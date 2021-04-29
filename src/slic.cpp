@@ -1,4 +1,4 @@
-#include "slic.hpp"
+#include "slic.h"
 
 /*
  * Constructor. Nothing is done here.
@@ -40,23 +40,12 @@ void Slic::inits(integers_matrix m){
     clusters.push_back(cluster);
     distances.push_back(distancemat);
   }
-  // cout << "distances.size()" << distances.size() << endl;
-  // cout << "clusters.size()" << clusters.size() << endl;
-  // cout << "step" << step << endl;
-  // cout << "m.ncol() - step/2)" << m.ncol() - step/2 << endl;
 
   for (int ncolcenter = step; ncolcenter < m.ncol() - step/2; ncolcenter += step){
     for (int nrowcenter = step; nrowcenter < m.nrow() - step/2; nrowcenter += step){
       vector<double> center;
       int colour = m(nrowcenter, ncolcenter);
-      // cout << "i" << ncolcenter << endl;
-      // cout << "j" << nrowcenter << endl;
-
       vector<int> lm = find_local_minimum(m, nrowcenter, ncolcenter);
-
-      // cout << "colour" << colour << endl;
-      // cout << "lm0" << lm[0][0] << endl;
-      // cout << "lm1" << lm[0][1] << endl;
 
       /* Generate the center vector. */
       center.push_back(lm[0]);
@@ -68,10 +57,6 @@ void Slic::inits(integers_matrix m){
       center_counts.push_back(0);
     }
   }
-  // cout << "centers.size()" << centers.size() << endl;
-  // cout << "center_counts.size()" << center_counts.size() << endl;
-  //
-  // cout << "inits ends" << endl;
 }
 
 double Slic::compute_dist(int ci, int y, int x, int value) {
@@ -84,7 +69,6 @@ double Slic::compute_dist(int ci, int y, int x, int value) {
 
 vector<int> Slic::find_local_minimum(integers_matrix m, int y, int x) {
   int min_grad = -1;
-  // cout << "min_grad" << min_grad << endl;
 
   vector<int> loc_min(2);
   loc_min.at(0) = y;
@@ -109,7 +93,7 @@ vector<int> Slic::find_local_minimum(integers_matrix m, int y, int x) {
 }
 
 writable::integers_matrix Slic::generate_superpixels(integers_matrix mat, int step, int nc){
-  cout << "generate_superpixels" << endl;
+  // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
 
@@ -173,8 +157,6 @@ writable::integers_matrix Slic::generate_superpixels(integers_matrix mat, int st
       centers[l][0] /= center_counts[l];
       centers[l][1] /= center_counts[l];
       centers[l][2] /= center_counts[l];
-      // centers[l][3] /= center_counts[l];
-      // centers[l][4] /= center_counts[l];
     }
   }
   // // cout << "centers.size()" << centers.size() << endl;
@@ -234,7 +216,6 @@ void Slic::create_connectivity(integers_matrix m) {
     vector<int> nc;
     for (int j = 0; j < m.nrow(); j++) {
       nc.push_back(-1);
-      // cout << "nc" << nc[-1] << endl;
     }
     new_clusters.push_back(nc);
   }
@@ -245,11 +226,9 @@ void Slic::create_connectivity(integers_matrix m) {
       if (new_clusters[i][j] == -1) {
 
         new_clusters[i][j] = label;
-        // cout << " new_clusters[i][j] " <<  new_clusters[i][j]  << endl;
 
         vector<vector<int> > elements;
         vector<int> element;
-        // vector<CvPoint> elements;
         element.push_back(j);
         element.push_back(i);
         elements.push_back(element);
@@ -261,7 +240,6 @@ void Slic::create_connectivity(integers_matrix m) {
           if (x >= 0 && x < m.ncol() && y >= 0 && y < m.nrow()) {
             if (new_clusters[x][y] >= 0) {
               adjlabel = new_clusters[x][y];
-              // cout << "adjlabel" << adjlabel << endl;
             }
           }
         }
@@ -279,7 +257,6 @@ void Slic::create_connectivity(integers_matrix m) {
                 elements.push_back(element2);
                 new_clusters[x][y] = label;
                 count += 1;
-                cout << "count" << count << endl;
               }
             }
           }
@@ -288,53 +265,15 @@ void Slic::create_connectivity(integers_matrix m) {
         /* Use the earlier found adjacent label if a segment size is
          smaller than a limit. */
         if (count <= lims >> 2) {
-        // if (count <= 20) {
           for (int c = 0; c < count; c++) {
             new_clusters[elements[c][1]][elements[c][0]] = adjlabel;
-            // cout << "adjlabel" << adjlabel << endl;
-            // cout << "new_clusters" << new_clusters[elements[c][1]][elements[c][0]] << endl;
           }
           label = label - 1;
-          // cout << "label0" << label << endl;
         }
         label = label + 1;
-        // cout << "label" << label << endl;
-
       }
     }
   }
-
-//
-//   /* Clear the center values. */
-//   for (int j = 0; j < (int) label; j++) {
-//     centers[j][0] = centers[j][1] = centers[j][2];
-//     center_counts[j] = 0;
-//   }
-//
-//   /* Compute the new cluster centers. */
-//   for (int j = 0; j < m.ncol(); j++) {
-//     for (int k = 0; k < m.nrow(); k++) {
-//       int c_id = new_clusters[j][k];
-//
-//       if (c_id != -1) {
-//         auto colour = m(k, j);
-//
-//         centers[c_id][0] += k;
-//         centers[c_id][1] += j;
-//         centers[c_id][2] += colour;
-//
-//         center_counts[c_id] += 1;
-//       }
-//     }
-//   }
-//
-//   /* Normalize the clusters. */
-//   for (int j = 0; j < (int) label; j++) {
-//     centers[j][0] /= center_counts[j];
-//     centers[j][1] /= center_counts[j];
-//     centers[j][2] /= center_counts[j];
-//   }
-//   clusters = new_clusters;
 }
 
 writable::integers_matrix Slic::colour_with_cluster_means(integers_matrix m) {
@@ -368,36 +307,6 @@ writable::integers_matrix Slic::colour_with_cluster_means(integers_matrix m) {
   }
   return result;
 }
-
-// void starts(int step, integers_matrix x){
-//   int x_ncol = x.ncol();
-//   int x_nrow = x.nrow();
-//   int x_ncol_step = step / 2;
-//   int output_rows =  floor(x_ncol / step) * floor(x_nrow / step);
-//   integers_matrix =
-//   for (x_ncol_step; x_ncol_step < x_ncol; x_ncol_step += step){
-//     cout << x_ncol_step << "- xcol" << endl;
-//     int x_nrow_step = step / 2;
-//     for (x_nrow_step; x_nrow_step < x_nrow; x_nrow_step += step){
-//       cout << x_nrow_step << "- xrow"<< endl;
-//     }
-//   }
-//   // integers_matrix r(0,0);
-// }
-
-
-  // def initial_cluster_center(S,img,img_h,img_w,clusters):
-  //   h = S // 2
-  //   w = S // 2
-  //   while h < img_h:
-  //     while w < img_w:
-  //       clusters.append(make_superPixel(h, w,img))
-  //       w += S
-  //       w = S // 2
-  //       h += S
-  //       return clusters
-
-
 
 /*** R
 devtools::load_all()

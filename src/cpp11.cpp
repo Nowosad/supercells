@@ -4,29 +4,21 @@
 
 #include "cpp11/declarations.hpp"
 
-// code.cpp
-void fun();
-extern "C" SEXP _slicr_fun() {
-  BEGIN_CPP11
-    fun();
-    return R_NilValue;
-  END_CPP11
-}
-// slic.hpp
+// slic.h
 integers_matrix foo(integers_matrix m, int step, int nc);
 extern "C" SEXP _slicr_foo(SEXP m, SEXP step, SEXP nc) {
   BEGIN_CPP11
     return cpp11::as_sexp(foo(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(m), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<int>>(nc)));
   END_CPP11
 }
-// slic.hpp
+// slic.h
 integers_matrix foo2(integers_matrix m, int x, int y);
 extern "C" SEXP _slicr_foo2(SEXP m, SEXP x, SEXP y) {
   BEGIN_CPP11
     return cpp11::as_sexp(foo2(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(m), cpp11::as_cpp<cpp11::decay_t<int>>(x), cpp11::as_cpp<cpp11::decay_t<int>>(y)));
   END_CPP11
 }
-// slic.hpp
+// slic.h
 integers_matrix foo3(integers_matrix m, int step, int nc);
 extern "C" SEXP _slicr_foo3(SEXP m, SEXP step, SEXP nc) {
   BEGIN_CPP11
@@ -39,13 +31,11 @@ extern "C" {
 extern SEXP _slicr_foo(SEXP, SEXP, SEXP);
 extern SEXP _slicr_foo2(SEXP, SEXP, SEXP);
 extern SEXP _slicr_foo3(SEXP, SEXP, SEXP);
-extern SEXP _slicr_fun();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_slicr_foo",  (DL_FUNC) &_slicr_foo,  3},
     {"_slicr_foo2", (DL_FUNC) &_slicr_foo2, 3},
     {"_slicr_foo3", (DL_FUNC) &_slicr_foo3, 3},
-    {"_slicr_fun",  (DL_FUNC) &_slicr_fun,  0},
     {NULL, NULL, 0}
 };
 }
