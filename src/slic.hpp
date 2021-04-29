@@ -21,6 +21,9 @@ class Slic {
     /* The number of occurrences of each center. */
     vector<int> center_counts;
 
+    /* Initialize the new cluster matrix. */
+    vector<vector<int> > new_clusters;
+
     /* The step size per cluster, and the color (nc) and distance (ns)
      * parameters. */
     int step, nc, ns;
@@ -44,7 +47,7 @@ class Slic {
     /* Generate an over-segmentation for an image. */
     writable::integers_matrix generate_superpixels(integers_matrix m, int step, int nc);
     /* Enforce connectivity for an image. */
-    // void create_connectivity(IplImage *image);
+    void create_connectivity(integers_matrix m);
 
     /* Draw functions. Resp. displayal of the centers and the contours. */
     // void display_center_grid(IplImage *image, CvScalar colour);
@@ -81,6 +84,7 @@ integers_matrix foo3(integers_matrix m, int step, int nc) {
   // integers_matrix r(20, 3);
   Slic slic;
   integers_matrix r = slic.generate_superpixels(m, step, nc);
+  // slic.create_connectivity(m);
   integers_matrix r2 = slic.colour_with_cluster_means(m);
   return r2;
 }

@@ -49,8 +49,8 @@ void Slic::inits(integers_matrix m){
     for (int nrowcenter = step; nrowcenter < m.nrow() - step/2; nrowcenter += step){
       vector<double> center;
       int colour = m(nrowcenter, ncolcenter);
-      cout << "i" << ncolcenter << endl;
-      cout << "j" << nrowcenter << endl;
+      // cout << "i" << ncolcenter << endl;
+      // cout << "j" << nrowcenter << endl;
 
       vector<int> lm = find_local_minimum(m, nrowcenter, ncolcenter);
 
@@ -177,7 +177,41 @@ writable::integers_matrix Slic::generate_superpixels(integers_matrix mat, int st
       // centers[l][4] /= center_counts[l];
     }
   }
-  // cout << "centers.size()" << centers.size() << endl;
+  // // cout << "centers.size()" << centers.size() << endl;
+  // create_connectivity(mat);
+  // clusters = new_clusters;
+
+  //
+  // /* Clear the center values. */
+  // for (int m = 0; m < (int) centers.size(); m++) {
+  //   centers[m][0] = centers[m][1] = centers[m][2] = 0;
+  //   center_counts[m] = 0;
+  // }
+  //
+  // /* Compute the new cluster centers. */
+  // for (int l = 0; l < mat.ncol(); l++) {
+  //   for (int k = 0; k < mat.nrow(); k++) {
+  //     int c_id = clusters[l][k];
+  //
+  //     if (c_id != -1) {
+  //       int colour = mat(k, l);
+  //
+  //       centers[c_id][0] += k;
+  //       centers[c_id][1] += l;
+  //       centers[c_id][2] += colour;
+  //
+  //       center_counts[c_id] += 1;
+  //     }
+  //   }
+  // }
+  // /* Normalize the clusters. */
+  // for (int l = 0; l < (int) centers.size(); l++) {
+  //   centers[l][0] /= center_counts[l];
+  //   centers[l][1] /= center_counts[l];
+  //   centers[l][2] /= center_counts[l];
+  //   // centers[l][3] /= center_counts[l];
+  //   // centers[l][4] /= center_counts[l];
+  // }
 
   writable::integers_matrix result(centers.size(), 3);
   for (int i = 0; i < (int) centers.size(); i++){
@@ -186,6 +220,121 @@ writable::integers_matrix Slic::generate_superpixels(integers_matrix mat, int st
     result(i, 2) = centers[i][2];
   }
   return result;
+}
+
+void Slic::create_connectivity(integers_matrix m) {
+  int label = 0;
+  int adjlabel = 0;
+  const int lims = (m.ncol() * m.nrow()) / ((int)centers.size());
+  cout << "lims" << lims << endl;
+  const int dx4[4] = {-1,  0,  1,  0};
+  const int dy4[4] = { 0, -1,  0,  1};
+
+  for (int i = 0; i < m.ncol(); i++) {
+    vector<int> nc;
+    for (int j = 0; j < m.nrow(); j++) {
+      nc.push_back(-1);
+      // cout << "nc" << nc[-1] << endl;
+    }
+    new_clusters.push_back(nc);
+  }
+
+  for (int i = 0; i < m.ncol(); i++) {
+    for (int j = 0; j < m.nrow(); j++) {
+
+      if (new_clusters[i][j] == -1) {
+
+        new_clusters[i][j] = label;
+        // cout << " new_clusters[i][j] " <<  new_clusters[i][j]  << endl;
+
+        vector<vector<int> > elements;
+        vector<int> element;
+        // vector<CvPoint> elements;
+        element.push_back(j);
+        element.push_back(i);
+        elements.push_back(element);
+
+        /* Find an adjacent label, for possible use later. */
+        for (int k = 0; k < 4; k++) {
+          int x = elements[0][1] + dx4[k], y = elements[0][0] + dy4[k];
+
+          if (x >= 0 && x < m.ncol() && y >= 0 && y < m.nrow()) {
+            if (new_clusters[x][y] >= 0) {
+              adjlabel = new_clusters[x][y];
+              // cout << "adjlabel" << adjlabel << endl;
+            }
+          }
+        }
+
+        int count = 1;
+        for (int c = 0; c < count; c++) {
+          for (int k = 0; k < 4; k++) {
+            int x = elements[c][1] + dx4[k], y = elements[c][0] + dy4[k];
+
+            if (x >= 0 && x < m.ncol() && y >= 0 && y < m.nrow()) {
+              if (new_clusters[x][y] == -1 && clusters[i][j] == clusters[x][y]) {
+                vector<int> element2;
+                element2.push_back(y);
+                element2.push_back(x);
+                elements.push_back(element2);
+                new_clusters[x][y] = label;
+                count += 1;
+                cout << "count" << count << endl;
+              }
+            }
+          }
+        }
+
+        /* Use the earlier found adjacent label if a segment size is
+         smaller than a limit. */
+        if (count <= lims >> 2) {
+        // if (count <= 20) {
+          for (int c = 0; c < count; c++) {
+            new_clusters[elements[c][1]][elements[c][0]] = adjlabel;
+            // cout << "adjlabel" << adjlabel << endl;
+            // cout << "new_clusters" << new_clusters[elements[c][1]][elements[c][0]] << endl;
+          }
+          label = label - 1;
+          // cout << "label0" << label << endl;
+        }
+        label = label + 1;
+        // cout << "label" << label << endl;
+
+      }
+    }
+  }
+
+//
+//   /* Clear the center values. */
+//   for (int j = 0; j < (int) label; j++) {
+//     centers[j][0] = centers[j][1] = centers[j][2];
+//     center_counts[j] = 0;
+//   }
+//
+//   /* Compute the new cluster centers. */
+//   for (int j = 0; j < m.ncol(); j++) {
+//     for (int k = 0; k < m.nrow(); k++) {
+//       int c_id = new_clusters[j][k];
+//
+//       if (c_id != -1) {
+//         auto colour = m(k, j);
+//
+//         centers[c_id][0] += k;
+//         centers[c_id][1] += j;
+//         centers[c_id][2] += colour;
+//
+//         center_counts[c_id] += 1;
+//       }
+//     }
+//   }
+//
+//   /* Normalize the clusters. */
+//   for (int j = 0; j < (int) label; j++) {
+//     centers[j][0] /= center_counts[j];
+//     centers[j][1] /= center_counts[j];
+//     centers[j][2] /= center_counts[j];
+//   }
+//   clusters = new_clusters;
 }
 
 writable::integers_matrix Slic::colour_with_cluster_means(integers_matrix m) {
@@ -214,6 +363,7 @@ writable::integers_matrix Slic::colour_with_cluster_means(integers_matrix m) {
       // int ncolour = colours[clusters[i][j]];
       // result(j, i) = ncolour;
       result(j, i) = clusters[i][j];
+      // result(j, i) = new_clusters[i][j];
     }
   }
   return result;
@@ -250,8 +400,32 @@ writable::integers_matrix Slic::colour_with_cluster_means(integers_matrix m) {
 
 
 /*** R
+devtools::load_all()
 library(landscapemetrics)
 library(raster)
+library(terra)
+library(sf)
+library(tmap)
+
+volcanorast = raster(volcano, xmn = 0, xmx = 61, ymn = 0, ymx = 87, crs = 2180)
+mode(volcano) = "integer"
+b = foo3(volcano, 5, 5)
+volcanorast2 = raster(b)
+extent(volcanorast2) = extent(volcanorast)
+vo2 = rast(volcanorast2)
+vo3 = terra::as.polygons(vo2, dissolve=TRUE)
+vo4 = st_as_sf(vo3, crs = st_crs(volcanorast))
+vo5 = st_cast(st_make_valid(vo4), "MULTIPOLYGON")
+st_crs(vo5) = st_crs(volcanorast)
+
+tmap_mode("plot")
+tm_shape(volcanorast) +
+  tm_raster(legend.show = FALSE, style = "cont") +
+  tm_shape(vo5, is.master = TRUE) +
+  tm_borders()
+
+write_sf(vo5, "tmp.gpkg")
+
 data("augusta_nlcd")
 m = as.matrix(augusta_nlcd)
 a = foo(m, 20, 1)
@@ -262,11 +436,10 @@ aaa = foo3(m, 20, 1)
 augusta_nlcd2 = augusta_nlcd
 augusta_nlcd2 = raster(aaa)
 extent(augusta_nlcd2) = extent(augusta_nlcd)
-plot(augusta_nlcd2)
+# plot(augusta_nlcd2)
 
-library(terra)
-library(sf)
-library
+
+
 an = rast(augusta_nlcd)
 an2 = rast(augusta_nlcd2)
 an3 = terra::as.polygons(an2, dissolve=TRUE)
@@ -281,22 +454,7 @@ tm_shape(augusta_nlcd) +
   tm_shape(an5) +
   tm_borders()
 
-volcanorast = raster(volcano, xmn = 0, xmx = 61, ymn = 0, ymx = 87)
-mode(volcano) = "integer"
-b = foo3(volcano, 5, 1)
-volcanorast2 = raster(b)
-extent(volcanorast2) = extent(volcanorast)
-vo2 = rast(volcanorast2)
-vo3 = terra::as.polygons(vo2, dissolve=TRUE)
-vo4 = st_as_sf(vo3, crs = st_crs(volcanorast))
-vo5 = st_cast(st_make_valid(vo4), "MULTIPOLYGON")
-st_crs(vo5) = st_crs(volcanorast)
 
-tmap_mode("plot")
-tm_shape(volcanorast) +
-  tm_raster(legend.show = FALSE, style = "cont") +
-  tm_shape(vo5, is.master = TRUE) +
-  tm_borders()
 
 library(sf)
 library(tmap)
