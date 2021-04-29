@@ -160,8 +160,8 @@ writable::integers_matrix Slic::generate_superpixels(integers_matrix mat, int st
     }
   }
   // // cout << "centers.size()" << centers.size() << endl;
-  // create_connectivity(mat);
-  // clusters = new_clusters;
+  create_connectivity(mat);
+  clusters = new_clusters;
 
   //
   // /* Clear the center values. */
