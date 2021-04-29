@@ -159,41 +159,39 @@ writable::integers_matrix Slic::generate_superpixels(integers_matrix mat, int st
       centers[l][2] /= center_counts[l];
     }
   }
-  // // cout << "centers.size()" << centers.size() << endl;
+  // cout << "centers.size()" << centers.size() << endl;
   create_connectivity(mat);
   clusters = new_clusters;
 
-  //
-  // /* Clear the center values. */
-  // for (int m = 0; m < (int) centers.size(); m++) {
-  //   centers[m][0] = centers[m][1] = centers[m][2] = 0;
-  //   center_counts[m] = 0;
-  // }
-  //
-  // /* Compute the new cluster centers. */
-  // for (int l = 0; l < mat.ncol(); l++) {
-  //   for (int k = 0; k < mat.nrow(); k++) {
-  //     int c_id = clusters[l][k];
-  //
-  //     if (c_id != -1) {
-  //       int colour = mat(k, l);
-  //
-  //       centers[c_id][0] += k;
-  //       centers[c_id][1] += l;
-  //       centers[c_id][2] += colour;
-  //
-  //       center_counts[c_id] += 1;
-  //     }
-  //   }
-  // }
-  // /* Normalize the clusters. */
-  // for (int l = 0; l < (int) centers.size(); l++) {
-  //   centers[l][0] /= center_counts[l];
-  //   centers[l][1] /= center_counts[l];
-  //   centers[l][2] /= center_counts[l];
-  //   // centers[l][3] /= center_counts[l];
-  //   // centers[l][4] /= center_counts[l];
-  // }
+  /* Clear the center values. */
+  for (int m = 0; m < (int) centers.size(); m++) {
+    centers[m][0] = centers[m][1] = centers[m][2] = 0;
+    center_counts[m] = 0;
+  }
+
+  /* Compute the new cluster centers. */
+  for (int l = 0; l < mat.ncol(); l++) {
+    for (int k = 0; k < mat.nrow(); k++) {
+      int c_id = clusters[l][k];
+
+      if (c_id != -1) {
+        int colour = mat(k, l);
+
+        centers[c_id][0] += k;
+        centers[c_id][1] += l;
+        centers[c_id][2] += colour;
+
+        center_counts[c_id] += 1;
+      }
+    }
+  }
+
+  /* Normalize the clusters. */
+  for (int l = 0; l < (int) centers.size(); l++) {
+    centers[l][0] /= center_counts[l];
+    centers[l][1] /= center_counts[l];
+    centers[l][2] /= center_counts[l];
+  }
 
   writable::integers_matrix result(centers.size(), 3);
   for (int i = 0; i < (int) centers.size(); i++){
@@ -318,6 +316,12 @@ library(tmap)
 
 volcanorast = raster(volcano, xmn = 0, xmx = 61, ymn = 0, ymx = 87, crs = 2180)
 mode(volcano) = "integer"
+bc = foo(volcano, 5, 5)
+bc = st_as_sf(as.data.frame(bc),
+              coords = c("V2", "V1"),
+              crs = st_crs(volcanorast))
+
+
 b = foo3(volcano, 5, 5)
 volcanorast2 = raster(b)
 extent(volcanorast2) = extent(volcanorast)
@@ -331,7 +335,9 @@ tmap_mode("plot")
 tm_shape(volcanorast) +
   tm_raster(legend.show = FALSE, style = "cont") +
   tm_shape(vo5, is.master = TRUE) +
-  tm_borders()
+  tm_borders() +
+  tm_shape(bc) +
+  tm_dots()
 
 write_sf(vo5, "tmp.gpkg")
 
