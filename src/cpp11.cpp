@@ -5,10 +5,10 @@
 #include "cpp11/declarations.hpp"
 
 // slic.h
-integers_matrix run_slic(integers_matrix m, int step, int nc, int con, int type);
+integers_matrix run_slic(integers_matrix m, int step, int nc, bool con, bool type);
 extern "C" SEXP _slicr_run_slic(SEXP m, SEXP step, SEXP nc, SEXP con, SEXP type) {
   BEGIN_CPP11
-    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(m), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<int>>(nc), cpp11::as_cpp<cpp11::decay_t<int>>(con), cpp11::as_cpp<cpp11::decay_t<int>>(type)));
+    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(m), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<int>>(nc), cpp11::as_cpp<cpp11::decay_t<bool>>(con), cpp11::as_cpp<cpp11::decay_t<bool>>(type)));
   END_CPP11
 }
 

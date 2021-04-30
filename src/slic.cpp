@@ -271,7 +271,7 @@ void Slic::create_connectivity(integers_matrix mat) {
   }
 }
 
-writable::integers_matrix Slic::return_centers(){
+writable::integers_matrix Slic::return_clusters(){
   writable::integers_matrix result(clusters[0].size(), clusters.size());
 
   for (int i = 0; i < clusters.size(); i++) {
@@ -282,7 +282,7 @@ writable::integers_matrix Slic::return_centers(){
   return result;
 }
 
-writable::integers_matrix Slic::return_clusters(){
+writable::integers_matrix Slic::return_centers(){
   writable::integers_matrix result(centers.size(), 3);
   for (int i = 0; i < (int) centers.size(); i++){
     result(i, 0) = centers[i][0];
@@ -303,7 +303,7 @@ library(tmap)
 volcanorast = raster(volcano, xmn = 0, xmx = 61, ymn = 0, ymx = 87, crs = 2180)
 mode(volcano) = "integer"
 
-b = run_slic(volcano, 5, 5, 0, 0)
+b = run_slic(volcano, 5, 5, TRUE, TRUE)
 volcanorast2 = raster(b)
 extent(volcanorast2) = extent(volcanorast)
 vo2 = rast(volcanorast2)
@@ -316,15 +316,12 @@ tmap_mode("plot")
 tm_shape(volcanorast) +
   tm_raster(legend.show = FALSE, style = "cont") +
   tm_shape(vo5, is.master = TRUE) +
-  tm_borders() +
-  tm_shape(bc) +
-  tm_dots()
-
+  tm_borders()
 
 data("augusta_nlcd")
 m = as.matrix(augusta_nlcd)
 
-aaa = run_slic(m, 20, 1, 0, 0)
+aaa = run_slic(m, 2, 1, TRUE, TRUE)
 
 augusta_nlcd2 = augusta_nlcd
 augusta_nlcd2 = raster(aaa)

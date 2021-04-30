@@ -53,7 +53,7 @@ class Slic {
 };
 
 [[cpp11::register]]
-integers_matrix run_slic(integers_matrix m, int step, int nc, int con, int type) {
+integers_matrix run_slic(integers_matrix m, int step, int nc, bool con, bool type) {
   Slic slic;
   integers_matrix r = slic.generate_superpixels(m, step, nc);
   if (con){
