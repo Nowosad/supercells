@@ -5,37 +5,19 @@
 #include "cpp11/declarations.hpp"
 
 // slic.h
-integers_matrix foo(integers_matrix m, int step, int nc);
-extern "C" SEXP _slicr_foo(SEXP m, SEXP step, SEXP nc) {
+integers_matrix run_slic(integers_matrix m, int step, int nc, int con, int type);
+extern "C" SEXP _slicr_run_slic(SEXP m, SEXP step, SEXP nc, SEXP con, SEXP type) {
   BEGIN_CPP11
-    return cpp11::as_sexp(foo(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(m), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<int>>(nc)));
-  END_CPP11
-}
-// slic.h
-integers_matrix foo2(integers_matrix m, int x, int y);
-extern "C" SEXP _slicr_foo2(SEXP m, SEXP x, SEXP y) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(foo2(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(m), cpp11::as_cpp<cpp11::decay_t<int>>(x), cpp11::as_cpp<cpp11::decay_t<int>>(y)));
-  END_CPP11
-}
-// slic.h
-integers_matrix foo3(integers_matrix m, int step, int nc);
-extern "C" SEXP _slicr_foo3(SEXP m, SEXP step, SEXP nc) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(foo3(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(m), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<int>>(nc)));
+    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(m), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<int>>(nc), cpp11::as_cpp<cpp11::decay_t<int>>(con), cpp11::as_cpp<cpp11::decay_t<int>>(type)));
   END_CPP11
 }
 
 extern "C" {
 /* .Call calls */
-extern SEXP _slicr_foo(SEXP, SEXP, SEXP);
-extern SEXP _slicr_foo2(SEXP, SEXP, SEXP);
-extern SEXP _slicr_foo3(SEXP, SEXP, SEXP);
+extern SEXP _slicr_run_slic(SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_slicr_foo",  (DL_FUNC) &_slicr_foo,  3},
-    {"_slicr_foo2", (DL_FUNC) &_slicr_foo2, 3},
-    {"_slicr_foo3", (DL_FUNC) &_slicr_foo3, 3},
+    {"_slicr_run_slic", (DL_FUNC) &_slicr_run_slic, 5},
     {NULL, NULL, 0}
 };
 }
