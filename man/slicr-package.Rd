@@ -6,7 +6,8 @@
 \alias{slicr-package}
 \title{slicr: What the Package Does (One Line, Title Case)}
 \description{
-What the package does (one paragraph).
+What the package does (one paragraph). 
+  What the package does (one paragraph).
 }
 \author{
 \strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
