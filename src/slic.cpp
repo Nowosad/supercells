@@ -92,7 +92,7 @@ vector<int> Slic::find_local_minimum(integers_matrix m, int y, int x) {
   return loc_min;
 }
 
-writable::integers_matrix Slic::generate_superpixels(integers_matrix mat, int step, int nc){
+void Slic::generate_superpixels(integers_matrix mat, int step, int nc){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -158,14 +158,6 @@ writable::integers_matrix Slic::generate_superpixels(integers_matrix mat, int st
       centers[l][2] /= center_counts[l];
     }
   }
-
-  writable::integers_matrix result(centers.size(), 3);
-  for (int i = 0; i < (int) centers.size(); i++){
-    result(i, 0) = centers[i][0];
-    result(i, 1) = centers[i][1];
-    result(i, 2) = centers[i][2];
-  }
-  return result;
 }
 
 void Slic::create_connectivity(integers_matrix mat) {
@@ -203,6 +195,8 @@ void Slic::create_connectivity(integers_matrix mat) {
           if (x >= 0 && x < mat.ncol() && y >= 0 && y < mat.nrow()) {
             if (new_clusters[x][y] >= 0) {
               adjlabel = new_clusters[x][y];
+              // cout << "adjlabel" << adjlabel <<endl;
+
             }
           }
         }
@@ -234,9 +228,14 @@ void Slic::create_connectivity(integers_matrix mat) {
           label = label - 1;
         }
         label = label + 1;
+        // cout << "label" << label << "";
+
       }
     }
   }
+
+  // cout << "clusters" << clusters.size() << " " << clusters[0].size() <<endl;
+  // cout << "new_clusters" << new_clusters.size() << " " << new_clusters[0].size() <<endl;
 
   clusters = new_clusters;
 
@@ -246,29 +245,39 @@ void Slic::create_connectivity(integers_matrix mat) {
     center_counts[m] = 0;
   }
 
-  /* Compute the new cluster centers. */
-  for (int l = 0; l < mat.ncol(); l++) {
-    for (int k = 0; k < mat.nrow(); k++) {
-      int c_id = clusters[l][k];
+  // cout << "centers.size" << (int) centers.size() <<endl;
 
-      if (c_id != -1) {
-        int colour = mat(k, l);
-
-        centers[c_id][0] += k;
-        centers[c_id][1] += l;
-        centers[c_id][2] += colour;
-
-        center_counts[c_id] += 1;
-      }
-    }
-  }
-
-  /* Normalize the clusters. */
-  for (int l = 0; l < (int) centers.size(); l++) {
-    centers[l][0] /= center_counts[l];
-    centers[l][1] /= center_counts[l];
-    centers[l][2] /= center_counts[l];
-  }
+  // /* Compute the new cluster centers. */
+  // for (int l = 0; l < mat.ncol(); l++) {
+  //   for (int k = 0; k < mat.nrow(); k++) {
+  //     int c_id = clusters[l][k] - 1;
+  //
+  //     // cout << "c_id" << c_id << "";
+  //
+  //     if (c_id != -1) {
+  //       int colour = mat(k, l);
+  //
+  //       // centers[c_id][0] += k;
+  //       // centers[c_id][1] += l;
+  //       // centers[c_id][2] += colour;
+  //
+  //       centers.at(c_id).at(0) += k;
+  //       centers.at(c_id).at(1) += l;
+  //       centers.at(c_id).at(2) += colour;
+  //
+  //       center_counts[c_id] += 1;
+  //     }
+  //   }
+  // }
+  // // << endl <<;
+  //
+  //
+  // /* Normalize the clusters. */
+  // for (int l = 0; l < (int) centers.size(); l++) {
+  //   centers[l][0] /= center_counts[l];
+  //   centers[l][1] /= center_counts[l];
+  //   centers[l][2] /= center_counts[l];
+  // }
 }
 
 writable::integers_matrix Slic::return_clusters(){

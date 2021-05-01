@@ -44,7 +44,7 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    writable::integers_matrix generate_superpixels(integers_matrix m, int step, int nc);
+    void generate_superpixels(integers_matrix m, int step, int nc);
     /* Enforce connectivity for an image. */
     void create_connectivity(integers_matrix mat);
 
@@ -55,7 +55,7 @@ class Slic {
 [[cpp11::register]]
 integers_matrix run_slic(integers_matrix m, int step, int nc, bool con, bool type) {
   Slic slic;
-  integers_matrix r = slic.generate_superpixels(m, step, nc);
+  slic.generate_superpixels(m, step, nc);
   if (con){
     slic.create_connectivity(m);
   }
