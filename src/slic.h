@@ -18,6 +18,8 @@ class Slic {
 
     /* The values of the centers. */
     vector<vector<double> > centers;
+    vector<vector<double> > centers_vals;
+
     /* The number of occurrences of each center. */
     vector<int> center_counts;
 
@@ -28,15 +30,17 @@ class Slic {
      * parameters. */
     int step, nc, ns;
 
+    double euclidean(vector<double> values1, vector<double> values2);
+
     /* Compute the distance between a center and an individual pixel. */
-    double compute_dist(int ci, int y, int x, int value);
+    double compute_dist(int ci, int y, int x, vector<double> value);
 
     /* Find the pixel with the lowest gradient in a 3x3 surrounding. */
-    vector<int> find_local_minimum(integers_matrix m, int y, int x);
+    vector<int> find_local_minimum(integers_matrix vals, integers_matrix mat, int y, int x);
 
     /* Remove and initialize the 2d vectors. */
     void clear_data();
-    void inits(integers_matrix m);
+    void inits(integers_matrix m, integers_matrix vals);
 
   public:
     /* Class constructors and deconstructors. */
@@ -44,20 +48,20 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers_matrix m, int step, int nc);
+    void generate_superpixels(integers_matrix m, integers_matrix vals, double step, int nc);
     /* Enforce connectivity for an image. */
-    void create_connectivity(integers_matrix mat);
+    void create_connectivity(integers_matrix mat, integers_matrix vals);
 
     writable::integers_matrix return_centers();
     writable::integers_matrix return_clusters();
 };
 
 [[cpp11::register]]
-integers_matrix run_slic(integers_matrix m, int step, int nc, bool con, bool type) {
+integers_matrix run_slic(integers_matrix m, integers_matrix vals, double step, int nc, bool con, bool type) {
   Slic slic;
-  slic.generate_superpixels(m, step, nc);
+  slic.generate_superpixels(m, vals, step, nc);
   if (con){
-    slic.create_connectivity(m);
+    slic.create_connectivity(m, vals);
   }
   if (type) {
     integers_matrix result = slic.return_clusters();

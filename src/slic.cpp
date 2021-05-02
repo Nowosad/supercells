@@ -24,10 +24,11 @@ void Slic::clear_data() {
   clusters.clear();
   distances.clear();
   centers.clear();
+  centers_vals.clear();
   center_counts.clear();
 }
 
-void Slic::inits(integers_matrix m){
+void Slic::inits(integers_matrix m, integers_matrix vals){
   // cout << "inits" << endl;
 
   for (int ncol = 0; ncol < m.ncol(); ncol++){
@@ -44,62 +45,114 @@ void Slic::inits(integers_matrix m){
   for (int ncolcenter = step; ncolcenter < m.ncol() - step/2; ncolcenter += step){
     for (int nrowcenter = step; nrowcenter < m.nrow() - step/2; nrowcenter += step){
       vector<double> center;
-      int colour = m(nrowcenter, ncolcenter);
-      vector<int> lm = find_local_minimum(m, nrowcenter, ncolcenter);
+      // cout << ncolcenter << " " << nrowcenter << endl;
+
+      int ncell = ncolcenter + (nrowcenter * m.ncol());
+
+      vector<double> colour;
+      for (int nval = 0; nval < vals.ncol(); nval++){
+        double val = vals(ncell, nval);
+        colour.push_back(val);
+      }
+
+      vector<int> lm = find_local_minimum(vals, m, nrowcenter, ncolcenter);
 
       /* Generate the center vector. */
       center.push_back(lm[0]);
       center.push_back(lm[1]);
-      center.push_back(colour);
+      // center.push_back(colour);
+
+      /* Generate the center vector. */
+      // center.push_back(nrowcenter);
+      // center.push_back(ncolcenter);
+      // center.insert(center.end(), colour.begin(), colour.end());
 
       /* Append to vector of centers. */
       centers.push_back(center);
+      centers_vals.push_back(colour);
       center_counts.push_back(0);
     }
   }
 }
 
-double Slic::compute_dist(int ci, int y, int x, int value) {
+double Slic::euclidean(vector<double> values1, vector<double> values2){
 
-  double dc = sqrt(pow(centers[ci][2] - value, 2));
-  double ds = sqrt(pow(centers[ci][0] - x, 2) + pow(centers[ci][1] - y, 2));
+    int len1 = values1.size();
+    // int len2 = values2.size();
+    double dist = 0.0;
+    double diff = 0.0;
+
+    for (int i = 0; i < len1; i++){
+        diff = values1[i] - values2[i];
+        dist += pow(diff, 2);
+    }
+    return sqrt(dist);
+}
+
+double Slic::compute_dist(int ci, int y, int x, vector<double> values) {
+
+  double dc = euclidean(centers_vals[ci], values);
+  double ds = sqrt(pow(centers[ci][0] - y, 2) + pow(centers[ci][1] - x, 2));
+  // cout << "distance: " << dc << endl;
 
   return sqrt(pow(dc / nc, 2) + pow(ds / ns, 2));
 }
 
-vector<int> Slic::find_local_minimum(integers_matrix m, int y, int x) {
-  int min_grad = -1;
+vector<int> Slic::find_local_minimum(integers_matrix vals, integers_matrix mat, int y, int x) {
+  double min_grad = FLT_MAX;
+  // int min_grad = -1;
 
   vector<int> loc_min(2);
   loc_min.at(0) = y;
   loc_min.at(1) = x;
 
+  // cout << "loc min start: " << loc_min[0] << " " << loc_min[1] << endl;
+
   for (int i = x - 1; i < x + 2; i++) {
     for (int j = y - 1; j < y + 2; j++) {
-      int i1 = m(j + 1, i);
-      int i2 = m(j, i + 1);
-      int i3 = m(j, i);
+
+      int ncell1 = i + ((j + 1) * mat.ncol());
+      int ncell2 = (i + 1) + (j * mat.ncol());
+      int ncell3 = i + (j * mat.ncol());
+
+      vector<double> colour1;
+      vector<double> colour2;
+      vector<double> colour3;
+      for (int nval = 0; nval < vals.ncol(); nval++){
+        double val1 = vals(ncell1, nval);
+        double val2 = vals(ncell2, nval);
+        double val3 = vals(ncell3, nval);
+        colour1.push_back(val1);
+        colour2.push_back(val2);
+        colour3.push_back(val3);
+      }
 
       /* Compute horizontal and vertical gradients and keep track of the
        minimum. */
-      if ((sqrt(pow(i1 - i3, 2)) + sqrt(pow(i2 - i3, 2))) < min_grad) {
-        min_grad = fabs(i1 - i3) + fabs(i2 - i3);
+      double new_grad = euclidean(colour1, colour3) + euclidean(colour2, colour3);
+      // cout << "new_grad: " << new_grad << " min_grad: " << min_grad << endl;
+
+      if (new_grad < min_grad) {
+        min_grad = new_grad;
         loc_min.at(0) = j;
         loc_min.at(1) = i;
       }
     }
   }
+  // cout << "loc min end: " << loc_min[0] << " " << loc_min[1] << endl;
+
   return loc_min;
 }
 
-void Slic::generate_superpixels(integers_matrix mat, int step, int nc){
+void Slic::generate_superpixels(integers_matrix mat, integers_matrix vals, double step, int nc){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
+  this->ns = step;
 
   /* Clear previous data (if any), and re-initialize it. */
   clear_data();
-  inits(mat);
+  inits(mat, vals);
 
   /* Run EM for 10 iterations (as prescribed by the algorithm). */
   for (int iter = 0; iter < NR_ITERATIONS; iter++) {
@@ -115,8 +168,19 @@ void Slic::generate_superpixels(integers_matrix mat, int step, int nc){
         for (int n = centers[l][0] - step; n < centers[l][0] + step; n++) {
 
           if (m >= 0 && m < mat.ncol() && n >= 0 && n < mat.nrow()) {
-            int colour = mat(n, m);
+            // int colour = mat(n, m);
+
+            int ncell = m + (n * mat.ncol());
+
+            vector<double> colour;
+            for (int nval = 0; nval < vals.ncol(); nval++){
+              double val = vals(ncell, nval);
+              colour.push_back(val);
+            }
+
             double d = compute_dist(l, n, m, colour);
+
+            // cout << "distance: " << d << endl;
 
             /* Update cluster allocation if the cluster minimizes the
              distance. */
@@ -130,37 +194,49 @@ void Slic::generate_superpixels(integers_matrix mat, int step, int nc){
     }
 
     /* Clear the center values. */
+    /* Clear the center _vals values. */
     for (int m = 0; m < (int) centers.size(); m++) {
-      centers[m][0] = centers[m][1] = centers[m][2] = 0;
+      centers[m][0] = centers[m][1] = 0;
+      for (int n = 0; n < (int) centers_vals[0].size(); n++){
+        centers_vals[m][n] = 0;
+      }
       center_counts[m] = 0;
     }
 
-    /* Compute the new cluster centers. */
+    // /* Compute the new cluster centers. */
     for (int l = 0; l < mat.ncol(); l++) {
       for (int k = 0; k < mat.nrow(); k++) {
         int c_id = clusters[l][k];
 
         if (c_id != -1) {
-          int colour = mat(k, l);
+          int ncell = l + (k * mat.ncol());
 
+          vector<double> colour;
+          for (int nval = 0; nval < vals.ncol(); nval++){
+            double val = vals(ncell, nval);
+            colour.push_back(val);
+          }
           centers[c_id][0] += k;
           centers[c_id][1] += l;
-          centers[c_id][2] += colour;
-
+          for (int nval = 0; nval < vals.ncol(); nval++){
+            centers_vals[c_id][nval] += colour[nval];
+          }
           center_counts[c_id] += 1;
         }
       }
     }
-    /* Normalize the clusters. */
+    // /* Normalize the clusters. */
     for (int l = 0; l < (int) centers.size(); l++) {
       centers[l][0] /= center_counts[l];
       centers[l][1] /= center_counts[l];
-      centers[l][2] /= center_counts[l];
+      for (int nval = 0; nval < vals.ncol(); nval++){
+        centers_vals[l][nval] /= center_counts[l];
+      }
     }
   }
 }
 
-void Slic::create_connectivity(integers_matrix mat) {
+void Slic::create_connectivity(integers_matrix mat, integers_matrix vals) {
   int label = 0;
   int adjlabel = 0;
   const int lims = (mat.ncol() * mat.nrow()) / ((int)centers.size());
@@ -240,43 +316,47 @@ void Slic::create_connectivity(integers_matrix mat) {
   clusters = new_clusters;
 
   /* Clear the center values. */
-  for (int m = 0; m < (int) centers.size(); m++) {
-    centers[m][0] = centers[m][1] = centers[m][2] = 0;
-    center_counts[m] = 0;
-  }
-
-  // cout << "centers.size" << (int) centers.size() <<endl;
-
-  // /* Compute the new cluster centers. */
+  /* Clear the center _vals values. */
+  // for (int m = 0; m < (int) centers.size(); m++) {
+  //   centers[m][0] = centers[m][1] = 0;
+  //   for (int n = 0; n < (int) centers_vals[0].size(); n++){
+  //     centers_vals[m][n] = 0;
+  //   }
+  //   center_counts[m] = 0;
+  // }
+  //
+  // // /* Compute the new cluster centers. */
   // for (int l = 0; l < mat.ncol(); l++) {
   //   for (int k = 0; k < mat.nrow(); k++) {
-  //     int c_id = clusters[l][k] - 1;
-  //
-  //     // cout << "c_id" << c_id << "";
+  //     int c_id = clusters[l][k];
   //
   //     if (c_id != -1) {
-  //       int colour = mat(k, l);
+  //       int ncell = l + (k * mat.ncol());
   //
-  //       // centers[c_id][0] += k;
-  //       // centers[c_id][1] += l;
-  //       // centers[c_id][2] += colour;
+  //       vector<double> colour;
+  //       for (int nval = 0; nval < vals.ncol(); nval++){
+  //         double val = vals(ncell, nval);
+  //         colour.push_back(val);
+  //       }
   //
-  //       centers.at(c_id).at(0) += k;
-  //       centers.at(c_id).at(1) += l;
-  //       centers.at(c_id).at(2) += colour;
+  //       centers[c_id][0] += k;
+  //       centers[c_id][1] += l;
+  //       for (int nval = 0; nval < vals.ncol(); nval++){
+  //         centers_vals[c_id][nval] += colour[nval];
+  //       }
   //
   //       center_counts[c_id] += 1;
   //     }
   //   }
   // }
-  // // << endl <<;
   //
-  //
-  // /* Normalize the clusters. */
+  // // /* Normalize the clusters. */
   // for (int l = 0; l < (int) centers.size(); l++) {
   //   centers[l][0] /= center_counts[l];
   //   centers[l][1] /= center_counts[l];
-  //   centers[l][2] /= center_counts[l];
+  //   for (int nval = 0; nval < vals.ncol(); nval++){
+  //     centers_vals[l][nval] /= center_counts[l];
+  //   }
   // }
 }
 
