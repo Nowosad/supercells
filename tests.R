@@ -48,13 +48,28 @@ tm_shape(nlcd) +
 
 # test 3 ------------------------------------------------------------------
 landsat = rast(system.file("raster/landsat.tif", package = "spDataLarge"))
-# plotRGB(landsat, r = 3, g = 2, b = 1, stretch = "lin")
 
-landsatm = as.matrix(landsat[[1]], wide = TRUE)
-landsatv = as.matrix(as.data.frame(landsat, cell = TRUE)[-c(1, 5)])
+.linStretch <- function (x) {
+  v_vals = terra::values(x)
+  v <- stats::quantile(v_vals, c(0.02, 0.98), na.rm = TRUE)
+  temp <- (255 * (x - v[1]))/(v[2] - v[1])
+  temp[temp < 0] <- 0
+  temp[temp > 255] <- 255
+  return(temp)
+}
+landsat2 = landsat
+landsat2[[1]] = .linStretch(landsat[[1]])
+landsat2[[2]] = .linStretch(landsat[[2]])
+landsat2[[3]] = .linStretch(landsat[[3]])
+landsat2[[4]] = .linStretch(landsat[[4]])
+
+plotRGB(landsat2, r = 3, g = 2, b = 1)
+
+landsatm = as.matrix(landsat2[[1]], wide = TRUE)
+landsatv = as.matrix(as.data.frame(landsat2, cell = TRUE)[-c(1, 5)])
 mode(landsatm) = "integer"
 mode(landsatv) = "integer"
-landsat_slic = run_slic(landsatm, landsatv, 50, 20, TRUE, TRUE)
+landsat_slic = run_slic(landsatm, landsatv, 50, 50, TRUE, TRUE)
 landsat_slic = rast(landsat_slic)
 ext(landsat_slic) = ext(landsat)
 crs(landsat_slic) = st_crs(landsat)$proj4string
@@ -62,10 +77,12 @@ landsat_slict = terra::as.polygons(landsat_slic, dissolve = TRUE)
 landsat_slic = st_as_sf(landsat_slict)
 
 
-plotRGB(landsat, r = 3, g = 2, b = 1, stretch = "lin")
+plotRGB(landsat2, r = 3, g = 2, b = 1)
 lines(landsat_slict, add = TRUE, lwd = 3, col = "red")
-# plot(landsat_slic)
 
+# terra::writeRaster(landsat2, "l.tif")
+# write_sf(landsat_slic, "l.gpkg")
+# plot(landsat_slic)
 
 l1 = dplyr::filter(stars::st_as_stars(landsat), band == 3)
 tm_shape(l1) +
