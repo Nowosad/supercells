@@ -15,7 +15,7 @@ srtmm = as.matrix(srtm, wide = TRUE)
 srtmv = as.matrix(as.data.frame(srtm, cell = TRUE)[2])
 mode(srtmm) = "integer"
 mode(srtmv) = "integer"
-srtm_slic = run_slic(srtmm, srtmv, 23.04913, 50, FALSE, TRUE)
+srtm_slic = run_slic(srtmm, srtmv, 23.04913, 1, TRUE, TRUE, "jensen_shannon")
 # srtm_slic = slicr2:::run_slic(srtmm, 50, 5, TRUE, TRUE)
 
 srtm_slic = rast(srtm_slic)

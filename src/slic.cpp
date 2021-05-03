@@ -28,7 +28,7 @@ void Slic::clear_data() {
   center_counts.clear();
 }
 
-void Slic::inits(integers_matrix m, integers_matrix vals){
+void Slic::inits(integers_matrix m, integers_matrix vals, std::string type){
   // cout << "inits" << endl;
 
   for (int ncol = 0; ncol < m.ncol(); ncol++){
@@ -55,7 +55,7 @@ void Slic::inits(integers_matrix m, integers_matrix vals){
         colour.push_back(val);
       }
 
-      vector<int> lm = find_local_minimum(vals, m, nrowcenter, ncolcenter);
+      vector<int> lm = find_local_minimum(vals, m, nrowcenter, ncolcenter, type);
 
       /* Generate the center vector. */
       center.push_back(lm[0]);
@@ -89,16 +89,76 @@ double Slic::euclidean(vector<double> values1, vector<double> values2){
     return sqrt(dist);
 }
 
-double Slic::compute_dist(int ci, int y, int x, vector<double> values) {
+double Slic::manhattan(vector<double> values1, vector<double> values2){
 
-  double dc = euclidean(centers_vals[ci], values);
+  int len1 = values1.size();
+  // int len2 = values2.size();
+  double dist = 0.0;
+  double diff = 0.0;
+
+  for (int i = 0; i < len1; i++){
+      diff = fabs(values1[i] - values2[i]);
+      dist += diff;
+  }
+  return dist;
+}
+
+double custom_log2(const double& x ){
+  if (x == 0.0){
+    return NAN;
+  } else {
+    return log(x)/log(2.0);
+  }
+}
+
+double Slic::jensen_shannon(vector<double> values1, vector<double> values2){
+
+  int len1 = values1.size();
+  double sum1       = 0.0;
+  double sum2       = 0.0;
+  double sum12      = 0.0;
+
+  for(int i = 0; i < len1; i++){
+
+    sum12 =   values1[i] + values2[i];
+    if (values1[i] == 0.0 || sum12 == 0.0) {
+      sum1  += 0.0;
+    } else {
+      sum1  +=  values1[i] * custom_log2((2.0 * values1[i]) / sum12);
+    }
+    if (values2[i] == 0.0 || sum12 == 0.0) {
+      sum2  += 0.0;
+    } else {
+      sum2  +=  values2[i] * custom_log2((2.0 * values2[i]) / sum12);
+    }
+  }
+
+  return 0.5 * (sum1 + sum2);
+}
+
+
+double Slic::get_vals_dist(vector<double> values1, vector<double> values2, std::string type){
+  if (type == "euclidean"){
+    return euclidean(values1, values2);
+  } else if (type == "manhattan"){
+    return manhattan(values1, values2);
+  } else if (type == "jensen_shannon"){
+    return jensen_shannon(values1, values2);
+  } else {
+    return euclidean(values1, values2);
+  }
+}
+
+double Slic::compute_dist(int ci, int y, int x, vector<double> values, std::string type) {
+
+  double dc = get_vals_dist(centers_vals[ci], values, type);
   double ds = sqrt(pow(centers[ci][0] - y, 2) + pow(centers[ci][1] - x, 2));
   // cout << "distance: " << dc << endl;
 
   return sqrt(pow(dc / nc, 2) + pow(ds / ns, 2));
 }
 
-vector<int> Slic::find_local_minimum(integers_matrix vals, integers_matrix mat, int y, int x) {
+vector<int> Slic::find_local_minimum(integers_matrix vals, integers_matrix mat, int y, int x, std::string type) {
   double min_grad = FLT_MAX;
   // int min_grad = -1;
 
@@ -129,7 +189,7 @@ vector<int> Slic::find_local_minimum(integers_matrix vals, integers_matrix mat, 
 
       /* Compute horizontal and vertical gradients and keep track of the
        minimum. */
-      double new_grad = euclidean(colour1, colour3) + euclidean(colour2, colour3);
+      double new_grad = get_vals_dist(colour1, colour3, type) + get_vals_dist(colour2, colour3, type);
       // cout << "new_grad: " << new_grad << " min_grad: " << min_grad << endl;
 
       if (new_grad < min_grad) {
@@ -144,7 +204,7 @@ vector<int> Slic::find_local_minimum(integers_matrix vals, integers_matrix mat, 
   return loc_min;
 }
 
-void Slic::generate_superpixels(integers_matrix mat, integers_matrix vals, double step, int nc){
+void Slic::generate_superpixels(integers_matrix mat, integers_matrix vals, double step, int nc, std::string type){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -152,7 +212,7 @@ void Slic::generate_superpixels(integers_matrix mat, integers_matrix vals, doubl
 
   /* Clear previous data (if any), and re-initialize it. */
   clear_data();
-  inits(mat, vals);
+  inits(mat, vals, type);
 
   /* Run EM for 10 iterations (as prescribed by the algorithm). */
   for (int iter = 0; iter < NR_ITERATIONS; iter++) {
@@ -178,7 +238,7 @@ void Slic::generate_superpixels(integers_matrix mat, integers_matrix vals, doubl
               colour.push_back(val);
             }
 
-            double d = compute_dist(l, n, m, colour);
+            double d = compute_dist(l, n, m, colour, type);
 
             // cout << "distance: " << d << endl;
 
