@@ -28,7 +28,7 @@ void Slic::clear_data() {
   center_counts.clear();
 }
 
-void Slic::inits(integers_matrix m, integers_matrix vals, std::string type){
+void Slic::inits(integers_matrix m, doubles_matrix vals, std::string type){
   // cout << "inits" << endl;
 
   for (int ncol = 0; ncol < m.ncol(); ncol++){
@@ -158,7 +158,7 @@ double Slic::compute_dist(int ci, int y, int x, vector<double> values, std::stri
   return sqrt(pow(dc / nc, 2) + pow(ds / ns, 2));
 }
 
-vector<int> Slic::find_local_minimum(integers_matrix vals, integers_matrix mat, int y, int x, std::string type) {
+vector<int> Slic::find_local_minimum(doubles_matrix vals, integers_matrix mat, int y, int x, std::string type) {
   double min_grad = FLT_MAX;
   // int min_grad = -1;
 
@@ -204,7 +204,7 @@ vector<int> Slic::find_local_minimum(integers_matrix vals, integers_matrix mat, 
   return loc_min;
 }
 
-void Slic::generate_superpixels(integers_matrix mat, integers_matrix vals, double step, int nc, std::string type){
+void Slic::generate_superpixels(integers_matrix mat, doubles_matrix vals, double step, int nc, std::string type){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -296,7 +296,7 @@ void Slic::generate_superpixels(integers_matrix mat, integers_matrix vals, doubl
   }
 }
 
-void Slic::create_connectivity(integers_matrix mat, integers_matrix vals) {
+void Slic::create_connectivity(integers_matrix mat, doubles_matrix vals) {
   int label = 0;
   int adjlabel = 0;
   const int lims = (mat.ncol() * mat.nrow()) / ((int)centers.size());

@@ -40,11 +40,11 @@ class Slic {
     double compute_dist(int ci, int y, int x, vector<double> value, std::string type);
 
     /* Find the pixel with the lowest gradient in a 3x3 surrounding. */
-    vector<int> find_local_minimum(integers_matrix vals, integers_matrix mat, int y, int x, std::string type);
+    vector<int> find_local_minimum(doubles_matrix vals, integers_matrix mat, int y, int x, std::string type);
 
     /* Remove and initialize the 2d vectors. */
     void clear_data();
-    void inits(integers_matrix m, integers_matrix vals, std::string type);
+    void inits(integers_matrix m, doubles_matrix vals, std::string type);
 
   public:
     /* Class constructors and deconstructors. */
@@ -52,16 +52,16 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers_matrix m, integers_matrix vals, double step, int nc, std::string type);
+    void generate_superpixels(integers_matrix m, doubles_matrix vals, double step, int nc, std::string type);
     /* Enforce connectivity for an image. */
-    void create_connectivity(integers_matrix mat, integers_matrix vals);
+    void create_connectivity(integers_matrix mat, doubles_matrix vals);
 
     writable::integers_matrix return_centers();
     writable::integers_matrix return_clusters();
 };
 
 [[cpp11::register]]
-integers_matrix run_slic(integers_matrix m, integers_matrix vals, double step, int nc, bool con, bool output_type, std::string type) {
+integers_matrix run_slic(integers_matrix m, doubles_matrix vals, double step, int nc, bool con, bool output_type, std::string type) {
   Slic slic;
   slic.generate_superpixels(m, vals, step, nc, type);
   if (con){
