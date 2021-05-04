@@ -1,15 +1,16 @@
 #' Title
 #'
-#' @param x
-#' @param step
-#' @param nc
-#' @param dist_fun
-#' @param clean
+#' @param x a
+#' @param step a
+#' @param nc a
+#' @param dist_fun a
+#' @param clean a
 #'
-#' @return
+#' @return a
 #' @export
 #'
 #' @examples
+#' #a
 supercell = function(x, step, nc, dist_fun = "euclidean", clean = TRUE){
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input")

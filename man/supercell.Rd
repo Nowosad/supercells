@@ -7,11 +7,22 @@
 supercell(x, step, nc, dist_fun = "euclidean", clean = TRUE)
 }
 \arguments{
-\item{clean}{}
+\item{x}{a}
+
+\item{step}{a}
+
+\item{nc}{a}
+
+\item{dist_fun}{a}
+
+\item{clean}{a}
 }
 \value{
-
+a
 }
 \description{
 Title
+}
+\examples{
+#a
 }
