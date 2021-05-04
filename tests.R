@@ -3,7 +3,7 @@ library(spDataLarge)
 library(terra)
 library(sf)
 library(tmap)
-# library(slicr)
+# library(supercell)
 
 get_step = function(r, sp){
   sqrt((ncol(r) * nrow(r)) / sp)
