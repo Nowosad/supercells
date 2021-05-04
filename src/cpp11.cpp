@@ -11,21 +11,12 @@ extern "C" SEXP _supercell_run_slic(SEXP m, SEXP vals, SEXP step, SEXP nc, SEXP 
     return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(m), cpp11::as_cpp<cpp11::decay_t<doubles_matrix>>(vals), cpp11::as_cpp<cpp11::decay_t<double>>(step), cpp11::as_cpp<cpp11::decay_t<int>>(nc), cpp11::as_cpp<cpp11::decay_t<bool>>(con), cpp11::as_cpp<cpp11::decay_t<bool>>(output_type), cpp11::as_cpp<cpp11::decay_t<std::string>>(type)));
   END_CPP11
 }
-// test.cpp
-integers a(integers_matrix vals);
-extern "C" SEXP _supercell_a(SEXP vals) {
-  BEGIN_CPP11
-    return cpp11::as_sexp(a(cpp11::as_cpp<cpp11::decay_t<integers_matrix>>(vals)));
-  END_CPP11
-}
 
 extern "C" {
 /* .Call calls */
-extern SEXP _supercell_a(SEXP);
 extern SEXP _supercell_run_slic(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_supercell_a",        (DL_FUNC) &_supercell_a,        1},
     {"_supercell_run_slic", (DL_FUNC) &_supercell_run_slic, 7},
     {NULL, NULL, 0}
 };

@@ -3,7 +3,3 @@
 run_slic <- function(m, vals, step, nc, con, output_type, type) {
   .Call(`_supercell_run_slic`, m, vals, step, nc, con, output_type, type)
 }
-
-a <- function(vals) {
-  .Call(`_supercell_a`, vals)
-}
