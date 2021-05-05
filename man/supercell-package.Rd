@@ -2,8 +2,8 @@
 % Please edit documentation in R/supercell-package.R
 \docType{package}
 \name{supercell-package}
-\alias{supercell}
 \alias{supercell-package}
+\alias{_PACKAGE}
 \title{supercell: Superpixels of Spatial Data}
 \description{
 Creates superpixels based on input spatial data. 

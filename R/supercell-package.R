@@ -1,3 +1,4 @@
+#' @aliases supercell-package
 #' @keywords internal
 "_PACKAGE"
 
