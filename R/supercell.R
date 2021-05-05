@@ -26,3 +26,7 @@ supercell = function(x, step, nc, dist_fun = "euclidean", clean = TRUE){
   slic = sf::st_as_sf(terra::as.polygons(slic, dissolve = TRUE))
   return(slic)
 }
+
+# format(object.size(as.matrix(dog2[[1]], wide = T)), "MB")
+# format(object.size(as.matrix(terra::as.data.frame(dog2, cell = TRUE)[-1])), "MB")
+
