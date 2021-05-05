@@ -26,15 +26,23 @@ void Slic::clear_data() {
   centers.clear();
   centers_vals.clear();
   center_counts.clear();
+  mat_dims.clear();
 }
 
-void Slic::inits(integers_matrix m, doubles_matrix vals, std::string type){
+void Slic::inits(integers_matrix mat, doubles_matrix vals, std::string& type){
   // cout << "inits" << endl;
 
-  for (int ncol = 0; ncol < m.ncol(); ncol++){
-    vector<int> cluster;
-    vector<double> distancemat;
-    for (int nrow = 0; nrow < m.nrow(); nrow++){
+  mat_dims.reserve(3);
+  mat_dims.push_back(mat.nrow());
+  mat_dims.push_back(mat.ncol());
+  mat_dims.push_back(vals.ncol());
+
+  clusters.reserve(mat_dims[1]);
+  distances.reserve(mat_dims[1]);
+  for (int ncol = 0; ncol < mat_dims[1]; ncol++){
+    vector<int> cluster; cluster.reserve(mat_dims[0]);
+    vector<double> distancemat; distancemat.reserve(mat_dims[0]);
+    for (int nrow = 0; nrow < mat_dims[0]; nrow++){
       cluster.push_back(-1);
       distancemat.push_back(FLT_MAX);
     }
@@ -42,30 +50,21 @@ void Slic::inits(integers_matrix m, doubles_matrix vals, std::string type){
     distances.push_back(distancemat);
   }
 
-  for (int ncolcenter = step; ncolcenter < m.ncol() - step/2; ncolcenter += step){
-    for (int nrowcenter = step; nrowcenter < m.nrow() - step/2; nrowcenter += step){
-      vector<double> center;
-      // cout << ncolcenter << " " << nrowcenter << endl;
-
-      int ncell = ncolcenter + (nrowcenter * m.ncol());
-
-      vector<double> colour;
-      for (int nval = 0; nval < vals.ncol(); nval++){
+  for (int ncolcenter = step; ncolcenter < mat_dims[1] - step/2; ncolcenter += step){
+    for (int nrowcenter = step; nrowcenter < mat_dims[0] - step/2; nrowcenter += step){
+      vector<double> center; center.reserve(2);
+      int ncell = ncolcenter + (nrowcenter * mat_dims[1]);
+      vector<double> colour; colour.reserve(mat_dims[2]);
+      for (int nval = 0; nval < mat_dims[2]; nval++){
         double val = vals(ncell, nval);
         colour.push_back(val);
       }
 
-      vector<int> lm = find_local_minimum(vals, m, nrowcenter, ncolcenter, type);
+      vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type);
 
       /* Generate the center vector. */
       center.push_back(lm[0]);
       center.push_back(lm[1]);
-      // center.push_back(colour);
-
-      /* Generate the center vector. */
-      // center.push_back(nrowcenter);
-      // center.push_back(ncolcenter);
-      // center.insert(center.end(), colour.begin(), colour.end());
 
       /* Append to vector of centers. */
       centers.push_back(center);
@@ -75,24 +74,22 @@ void Slic::inits(integers_matrix m, doubles_matrix vals, std::string type){
   }
 }
 
-double Slic::euclidean(vector<double> values1, vector<double> values2){
+double Slic::euclidean(vector<double>& values1, vector<double>& values2){
 
     int len1 = values1.size();
-    // int len2 = values2.size();
     double dist = 0.0;
     double diff = 0.0;
 
     for (int i = 0; i < len1; i++){
         diff = values1[i] - values2[i];
-        dist += pow(diff, 2);
+        dist += diff * diff;
     }
     return sqrt(dist);
 }
 
-double Slic::manhattan(vector<double> values1, vector<double> values2){
+double Slic::manhattan(vector<double>& values1, vector<double>& values2){
 
   int len1 = values1.size();
-  // int len2 = values2.size();
   double dist = 0.0;
   double diff = 0.0;
 
@@ -111,7 +108,7 @@ double custom_log2(const double& x ){
   }
 }
 
-double Slic::jensen_shannon(vector<double> values1, vector<double> values2){
+double Slic::jensen_shannon(vector<double>& values1, vector<double>& values2){
 
   int len1 = values1.size();
   double sum1       = 0.0;
@@ -119,8 +116,7 @@ double Slic::jensen_shannon(vector<double> values1, vector<double> values2){
   double sum12      = 0.0;
 
   for(int i = 0; i < len1; i++){
-
-    sum12 =   values1[i] + values2[i];
+    sum12 = values1[i] + values2[i];
     if (values1[i] == 0.0 || sum12 == 0.0) {
       sum1  += 0.0;
     } else {
@@ -132,12 +128,11 @@ double Slic::jensen_shannon(vector<double> values1, vector<double> values2){
       sum2  +=  values2[i] * custom_log2((2.0 * values2[i]) / sum12);
     }
   }
-
   return 0.5 * (sum1 + sum2);
 }
 
 
-double Slic::get_vals_dist(vector<double> values1, vector<double> values2, std::string type){
+double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2, std::string& type){
   if (type == "euclidean"){
     return euclidean(values1, values2);
   } else if (type == "manhattan"){
@@ -149,16 +144,24 @@ double Slic::get_vals_dist(vector<double> values1, vector<double> values2, std::
   }
 }
 
-double Slic::compute_dist(int ci, int y, int x, vector<double> values, std::string type) {
+double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values, std::string& type) {
 
+  /*vals distance*/
   double dc = get_vals_dist(centers_vals[ci], values, type);
-  double ds = sqrt(pow(centers[ci][0] - y, 2) + pow(centers[ci][1] - x, 2));
+
+  /*coords distance*/
+  int y_dist = centers[ci][0] - y;
+  int x_dist = centers[ci][1] - x;
+  double ds = sqrt((y_dist * y_dist) + (x_dist * x_dist));
   // cout << "distance: " << dc << endl;
 
-  return sqrt(pow(dc / nc, 2) + pow(ds / ns, 2));
+  double vals_dist = dc / nc;
+  double coords_dist = ds / ns;
+
+  return sqrt((vals_dist * vals_dist) + (coords_dist * coords_dist));
 }
 
-vector<int> Slic::find_local_minimum(doubles_matrix vals, integers_matrix mat, int y, int x, std::string type) {
+vector<int> Slic::find_local_minimum(doubles_matrix vals, int& y, int& x, std::string& type) {
   double min_grad = FLT_MAX;
   // int min_grad = -1;
 
@@ -171,14 +174,15 @@ vector<int> Slic::find_local_minimum(doubles_matrix vals, integers_matrix mat, i
   for (int i = x - 1; i < x + 2; i++) {
     for (int j = y - 1; j < y + 2; j++) {
 
-      int ncell1 = i + ((j + 1) * mat.ncol());
-      int ncell2 = (i + 1) + (j * mat.ncol());
-      int ncell3 = i + (j * mat.ncol());
+      int ncell1 = i + ((j + 1) * mat_dims[1]);
+      int ncell2 = (i + 1) + (j * mat_dims[1]);
+      int ncell3 = i + (j * mat_dims[1]);
 
-      vector<double> colour1;
-      vector<double> colour2;
-      vector<double> colour3;
-      for (int nval = 0; nval < vals.ncol(); nval++){
+      vector<double> colour1; colour1.reserve(mat_dims[2]);
+      vector<double> colour2; colour2.reserve(mat_dims[2]);
+      vector<double> colour3; colour3.reserve(mat_dims[2]);
+
+      for (int nval = 0; nval < mat_dims[2]; nval++){
         double val1 = vals(ncell1, nval);
         double val2 = vals(ncell2, nval);
         double val3 = vals(ncell3, nval);
@@ -190,7 +194,6 @@ vector<int> Slic::find_local_minimum(doubles_matrix vals, integers_matrix mat, i
       /* Compute horizontal and vertical gradients and keep track of the
        minimum. */
       double new_grad = get_vals_dist(colour1, colour3, type) + get_vals_dist(colour2, colour3, type);
-      // cout << "new_grad: " << new_grad << " min_grad: " << min_grad << endl;
 
       if (new_grad < min_grad) {
         min_grad = new_grad;
@@ -199,12 +202,10 @@ vector<int> Slic::find_local_minimum(doubles_matrix vals, integers_matrix mat, i
       }
     }
   }
-  // cout << "loc min end: " << loc_min[0] << " " << loc_min[1] << endl;
-
   return loc_min;
 }
 
-void Slic::generate_superpixels(integers_matrix mat, doubles_matrix vals, double step, int nc, std::string type){
+void Slic::generate_superpixels(integers_matrix mat, doubles_matrix vals, double step, int nc, std::string& type){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -217,8 +218,8 @@ void Slic::generate_superpixels(integers_matrix mat, doubles_matrix vals, double
   /* Run EM for 10 iterations (as prescribed by the algorithm). */
   for (int iter = 0; iter < NR_ITERATIONS; iter++) {
     /* Reset distance values. */
-    for (int i = 0; i < mat.ncol(); i++) {
-      for (int j = 0; j < mat.nrow(); j++) {
+    for (int i = 0; i < mat_dims[1]; i++) {
+      for (int j = 0; j < mat_dims[0]; j++) {
         distances[i][j] = FLT_MAX;
       }
     }
@@ -227,20 +228,18 @@ void Slic::generate_superpixels(integers_matrix mat, doubles_matrix vals, double
       for (int m = centers[l][1] - step; m < centers[l][1] + step; m++) {
         for (int n = centers[l][0] - step; n < centers[l][0] + step; n++) {
 
-          if (m >= 0 && m < mat.ncol() && n >= 0 && n < mat.nrow()) {
+          if (m >= 0 && m < mat_dims[1] && n >= 0 && n < mat_dims[0]) {
             // int colour = mat(n, m);
 
-            int ncell = m + (n * mat.ncol());
+            int ncell = m + (n * mat_dims[1]);
 
-            vector<double> colour;
-            for (int nval = 0; nval < vals.ncol(); nval++){
+            vector<double> colour; colour.reserve(mat_dims[2]);
+            for (int nval = 0; nval < mat_dims[2]; nval++){
               double val = vals(ncell, nval);
               colour.push_back(val);
             }
 
             double d = compute_dist(l, n, m, colour, type);
-
-            // cout << "distance: " << d << endl;
 
             /* Update cluster allocation if the cluster minimizes the
              distance. */
@@ -264,21 +263,21 @@ void Slic::generate_superpixels(integers_matrix mat, doubles_matrix vals, double
     }
 
     // /* Compute the new cluster centers. */
-    for (int l = 0; l < mat.ncol(); l++) {
-      for (int k = 0; k < mat.nrow(); k++) {
+    for (int l = 0; l < mat_dims[1]; l++) {
+      for (int k = 0; k < mat_dims[0]; k++) {
         int c_id = clusters[l][k];
 
         if (c_id != -1) {
-          int ncell = l + (k * mat.ncol());
+          int ncell = l + (k * mat_dims[1]);
 
-          vector<double> colour;
-          for (int nval = 0; nval < vals.ncol(); nval++){
+          vector<double> colour; colour.reserve(mat_dims[2]);
+          for (int nval = 0; nval < mat_dims[2]; nval++){
             double val = vals(ncell, nval);
             colour.push_back(val);
           }
           centers[c_id][0] += k;
           centers[c_id][1] += l;
-          for (int nval = 0; nval < vals.ncol(); nval++){
+          for (int nval = 0; nval < mat_dims[2]; nval++){
             centers_vals[c_id][nval] += colour[nval];
           }
           center_counts[c_id] += 1;
@@ -289,50 +288,49 @@ void Slic::generate_superpixels(integers_matrix mat, doubles_matrix vals, double
     for (int l = 0; l < (int) centers.size(); l++) {
       centers[l][0] /= center_counts[l];
       centers[l][1] /= center_counts[l];
-      for (int nval = 0; nval < vals.ncol(); nval++){
+      for (int nval = 0; nval < mat_dims[2]; nval++){
         centers_vals[l][nval] /= center_counts[l];
       }
     }
   }
 }
 
-void Slic::create_connectivity(integers_matrix mat, doubles_matrix vals) {
+void Slic::create_connectivity(doubles_matrix vals) {
   int label = 0;
   int adjlabel = 0;
-  const int lims = (mat.ncol() * mat.nrow()) / ((int)centers.size());
+  const int lims = (mat_dims[1] * mat_dims[0]) / ((int)centers.size());
   const int dx4[4] = {-1,  0,  1,  0};
   const int dy4[4] = { 0, -1,  0,  1};
 
-  for (int i = 0; i < mat.ncol(); i++) {
-    vector<int> nc;
-    for (int j = 0; j < mat.nrow(); j++) {
+  for (int i = 0; i < mat_dims[1]; i++) {
+    vector<int> nc; nc.reserve(mat_dims[0]);
+    for (int j = 0; j < mat_dims[0]; j++) {
       nc.push_back(-1);
     }
     new_clusters.push_back(nc);
   }
 
-  for (int i = 0; i < mat.ncol(); i++) {
-    for (int j = 0; j < mat.nrow(); j++) {
+  for (int i = 0; i < mat_dims[1]; i++) {
+    for (int j = 0; j < mat_dims[0]; j++) {
 
       if (new_clusters[i][j] == -1) {
 
         new_clusters[i][j] = label;
 
+        vector<int> element(2);
+        element.at(0) = j;
+        element.at(1) = i;
+
         vector<vector<int> > elements;
-        vector<int> element;
-        element.push_back(j);
-        element.push_back(i);
         elements.push_back(element);
 
         /* Find an adjacent label, for possible use later. */
         for (int k = 0; k < 4; k++) {
           int x = elements[0][1] + dx4[k], y = elements[0][0] + dy4[k];
 
-          if (x >= 0 && x < mat.ncol() && y >= 0 && y < mat.nrow()) {
+          if (x >= 0 && x < mat_dims[1] && y >= 0 && y < mat_dims[0]) {
             if (new_clusters[x][y] >= 0) {
               adjlabel = new_clusters[x][y];
-              // cout << "adjlabel" << adjlabel <<endl;
-
             }
           }
         }
@@ -342,11 +340,12 @@ void Slic::create_connectivity(integers_matrix mat, doubles_matrix vals) {
           for (int k = 0; k < 4; k++) {
             int x = elements[c][1] + dx4[k], y = elements[c][0] + dy4[k];
 
-            if (x >= 0 && x < mat.ncol() && y >= 0 && y < mat.nrow()) {
+            if (x >= 0 && x < mat_dims[1] && y >= 0 && y < mat_dims[0]) {
               if (new_clusters[x][y] == -1 && clusters[i][j] == clusters[x][y]) {
-                vector<int> element2;
-                element2.push_back(y);
-                element2.push_back(x);
+                vector<int> element2(2);
+                element2.at(0) = y;
+                element2.at(1) = x;
+
                 elements.push_back(element2);
                 new_clusters[x][y] = label;
                 count += 1;
@@ -364,8 +363,6 @@ void Slic::create_connectivity(integers_matrix mat, doubles_matrix vals) {
           label = label - 1;
         }
         label = label + 1;
-        // cout << "label" << label << "";
-
       }
     }
   }
@@ -386,22 +383,22 @@ void Slic::create_connectivity(integers_matrix mat, doubles_matrix vals) {
   // }
   //
   // // /* Compute the new cluster centers. */
-  // for (int l = 0; l < mat.ncol(); l++) {
-  //   for (int k = 0; k < mat.nrow(); k++) {
+  // for (int l = 0; l < mat_dims[1]; l++) {
+  //   for (int k = 0; k < mat_dims[0]; k++) {
   //     int c_id = clusters[l][k];
   //
   //     if (c_id != -1) {
-  //       int ncell = l + (k * mat.ncol());
+  //       int ncell = l + (k * mat_dims[1]);
   //
   //       vector<double> colour;
-  //       for (int nval = 0; nval < vals.ncol(); nval++){
+  //       for (int nval = 0; nval < mat_dims[2]; nval++){
   //         double val = vals(ncell, nval);
   //         colour.push_back(val);
   //       }
   //
   //       centers[c_id][0] += k;
   //       centers[c_id][1] += l;
-  //       for (int nval = 0; nval < vals.ncol(); nval++){
+  //       for (int nval = 0; nval < mat_dims[2]; nval++){
   //         centers_vals[c_id][nval] += colour[nval];
   //       }
   //
@@ -414,7 +411,7 @@ void Slic::create_connectivity(integers_matrix mat, doubles_matrix vals) {
   // for (int l = 0; l < (int) centers.size(); l++) {
   //   centers[l][0] /= center_counts[l];
   //   centers[l][1] /= center_counts[l];
-  //   for (int nval = 0; nval < vals.ncol(); nval++){
+  //   for (int nval = 0; nval < mat_dims[2]; nval++){
   //     centers_vals[l][nval] /= center_counts[l];
   //   }
   // }

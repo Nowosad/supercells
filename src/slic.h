@@ -16,6 +16,9 @@ class Slic {
     vector<vector<int> > clusters;
     vector<vector<double> > distances;
 
+    /* Input matrix dimensions (rows, cols, val-cols) */
+    vector<int> mat_dims;
+
     /* The values of the centers. */
     vector<vector<double> > centers;
     vector<vector<double> > centers_vals;
@@ -30,21 +33,21 @@ class Slic {
      * parameters. */
     int step, nc, ns;
 
-    double euclidean(vector<double> values1, vector<double> values2);
-    double manhattan(vector<double> values1, vector<double> values2);
-    double jensen_shannon(vector<double> values1, vector<double> values2);
+    double euclidean(vector<double>& values1, vector<double>& values2);
+    double manhattan(vector<double>& values1, vector<double>& values2);
+    double jensen_shannon(vector<double>& values1, vector<double>& values2);
 
-    double get_vals_dist(vector<double> values1, vector<double> values2, std::string type);
+    double get_vals_dist(vector<double>& values1, vector<double>& values2, std::string& type);
 
     /* Compute the distance between a center and an individual pixel. */
-    double compute_dist(int ci, int y, int x, vector<double> value, std::string type);
+    double compute_dist(int& ci, int& y, int& x, vector<double>& value, std::string& type);
 
     /* Find the pixel with the lowest gradient in a 3x3 surrounding. */
-    vector<int> find_local_minimum(doubles_matrix vals, integers_matrix mat, int y, int x, std::string type);
+    vector<int> find_local_minimum(doubles_matrix vals, int& y, int& x, std::string& type);
 
     /* Remove and initialize the 2d vectors. */
     void clear_data();
-    void inits(integers_matrix m, doubles_matrix vals, std::string type);
+    void inits(integers_matrix mat, doubles_matrix vals, std::string& type);
 
   public:
     /* Class constructors and deconstructors. */
@@ -52,20 +55,20 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers_matrix m, doubles_matrix vals, double step, int nc, std::string type);
+    void generate_superpixels(integers_matrix mat, doubles_matrix vals, double step, int nc, std::string& type);
     /* Enforce connectivity for an image. */
-    void create_connectivity(integers_matrix mat, doubles_matrix vals);
+    void create_connectivity(doubles_matrix vals);
 
     writable::integers_matrix return_centers();
     writable::integers_matrix return_clusters();
 };
 
 [[cpp11::register]]
-integers_matrix run_slic(integers_matrix m, doubles_matrix vals, double step, int nc, bool con, bool output_type, std::string type) {
+integers_matrix run_slic(integers_matrix mat, doubles_matrix vals, double step, int nc, bool con, bool output_type, std::string type) {
   Slic slic;
-  slic.generate_superpixels(m, vals, step, nc, type);
+  slic.generate_superpixels(mat, vals, step, nc, type);
   if (con){
-    slic.create_connectivity(m, vals);
+    slic.create_connectivity(vals);
   }
   if (output_type) {
     integers_matrix result = slic.return_clusters();
