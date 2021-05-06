@@ -417,10 +417,13 @@ void Slic::create_connectivity(doubles_matrix vals) {
 }
 
 writable::integers_matrix Slic::return_clusters(){
-  writable::integers_matrix result(clusters[0].size(), clusters.size());
+  int isize = clusters.size();
+  int jsize = clusters[0].size();
 
-  for (int i = 0; i < clusters.size(); i++) {
-    for (int j = 0; j < clusters[0].size(); j++) {
+  writable::integers_matrix result(jsize, isize);
+
+  for (int i = 0; i < isize; i++) {
+    for (int j = 0; j < jsize; j++) {
       result(j, i) = clusters[i][j];
     }
   }
