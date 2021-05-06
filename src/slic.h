@@ -31,7 +31,8 @@ class Slic {
 
     /* The step size per cluster, and the color (nc) and distance (ns)
      * parameters. */
-    int step, nc, ns;
+    int step, ns;
+    double nc;
 
     double euclidean(vector<double>& values1, vector<double>& values2);
     double manhattan(vector<double>& values1, vector<double>& values2);
@@ -55,7 +56,7 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers mat, doubles_matrix vals, double step, int nc, std::string& type);
+    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type);
     /* Enforce connectivity for an image. */
     void create_connectivity(doubles_matrix vals);
 
@@ -64,7 +65,7 @@ class Slic {
 };
 
 [[cpp11::register]]
-integers_matrix run_slic(integers mat, doubles_matrix vals, double step, int nc, bool con, bool output_type, std::string type) {
+integers_matrix run_slic(integers mat, doubles_matrix vals, double step, double nc, bool con, bool output_type, std::string type) {
   Slic slic;
   slic.generate_superpixels(mat, vals, step, nc, type);
   if (con){

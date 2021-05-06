@@ -157,6 +157,9 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values, std::
 
   double vals_dist = dc / nc;
   double coords_dist = ds / ns;
+  // cout << "dc: " << dc;
+  // cout << "nc: " << nc;
+  // cout << "vals_dist: " << vals_dist << endl;
 
   return sqrt((vals_dist * vals_dist) + (coords_dist * coords_dist));
 }
@@ -205,7 +208,7 @@ vector<int> Slic::find_local_minimum(doubles_matrix vals, int& y, int& x, std::s
   return loc_min;
 }
 
-void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, int nc, std::string& type){
+void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
