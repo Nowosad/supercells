@@ -29,12 +29,12 @@ void Slic::clear_data() {
   mat_dims.clear();
 }
 
-void Slic::inits(integers_matrix mat, doubles_matrix vals, std::string& type){
+void Slic::inits(integers mat, doubles_matrix vals, std::string& type){
   // cout << "inits" << endl;
 
   mat_dims.reserve(3);
-  mat_dims.push_back(mat.nrow());
-  mat_dims.push_back(mat.ncol());
+  mat_dims.push_back(mat.at(0));
+  mat_dims.push_back(mat.at(1));
   mat_dims.push_back(vals.ncol());
 
   clusters.reserve(mat_dims[1]);
@@ -205,7 +205,7 @@ vector<int> Slic::find_local_minimum(doubles_matrix vals, int& y, int& x, std::s
   return loc_min;
 }
 
-void Slic::generate_superpixels(integers_matrix mat, doubles_matrix vals, double step, int nc, std::string& type){
+void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, int nc, std::string& type){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;

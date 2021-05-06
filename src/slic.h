@@ -47,7 +47,7 @@ class Slic {
 
     /* Remove and initialize the 2d vectors. */
     void clear_data();
-    void inits(integers_matrix mat, doubles_matrix vals, std::string& type);
+    void inits(integers mat, doubles_matrix vals, std::string& type);
 
   public:
     /* Class constructors and deconstructors. */
@@ -55,7 +55,7 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers_matrix mat, doubles_matrix vals, double step, int nc, std::string& type);
+    void generate_superpixels(integers mat, doubles_matrix vals, double step, int nc, std::string& type);
     /* Enforce connectivity for an image. */
     void create_connectivity(doubles_matrix vals);
 
@@ -64,7 +64,7 @@ class Slic {
 };
 
 [[cpp11::register]]
-integers_matrix run_slic(integers_matrix mat, doubles_matrix vals, double step, int nc, bool con, bool output_type, std::string type) {
+integers_matrix run_slic(integers mat, doubles_matrix vals, double step, int nc, bool con, bool output_type, std::string type) {
   Slic slic;
   slic.generate_superpixels(mat, vals, step, nc, type);
   if (con){
