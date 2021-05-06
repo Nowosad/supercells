@@ -12,8 +12,8 @@ get_step = function(r, sp){
 # test 1 ------------------------------------------------------------------
 srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
 
-dog = raster::raster("dog.png"); crs(dog) = "EPSG:2180"
-dog2 = rast("dog.png"); ext(dog2) = c(0, 320, 0, 240); crs(dog2) = "EPSG:2180"
+dog = raster::raster("data-raw/dog.png"); crs(dog) = "EPSG:2180"
+dog2 = rast("data-raw/dog.png"); ext(dog2) = c(0, 320, 0, 240); crs(dog2) = "EPSG:2180"
 
 a = bench::mark(
   srtm_slic = supercell(srtm, 50, 1, "jensen_shannon")
