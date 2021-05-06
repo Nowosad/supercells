@@ -153,13 +153,9 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values, std::
   int y_dist = centers[ci][0] - y;
   int x_dist = centers[ci][1] - x;
   double ds = sqrt((y_dist * y_dist) + (x_dist * x_dist));
-  // cout << "distance: " << dc << endl;
 
   double vals_dist = dc / nc;
   double coords_dist = ds / ns;
-  // cout << "dc: " << dc;
-  // cout << "nc: " << nc;
-  // cout << "vals_dist: " << vals_dist << endl;
 
   return sqrt((vals_dist * vals_dist) + (coords_dist * coords_dist));
 }
