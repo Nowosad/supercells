@@ -11,21 +11,27 @@
 #'
 #' @examples
 #' #a
-supercell = function(x, step, nc, dist_fun = "euclidean", clean = TRUE){
+supercell = function(x, step, nc, dist_fun = "euclidean", clean = TRUE, centers = FALSE, iter = 10){
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input")
   }
   mat = dim(x)[1:2]
   mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cell = TRUE)[-1])
-  slic = run_slic(mat, vals, step = step, nc = nc, con = clean, output_type = TRUE, type = dist_fun)
+  slic = run_slic(mat, vals, step = step, nc = nc, con = clean, centers = centers, type = dist_fun, iter = iter)
 
-  slic = terra::rast(slic)
-  terra::ext(slic) = terra::ext(x)
-  terra::crs(slic) = terra::crs(x)
-  slic = sf::st_as_sf(terra::as.polygons(slic, dissolve = TRUE))
-  return(slic)
+  slic_sf = terra::rast(slic[[1]])
+  terra::ext(slic_sf) = terra::ext(x)
+  terra::crs(slic_sf) = terra::crs(x)
+  slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
+  slic_sf = cbind(slic_sf, slic[[2]])
+  names(slic_sf) = c("supercell", "x", "y", "geometry")
+  slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]])
+  slic_sf[["y"]] = as.vector(terra::ext(x))[[3]] + (slic_sf[["y"]] * terra::res(x)[[2]])
+  return(slic_sf)
 }
+
+
 
 #' @export
 supermotif = function(x, step, nc, dist_fun = "euclidean", clean = TRUE){

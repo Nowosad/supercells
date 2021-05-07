@@ -8,7 +8,7 @@ using namespace std;
 using namespace cpp11;
 namespace writable = cpp11::writable;
 
-#define NR_ITERATIONS 10
+// #define NR_ITERATIONS 10
 
 class Slic {
   private:
@@ -56,26 +56,25 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type);
+    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, int iter);
     /* Enforce connectivity for an image. */
     void create_connectivity(doubles_matrix vals);
 
-    writable::integers_matrix return_centers();
+    writable::doubles_matrix return_centers();
     writable::integers_matrix return_clusters();
 };
 
 [[cpp11::register]]
-integers_matrix run_slic(integers mat, doubles_matrix vals, double step, double nc, bool con, bool output_type, std::string type) {
+list run_slic(integers mat, doubles_matrix vals, double step, double nc, bool con, bool centers, std::string type, int iter) {
   Slic slic;
-  slic.generate_superpixels(mat, vals, step, nc, type);
+  slic.generate_superpixels(mat, vals, step, nc, type, iter);
   if (con){
     slic.create_connectivity(vals);
   }
-  if (output_type) {
-    integers_matrix result = slic.return_clusters();
-    return result;
-  } else {
-    integers_matrix result = slic.return_centers();
-    return result;
+  writable::list result(2);
+  result.at(0) = slic.return_clusters();
+  if (centers) {
+    result.at(1) = slic.return_centers();
   }
+  return result;
 }

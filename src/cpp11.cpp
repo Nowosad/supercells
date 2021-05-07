@@ -5,19 +5,19 @@
 #include "cpp11/declarations.hpp"
 
 // slic.h
-integers_matrix run_slic(integers mat, doubles_matrix vals, double step, double nc, bool con, bool output_type, std::string type);
-extern "C" SEXP _supercell_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP nc, SEXP con, SEXP output_type, SEXP type) {
+list run_slic(integers mat, doubles_matrix vals, double step, double nc, bool con, bool centers, std::string type, int iter);
+extern "C" SEXP _supercell_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP nc, SEXP con, SEXP centers, SEXP type, SEXP iter) {
   BEGIN_CPP11
-    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<integers>>(mat), cpp11::as_cpp<cpp11::decay_t<doubles_matrix>>(vals), cpp11::as_cpp<cpp11::decay_t<double>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(nc), cpp11::as_cpp<cpp11::decay_t<bool>>(con), cpp11::as_cpp<cpp11::decay_t<bool>>(output_type), cpp11::as_cpp<cpp11::decay_t<std::string>>(type)));
+    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<integers>>(mat), cpp11::as_cpp<cpp11::decay_t<doubles_matrix>>(vals), cpp11::as_cpp<cpp11::decay_t<double>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(nc), cpp11::as_cpp<cpp11::decay_t<bool>>(con), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(type), cpp11::as_cpp<cpp11::decay_t<int>>(iter)));
   END_CPP11
 }
 
 extern "C" {
 /* .Call calls */
-extern SEXP _supercell_run_slic(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _supercell_run_slic(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_supercell_run_slic", (DL_FUNC) &_supercell_run_slic, 7},
+    {"_supercell_run_slic", (DL_FUNC) &_supercell_run_slic, 8},
     {NULL, NULL, 0}
 };
 }

@@ -204,7 +204,7 @@ vector<int> Slic::find_local_minimum(doubles_matrix vals, int& y, int& x, std::s
   return loc_min;
 }
 
-void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type){
+void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, int iter){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -215,7 +215,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
   inits(mat, vals, type);
 
   /* Run EM for 10 iterations (as prescribed by the algorithm). */
-  for (int iter = 0; iter < NR_ITERATIONS; iter++) {
+  for (int itr = 0; itr < iter; itr++) {
     /* Reset distance values. */
     for (int i = 0; i < mat_dims[1]; i++) {
       for (int j = 0; j < mat_dims[0]; j++) {
@@ -366,54 +366,66 @@ void Slic::create_connectivity(doubles_matrix vals) {
     }
   }
 
-  // cout << "clusters" << clusters.size() << " " << clusters[0].size() <<endl;
+  // cout << "label" << label <<endl;
   // cout << "new_clusters" << new_clusters.size() << " " << new_clusters[0].size() <<endl;
 
   clusters = new_clusters;
 
+  vector<vector<double> > new_centers;
+  vector<vector<double> > new_centers_vals;
+  vector<int> new_center_counts(label);
+
   /* Clear the center values. */
   /* Clear the center _vals values. */
-  // for (int m = 0; m < (int) centers.size(); m++) {
-  //   centers[m][0] = centers[m][1] = 0;
-  //   for (int n = 0; n < (int) centers_vals[0].size(); n++){
-  //     centers_vals[m][n] = 0;
-  //   }
-  //   center_counts[m] = 0;
-  // }
-  //
-  // // /* Compute the new cluster centers. */
-  // for (int l = 0; l < mat_dims[1]; l++) {
-  //   for (int k = 0; k < mat_dims[0]; k++) {
-  //     int c_id = clusters[l][k];
-  //
-  //     if (c_id != -1) {
-  //       int ncell = l + (k * mat_dims[1]);
-  //
-  //       vector<double> colour;
-  //       for (int nval = 0; nval < mat_dims[2]; nval++){
-  //         double val = vals(ncell, nval);
-  //         colour.push_back(val);
-  //       }
-  //
-  //       centers[c_id][0] += k;
-  //       centers[c_id][1] += l;
-  //       for (int nval = 0; nval < mat_dims[2]; nval++){
-  //         centers_vals[c_id][nval] += colour[nval];
-  //       }
-  //
-  //       center_counts[c_id] += 1;
-  //     }
-  //   }
-  // }
-  //
-  // // /* Normalize the clusters. */
-  // for (int l = 0; l < (int) centers.size(); l++) {
-  //   centers[l][0] /= center_counts[l];
-  //   centers[l][1] /= center_counts[l];
-  //   for (int nval = 0; nval < mat_dims[2]; nval++){
-  //     centers_vals[l][nval] /= center_counts[l];
-  //   }
-  // }
+  for (int m = 0; m < (int) label; m++) {
+
+    vector<double> new_center(2);
+    new_center[0] = new_center[1] = 0;
+    new_centers.push_back(new_center);
+
+    vector<double> new_center_val;
+    for (int n = 0; n < (int) mat_dims[2]; n++){
+      new_center_val.push_back(0);
+    }
+    new_centers_vals.push_back(new_center_val);
+    new_center_counts[m] = 0;
+  }
+
+  // /* Compute the new cluster centers. */
+  for (int l = 0; l < new_clusters.size(); l++) {
+    for (int k = 0; k < new_clusters[0].size(); k++) {
+      int c_id = new_clusters[l][k];
+
+      if (c_id != -1) {
+        int ncell = l + (k * mat_dims[1]);
+
+        vector<double> colour;
+        for (int nval = 0; nval < mat_dims[2]; nval++){
+          double val = vals(ncell, nval);
+          colour.push_back(val);
+        }
+
+        new_centers[c_id][0] += k;
+        new_centers[c_id][1] += l;
+        for (int nval = 0; nval < mat_dims[2]; nval++){
+          new_centers_vals[c_id][nval] += colour[nval];
+        }
+
+        new_center_counts[c_id] += 1;
+      }
+    }
+  }
+
+  // /* Normalize the clusters. */
+  for (int l = 0; l < (int) label; l++) {
+    new_centers[l][0] /= new_center_counts[l];
+    new_centers[l][1] /= new_center_counts[l];
+    for (int nval = 0; nval < mat_dims[2]; nval++){
+      new_centers_vals[l][nval] /= new_center_counts[l];
+    }
+  }
+
+  centers = new_centers;
 }
 
 writable::integers_matrix Slic::return_clusters(){
@@ -430,12 +442,11 @@ writable::integers_matrix Slic::return_clusters(){
   return result;
 }
 
-writable::integers_matrix Slic::return_centers(){
-  writable::integers_matrix result(centers.size(), 3);
+writable::doubles_matrix Slic::return_centers(){
+  writable::doubles_matrix result(centers.size(), 2);
   for (int i = 0; i < (int) centers.size(); i++){
     result(i, 0) = centers[i][0];
     result(i, 1) = centers[i][1];
-    result(i, 2) = centers[i][2];
   }
   return result;
 }
