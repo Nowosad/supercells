@@ -1,25 +1,16 @@
 #include "slic.h"
 
-/*
- * Constructor. Nothing is done here.
- */
+/* Constructor. Nothing is done here. */
 Slic::Slic() {
 
 }
 
-/*
- * Destructor. Clear any present data.
- */
+/* Destructor. Clear any present data. */
 Slic::~Slic() {
   clear_data();
 }
 
-/*
- * Clear the data as saved by the algorithm.
- *
- * Input : -
- * Output: -
- */
+/* Clear the data as saved by the algorithm. */
 void Slic::clear_data() {
   clusters.clear();
   distances.clear();
@@ -29,7 +20,7 @@ void Slic::clear_data() {
   mat_dims.clear();
 }
 
-void Slic::inits(integers mat, doubles_matrix vals, std::string& type){
+void Slic::inits(integers mat, doubles_matrix vals, std::string& type) {
   // cout << "inits" << endl;
 
   mat_dims.reserve(3);
@@ -50,8 +41,8 @@ void Slic::inits(integers mat, doubles_matrix vals, std::string& type){
     distances.push_back(distancemat);
   }
 
-  for (int ncolcenter = step; ncolcenter < mat_dims[1] - step/2; ncolcenter += step){
-    for (int nrowcenter = step; nrowcenter < mat_dims[0] - step/2; nrowcenter += step){
+  for (int ncolcenter = step/2; ncolcenter < mat_dims[1]; ncolcenter += step){
+    for (int nrowcenter = step/2; nrowcenter < mat_dims[0]; nrowcenter += step){
       vector<double> center; center.reserve(2);
       int ncell = ncolcenter + (nrowcenter * mat_dims[1]);
       vector<double> colour; colour.reserve(mat_dims[2]);
@@ -66,6 +57,9 @@ void Slic::inits(integers mat, doubles_matrix vals, std::string& type){
       center.push_back(lm[0]);
       center.push_back(lm[1]);
 
+      // center.push_back(nrowcenter);
+      // center.push_back(ncolcenter);
+
       /* Append to vector of centers. */
       centers.push_back(center);
       centers_vals.push_back(colour);
@@ -76,15 +70,15 @@ void Slic::inits(integers mat, doubles_matrix vals, std::string& type){
 
 double Slic::euclidean(vector<double>& values1, vector<double>& values2){
 
-    int len1 = values1.size();
-    double dist = 0.0;
-    double diff = 0.0;
+  int len1 = values1.size();
+  double dist = 0.0;
+  double diff = 0.0;
 
-    for (int i = 0; i < len1; i++){
-        diff = values1[i] - values2[i];
-        dist += diff * diff;
-    }
-    return sqrt(dist);
+  for (int i = 0; i < len1; i++){
+    diff = values1[i] - values2[i];
+    dist += diff * diff;
+  }
+  return sqrt(dist);
 }
 
 double Slic::manhattan(vector<double>& values1, vector<double>& values2){
@@ -94,13 +88,13 @@ double Slic::manhattan(vector<double>& values1, vector<double>& values2){
   double diff = 0.0;
 
   for (int i = 0; i < len1; i++){
-      diff = fabs(values1[i] - values2[i]);
-      dist += diff;
+    diff = fabs(values1[i] - values2[i]);
+    dist += diff;
   }
   return dist;
 }
 
-double custom_log2(const double& x ){
+double custom_log2(const double& x){
   if (x == 0.0){
     return NAN;
   } else {
@@ -130,7 +124,6 @@ double Slic::jensen_shannon(vector<double>& values1, vector<double>& values2){
   }
   return 0.5 * (sum1 + sum2);
 }
-
 
 double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2, std::string& type){
   if (type == "euclidean"){
@@ -228,6 +221,9 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
         for (int n = centers[l][0] - step; n < centers[l][0] + step; n++) {
 
           if (m >= 0 && m < mat_dims[1] && n >= 0 && n < mat_dims[0]) {
+
+            // cout << "centers[l][1]" << centers[l][1] << ": m: " << m << ": centers[l][0]: " << centers[l][0] << ": n: "<< n << endl;
+
             // int colour = mat(n, m);
 
             int ncell = m + (n * mat_dims[1]);
