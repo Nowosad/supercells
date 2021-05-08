@@ -25,13 +25,15 @@ supercell = function(x, step, nc, dist_fun = "euclidean", clean = TRUE, centers 
   terra::crs(slic_sf) = terra::crs(x)
   slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
   slic_sf = cbind(slic_sf, slic[[2]])
-  names(slic_sf) = c("supercell", "x", "y", "geometry")
-  slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]])
-  slic_sf[["y"]] = as.vector(terra::ext(x))[[3]] + (slic_sf[["y"]] * terra::res(x)[[2]])
+  names(slic_sf) = c("supercell", "y", "x", "geometry")
+  slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
+  slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
   return(slic_sf)
 }
 
-
+# plot(x)
+# plot(slic_sf, add = TRUE, col = NA)
+# plot(vect(st_drop_geometry(slic_sf[c("x", "y")]), geom = c("x", "y")), add = TRUE, col = "red")
 
 #' @export
 supermotif = function(x, step, nc, dist_fun = "euclidean", clean = TRUE){
