@@ -61,6 +61,7 @@ class Slic {
     void create_connectivity(doubles_matrix vals);
 
     writable::doubles_matrix return_centers();
+    writable::doubles_matrix return_centers_vals();
     writable::integers_matrix return_clusters();
 };
 
@@ -71,10 +72,11 @@ list run_slic(integers mat, doubles_matrix vals, double step, double nc, bool co
   if (con){
     slic.create_connectivity(vals);
   }
-  writable::list result(2);
+  writable::list result(3);
   result.at(0) = slic.return_clusters();
   if (centers) {
     result.at(1) = slic.return_centers();
+    result.at(2) = slic.return_centers_vals();
   }
   return result;
 }

@@ -422,6 +422,7 @@ void Slic::create_connectivity(doubles_matrix vals) {
   }
 
   centers = new_centers;
+  centers_vals = new_centers_vals;
 }
 
 writable::integers_matrix Slic::return_clusters(){
@@ -446,6 +447,17 @@ writable::doubles_matrix Slic::return_centers(){
   }
   return result;
 }
+
+writable::doubles_matrix Slic::return_centers_vals(){
+  writable::doubles_matrix result(centers_vals.size(), mat_dims[2]);
+  for (int i = 0; i < (int) centers_vals.size(); i++){
+    for (int nval = 0; nval < mat_dims[2]; nval++){
+      result(i, nval) = centers_vals[i][nval];
+    }
+  }
+  return result;
+}
+
 
 /*** R
 devtools::load_all()
