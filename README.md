@@ -1,22 +1,22 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# supercell
+# supercells
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/Nowosad/supercell/workflows/R-CMD-check/badge.svg)](https://github.com/Nowosad/supercell/actions)
+[![R-CMD-check](https://github.com/Nowosad/supercells/workflows/R-CMD-check/badge.svg)](https://github.com/Nowosad/supercells/actions)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of **supercell** is to utilize the concept of superpixels to a
+The goal of **supercells** is to utilize the concept of superpixels to a
 variety of spatial data.
 
 ## Installation
 
-<!-- You can install the released version of supercell from [CRAN](https://CRAN.R-project.org) with: -->
+<!-- You can install the released version of supercells from [CRAN](https://CRAN.R-project.org) with: -->
 <!-- ``` r -->
-<!-- install.packages("supercell") -->
+<!-- install.packages("supercells") -->
 <!-- ``` -->
 
 You can install the development version from
@@ -25,15 +25,17 @@ You can install the development version from
 ``` r
 # install.packages("remotes")
 remotes::install_github("Nowosad/spDataLarge")
-remotes::install_github("Nowosad/supercell")
+remotes::install_github("Nowosad/supercells")
 ```
 
 ## Example
 
 ``` r
-library(supercell)
+library(supercells)
 library(terra)
 #> terra version 1.1.17
+library(sf)
+#> Linking to GEOS 3.8.1, GDAL 3.1.4, PROJ 6.3.2
 srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
 plot(srtm)
 ```
@@ -41,9 +43,17 @@ plot(srtm)
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
 ``` r
-srtm_slic = supercell(srtm, 23, 100, "euclidean")
+srtm_slic1 = supercells(srtm, 23, 1, "euclidean", iter = 10)
 plot(srtm)
-plot(srtm_slic, add = TRUE, col = NA)
+plot(st_geometry(srtm_slic1), add = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
+``` r
+srtm_slic2 = supercells(srtm, 23, 1, "euclidean", clean = FALSE, iter = 10)
+plot(srtm)
+plot(st_geometry(srtm_slic2), add = TRUE)
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />

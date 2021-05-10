@@ -6,7 +6,7 @@
 
 // slic.h
 list run_slic(integers mat, doubles_matrix vals, double step, double nc, bool con, bool centers, std::string type, int iter);
-extern "C" SEXP _supercell_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP nc, SEXP con, SEXP centers, SEXP type, SEXP iter) {
+extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP nc, SEXP con, SEXP centers, SEXP type, SEXP iter) {
   BEGIN_CPP11
     return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<integers>>(mat), cpp11::as_cpp<cpp11::decay_t<doubles_matrix>>(vals), cpp11::as_cpp<cpp11::decay_t<double>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(nc), cpp11::as_cpp<cpp11::decay_t<bool>>(con), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(type), cpp11::as_cpp<cpp11::decay_t<int>>(iter)));
   END_CPP11
@@ -14,15 +14,15 @@ extern "C" SEXP _supercell_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP nc, SEX
 
 extern "C" {
 /* .Call calls */
-extern SEXP _supercell_run_slic(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _supercells_run_slic(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_supercell_run_slic", (DL_FUNC) &_supercell_run_slic, 8},
+    {"_supercells_run_slic", (DL_FUNC) &_supercells_run_slic, 8},
     {NULL, NULL, 0}
 };
 }
 
-extern "C" void R_init_supercell(DllInfo* dll){
+extern "C" void R_init_supercells(DllInfo* dll){
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, FALSE);
   R_forceSymbols(dll, TRUE);
