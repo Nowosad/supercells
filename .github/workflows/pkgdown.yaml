@@ -35,6 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("covr")
           install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
 
@@ -46,3 +47,7 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'
+
+      - name: Test coverage
+        run: covr::codecov()
+        shell: Rscript {0}

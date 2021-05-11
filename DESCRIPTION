@@ -26,5 +26,6 @@ SystemRequirements: C++11
 URL: https://github.com/Nowosad/supercells
 BugReports: https://github.com/Nowosad/supercells/issues
 Suggests: 
+    covr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

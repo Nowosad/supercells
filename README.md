@@ -7,6 +7,8 @@
 [![R-CMD-check](https://github.com/Nowosad/supercells/workflows/R-CMD-check/badge.svg)](https://github.com/Nowosad/supercells/actions)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Codecov test
+coverage](https://codecov.io/gh/Nowosad/supercells/branch/master/graph/badge.svg)](https://codecov.io/gh/Nowosad/supercells?branch=master)
 <!-- badges: end -->
 
 The goal of **supercells** is to utilize the concept of superpixels to a
