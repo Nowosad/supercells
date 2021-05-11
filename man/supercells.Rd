@@ -7,24 +7,28 @@
 supercells(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10)
 }
 \arguments{
-\item{x}{a}
+\item{x}{An object of class SpatRaster (terra)}
 
-\item{dist_fun}{a}
+\item{k}{The number of supercells desired by the user (the output number can be slightly different!)}
 
-\item{clean}{a}
+\item{compactness}{A compactness value. Larger values cause clusters to be more compact/even (square).
+A compactness value depends on the range of input cell values and selected distance measure.}
 
-\item{iter}{a}
+\item{dist_fun}{A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon".}
 
-\item{step}{a}
+\item{clean}{Should connectivity of the supercells be enforced?}
 
-\item{nc}{a}
+\item{iter}{The number of iterations performed to create the output.}
 }
 \value{
-a
+An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
 }
 \description{
-Creates supercells
+Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
 }
 \examples{
 #a
+}
+\references{
+Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120
 }

@@ -1,13 +1,18 @@
 #' Creates supercells
 #'
-#' @param x a
-#' @param step a
-#' @param nc a
-#' @param dist_fun a
-#' @param clean a
-#' @param iter a
+#' Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
 #'
-#' @return a
+#' @param x An object of class SpatRaster (terra)
+#' @param k The number of supercells desired by the user (the output number can be slightly different!)
+#' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
+#' A compactness value depends on the range of input cell values and selected distance measure.
+#' @param dist_fun A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon".
+#' @param clean Should connectivity of the supercells be enforced?
+#' @param iter The number of iterations performed to create the output.
+#'
+#' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
+#'
+#' @references Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120
 #' @export
 #'
 #' @examples
