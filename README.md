@@ -45,17 +45,18 @@ plot(srtm)
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
 ``` r
-srtm_slic1 = supercells(srtm, 23, 1, "euclidean", iter = 10)
+srtm_slic1 = supercells(srtm, k = 500, compactness = 1)
 plot(srtm)
-plot(st_geometry(srtm_slic1), add = TRUE)
+plot(st_geometry(srtm_slic1), add = TRUE, lwd = 0.2)
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 ``` r
-srtm_slic2 = supercells(srtm, 23, 1, "euclidean", clean = FALSE, iter = 10)
+srtm_slic2 = supercells(srtm, k = 500, compactness = 1, dist_fun = "euclidean", 
+                        clean = FALSE, iter = 10)
 plot(srtm)
-plot(st_geometry(srtm_slic2), add = TRUE)
+plot(st_geometry(srtm_slic2), add = TRUE, lwd = 0.2)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
