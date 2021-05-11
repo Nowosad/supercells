@@ -4,20 +4,20 @@
 \alias{supercells}
 \title{Creates supercells}
 \usage{
-supercells(x, step, nc, dist_fun = "euclidean", clean = TRUE, iter = 10)
+supercells(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10)
 }
 \arguments{
 \item{x}{a}
-
-\item{step}{a}
-
-\item{nc}{a}
 
 \item{dist_fun}{a}
 
 \item{clean}{a}
 
 \item{iter}{a}
+
+\item{step}{a}
+
+\item{nc}{a}
 }
 \value{
 a

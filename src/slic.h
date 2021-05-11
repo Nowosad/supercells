@@ -66,7 +66,13 @@ class Slic {
 };
 
 [[cpp11::register]]
-list run_slic(integers mat, doubles_matrix vals, double step, double nc, bool con, bool centers, std::string type, int iter) {
+list run_slic(integers mat, doubles_matrix vals, int k, double nc, bool con, bool centers, std::string type, int iter) {
+
+  const int superpixelsize = 0.5 + double(mat.at(0) * mat.at(1)) / double(k);
+  const int step = sqrt(double(superpixelsize)) + 0.5;
+  // cout << "superpixelsize" << superpixelsize << endl;
+  // cout << "step" << step << endl;
+
   Slic slic;
   slic.generate_superpixels(mat, vals, step, nc, type, iter);
   if (con){

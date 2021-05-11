@@ -5,10 +5,10 @@
 #include "cpp11/declarations.hpp"
 
 // slic.h
-list run_slic(integers mat, doubles_matrix vals, double step, double nc, bool con, bool centers, std::string type, int iter);
-extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP nc, SEXP con, SEXP centers, SEXP type, SEXP iter) {
+list run_slic(integers mat, doubles_matrix vals, int k, double nc, bool con, bool centers, std::string type, int iter);
+extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP k, SEXP nc, SEXP con, SEXP centers, SEXP type, SEXP iter) {
   BEGIN_CPP11
-    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<integers>>(mat), cpp11::as_cpp<cpp11::decay_t<doubles_matrix>>(vals), cpp11::as_cpp<cpp11::decay_t<double>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(nc), cpp11::as_cpp<cpp11::decay_t<bool>>(con), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(type), cpp11::as_cpp<cpp11::decay_t<int>>(iter)));
+    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<integers>>(mat), cpp11::as_cpp<cpp11::decay_t<doubles_matrix>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(k), cpp11::as_cpp<cpp11::decay_t<double>>(nc), cpp11::as_cpp<cpp11::decay_t<bool>>(con), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(type), cpp11::as_cpp<cpp11::decay_t<int>>(iter)));
   END_CPP11
 }
 

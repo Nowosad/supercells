@@ -298,11 +298,11 @@ void Slic::create_connectivity(doubles_matrix vals) {
   const int dy4[4] = { 0, -1,  0,  1};
 
   for (int i = 0; i < mat_dims[1]; i++) {
-    vector<int> nc; nc.reserve(mat_dims[0]);
+    vector<int> ncl; ncl.reserve(mat_dims[0]);
     for (int j = 0; j < mat_dims[0]; j++) {
-      nc.push_back(-1);
+      ncl.push_back(-1);
     }
-    new_clusters.push_back(nc);
+    new_clusters.push_back(ncl);
   }
 
   for (int i = 0; i < mat_dims[1]; i++) {

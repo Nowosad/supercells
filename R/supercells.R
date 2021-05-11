@@ -12,7 +12,7 @@
 #'
 #' @examples
 #' #a
-supercells = function(x, step, nc, dist_fun = "euclidean", clean = TRUE, iter = 10){
+supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10){
   centers = TRUE
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input")
@@ -20,7 +20,7 @@ supercells = function(x, step, nc, dist_fun = "euclidean", clean = TRUE, iter = 
   mat = dim(x)[1:2]
   mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cell = TRUE)[-1])
-  slic = run_slic(mat, vals, step = step, nc = nc, con = clean, centers = centers, type = dist_fun, iter = iter)
+  slic = run_slic(mat, vals, k = k, nc = compactness, con = clean, centers = centers, type = dist_fun, iter = iter)
 
   slic_sf = terra::rast(slic[[1]])
   terra::ext(slic_sf) = terra::ext(x)
@@ -29,6 +29,7 @@ supercells = function(x, step, nc, dist_fun = "euclidean", clean = TRUE, iter = 
   # if (centers){
     slic_sf = cbind(slic_sf, slic[[2]])
     names(slic_sf) = c("supercells", "y", "x", "geometry")
+    slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
     slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
     slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     colnames(slic[[3]]) = names(x)
