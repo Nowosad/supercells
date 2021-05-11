@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Creates supercells — supercells" />
-<meta property="og:description" content="Creates supercells" />
+<meta property="og:description" content="Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function." />
 
 
 
@@ -114,7 +114,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Creates supercells</p>
+    <p>Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.</p>
     </div>
 
     <pre class="usage"><span class='fu'>supercells</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>k</span>, <span class='va'>compactness</span>, dist_fun <span class='op'>=</span> <span class='st'>"euclidean"</span>, clean <span class='op'>=</span> <span class='cn'>TRUE</span>, iter <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span></pre>
@@ -124,33 +124,37 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>a</p></td>
+      <td><p>An object of class SpatRaster (terra)</p></td>
+    </tr>
+    <tr>
+      <th>k</th>
+      <td><p>The number of supercells desired by the user (the output number can be slightly different!)</p></td>
+    </tr>
+    <tr>
+      <th>compactness</th>
+      <td><p>A compactness value. Larger values cause clusters to be more compact/even (square).
+A compactness value depends on the range of input cell values and selected distance measure.</p></td>
     </tr>
     <tr>
       <th>dist_fun</th>
-      <td><p>a</p></td>
+      <td><p>A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon".</p></td>
     </tr>
     <tr>
       <th>clean</th>
-      <td><p>a</p></td>
+      <td><p>Should connectivity of the supercells be enforced?</p></td>
     </tr>
     <tr>
       <th>iter</th>
-      <td><p>a</p></td>
-    </tr>
-    <tr>
-      <th>step</th>
-      <td><p>a</p></td>
-    </tr>
-    <tr>
-      <th>nc</th>
-      <td><p>a</p></td>
+      <td><p>The number of iterations performed to create the output.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a</p>
+    <p>An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., &amp; Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>#a</span>
