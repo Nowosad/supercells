@@ -17,14 +17,20 @@
 #'
 #' @examples
 #' #a
-supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10){
+supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10, transform = NULL){
   centers = TRUE
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input")
   }
   mat = dim(x)[1:2]
   mode(mat) = "integer"
-  vals = as.matrix(terra::as.data.frame(x, cell = TRUE)[-1])
+  vals = as.matrix(terra::as.data.frame(x, cell = FALSE))
+  if (!missing(transform)){
+    if (transform == "to_LAB"){
+      vals = vals / 255
+      vals = convertColor(vals, from = "sRGB", to = "Lab")
+    }
+  }
   slic = run_slic(mat, vals, k = k, nc = compactness, con = clean, centers = centers, type = dist_fun, iter = iter)
 
   slic_sf = terra::rast(slic[[1]])
@@ -46,3 +52,9 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, i
 # plot(x)
 # plot(slic_sf, add = TRUE, col = NA)
 # plot(vect(st_drop_geometry(slic_sf[c("x", "y")]), geom = c("x", "y")), add = TRUE, col = "red")
+rgb_to_lab = function(x){
+  new_vals = values(logo) / 255
+  new_vals = convertColor(new_vals, from = "sRGB", to = "Lab")
+  values(x) = new_vals
+  x
+}
