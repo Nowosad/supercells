@@ -4,7 +4,15 @@
 \alias{supercells}
 \title{Creates supercells}
 \usage{
-supercells(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10)
+supercells(
+  x,
+  k,
+  compactness,
+  dist_fun = "euclidean",
+  clean = TRUE,
+  iter = 10,
+  transform = NULL
+)
 }
 \arguments{
 \item{x}{An object of class SpatRaster (terra)}

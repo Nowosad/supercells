@@ -9,6 +9,7 @@
 #' @param dist_fun A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon".
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param iter The number of iterations performed to create the output.
+#' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default no transformation is performed.
 #'
 #' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
 #'
@@ -28,24 +29,24 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, i
   if (!missing(transform)){
     if (transform == "to_LAB"){
       vals = vals / 255
-      vals = convertColor(vals, from = "sRGB", to = "Lab")
+      vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
     }
   }
   slic = run_slic(mat, vals, k = k, nc = compactness, con = clean, centers = centers, type = dist_fun, iter = iter)
 
   slic_sf = terra::rast(slic[[1]])
-  NAflag(slic_sf) = -1
+  terra::NAflag(slic_sf) = -1
   terra::ext(slic_sf) = terra::ext(x)
   terra::crs(slic_sf) = terra::crs(x)
   slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
   # if (centers){
-    slic_sf = cbind(slic_sf, na.omit(slic[[2]]))
+    slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]]))
     names(slic_sf) = c("supercells", "y", "x", "geometry")
     slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
     slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
     slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     colnames(slic[[3]]) = names(x)
-    slic_sf = cbind(slic_sf, na.omit(slic[[3]]))
+    slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
   # }
   return(slic_sf)
 }
@@ -53,9 +54,9 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, i
 # plot(x)
 # plot(slic_sf, add = TRUE, col = NA)
 # plot(vect(st_drop_geometry(slic_sf[c("x", "y")]), geom = c("x", "y")), add = TRUE, col = "red")
-rgb_to_lab = function(x){
-  new_vals = values(logo) / 255
-  new_vals = convertColor(new_vals, from = "sRGB", to = "Lab")
-  values(x) = new_vals
-  x
-}
+# rgb_to_lab = function(x){
+#   new_vals = values(logo) / 255
+#   new_vals = convertColor(new_vals, from = "sRGB", to = "Lab")
+#   values(x) = new_vals
+#   x
+# }
