@@ -203,12 +203,17 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
   this->nc = nc;
   this->ns = step;
 
+  Rprintf("Initialization: ");
   /* Clear previous data (if any), and re-initialize it. */
   clear_data();
   inits(mat, vals, type);
+  Rprintf("Completed\n");
 
   /* Run EM for 10 iterations (as prescribed by the algorithm). */
   for (int itr = 0; itr < iter; itr++) {
+    Rprintf("Iteration: %u/%u\r", itr + 1, iter);
+    // cout << "Iteration: " << itr + 1;
+
     /* Reset distance values. */
     for (int i = 0; i < mat_dims[1]; i++) {
       for (int j = 0; j < mat_dims[0]; j++) {
@@ -255,7 +260,10 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
           }
         }
       }
+      // Rprintf("\r");
+      // cout << "\r";
     }
+    // cout << endl;
 
     /* Clear the center values. */
     /* Clear the center _vals values. */
@@ -298,9 +306,11 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
       }
     }
   }
+  Rprintf("\n");
 }
 
 void Slic::create_connectivity(doubles_matrix vals) {
+  Rprintf("Cleaning connectivity: ");
   int label = 0;
   int adjlabel = 0;
   const int lims = (mat_dims[1] * mat_dims[0]) / ((int)centers.size());
@@ -433,6 +443,7 @@ void Slic::create_connectivity(doubles_matrix vals) {
 
   centers = new_centers;
   centers_vals = new_centers_vals;
+  Rprintf("Completed\n");
 }
 
 writable::integers_matrix Slic::return_clusters(){
