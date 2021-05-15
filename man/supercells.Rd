@@ -27,6 +27,8 @@ A compactness value depends on the range of input cell values and selected dista
 \item{clean}{Should connectivity of the supercells be enforced?}
 
 \item{iter}{The number of iterations performed to create the output.}
+
+\item{transform}{Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default no transformation is performed.}
 }
 \value{
 An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
