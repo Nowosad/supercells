@@ -11,18 +11,24 @@ writeRaster(v, "inst/raster/volcano.tif")
 # RGB ---------------------------------------------------------------------
 library(rgugik)
 
-geodb_download("wielkopolskie", outdir = "./data")
+geodb_download("wielkopolskie", outdir = "./tdata")
 reserves = read_sf("data/PL.PZGiK.201.30/BDOO/PL.PZGIK.201.30__OT_ADMS_P.xml")
 p = reserves[1, ]
 req_df = ortho_request(p)
-tile_download(req_df[3, ], outdir = "./data")
+tile_download(req_df[3, ], outdir = "./tdata")
 
 r = rast("data/69884_519852_N-33-130-D-d-1-2.tif")
 r2 = terra::aggregate(r, fact = 8)
-r2 = crop(r2, c(358500, 359776.7, 505317.5, 506000))
+r2 = crop(r2, c(358900, 359776.7, 505400, 505800))
+mymask = st_sf(geom = st_as_sfc(st_bbox(raster::extent(c(359000, 359100, 505500, 505600)))))
+r3 = mask(r2, vect(mymask), inverse = TRUE)
+
+r3_slic2 = supercells(r3, 1000, 1, clean = TRUE, transform = "to_LAB")
+# terra::plotRGB(r3, stretch = "lin")
+# lines(vect(r3_slic2), add = TRUE, col = "red")
 
 writeRaster(r2, "inst/raster/ortho.tif", overwrite = TRUE, datatype = "INT1U")
-
+unlink("tdata", recursive = TRUE, force = TRUE)
 
 # landsat = rast(system.file("raster/landsat.tif", package = "spDataLarge"))
 #
