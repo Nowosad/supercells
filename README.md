@@ -35,28 +35,36 @@ remotes::install_github("Nowosad/supercells")
 ``` r
 library(supercells)
 library(terra)
-#> terra version 1.1.17
+#> terra version 1.2.10
 library(sf)
 #> Linking to GEOS 3.8.1, GDAL 3.1.4, PROJ 6.3.2
-srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
-plot(srtm)
+vol = rast(system.file("raster/volcano.tif", package = "supercells"))
+plot(vol)
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
 ``` r
-srtm_slic1 = supercells(srtm, k = 500, compactness = 1)
-plot(srtm)
-plot(st_geometry(srtm_slic1), add = TRUE, lwd = 0.2)
+vol_slic1 = supercells(vol, k = 50, compactness = 1)
+plot(vol)
+plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 ``` r
-srtm_slic2 = supercells(srtm, k = 500, compactness = 1, dist_fun = "euclidean", 
+vol_slic2 = supercells(vol, k = 50, compactness = 1, dist_fun = "euclidean", 
                         clean = FALSE, iter = 10)
-plot(srtm)
-plot(st_geometry(srtm_slic2), add = TRUE, lwd = 0.2)
+plot(vol)
+plot(st_geometry(vol_slic2), add = TRUE, lwd = 0.2)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+
+## Contribution
+
+Contributions to this package are welcome - let me know if you need
+other distance measures or transformations, have any suggestions, or
+spotted a bug. The preferred method of contribution is through a GitHub
+pull request. Feel also free to contact us by creating [an
+issue](https://github.com/nowosad/supercells/issues).
