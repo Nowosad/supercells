@@ -229,10 +229,20 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
             int ncell = m + (n * mat_dims[1]);
 
             vector<double> colour; colour.reserve(mat_dims[2]);
+
+            int count_na = 0;
             for (int nval = 0; nval < mat_dims[2]; nval++){
               double val = vals(ncell, nval);
               colour.push_back(val);
+              int nanr = is_na(val);
+              count_na = count_na + nanr;
             }
+
+            /*check NAN*/
+            if (count_na > 0){
+              continue;
+            }
+            // cpp11::
 
             double d = compute_dist(l, n, m, colour, type);
 
@@ -308,7 +318,7 @@ void Slic::create_connectivity(doubles_matrix vals) {
   for (int i = 0; i < mat_dims[1]; i++) {
     for (int j = 0; j < mat_dims[0]; j++) {
 
-      if (new_clusters[i][j] == -1) {
+      if (new_clusters[i][j] == -1 && clusters[i][j] != -1) {
 
         new_clusters[i][j] = label;
 
