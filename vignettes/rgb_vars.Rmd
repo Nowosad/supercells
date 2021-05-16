@@ -1,0 +1,49 @@
+---
+title: "Superpixels of an RGB raster"
+author: Jakub Nowosad
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Superpixels of an RGB raster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "`r system.file('refs.bib', package = 'supercells')`"
+nocite: '@*'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 3.5
+)
+```
+
+```{r setup}
+library(supercells)
+library(terra)
+library(sf)
+ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
+plot(ortho)
+```
+
+```{r, results='hide'}
+ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
+ortho_slic1 = supercells(ortho, k = 2000, compactness = 10)
+plot(ortho)
+plot(st_geometry(ortho_slic1), add = TRUE)
+```
+
+```{r}
+## RGB variables - colored output
+rgb_to_hex = function(x){
+  apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
+}
+avg_colors = rgb_to_hex(st_drop_geometry(ortho_slic1[4:6]))
+
+plot(ortho)
+plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
+```
+
+# References

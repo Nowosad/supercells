@@ -1,0 +1,44 @@
+---
+title: "Superpixels of a single raster layer"
+author: Jakub Nowosad
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Superpixels of a single raster layer}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "`r system.file('refs.bib', package = 'supercells')`"
+nocite: '@*'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 5,
+  fig.height = 6.5
+)
+```
+
+```{r}
+library(supercells)
+library(terra)
+library(sf)
+vol = rast(system.file("raster/volcano.tif", package = "supercells"))
+plot(vol)
+```
+
+```{r, results='hide'}
+vol_slic1 = supercells(vol, k = 50, compactness = 1)
+plot(vol)
+plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
+```
+
+```{r, results='hide'}
+vol_slic2 = supercells(vol, k = 50, compactness = 1, dist_fun = "euclidean", 
+                        clean = FALSE, iter = 10)
+plot(vol)
+plot(st_geometry(vol_slic2), add = TRUE, lwd = 0.2)
+```
+
+# References
