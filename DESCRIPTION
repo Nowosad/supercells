@@ -30,7 +30,5 @@ Suggests:
     covr,
     testthat (>= 3.0.0),
     rmarkdown
-Remotes:
-    rspatial/terra
 Config/testthat/edition: 3
 VignetteBuilder: knitr
