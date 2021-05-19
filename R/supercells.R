@@ -28,15 +28,11 @@
 #' plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 #'
 #' # RGB variables
-#' b = rast(system.file("ex/logo.tif", package="terra"))
-#' b_slic1 = supercells(b, k = 200, compactness = 10)
-#' plot(b)
-#' plot(st_geometry(b_slic1), add = TRUE)
 #'
-#' #ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
-#' #ortho_slic1 = supercells(ortho, k = 2000, compactness = 10)
-#' #plot(ortho)
-#' #plot(st_geometry(ortho_slic1), add = TRUE)
+#' ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
+#' ortho_slic1 = supercells(ortho, k = 200, compactness = 10)
+#' plot(ortho)
+#' plot(st_geometry(ortho_slic1), add = TRUE)
 #'
 #' ## RGB variables - colored output
 #'
