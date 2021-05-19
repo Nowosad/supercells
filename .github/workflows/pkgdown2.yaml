@@ -39,6 +39,12 @@ jobs:
           install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
 
+      - name: Check
+        run: |
+          options(crayon.enabled = TRUE)
+          rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
+        shell: Rscript {0}
+
       - name: Install package
         run: R CMD INSTALL .
 
