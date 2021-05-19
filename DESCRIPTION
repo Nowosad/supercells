@@ -1,6 +1,6 @@
 Package: supercells
 Title: Superpixels of Spatial Data
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: c(
     person(given = "Jakub", family = "Nowosad", 
     role = c("aut", "cre"),
