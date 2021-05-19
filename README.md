@@ -12,7 +12,12 @@ coverage](https://codecov.io/gh/Nowosad/supercells/branch/master/graph/badge.svg
 <!-- badges: end -->
 
 The goal of **supercells** is to utilize the concept of superpixels to a
-variety of spatial data.
+variety of spatial data. This package works on spatial data with one
+variable (e.g., continuous raster), many variables (e.g., RGB rasters),
+and spatial patterns (e.g., areas in categorical rasters). It is based
+on the SLIC algorithm (Achanta et al. (2012)
+<doi:10.1109/TPAMI.2012.120>), and readapts it to work with arbitrary
+dissimilarity measures.
 
 ## Installation
 
@@ -52,14 +57,14 @@ plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
-``` r
-vol_slic2 = supercells(vol, k = 50, compactness = 1, dist_fun = "euclidean", 
-                        clean = FALSE, iter = 10)
-plot(vol)
-plot(st_geometry(vol_slic2), add = TRUE, lwd = 0.2)
-```
+## Documentation
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+See the package’s vignettes:
+
+1.  [Superpixels of a single raster
+    layer](https://nowosad.github.io/supercells/articles/one_var.html)
+2.  [Superpixels of an RGB
+    raster](https://nowosad.github.io/supercells/articles/rgb_vars.html)
 
 ## Contribution
 
