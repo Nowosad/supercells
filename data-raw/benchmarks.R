@@ -3,7 +3,7 @@ library(spDataLarge)
 library(terra)
 library(sf)
 library(tmap)
-# library(supercell)
+# library(supercells)
 
 get_step = function(r, sp){
   sqrt((ncol(r) * nrow(r)) / sp)
@@ -16,7 +16,7 @@ dog = raster::raster("data-raw/dog.png"); crs(dog) = "EPSG:2180"
 dog2 = rast("data-raw/dog.png"); ext(dog2) = c(0, 320, 0, 240); crs(dog2) = "EPSG:2180"
 
 a = bench::mark(
-  srtm_slic = supercell(srtm, 50, 1, "jensen_shannon")
+  srtm_slic = supercells(srtm, 50, 1, "jensen_shannon", iter = 1)
 )
 a
 # A tibble: 1 x 13
@@ -25,12 +25,12 @@ a
 #   1 srtm_slic     733ms    733ms      1.36    26.4MB
 
 b = bench::mark(
-  srtm_slic = supercell(dog2, 12, 1, "jensen_shannon"),
-  srtm_slic = supercell(dog2, 12, 1, "euclidean"),
-  srtm_slic = supercell(dog2, 50, 1, "jensen_shannon"),
-  srtm_slic = supercell(dog2, 50, 1, "euclidean"),
-  srtm_slic = supercell(dog2, 50, 10, "jensen_shannon"),
-  srtm_slic = supercell(dog2, 50, 10, "euclidean"),
+  srtm_slic = supercells(dog2, 12, 1, "jensen_shannon"),
+  srtm_slic = supercells(dog2, 12, 1, "euclidean"),
+  srtm_slic = supercells(dog2, 50, 1, "jensen_shannon"),
+  srtm_slic = supercells(dog2, 50, 1, "euclidean"),
+  srtm_slic = supercells(dog2, 50, 10, "jensen_shannon"),
+  srtm_slic = supercells(dog2, 50, 10, "euclidean"),
   check = FALSE
 )
 b
