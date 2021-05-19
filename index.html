@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">supercells</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
       </span>
     </div>
 
@@ -47,6 +47,21 @@
 </li>
 <li>
   <a href="reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/one_var.html">Superpixels of a single raster layer</a>
+    </li>
+    <li>
+      <a href="articles/rgb_vars.html">Superpixels of an RGB raster</a>
+    </li>
+  </ul>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -73,7 +88,7 @@
 <a href="#supercells" class="anchor"></a>supercells</h1></div>
 <!-- badges: start -->
 
-<p>The goal of <strong>supercells</strong> is to utilize the concept of superpixels to a variety of spatial data.</p>
+<p>The goal of <strong>supercells</strong> is to utilize the concept of superpixels to a variety of spatial data. This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters). It is based on the SLIC algorithm (Achanta et al. (2012) <a href="doi:10.1109/TPAMI.2012.120" class="uri">doi:10.1109/TPAMI.2012.120</a>), and readapts it to work with arbitrary dissimilarity measures.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -104,12 +119,15 @@
 <span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">vol_slic1</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">vol_slic2</span> <span class="op">=</span> <span class="fu"><a href="reference/supercells.html">supercells</a></span><span class="op">(</span><span class="va">vol</span>, k <span class="op">=</span> <span class="fl">50</span>, compactness <span class="op">=</span> <span class="fl">1</span>, dist_fun <span class="op">=</span> <span class="st">"euclidean"</span>, 
-                        clean <span class="op">=</span> <span class="cn">FALSE</span>, iter <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">vol_slic2</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
+</div>
+<div id="documentation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#documentation" class="anchor"></a>Documentation</h2>
+<p>See the package’s vignettes:</p>
+<ol>
+<li><a href="https://nowosad.github.io/supercells/articles/one_var.html">Superpixels of a single raster layer</a></li>
+<li><a href="https://nowosad.github.io/supercells/articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
+</ol>
 </div>
 <div id="contribution" class="section level2">
 <h2 class="hasAnchor">
