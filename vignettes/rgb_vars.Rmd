@@ -29,7 +29,6 @@ plot(ortho)
 ```
 
 ```{r, results='hide', eval=FALSE}
-ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
 ortho_slic1 = supercells(ortho, k = 2000, compactness = 10)
 plot(ortho)
 plot(st_geometry(ortho_slic1), add = TRUE)
