@@ -49,20 +49,20 @@ plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 
 # RGB variables
 
-ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
-ortho_slic1 = supercells(ortho, k = 200, compactness = 10)
-plot(ortho)
-plot(st_geometry(ortho_slic1), add = TRUE)
+#ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
+#ortho_slic1 = supercells(ortho, k = 200, compactness = 10)
+#plot(ortho)
+#plot(st_geometry(ortho_slic1), add = TRUE)
 
-## RGB variables - colored output
+### RGB variables - colored output
 
-rgb_to_hex = function(x){
-  apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
-}
-avg_colors = rgb_to_hex(st_drop_geometry(ortho_slic1[4:6]))
+#rgb_to_hex = function(x){
+#  apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
+#}
+#avg_colors = rgb_to_hex(st_drop_geometry(ortho_slic1[4:6]))
 
-plot(ortho)
-plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
+#plot(ortho)
+#plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 }
 \references{
 Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120

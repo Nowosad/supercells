@@ -29,20 +29,20 @@
 #'
 #' # RGB variables
 #'
-#' ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
-#' ortho_slic1 = supercells(ortho, k = 200, compactness = 10)
-#' plot(ortho)
-#' plot(st_geometry(ortho_slic1), add = TRUE)
+#' #ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
+#' #ortho_slic1 = supercells(ortho, k = 200, compactness = 10)
+#' #plot(ortho)
+#' #plot(st_geometry(ortho_slic1), add = TRUE)
 #'
-#' ## RGB variables - colored output
+#' ### RGB variables - colored output
 #'
-#' rgb_to_hex = function(x){
-#'   apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
-#' }
-#' avg_colors = rgb_to_hex(st_drop_geometry(ortho_slic1[4:6]))
+#' #rgb_to_hex = function(x){
+#' #  apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
+#' #}
+#' #avg_colors = rgb_to_hex(st_drop_geometry(ortho_slic1[4:6]))
 #'
-#' plot(ortho)
-#' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
+#' #plot(ortho)
+#' #plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10, transform = NULL){
   centers = TRUE
   if (!inherits(x, "SpatRaster")){
