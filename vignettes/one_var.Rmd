@@ -25,7 +25,6 @@ library(supercells)
 library(terra)
 library(sf)
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
-vol[][1] = NA
 plot(vol)
 ```
 

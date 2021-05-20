@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, eval=FALSE}
+```{r setup, eval=TRUE}
 library(supercells)
 library(terra)
 library(sf)
@@ -28,13 +28,13 @@ ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
 plot(ortho)
 ```
 
-```{r, results='hide', eval=FALSE}
+```{r, results='hide', eval=TRUE}
 ortho_slic1 = supercells(ortho, k = 2000, compactness = 10)
 plot(ortho)
 plot(st_geometry(ortho_slic1), add = TRUE)
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 ## RGB variables - colored output
 rgb_to_hex = function(x){
   apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
