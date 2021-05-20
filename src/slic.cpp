@@ -408,8 +408,8 @@ void Slic::create_connectivity(doubles_matrix vals) {
   }
 
   // /* Compute the new cluster centers. */
-  for (int l = 0; l < new_clusters.size(); l++) {
-    for (int k = 0; k < new_clusters[0].size(); k++) {
+  for (int l = 0; l < (int) new_clusters.size(); l++) {
+    for (int k = 0; k < (int) new_clusters[0].size(); k++) {
       int c_id = new_clusters[l][k];
 
       if (c_id != -1) {
