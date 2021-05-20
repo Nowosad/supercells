@@ -85,7 +85,7 @@
       <h1 data-toc-skip>Superpixels of an RGB raster</h1>
                         <h4 class="author">Jakub Nowosad</h4>
             
-            <h4 class="date">2021-05-19</h4>
+            <h4 class="date">2021-05-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/master/vignettes/rgb_vars.Rmd"><code>vignettes/rgb_vars.Rmd</code></a></small>
       <div class="hidden name"><code>rgb_vars.Rmd</code></div>
@@ -101,8 +101,7 @@
 <span class="va">ortho</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"raster/ortho.tif"</span>, package <span class="op">=</span> <span class="st">"supercells"</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">ortho</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ortho</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"raster/ortho.tif"</span>, package <span class="op">=</span> <span class="st">"supercells"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">ortho_slic1</span> <span class="op">=</span> <span class="fu"><a href="../reference/supercells.html">supercells</a></span><span class="op">(</span><span class="va">ortho</span>, k <span class="op">=</span> <span class="fl">2000</span>, compactness <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">ortho_slic1</span> <span class="op">=</span> <span class="fu"><a href="../reference/supercells.html">supercells</a></span><span class="op">(</span><span class="va">ortho</span>, k <span class="op">=</span> <span class="fl">2000</span>, compactness <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">ortho</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">ortho_slic1</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
