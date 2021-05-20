@@ -4,7 +4,7 @@
 # supercells
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/Nowosad/supercells/workflows/R-CMD-check/badge.svg)](https://github.com/Nowosad/supercells/actions)
+[![R-CMD-check](https://github.com/Nowosad/supercells/workflows/pkgdown/badge.svg)](https://github.com/Nowosad/supercells/actions)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
@@ -15,7 +15,7 @@ The goal of **supercells** is to utilize the concept of superpixels to a
 variety of spatial data. This package works on spatial data with one
 variable (e.g., continuous raster), many variables (e.g., RGB rasters),
 and spatial patterns (e.g., areas in categorical rasters). It is based
-on the SLIC algorithm (Achanta et al. (2012)
+on the SLIC algorithm (Achanta et al. (2012),
 <doi:10.1109/TPAMI.2012.120>), and readapts it to work with arbitrary
 dissimilarity measures.
 
