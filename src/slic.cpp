@@ -205,7 +205,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
 
   Rprintf("Initialization: ");
   /* Clear previous data (if any), and re-initialize it. */
-  /*clear_data();*/
+  clear_data();
   inits(mat, vals, type);
   Rprintf("Completed\n");
 
