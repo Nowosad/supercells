@@ -22,7 +22,7 @@ supercells(
 \item{compactness}{A compactness value. Larger values cause clusters to be more compact/even (square).
 A compactness value depends on the range of input cell values and selected distance measure.}
 
-\item{dist_fun}{A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon".}
+\item{dist_fun}{A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon". Default: "euclidean"}
 
 \item{clean}{Should connectivity of the supercells be enforced?}
 

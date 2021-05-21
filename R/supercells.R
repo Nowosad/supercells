@@ -6,7 +6,7 @@
 #' @param k The number of supercells desired by the user (the output number can be slightly different!)
 #' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
 #' A compactness value depends on the range of input cell values and selected distance measure.
-#' @param dist_fun A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon".
+#' @param dist_fun A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon". Default: "euclidean"
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param iter The number of iterations performed to create the output.
 #' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default no transformation is performed.
