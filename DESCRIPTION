@@ -31,5 +31,7 @@ Suggests:
     rmarkdown,
     motif (>= 0.4.3),
     stars
+Remotes:
+    nowosad/motif
 Config/testthat/edition: 3
 VignetteBuilder: knitr
