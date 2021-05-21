@@ -3,16 +3,40 @@ library(motif)
 library(stars)
 library(terra)
 library(tmap)
+
+# 1 -----------------------------------------------------------------------
 nlcd = read_stars(system.file("raster/nlcd2011.tif", package = "spDataLarge"))
 coma_output = lsp_signature(nlcd, type = "cove", window = 10, normalization = "pdf", ordered = FALSE)
 
-slic = supermotif(coma_output, step = 15, nc = 0.01, dist_fun = "euclidean")
+slic = supermotifs(coma_output, k = 300, compactness = 0.01, dist_fun = "jensen_shannon")
+
+slic_cent = st_as_sf(st_drop_geometry(slic[2:3]), coords = c("x", "y"), crs = st_crs(slic))
+
 tm_shape(nlcd) +
   tm_raster(legend.show = FALSE, drop.levels = TRUE) +
   tm_shape(slic) +
-  tm_borders(col = "red")
+  tm_borders(col = "red") +
+  tm_shape(slic_cent) +
+  tm_dots()
 
 
+# 2 -----------------------------------------------------------------------
+landcover = read_stars(system.file("raster/landcover2015.tif", package = "motif"))
+coma_output2 = lsp_signature(landcover, type = "cove", window = 10, normalization = "pdf", ordered = FALSE)
+
+slic2 = supermotifs(coma_output2, k = 5000, compactness = 0.1, dist_fun = "jensen_shannon")
+
+slic_cent2 = st_as_sf(st_drop_geometry(slic2[2:3]), coords = c("x", "y"), crs = st_crs(slic2))
+
+tm_shape(landcover) +
+  tm_raster(legend.show = FALSE, drop.levels = TRUE) +
+  tm_shape(slic2) +
+  tm_borders(col = "red") #+
+  #tm_shape(slic_cent2) +
+  #tm_dots()
+
+write_stars(landcover, "landcover.tf")
+write_sf(slic2, "slic2.gpkg")
 # old (2021-05-06) --------------------------------------------------------
 lsp_restructure = function(x){
   x_attr = attributes(x)
@@ -60,7 +84,7 @@ tm_shape(landcover) +
 
 
 # nlcd = rast(system.file("raster/nlcd2011.tif", package = "spDataLarge"))
-# nlcd_slic = supercell(nlcd, 40, 10, "jenson_shannon")
+# nlcd_slic = supercells(nlcd, 40, 10, "jenson_shannon")
 
 nlcd = read_stars(system.file("raster/nlcd2011.tif", package = "spDataLarge"))
 coma_output = lsp_signature(nlcd, type = "cove", window = 10, normalization = "pdf", ordered = FALSE)
