@@ -33,6 +33,20 @@ An sf object with several columns: (1) supercells - an id of each supercell, (2)
 \description{
 Creates supermotifs based on the lsp objects from the motif package. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
 }
+\examples{
+if (requireNamespace("motif", quietly = TRUE) && requireNamespace("stars", quietly = TRUE)) {
+  library(motif)
+  library(stars)
+  landcover = read_stars(system.file("raster/landcover2015.tif", package = "motif"))
+  coma_output2 = lsp_signature(landcover, type = "cove", window = 10,
+                               normalization = "pdf", ordered = FALSE)
+  slic2 = supermotifs(coma_output2, k = 2000, compactness = 0.1, dist_fun = "jensen_shannon")
+
+  plot(landcover, reset = FALSE)
+  plot(st_geometry(slic2), add = TRUE)
+
+}
+}
 \references{
 Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120
 }

@@ -16,9 +16,21 @@
 #' @export
 #'
 #' @examples
+#' if (requireNamespace("motif", quietly = TRUE) && requireNamespace("stars", quietly = TRUE)) {
+#'   library(motif)
+#'   library(stars)
+#'   landcover = read_stars(system.file("raster/landcover2015.tif", package = "motif"))
+#'   coma_output2 = lsp_signature(landcover, type = "cove", window = 10,
+#'                                normalization = "pdf", ordered = FALSE)
+#'   slic2 = supermotifs(coma_output2, k = 2000, compactness = 0.1, dist_fun = "jensen_shannon")
+#'
+#'   plot(landcover, reset = FALSE)
+#'   plot(st_geometry(slic2), add = TRUE)
+#'
+#' }
 supermotifs = function(x, k, compactness, dist_fun = "jensen_shannon", clean = TRUE, iter = 10){
   centers = TRUE
-  output_sig = lsp_restructure(x)
+  output_sig = motif::lsp_restructure(x)
   output_stars = motif::lsp_add_stars(output_sig)
   mat = dim(output_stars)[2:1]
   vals = as.matrix(as.data.frame(output_stars)[-c(1:4)])
@@ -36,8 +48,8 @@ supermotifs = function(x, k, compactness, dist_fun = "jensen_shannon", clean = T
   names(slic_sf) = c("supercells", "y", "x", "geometry")
   slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
 
-  res_x = st_dimensions(output_stars)[[1]]$delta
-  res_y = st_dimensions(output_stars)[[2]]$delta
+  res_x = stars::st_dimensions(output_stars)[[1]]$delta
+  res_y = stars::st_dimensions(output_stars)[[2]]$delta
 
   slic_sf[["x"]] = as.vector(input_ext)[[1]] + (slic_sf[["x"]] * res_x) + (res_x/2)
   slic_sf[["y"]] = as.vector(input_ext)[[4]] + (slic_sf[["y"]] * res_y) + (res_y/2)
@@ -45,27 +57,3 @@ supermotifs = function(x, k, compactness, dist_fun = "jensen_shannon", clean = T
   slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
   return(slic_sf)
 }
-
-lsp_restructure = function(x){
-  x_attr = attributes(x)
-  nc = ncol(x$signature[[1]])
-
-  unnested_signature = matrix(unlist(x$signature, use.names = FALSE),
-                              ncol = nc, byrow = TRUE)
-  colnames(unnested_signature) = paste0("X", seq_len(nc))
-  unnested_signature = tibble::as_tibble(unnested_signature)
-
-  x["signature"] = NULL
-
-  x = tibble::as_tibble(cbind(x, unnested_signature))
-  x_attr$names = names(x)
-  attributes(x) = x_attr
-
-  x
-}
-# # a = supercells(rast(landscape), 3, 1)
-# # plot(rast(landscape))
-# # plot(a, add = TRUE, col = NA)
-# # format(object.size(as.matrix(dog2[[1]], wide = T)), "MB")
-# # format(object.size(as.matrix(terra::as.data.frame(dog2, cell = TRUE)[-1])), "MB")
-#

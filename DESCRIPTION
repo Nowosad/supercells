@@ -29,6 +29,7 @@ Suggests:
     covr,
     testthat (>= 3.0.0),
     rmarkdown,
-    motif
+    motif (>= 0.4.3),
+    stars
 Config/testthat/edition: 3
 VignetteBuilder: knitr
