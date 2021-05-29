@@ -55,5 +55,6 @@ supermotifs = function(x, k, compactness, dist_fun = "jensen_shannon", clean = T
   slic_sf[["y"]] = as.vector(input_ext)[[4]] + (slic_sf[["y"]] * res_y) + (res_y/2)
   # colnames(slic[[3]]) = names(x)
   slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
+  slic_sf = sf::st_collection_extract(slic_sf, "POLYGON")
   return(slic_sf)
 }
