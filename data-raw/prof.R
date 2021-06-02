@@ -5,15 +5,16 @@ library(terra)
 library(sf)
 library(tmap)
 
-input = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
-input = rast(system.file("raster/ortho.tif", package = "supercells"))
+# dog = raster::raster("dog.png"); crs(dog) = "EPSG:2180"
+# dog2 = rast("dog.png"); ext(dog2) = c(0, 320, 0, 240); crs(dog2) = "EPSG:2180"
+srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
 
 target_file = "Rprof.out"
 
 # Collect profile data
 start_profiler(target_file)
 ## code to be profiled
-supercells(input, k = 2000, compactness = 10)
+supercells(srtm, 5000, 1)
 stop_profiler()
 
 # Analyze profile data
@@ -26,12 +27,12 @@ stop_profiler()
 pprof_target_file = "Rprof.pb.gz"
 profile_data = profile::read_rprof(target_file)
 profile::write_pprof(profile_data, pprof_target_file)
-# system2(
-#   find_pprof(),
-#   c(
-#     "-http",
-#     "localhost:8081",
-#     shQuote(pprof_target_file)
-#   )
-# )
-# "http://localhost:8080"
+system2(
+  find_pprof(),
+  c(
+    "-http",
+    "localhost:8080",
+    shQuote(pprof_target_file)
+  )
+)
+"http://localhost:8080"
