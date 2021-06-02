@@ -40,9 +40,9 @@ remotes::install_github("Nowosad/supercells")
 ``` r
 library(supercells)
 library(terra)
-#> terra version 1.2.10
+#> terra version 1.1.17
 library(sf)
-#> Linking to GEOS 3.8.1, GDAL 3.1.4, PROJ 6.3.2
+#> Linking to GEOS 3.9.0, GDAL 3.2.2, PROJ 7.2.1
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 plot(vol)
 ```
@@ -65,6 +65,8 @@ See the package’s vignettes:
     layer](https://nowosad.github.io/supercells/articles/one_var.html)
 2.  [Superpixels of an RGB
     raster](https://nowosad.github.io/supercells/articles/rgb_vars.html)
+3.  [Superpixels of spatial categorical
+    patterns](https://nowosad.github.io/supercells/articles/motifels.html)
 
 ## Contribution
 

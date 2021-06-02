@@ -62,6 +62,7 @@ See the package's vignettes:
 
 1. [Superpixels of a single raster layer](https://nowosad.github.io/supercells/articles/one_var.html)
 2. [Superpixels of an RGB raster](https://nowosad.github.io/supercells/articles/rgb_vars.html)
+3. [Superpixels of spatial categorical patterns](https://nowosad.github.io/supercells/articles/motifels.html)
 
 ## Contribution
 
