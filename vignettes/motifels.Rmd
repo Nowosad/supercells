@@ -1,0 +1,45 @@
+---
+title: "Superpixels of spatial categorical patterns"
+author: Jakub Nowosad
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Superpixels of spatial categorical patterns}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "`r system.file('refs.bib', package = 'supercells')`"
+nocite: '@*'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 5,
+  fig.height = 6.5
+)
+```
+
+```{r}
+library(supercells)
+library(motif)
+library(stars)
+landcover = read_stars(system.file("raster/landcover2015.tif", package = "motif"))
+plot(landcover)
+```
+```{r}
+coma_output2 = lsp_signature(landcover, type = "cove", window = 10,
+                             normalization = "pdf", ordered = FALSE)
+coma_output2
+```
+
+```{r}
+slic2 = supermotifs(coma_output2, k = 2000, compactness = 0.1, dist_fun = "jensen_shannon")
+```
+
+```{r}
+plot(landcover, reset = FALSE)
+plot(st_geometry(slic2), add = TRUE)
+```
+
+# References
