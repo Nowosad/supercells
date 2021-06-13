@@ -73,6 +73,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, i
     slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     colnames(slic[[3]]) = names(x)
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
+    slic_sf = sf::st_collection_extract(slic_sf, "POLYGON")
   # }
   return(slic_sf)
 }
