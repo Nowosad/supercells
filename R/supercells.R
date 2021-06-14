@@ -30,20 +30,20 @@
 #'
 #' # RGB variables
 #'
-#' #ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
-#' #ortho_slic1 = supercells(ortho, k = 200, compactness = 10)
-#' #plot(ortho)
-#' #plot(st_geometry(ortho_slic1), add = TRUE)
+#' ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
+#' ortho_slic1 = supercells(ortho, k = 1000, compactness = 10, transform = "to_LAB")
+#' plot(ortho)
+#' plot(st_geometry(ortho_slic1), add = TRUE)
 #'
 #' ### RGB variables - colored output
 #'
-#' #rgb_to_hex = function(x){
-#' #  apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
-#' #}
-#' #avg_colors = rgb_to_hex(st_drop_geometry(ortho_slic1[4:6]))
+#' rgb_to_hex = function(x){
+#'   apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
+#' }
+#' avg_colors = rgb_to_hex(st_drop_geometry(ortho_slic1[4:6]))
 #'
-#' #plot(ortho)
-#' #plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
+#' plot(ortho)
+#' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10, transform = NULL){
   centers = TRUE
   if (!inherits(x, "SpatRaster")){
@@ -59,7 +59,11 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, i
     }
   }
   slic = run_slic(mat, vals, k = k, nc = compactness, con = clean, centers = centers, type = dist_fun, iter = iter)
-
+  if (!missing(transform)){
+    if (transform == "to_LAB"){
+      slic[[3]] = grDevices::convertColor(slic[[3]], from = "Lab", to = "sRGB") * 255
+    }
+  }
   slic_sf = terra::rast(slic[[1]])
   terra::NAflag(slic_sf) = -1
   terra::ext(slic_sf) = terra::ext(x)
@@ -73,7 +77,8 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, i
     slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     colnames(slic[[3]]) = names(x)
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
-    slic_sf = sf::st_collection_extract(slic_sf, "POLYGON")
+    slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
+
   # }
   return(slic_sf)
 }
