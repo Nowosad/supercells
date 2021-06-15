@@ -1,4 +1,5 @@
 #include "slic.h"
+#include "distances.h"
 
 /* Constructor. Nothing is done here. */
 Slic::Slic() {
@@ -68,63 +69,6 @@ void Slic::inits(integers mat, doubles_matrix vals, std::string& type) {
   }
 }
 
-double Slic::euclidean(vector<double>& values1, vector<double>& values2){
-
-  int len1 = values1.size();
-  double dist = 0.0;
-  double diff = 0.0;
-
-  for (int i = 0; i < len1; i++){
-    diff = values1[i] - values2[i];
-    dist += diff * diff;
-  }
-  return sqrt(dist);
-}
-
-double Slic::manhattan(vector<double>& values1, vector<double>& values2){
-
-  int len1 = values1.size();
-  double dist = 0.0;
-  double diff = 0.0;
-
-  for (int i = 0; i < len1; i++){
-    diff = fabs(values1[i] - values2[i]);
-    dist += diff;
-  }
-  return dist;
-}
-
-double custom_log2(const double& x){
-  if (x == 0.0){
-    return NAN;
-  } else {
-    return log(x)/log(2.0);
-  }
-}
-
-double Slic::jensen_shannon(vector<double>& values1, vector<double>& values2){
-
-  int len1 = values1.size();
-  double sum1       = 0.0;
-  double sum2       = 0.0;
-  double sum12      = 0.0;
-
-  for(int i = 0; i < len1; i++){
-    sum12 = values1[i] + values2[i];
-    if (values1[i] == 0.0 || sum12 == 0.0) {
-      sum1  += 0.0;
-    } else {
-      sum1  +=  values1[i] * custom_log2((2.0 * values1[i]) / sum12);
-    }
-    if (values2[i] == 0.0 || sum12 == 0.0) {
-      sum2  += 0.0;
-    } else {
-      sum2  +=  values2[i] * custom_log2((2.0 * values2[i]) / sum12);
-    }
-  }
-  return 0.5 * (sum1 + sum2);
-}
-
 double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2, std::string& type){
   if (type == "euclidean"){
     return euclidean(values1, values2);
@@ -132,8 +76,10 @@ double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2, std
     return manhattan(values1, values2);
   } else if (type == "jensen_shannon"){
     return jensen_shannon(values1, values2);
+  } else if (type == "dtw"){
+    return dtw3(values1, values2);
   } else {
-    return euclidean(values1, values2);
+    stop("Wrong distance function!");
   }
 }
 

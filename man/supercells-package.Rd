@@ -24,6 +24,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Pascal Mettes (Author of the initial C++ implementation of the SLIC Superpixel algorithm for image data) [contributor]
+  \item Charles Jekel (Author of underlying C++ code for dtw) [contributor]
 }
 
 }

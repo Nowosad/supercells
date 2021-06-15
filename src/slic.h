@@ -34,9 +34,9 @@ class Slic {
     int step, ns;
     double nc;
 
-    double euclidean(vector<double>& values1, vector<double>& values2);
-    double manhattan(vector<double>& values1, vector<double>& values2);
-    double jensen_shannon(vector<double>& values1, vector<double>& values2);
+    // double euclidean(vector<double>& values1, vector<double>& values2);
+    // double manhattan(vector<double>& values1, vector<double>& values2);
+    // double jensen_shannon(vector<double>& values1, vector<double>& values2);
 
     double get_vals_dist(vector<double>& values1, vector<double>& values2, std::string& type);
 
