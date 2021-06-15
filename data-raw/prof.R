@@ -1,3 +1,4 @@
+# remotes::install_github("r-prof/jointprof")
 library(jointprof)
 devtools::load_all()
 library(spDataLarge)
@@ -35,4 +36,32 @@ system2(
     shQuote(pprof_target_file)
   )
 )
+"http://localhost:8080"
+
+
+
+# 2 -----------------------------------------------------------------------
+srtm = rast(system.file("raster/landsat.tif", package = "spDataLarge"))
+target_file = "Rprof.out"
+
+# Collect profile data
+start_profiler(target_file)
+supercells(srtm, 1000, 1, dist_fun = "dtw", iter = 1)
+stop_profiler()
+
+# Convert to pprof format and analyze
+pprof_target_file = "Rprof.pb.gz"
+profile_data = profile::read_rprof(target_file)
+profile::write_pprof(profile_data, pprof_target_file)
+
+paste0(find_pprof(), " -http", " localhost:8080", " 'Rprof.pb.gz'")
+
+# system2(
+#   find_pprof(),
+#   c(
+#     "-http",
+#     "localhost:8080",
+#     shQuote(pprof_target_file)
+#   )
+# )
 "http://localhost:8080"
