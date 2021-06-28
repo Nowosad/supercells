@@ -91,3 +91,65 @@ v3_p = ggplot() +
 # animate(g1a, renderer = ffmpeg_renderer())
 anim_save("v3_p.gif", v3_p, height = 280/50, width = 550/50, units = "in", res = 150)
 
+
+# tests iterations --------------------------------------------------------
+supercell_i = function(iter, x, step, nc, dist_fun = "euclidean", clean = TRUE, transform){
+  supercells(x = x, k = step, compactness = nc, dist_fun = dist_fun, clean = clean, iter = iter, transform = transform)
+}
+add_cols = function(x, col_value){
+  x$sizes = as.factor(col_value)
+  x
+}
+srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
+
+i  = 1:10
+names(i) = i
+system.time({i_slic = map(i, supercell_i, srtm, 200, 50, clean = FALSE)})
+i_slic2 = map2(i_slic, i, add_cols)
+i_slic3 = do.call(rbind, i_slic2)
+
+g_i = ggplot() +
+  geom_stars(data = stars::st_as_stars(raster::raster(srtm))) +
+  scale_fill_continuous_sequential("Terrain 2") +
+  geom_sf(data = i_slic3, fill = NA, color = "#DA3DBE", size = 0.1, aes(group = sizes)) +
+  stars:::theme_stars() +
+  transition_states(sizes, state_length = 2) +
+  ease_aes("bounce-in") +
+  enter_fade() +
+  exit_shrink() +
+  theme(legend.position = "none") +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  labs(x = NULL, y = NULL, title = "Numer of interations: {closest_state}")
+
+# animate(g1a, renderer = ffmpeg_renderer())
+anim_save("g_i.gif", g_i, height = 537/100, width = 420/100, units = "in", res = 150, renderer = gifski_renderer())
+
+# tests iterations2 --------------------------------------------------------
+v3 = rast(system.file("raster/ortho.tif", package = "supercells"))
+i  = 1:30
+names(i) = i
+system.time({i_slic2 = map(i, supercell_i, v3, 200, 50, clean = FALSE, transform = "to_LAB")})
+i_slic2 = map2(i_slic2, i, add_cols)
+i_slic2 = do.call(rbind, i_slic2)
+
+v3_rgb = st_rgb(stars::st_as_stars(raster::raster(v3))[,,,1:3],
+                probs = c(0.02, 0.98), stretch = TRUE)
+
+g_i2 = ggplot() +
+  geom_stars(data = v3_rgb)  +
+  scale_fill_identity() +
+  # scale_fill_continuous_sequential("Terrain 2") +
+  geom_sf(data = i_slic2, fill = NA, color = "red", size = 0.4, aes(group = sizes)) +
+  stars:::theme_stars() +
+  transition_states(sizes, state_length = 2) +
+  ease_aes("bounce-in") +
+  enter_fade() +
+  exit_shrink() +
+  theme(legend.position = "none") +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  labs(x = NULL, y = NULL, title = "Number of iterations: {closest_state}")
+
+# animate(g1a, renderer = ffmpeg_renderer())
+anim_save("g_i2.gif", g_i2, height = 280/50, width = 550/50, units = "in", res = 150, renderer = gifski_renderer())
