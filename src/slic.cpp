@@ -157,6 +157,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
 
   /* Run EM for 10 iterations (as prescribed by the algorithm). */
   for (int itr = 0; itr < iter; itr++) {
+
     Rprintf("Iteration: %u/%u\r", itr + 1, iter);
     // cout << "Iteration: " << itr + 1;
 
@@ -243,6 +244,19 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
         }
       }
     }
+
+    Rprintf("Test: ");
+    vector<vector<int> > c_id_centers_vals(mat_dims[0] * mat_dims[1]);
+    for (int l = 0; l < mat_dims[1]; l++) {
+      for (int k = 0; k < mat_dims[0]; k++) {
+        int c_id = clusters[l][k];
+        if (c_id != -1) {
+          int ncell = l + (k * mat_dims[1]);
+          c_id_centers_vals[ncell].push_back(c_id);
+        }
+      }
+    }
+    Rprintf("Completed\n");
 
     // /* Normalize the clusters. */
     for (int l = 0; l < (int) centers.size(); l++) {
