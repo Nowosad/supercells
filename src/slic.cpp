@@ -243,6 +243,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
         }
       }
     }
+
     // /* Normalize the clusters. */
     for (int l = 0; l < (int) centers.size(); l++) {
       centers[l][0] /= center_counts[l];
@@ -255,13 +256,18 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
   Rprintf("\n");
 }
 
-void Slic::create_connectivity(doubles_matrix vals) {
+void Slic::create_connectivity(doubles_matrix vals, int lims) {
   Rprintf("Cleaning connectivity: ");
   int label = 0;
   int adjlabel = 0;
-  const int lims = (mat_dims[1] * mat_dims[0]) / ((int)centers.size());
   const int dx4[4] = {-1,  0,  1,  0};
   const int dy4[4] = { 0, -1,  0,  1};
+
+  if (lims == 0) {
+    lims = (mat_dims[1] * mat_dims[0]) / ((int)centers.size());
+    lims = lims >> 2;
+  }
+  // Rprintf("(Min size: %i\) ", lims);
 
   for (int i = 0; i < mat_dims[1]; i++) {
     vector<int> ncl; ncl.reserve(mat_dims[0]);
@@ -317,7 +323,7 @@ void Slic::create_connectivity(doubles_matrix vals) {
 
         /* Use the earlier found adjacent label if a segment size is
          smaller than a limit. */
-        if (count <= lims >> 2) {
+        if (count <= lims) {
           for (int c = 0; c < count; c++) {
             new_clusters[elements[c][1]][elements[c][0]] = adjlabel;
           }

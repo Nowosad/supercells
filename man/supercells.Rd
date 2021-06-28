@@ -11,13 +11,16 @@ supercells(
   dist_fun = "euclidean",
   clean = TRUE,
   iter = 10,
-  transform = NULL
+  transform = NULL,
+  step,
+  minarea = 0
 )
 }
 \arguments{
 \item{x}{An object of class SpatRaster (terra)}
 
-\item{k}{The number of supercells desired by the user (the output number can be slightly different!)}
+\item{k}{The number of supercells desired by the user (the output number can be slightly different!).
+You can use either \code{k} or \code{step}.}
 
 \item{compactness}{A compactness value. Larger values cause clusters to be more compact/even (square).
 A compactness value depends on the range of input cell values and selected distance measure.}
@@ -29,6 +32,12 @@ A compactness value depends on the range of input cell values and selected dista
 \item{iter}{The number of iterations performed to create the output.}
 
 \item{transform}{Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default no transformation is performed.}
+
+\item{step}{The distance (number of cells) between initial supercells' centers. You can use either \code{k} or \code{step}.}
+
+\item{minarea}{Specifies the minimal size of a supercell (in cells). Only works when \code{clean = TRUE}.
+By default, when \code{clean = TRUE}, average area (A) is calculated based on the total number of cells divided by a number of superpixels.
+Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)}
 }
 \value{
 An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell

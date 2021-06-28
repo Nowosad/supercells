@@ -3,12 +3,18 @@
 #' Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
 #'
 #' @param x An object of class SpatRaster (terra)
-#' @param k The number of supercells desired by the user (the output number can be slightly different!)
+#' @param k The number of supercells desired by the user (the output number can be slightly different!).
+#' You can use either `k` or `step`.
 #' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
 #' A compactness value depends on the range of input cell values and selected distance measure.
 #' @param dist_fun A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon". Default: "euclidean"
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param iter The number of iterations performed to create the output.
+#' @param minarea Specifies the minimal size of a supercell (in cells). Only works when `clean = TRUE`.
+#' By default, when `clean = TRUE`, average area (A) is calculated based on the total number of cells divided by a number of superpixels.
+#' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
+#' @param iter The number of iterations performed to create the output.
+#' @param step The distance (number of cells) between initial supercells' centers. You can use either `k` or `step`.
 #' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default no transformation is performed.
 #'
 #' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
@@ -44,21 +50,30 @@
 #'
 #' plot(ortho)
 #' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
-supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10, transform = NULL){
+supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10, transform = NULL, step, minarea = 0){
   centers = TRUE
   if (!inherits(x, "SpatRaster")){
-    stop("The SpatRaster class is expected as an input")
+    stop("The SpatRaster class is expected as an input", .call = FALSE)
   }
   mat = dim(x)[1:2]
   mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cell = FALSE, na.rm = FALSE))
+  if (!missing(step) && !missing(k)){
+    stop("You can specify either k or step, not both", .call = FALSE)
+  } else if (missing(step) && missing(k)){
+    stop("You need to specify either k or step", .call = FALSE)
+  } else if (missing(step)){
+    superpixelsize = round((mat[1] * mat[2]) / k + 0.5)
+    step = round(sqrt(superpixelsize) + 0.5)
+  }
   if (!missing(transform)){
     if (transform == "to_LAB"){
       vals = vals / 255
       vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
     }
   }
-  slic = run_slic(mat, vals, k = k, nc = compactness, con = clean, centers = centers, type = dist_fun, iter = iter)
+  slic = run_slic(mat, vals, step = step, nc = compactness, con = clean,
+                  centers = centers, type = dist_fun, iter = iter, lims = minarea)
   if (!missing(transform)){
     if (transform == "to_LAB"){
       slic[[3]] = grDevices::convertColor(slic[[3]], from = "Lab", to = "sRGB") * 255

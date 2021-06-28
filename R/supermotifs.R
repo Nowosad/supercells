@@ -3,12 +3,17 @@
 #' Creates supermotifs based on the lsp objects from the motif package. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
 #'
 #' @param x An object of class lsp (output of `motif::lsp_signature()` from the motif package)
-#' @param k The number of supercells desired by the user (the output number can be slightly different!)
+#' @param k The number of supercells desired by the user (the output number can be slightly different!).
+#' You can use either `k` or `step`.
 #' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
 #' A compactness value depends on the range of input cell values and selected distance measure.
 #' @param dist_fun A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon". Default: "jensen_shannon"
 #' @param clean Should connectivity of the supercells be enforced?
+#' @param minarea Specifies the minimal size of a supercell (in cells). Only works when `clean = TRUE`.
+#' By default, when `clean = TRUE`, average area (A) is calculated based on the total number of cells divided by a number of superpixels.
+#' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
 #' @param iter The number of iterations performed to create the output.
+#' @param step The distance (number of cells) between initial supercells' centers. You can use either `k` or `step`.
 #'
 #' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
 #'
@@ -28,15 +33,18 @@
 #'   plot(st_geometry(slic2), add = TRUE)
 #'
 #' }
-supermotifs = function(x, k, compactness, dist_fun = "jensen_shannon", clean = TRUE, iter = 10){
+supermotifs = function(x, k, compactness, dist_fun = "jensen_shannon", clean = TRUE, iter = 10, step, minarea = 0){
   centers = TRUE
   output_sig = motif::lsp_restructure(x)
   output_stars = motif::lsp_add_stars(output_sig)
   mat = dim(output_stars)[2:1]
   vals = as.matrix(as.data.frame(output_stars)[-c(1:4)])
-
-  slic = run_slic(mat, vals, k = k, nc = compactness, con = clean,
-                  centers = centers, type = dist_fun, iter = iter)
+  if (missing(step)){
+    superpixelsize = round((mat[1] * mat[2]) / k + 0.5)
+    step = round(sqrt(superpixelsize) + 0.5)
+  }
+  slic = run_slic(mat, vals, step = step, nc = compactness, con = clean,
+                  centers = centers, type = dist_fun, iter = iter, lims = minarea)
 
   slic_sf = terra::rast(slic[[1]])
   terra::NAflag(slic_sf) = -1
