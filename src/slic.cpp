@@ -1,6 +1,9 @@
 #include "slic.h"
 #include "distances.h"
 
+typedef multimap<int, int> IntToIntMap;
+typedef IntToIntMap::iterator mapIter;
+
 /* Constructor. Nothing is done here. */
 Slic::Slic() {
 
@@ -143,7 +146,23 @@ vector<int> Slic::find_local_minimum(doubles_matrix vals, int& y, int& x, std::s
   return loc_min;
 }
 
-void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, int iter){
+double median(vector<double>& v){
+  size_t n = v.size() / 2;
+  nth_element(v.begin(), v.begin()+n, v.end());
+  return v[n];
+}
+
+double mean(vector<double>& v){
+  double sum = std::accumulate(v.begin(), v.end(), 0.0);
+  double mean = sum / v.size();
+  return mean;
+}
+
+double external_fun(vector<double>& v, function f){
+  return f(v);
+}
+
+void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, std::string& avg_fun, int iter){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -211,9 +230,8 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
       // cout << "\r";
     }
     // cout << endl;
-
     /* Clear the center values. */
-    /* Clear the center _vals values. */
+    /* Clear the center_vals values. */
     for (int m = 0; m < (int) centers.size(); m++) {
       centers[m][0] = centers[m][1] = 0;
       for (int n = 0; n < (int) centers_vals[0].size(); n++){
@@ -222,50 +240,90 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
       center_counts[m] = 0;
     }
 
-    // /* Compute the new cluster centers. */
-    for (int l = 0; l < mat_dims[1]; l++) {
-      for (int k = 0; k < mat_dims[0]; k++) {
-        int c_id = clusters[l][k];
+    if (avg_fun != "mean"){
+      auto fun = cpp11::package("base")["mean"];
 
-        if (c_id != -1) {
-          int ncell = l + (k * mat_dims[1]);
+      // Rprintf("Test: ");
+      multimap <int, int> c_id_centers_vals;
+      for (int l = 0; l < mat_dims[1]; l++) {
+        for (int k = 0; k < mat_dims[0]; k++) {
+          int c_id = clusters[l][k];
+          if (c_id != -1) {
+            int ncell = l + (k * mat_dims[1]);
+            c_id_centers_vals.insert(make_pair(c_id, ncell));
+            centers[c_id][0] += k;
+            centers[c_id][1] += l;
+            center_counts[c_id] += 1;
+          }
+        }
+      }
+      mapIter m_it, s_it;
+      for (m_it = c_id_centers_vals.begin();  m_it != c_id_centers_vals.end();  m_it = s_it){
+        int c_id = (*m_it).first;
 
-          vector<double> colour; colour.reserve(mat_dims[2]);
-          for (int nval = 0; nval < mat_dims[2]; nval++){
-            double val = vals(ncell, nval);
-            colour.push_back(val);
+        // cout << endl;
+        // cout << "  key = '" << c_id << "'" << endl;
+
+        pair<mapIter, mapIter> keyRange = c_id_centers_vals.equal_range(c_id);
+        vector<vector<double> > centers_vals_c_id(mat_dims[2]);
+
+        // Iterate over all map elements with key == theKey
+
+        for (s_it = keyRange.first;  s_it != keyRange.second;  ++s_it){
+          int ncell = (*s_it).second;
+          // cout << "    value = " << (*s_it).second << endl;
+            for (int nval = 0; nval < mat_dims[2]; nval++){
+              double val = vals(ncell, nval);
+              centers_vals_c_id[nval].push_back(val);
+            }
+        }
+        for (int nval = 0; nval < mat_dims[2]; nval++){
+          centers_vals[c_id][nval] = fun(centers_vals_c_id[nval]);
+          // centers_vals[c_id][nval] = median(centers_vals_c_id[nval]);
+          // centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
+        }
+      }
+      // /* Normalize the clusters. */
+      for (int l = 0; l < (int) centers.size(); l++) {
+        centers[l][0] /= center_counts[l];
+        centers[l][1] /= center_counts[l];
+      }
+
+      // Rprintf("Completed\n");
+    } else if (avg_fun == "mean"){
+      // /* Compute the new cluster centers. */
+      for (int l = 0; l < mat_dims[1]; l++) {
+        for (int k = 0; k < mat_dims[0]; k++) {
+          int c_id = clusters[l][k];
+
+          if (c_id != -1) {
+            int ncell = l + (k * mat_dims[1]);
+
+            vector<double> colour; colour.reserve(mat_dims[2]);
+            for (int nval = 0; nval < mat_dims[2]; nval++){
+              double val = vals(ncell, nval);
+              colour.push_back(val);
+            }
+            centers[c_id][0] += k;
+            centers[c_id][1] += l;
+            for (int nval = 0; nval < mat_dims[2]; nval++){
+              centers_vals[c_id][nval] += colour[nval];
+            }
+            center_counts[c_id] += 1;
           }
-          centers[c_id][0] += k;
-          centers[c_id][1] += l;
-          for (int nval = 0; nval < mat_dims[2]; nval++){
-            centers_vals[c_id][nval] += colour[nval];
-          }
-          center_counts[c_id] += 1;
+        }
+      }
+
+      // /* Normalize the clusters. */
+      for (int l = 0; l < (int) centers.size(); l++) {
+        centers[l][0] /= center_counts[l];
+        centers[l][1] /= center_counts[l];
+        for (int nval = 0; nval < mat_dims[2]; nval++){
+          centers_vals[l][nval] /= center_counts[l];
         }
       }
     }
 
-    Rprintf("Test: ");
-    vector<vector<int> > c_id_centers_vals(mat_dims[0] * mat_dims[1]);
-    for (int l = 0; l < mat_dims[1]; l++) {
-      for (int k = 0; k < mat_dims[0]; k++) {
-        int c_id = clusters[l][k];
-        if (c_id != -1) {
-          int ncell = l + (k * mat_dims[1]);
-          c_id_centers_vals[ncell].push_back(c_id);
-        }
-      }
-    }
-    Rprintf("Completed\n");
-
-    // /* Normalize the clusters. */
-    for (int l = 0; l < (int) centers.size(); l++) {
-      centers[l][0] /= center_counts[l];
-      centers[l][1] /= center_counts[l];
-      for (int nval = 0; nval < mat_dims[2]; nval++){
-        centers_vals[l][nval] /= center_counts[l];
-      }
-    }
   }
   Rprintf("\n");
 }

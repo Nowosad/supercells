@@ -2,6 +2,8 @@
 #include "cpp11.hpp"
 #include <iostream>
 #include <vector>
+#include <map>
+#include <numeric>
 #include <float.h>
 
 using namespace std;
@@ -56,7 +58,7 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, int iter);
+    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, std::string& avg_fun, int iter);
     /* Enforce connectivity for an image. */
     void create_connectivity(doubles_matrix vals, int lims);
 
@@ -66,13 +68,13 @@ class Slic {
 };
 
 [[cpp11::register]]
-list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, bool centers, std::string type, int iter, int lims) {
+list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, bool centers, std::string type, std::string avg_fun, int iter, int lims) {
 
   // cout << "superpixelsize" << superpixelsize << endl;
   Rprintf("Step: %u\n", step);
 
   Slic slic;
-  slic.generate_superpixels(mat, vals, step, nc, type, iter);
+  slic.generate_superpixels(mat, vals, step, nc, type, avg_fun, iter);
   if (con){
     slic.create_connectivity(vals, lims);
   }
