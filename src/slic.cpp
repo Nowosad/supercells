@@ -318,7 +318,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
   Rprintf("\n");
 }
 
-void Slic::create_connectivity(doubles_matrix vals, int lims) {
+void Slic::create_connectivity(doubles_matrix vals, function avg_fun_fun, std::string& avg_fun_name, int lims) {
   Rprintf("Cleaning connectivity: ");
   int label = 0;
   int adjlabel = 0;
@@ -421,40 +421,86 @@ void Slic::create_connectivity(doubles_matrix vals, int lims) {
     new_center_counts[m] = 0;
   }
 
-
-  // /* Compute the new cluster centers. */
-  for (int l = 0; l < (int) new_clusters.size(); l++) {
-    for (int k = 0; k < (int) new_clusters[0].size(); k++) {
-      int c_id = new_clusters[l][k];
-
-      if (c_id != -1) {
-        int ncell = l + (k * mat_dims[1]);
-
-        vector<double> colour;
+  if (avg_fun_name != "mean"){
+    multimap <int, int> new_c_id_centers_vals;
+    for (int l = 0; l < (int) new_clusters.size(); l++) {
+      for (int k = 0; k < (int) new_clusters[0].size(); k++) {
+        int c_id = new_clusters[l][k];
+        if (c_id != -1) {
+          int ncell = l + (k * mat_dims[1]);
+          new_c_id_centers_vals.insert(make_pair(c_id, ncell));
+          new_centers[c_id][0] += k;
+          new_centers[c_id][1] += l;
+          new_center_counts[c_id] += 1;
+        }
+      }
+    }
+    mapIter m_it, s_it;
+    for (m_it = new_c_id_centers_vals.begin();  m_it != new_c_id_centers_vals.end();  m_it = s_it){
+      int c_id = (*m_it).first;
+      pair<mapIter, mapIter> keyRange = new_c_id_centers_vals.equal_range(c_id);
+      vector<vector<double> > new_c_id_centers_vals(mat_dims[2]);
+      // Iterate over all map elements with key == theKey
+      for (s_it = keyRange.first;  s_it != keyRange.second;  ++s_it){
+        int ncell = (*s_it).second;
         for (int nval = 0; nval < mat_dims[2]; nval++){
           double val = vals(ncell, nval);
-          colour.push_back(val);
+          new_c_id_centers_vals[nval].push_back(val);
         }
-
-        new_centers[c_id][0] += k;
-        new_centers[c_id][1] += l;
-        for (int nval = 0; nval < mat_dims[2]; nval++){
-          new_centers_vals[c_id][nval] += colour[nval];
+      }
+      for (int nval = 0; nval < mat_dims[2]; nval++){
+        // calculate
+        if (avg_fun_name == "median"){
+          new_centers_vals[c_id][nval] = median(new_c_id_centers_vals[nval]);
+        } else if (avg_fun_name == "mean2"){
+          new_centers_vals[c_id][nval] = mean(new_c_id_centers_vals[nval]);
+        } else if (avg_fun_name.empty()){
+          // use user-defined function
+          new_centers_vals[c_id][nval] = avg_fun_fun(new_c_id_centers_vals[nval]);
         }
+      }
+    }
 
-        new_center_counts[c_id] += 1;
+    // /* Normalize the clusters. */
+    for (int l = 0; l < (int) label; l++) {
+      new_centers[l][0] /= new_center_counts[l];
+      new_centers[l][1] /= new_center_counts[l];
+    }
+  } else if (avg_fun_name == "mean"){
+    // /* Compute the new cluster centers. */
+    for (int l = 0; l < (int) new_clusters.size(); l++) {
+      for (int k = 0; k < (int) new_clusters[0].size(); k++) {
+        int c_id = new_clusters[l][k];
+
+        if (c_id != -1) {
+          int ncell = l + (k * mat_dims[1]);
+
+          vector<double> colour;
+          for (int nval = 0; nval < mat_dims[2]; nval++){
+            double val = vals(ncell, nval);
+            colour.push_back(val);
+          }
+
+          new_centers[c_id][0] += k;
+          new_centers[c_id][1] += l;
+          for (int nval = 0; nval < mat_dims[2]; nval++){
+            new_centers_vals[c_id][nval] += colour[nval];
+          }
+
+          new_center_counts[c_id] += 1;
+        }
+      }
+    }
+    // /* Normalize the clusters. */
+    for (int l = 0; l < (int) label; l++) {
+      new_centers[l][0] /= new_center_counts[l];
+      new_centers[l][1] /= new_center_counts[l];
+      for (int nval = 0; nval < mat_dims[2]; nval++){
+        new_centers_vals[l][nval] /= new_center_counts[l];
       }
     }
   }
 
-  // /* Normalize the clusters. */
-  for (int l = 0; l < (int) label; l++) {
-    new_centers[l][0] /= new_center_counts[l];
-    new_centers[l][1] /= new_center_counts[l];
-    for (int nval = 0; nval < mat_dims[2]; nval++){
-      new_centers_vals[l][nval] /= new_center_counts[l];
-    }
-  }
 
   centers = new_centers;
   centers_vals = new_centers_vals;

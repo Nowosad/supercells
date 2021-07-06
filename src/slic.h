@@ -60,7 +60,7 @@ class Slic {
     /* Generate an over-segmentation for an image. */
     void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, function avg_fun_fun, std::string& avg_fun_name, int iter);
     /* Enforce connectivity for an image. */
-    void create_connectivity(doubles_matrix vals, int lims);
+    void create_connectivity(doubles_matrix vals, function avg_fun_fun, std::string& avg_fun_name, int lims);
 
     writable::doubles_matrix return_centers();
     writable::doubles_matrix return_centers_vals();
@@ -76,7 +76,7 @@ list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, 
   Slic slic;
   slic.generate_superpixels(mat, vals, step, nc, type, avg_fun_fun, avg_fun_name, iter);
   if (con){
-    slic.create_connectivity(vals, lims);
+    slic.create_connectivity(vals, avg_fun_fun, avg_fun_name, lims);
   }
   writable::list result(3);
   result.at(0) = slic.return_clusters();
