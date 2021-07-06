@@ -9,6 +9,7 @@ supercells(
   k,
   compactness,
   dist_fun = "euclidean",
+  avg_fun = "mean",
   clean = TRUE,
   iter = 10,
   transform = NULL,
