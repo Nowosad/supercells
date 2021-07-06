@@ -158,10 +158,6 @@ double mean(vector<double>& v){
   return mean;
 }
 
-double external_fun(vector<double>& v, function f){
-  return f(v);
-}
-
 void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, function avg_fun_fun, std::string& avg_fun_name, int iter){
   // cout << "generate_superpixels" << endl;
   this->step = step;
@@ -241,7 +237,6 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
     }
 
     if (avg_fun_name != "mean"){
-      // Rprintf("Test: ");
       multimap <int, int> c_id_centers_vals;
       for (int l = 0; l < mat_dims[1]; l++) {
         for (int k = 0; k < mat_dims[0]; k++) {
@@ -258,29 +253,24 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
       mapIter m_it, s_it;
       for (m_it = c_id_centers_vals.begin();  m_it != c_id_centers_vals.end();  m_it = s_it){
         int c_id = (*m_it).first;
-
-        // cout << endl;
-        // cout << "  key = '" << c_id << "'" << endl;
-
         pair<mapIter, mapIter> keyRange = c_id_centers_vals.equal_range(c_id);
         vector<vector<double> > centers_vals_c_id(mat_dims[2]);
-
         // Iterate over all map elements with key == theKey
-
         for (s_it = keyRange.first;  s_it != keyRange.second;  ++s_it){
           int ncell = (*s_it).second;
-          // cout << "    value = " << (*s_it).second << endl;
             for (int nval = 0; nval < mat_dims[2]; nval++){
               double val = vals(ncell, nval);
               centers_vals_c_id[nval].push_back(val);
             }
         }
         for (int nval = 0; nval < mat_dims[2]; nval++){
+          // calculate
           if (avg_fun_name == "median"){
             centers_vals[c_id][nval] = median(centers_vals_c_id[nval]);
           } else if (avg_fun_name == "mean2"){
             centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
           } else if (avg_fun_name.empty()){
+            // use user-defined function
             centers_vals[c_id][nval] = avg_fun_fun(centers_vals_c_id[nval]);
           }
         }
@@ -290,8 +280,6 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
         centers[l][0] /= center_counts[l];
         centers[l][1] /= center_counts[l];
       }
-
-      // Rprintf("Completed\n");
     } else if (avg_fun_name == "mean"){
       // /* Compute the new cluster centers. */
       for (int l = 0; l < mat_dims[1]; l++) {
