@@ -50,7 +50,7 @@
 #'
 #' plot(ortho)
 #' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
-supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, iter = 10, transform = NULL, step, minarea = 0){
+supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE, iter = 10, transform = NULL, step, minarea = 0){
   centers = TRUE
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input", .call = FALSE)
@@ -72,8 +72,16 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", clean = TRUE, i
       vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
     }
   }
+  if (is.character(avg_fun)){
+    avg_fun_name = avg_fun
+    avg_fun_fun = function() ""
+  } else {
+    avg_fun_name = ""
+    avg_fun_fun = avg_fun
+  }
   slic = run_slic(mat, vals, step = step, nc = compactness, con = clean,
-                  centers = centers, type = dist_fun, iter = iter, lims = minarea)
+                  centers = centers, type = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
+                  iter = iter, lims = minarea)
   if (!missing(transform)){
     if (transform == "to_LAB"){
       slic[[3]] = grDevices::convertColor(slic[[3]], from = "Lab", to = "sRGB") * 255

@@ -162,7 +162,7 @@ double external_fun(vector<double>& v, function f){
   return f(v);
 }
 
-void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, std::string& avg_fun, int iter){
+void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, function avg_fun_fun, std::string& avg_fun_name, int iter){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -240,9 +240,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
       center_counts[m] = 0;
     }
 
-    if (avg_fun != "mean"){
-      auto fun = cpp11::package("base")["mean"];
-
+    if (avg_fun_name != "mean"){
       // Rprintf("Test: ");
       multimap <int, int> c_id_centers_vals;
       for (int l = 0; l < mat_dims[1]; l++) {
@@ -278,9 +276,13 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
             }
         }
         for (int nval = 0; nval < mat_dims[2]; nval++){
-          centers_vals[c_id][nval] = fun(centers_vals_c_id[nval]);
-          // centers_vals[c_id][nval] = median(centers_vals_c_id[nval]);
-          // centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
+          if (avg_fun_name == "median"){
+            centers_vals[c_id][nval] = median(centers_vals_c_id[nval]);
+          } else if (avg_fun_name == "mean2"){
+            centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
+          } else if (avg_fun_name.empty()){
+            centers_vals[c_id][nval] = avg_fun_fun(centers_vals_c_id[nval]);
+          }
         }
       }
       // /* Normalize the clusters. */
@@ -290,7 +292,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
       }
 
       // Rprintf("Completed\n");
-    } else if (avg_fun == "mean"){
+    } else if (avg_fun_name == "mean"){
       // /* Compute the new cluster centers. */
       for (int l = 0; l < mat_dims[1]; l++) {
         for (int k = 0; k < mat_dims[0]; k++) {
