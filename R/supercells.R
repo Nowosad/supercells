@@ -8,6 +8,8 @@
 #' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
 #' A compactness value depends on the range of input cell values and selected distance measure.
 #' @param dist_fun A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon". Default: "euclidean"
+#' @param avg_fun An averaging function - how the values of a supercells' centers are calculated?
+#' It accepts any fitting R function (e.g., `base::mean()` or `stats::median()`) or one of internally implemented `"mean"` and `"median"`. Default: `"mean"`
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param iter The number of iterations performed to create the output.
 #' @param minarea Specifies the minimal size of a supercell (in cells). Only works when `clean = TRUE`.
@@ -50,7 +52,8 @@
 #'
 #' plot(ortho)
 #' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
-supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE, iter = 10, transform = NULL, step, minarea = 0){
+supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
+                      iter = 10, transform = NULL, step, minarea){
   centers = TRUE
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input", .call = FALSE)
@@ -79,7 +82,10 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     avg_fun_name = ""
     avg_fun_fun = avg_fun
   }
-  slic = run_slic(mat, vals, step = step, nc = compactness, con = clean,
+  if (missing(minarea)){
+    minarea = 0
+  }
+  slic = run_slic(mat, vals = vals, step = step, nc = compactness, con = clean,
                   centers = centers, type = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                   iter = iter, lims = minarea)
   if (!missing(transform)){
