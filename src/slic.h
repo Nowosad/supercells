@@ -72,6 +72,8 @@ list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, 
 
   // cout << "superpixelsize" << superpixelsize << endl;
   Rprintf("Step: %u\n", step);
+  // Rprintf("Vu: %u\n", vals(0, 0));
+  // Rprintf("Vf: %f\n", vals(0, 0));
 
   Slic slic;
   slic.generate_superpixels(mat, vals, step, nc, type, avg_fun_fun, avg_fun_name, iter);

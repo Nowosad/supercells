@@ -200,6 +200,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
             int count_na = 0;
             for (int nval = 0; nval < mat_dims[2]; nval++){
               double val = vals(ncell, nval);
+              // Rprintf("val: %f\n", val);
               colour.push_back(val);
               int nanr = is_na(val);
               count_na = count_na + nanr;
@@ -260,17 +261,24 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
           int ncell = (*s_it).second;
             for (int nval = 0; nval < mat_dims[2]; nval++){
               double val = vals(ncell, nval);
+              // Rprintf("val: %f\n", val);
               centers_vals_c_id[nval].push_back(val);
             }
         }
         for (int nval = 0; nval < mat_dims[2]; nval++){
           // calculate
           if (avg_fun_name == "median"){
+            // Rprintf("\nmedian: %f\n", median(centers_vals_c_id[nval]));
+            // double a = median(centers_vals_c_id[nval]);
+            // cout << a << "\n" << endl;
             centers_vals[c_id][nval] = median(centers_vals_c_id[nval]);
           } else if (avg_fun_name == "mean2"){
             centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
           } else if (avg_fun_name.empty()){
             // use user-defined function
+            // Rprintf("\nexternalfun: %f\n", avg_fun_fun(centers_vals_c_id[nval]));
+            // double a = avg_fun_fun(centers_vals_c_id[nval]);
+            // cout << a << "\n" << endl;
             centers_vals[c_id][nval] = avg_fun_fun(centers_vals_c_id[nval]);
           }
         }
