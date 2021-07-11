@@ -56,15 +56,15 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
                       iter = 10, transform = NULL, step, minarea){
   centers = TRUE
   if (!inherits(x, "SpatRaster")){
-    stop("The SpatRaster class is expected as an input", .call = FALSE)
+    stop("The SpatRaster class is expected as an input", call. = FALSE)
   }
   mat = dim(x)[1:2]
   mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cell = FALSE, na.rm = FALSE))
   if (!missing(step) && !missing(k)){
-    stop("You can specify either k or step, not both", .call = FALSE)
+    stop("You can specify either k or step, not both", call. = FALSE)
   } else if (missing(step) && missing(k)){
-    stop("You need to specify either k or step", .call = FALSE)
+    stop("You need to specify either k or step", call. = FALSE)
   } else if (missing(step)){
     superpixelsize = round((mat[1] * mat[2]) / k + 0.5)
     step = round(sqrt(superpixelsize) + 0.5)
