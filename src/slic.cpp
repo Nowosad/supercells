@@ -82,7 +82,8 @@ double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2, std
   } else if (type == "dtw"){
     return dtw3(values1, values2);
   } else {
-    stop("Wrong distance function!");
+    // return custom_distance(values1, values2, type);
+    stop("This distance function does not exist");
   }
 }
 
@@ -158,7 +159,7 @@ double mean(vector<double>& v){
   return mean;
 }
 
-void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, function avg_fun_fun, std::string& avg_fun_name, int iter){
+void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -326,7 +327,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
   Rprintf("\n");
 }
 
-void Slic::create_connectivity(doubles_matrix vals, function avg_fun_fun, std::string& avg_fun_name, int lims) {
+void Slic::create_connectivity(doubles_matrix vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims) {
   Rprintf("Cleaning connectivity: ");
   int label = 0;
   int adjlabel = 0;

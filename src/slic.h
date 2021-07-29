@@ -58,9 +58,9 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, function avg_fun_fun, std::string& avg_fun_name, int iter);
+    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter);
     /* Enforce connectivity for an image. */
-    void create_connectivity(doubles_matrix vals, function avg_fun_fun, std::string& avg_fun_name, int lims);
+    void create_connectivity(doubles_matrix vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims);
 
     writable::doubles_matrix return_centers();
     writable::doubles_matrix return_centers_vals();
@@ -68,7 +68,7 @@ class Slic {
 };
 
 [[cpp11::register]]
-list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, bool centers, std::string type, function avg_fun_fun, std::string avg_fun_name, int iter, int lims) {
+list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, bool centers, std::string type, cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int lims) {
 
   // cout << "superpixelsize" << superpixelsize << endl;
   Rprintf("Step: %u\n", step);
