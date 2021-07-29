@@ -43,7 +43,9 @@ jobs:
             libudunits2-dev \
             libgdal-dev \
             libgeos-dev \
-            libproj-dev
+            libproj-dev \
+            libharfbuzz-dev \
+            libfribidi-dev
 
       - name: Install dependencies
         run: |
