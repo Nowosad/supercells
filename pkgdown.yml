@@ -2,7 +2,7 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  one_var: one_var.html
-  rgb_vars: rgb_vars.html
-last_built: 2021-05-20T08:57Z
+  articles/one_var: one_var.html
+  articles/rgb_vars: rgb_vars.html
+last_built: 2021-07-29T15:39Z
 
