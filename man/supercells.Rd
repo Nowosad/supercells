@@ -9,11 +9,12 @@ supercells(
   k,
   compactness,
   dist_fun = "euclidean",
+  avg_fun = "mean",
   clean = TRUE,
   iter = 10,
   transform = NULL,
   step,
-  minarea = 0
+  minarea
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ You can use either \code{k} or \code{step}.}
 A compactness value depends on the range of input cell values and selected distance measure.}
 
 \item{dist_fun}{A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon". Default: "euclidean"}
+
+\item{avg_fun}{An averaging function - how the values of a supercells' centers are calculated?
+It accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::median()}) or one of internally implemented \code{"mean"} and \code{"median"}. Default: \code{"mean"}}
 
 \item{clean}{Should connectivity of the supercells be enforced?}
 
