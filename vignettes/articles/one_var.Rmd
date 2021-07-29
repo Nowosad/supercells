@@ -84,6 +84,7 @@ The `supercells()` function also has a set of optional arguments, including:
 - `iter` - a number of iterations performed to create the output. It is `10` by default.
 
 Let's try to change the values of some of them:
+
 ```{r, results='hide'}
 vol_slic2 = supercells(vol, step = 11, compactness = 1, dist_fun = "euclidean", 
                        clean = FALSE, iter = 10)
