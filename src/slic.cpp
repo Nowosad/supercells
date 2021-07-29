@@ -533,8 +533,8 @@ writable::integers_matrix Slic::return_clusters(){
 writable::doubles_matrix Slic::return_centers(){
   writable::doubles_matrix result(centers.size(), 2);
   for (int i = 0; i < (int) centers.size(); i++){
-    result(i, 0) = centers[i][0];
-    result(i, 1) = centers[i][1];
+    result(i, 1) = centers[i][0]; /*y*/
+    result(i, 0) = centers[i][1]; /*x*/
   }
   return result;
 }

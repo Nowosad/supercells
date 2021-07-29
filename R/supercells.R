@@ -100,7 +100,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
   # if (centers){
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]]))
-    names(slic_sf) = c("supercells", "y", "x", "geometry")
+    names(slic_sf) = c("supercells", "x", "y", "geometry")
     slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
     slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
     slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
