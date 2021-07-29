@@ -38,8 +38,6 @@ library(terra)         # spatial raster data reading and handling
 library(sf)            # spatial raster data reading and handling
 ```
 
-# Default arguments
-
 The first step is to read the input data.
 This time our input data `ortho.tif`, included in the **supercells** package, contains three layers representing red, green, and blue satellite bands^[It also has an empty square on the left part of the image for testing purposes.].
 
