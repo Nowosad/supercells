@@ -77,7 +77,7 @@ double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2, std
     return euclidean(values1, values2);
   } else if (type == "manhattan"){
     return manhattan(values1, values2);
-  } else if (type == "jensenshannon"){
+  } else if (type == "jsd"){
     return jensen_shannon(values1, values2);
   } else if (type == "dtw"){
     return dtw3(values1, values2);
