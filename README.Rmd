@@ -37,7 +37,6 @@ You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("Nowosad/spDataLarge")
 remotes::install_github("Nowosad/supercells")
 ```
 ## Example
@@ -60,8 +59,8 @@ plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 
 See the package's vignettes:
 
-1. [Superpixels of a single raster layer](https://nowosad.github.io/supercells/articles/one_var.html)
-2. [Superpixels of an RGB raster](https://nowosad.github.io/supercells/articles/rgb_vars.html)
+1. [Superpixels of a single raster layer](https://nowosad.github.io/supercells/articles/articles/one_var.html)
+2. [Superpixels of an RGB raster](https://nowosad.github.io/supercells/articles/articles/rgb_vars.html)
 <!-- 3. [Superpixels of spatial categorical patterns](https://nowosad.github.io/supercells/articles/motifels.html) -->
 
 ## Contribution

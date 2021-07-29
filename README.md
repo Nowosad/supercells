@@ -34,7 +34,6 @@ You can install the development version from
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("Nowosad/spDataLarge")
 remotes::install_github("Nowosad/supercells")
 ```
 
@@ -43,7 +42,7 @@ remotes::install_github("Nowosad/supercells")
 ``` r
 library(supercells)
 library(terra)
-#> terra version 1.3.12
+#> terra version 1.3.17
 library(sf)
 #> Linking to GEOS 3.9.0, GDAL 3.2.2, PROJ 7.2.1
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
@@ -65,9 +64,9 @@ plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 See the package’s vignettes:
 
 1.  [Superpixels of a single raster
-    layer](https://nowosad.github.io/supercells/articles/one_var.html)
+    layer](https://nowosad.github.io/supercells/articles/articles/one_var.html)
 2.  [Superpixels of an RGB
-    raster](https://nowosad.github.io/supercells/articles/rgb_vars.html)
+    raster](https://nowosad.github.io/supercells/articles/articles/rgb_vars.html)
     <!-- 3. [Superpixels of spatial categorical patterns](https://nowosad.github.io/supercells/articles/motifels.html) -->
 
 ## Contribution
