@@ -34,7 +34,6 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install system dependencies
-
         run: |
           # install spatial dependencies
           sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
