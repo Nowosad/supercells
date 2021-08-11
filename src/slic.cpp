@@ -24,7 +24,8 @@ void Slic::clear_data() {
   mat_dims.clear();
 }
 
-void Slic::inits(integers mat, doubles_matrix vals, std::string& type) {
+void Slic::inits(integers mat, doubles_matrix vals,
+                 std::string& type, cpp11::function type_fun) {
   // cout << "inits" << endl;
 
   mat_dims.reserve(3);
@@ -55,7 +56,7 @@ void Slic::inits(integers mat, doubles_matrix vals, std::string& type) {
         colour.push_back(val);
       }
 
-      vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type);
+      vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type, type_fun);
 
       /* Generate the center vector. */
       center.push_back(lm[0]);
@@ -72,7 +73,8 @@ void Slic::inits(integers mat, doubles_matrix vals, std::string& type) {
   }
 }
 
-double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2, std::string& type){
+double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2,
+                           std::string& type, cpp11::function type_fun){
   if (type == "euclidean"){
     return euclidean(values1, values2);
   } else if (type == "manhattan"){
@@ -81,15 +83,18 @@ double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2, std
     return jensen_shannon(values1, values2);
   } else if (type == "dtw"){
     return dtw3(values1, values2);
-  } else {
+  } else if (type != ""){
     return custom_distance(values1, values2, type);
+  } else {
+    return type_fun(values1, values2);
   }
 }
 
-double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values, std::string& type) {
+double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
+                          std::string& type, cpp11::function type_fun) {
 
   /*vals distance*/
-  double dc = get_vals_dist(centers_vals[ci], values, type);
+  double dc = get_vals_dist(centers_vals[ci], values, type, type_fun);
 
   /*coords distance*/
   int y_dist = centers[ci][0] - y;
@@ -102,7 +107,8 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values, std::
   return sqrt((vals_dist * vals_dist) + (coords_dist * coords_dist));
 }
 
-vector<int> Slic::find_local_minimum(doubles_matrix vals, int& y, int& x, std::string& type) {
+vector<int> Slic::find_local_minimum(doubles_matrix vals, int& y, int& x,
+                                     std::string& type, cpp11::function type_fun) {
   double min_grad = FLT_MAX;
   // int min_grad = -1;
 
@@ -134,7 +140,7 @@ vector<int> Slic::find_local_minimum(doubles_matrix vals, int& y, int& x, std::s
 
       /* Compute horizontal and vertical gradients and keep track of the
        minimum. */
-      double new_grad = get_vals_dist(colour1, colour3, type) + get_vals_dist(colour2, colour3, type);
+      double new_grad = get_vals_dist(colour1, colour3, type, type_fun) + get_vals_dist(colour2, colour3, type, type_fun);
 
       if (new_grad < min_grad) {
         min_grad = new_grad;
@@ -158,7 +164,9 @@ double mean(vector<double>& v){
   return mean;
 }
 
-void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter){
+void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc,
+                                std::string& type, cpp11::function type_fun,
+                                cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -167,7 +175,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
   Rprintf("Initialization: ");
   /* Clear previous data (if any), and re-initialize it. */
   clear_data();
-  inits(mat, vals, type);
+  inits(mat, vals, type, type_fun);
   Rprintf("Completed\n");
 
   /* Run EM for 10 iterations (as prescribed by the algorithm). */
@@ -212,7 +220,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
             }
             // cpp11::
 
-            double d = compute_dist(l, n, m, colour, type);
+            double d = compute_dist(l, n, m, colour, type, type_fun);
 
             /* Update cluster allocation if the cluster minimizes the
              distance. */
