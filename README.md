@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# supercells
+# supercells <img src="man/figures/logo.png" align="right" width="150" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/Nowosad/supercells/workflows/pkgdown/badge.svg)](https://github.com/Nowosad/supercells/actions)
