@@ -2,16 +2,18 @@ devtools::load_all()
 library(motif)
 library(sf)
 library(terra)
-
+library(Rcpp)
 
 # small test
 # to make sense of it you need to uncomment printing in slic.cpp
 r = rast(matrix(c(rep(1, 15), 10, rep(2, 9)), nrow = 5), crs = "EPSG:2180")
 plot(r)
 
-vol_slic1a = supercells(r, step = 2, compactness = 1, clean = FALSE, avg_fun = "median", iter = 30)
+vol_slic1a = supercells(r, step = 2, compactness = 1, clean = FALSE,
+                        dist_fun = "euclidean",
+                        avg_fun = "mean", iter = 30)
 
-plot(t(r))
+plot(r)
 plot(st_geometry(vol_slic1a), add = TRUE, lwd = 0.5)
 
 # 1 -----------------------------------------------------------------------

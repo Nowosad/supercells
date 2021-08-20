@@ -40,17 +40,21 @@ class Slic {
     // double manhattan(vector<double>& values1, vector<double>& values2);
     // double jensen_shannon(vector<double>& values1, vector<double>& values2);
 
-    double get_vals_dist(vector<double>& values1, vector<double>& values2, std::string& type);
+    double get_vals_dist(vector<double>& values1, vector<double>& values2,
+                         std::string& type, cpp11::function type_fun);
 
     /* Compute the distance between a center and an individual pixel. */
-    double compute_dist(int& ci, int& y, int& x, vector<double>& value, std::string& type);
+    double compute_dist(int& ci, int& y, int& x, vector<double>& value,
+                        std::string& type, cpp11::function type_fun);
 
     /* Find the pixel with the lowest gradient in a 3x3 surrounding. */
-    vector<int> find_local_minimum(doubles_matrix vals, int& y, int& x, std::string& type);
+    vector<int> find_local_minimum(doubles_matrix vals, int& y, int& x,
+                                   std::string& type, cpp11::function type_fun);
 
     /* Remove and initialize the 2d vectors. */
     void clear_data();
-    void inits(integers mat, doubles_matrix vals, std::string& type);
+    void inits(integers mat, doubles_matrix vals,
+               std::string& type, cpp11::function type_fun);
 
   public:
     /* Class constructors and deconstructors. */
@@ -58,7 +62,9 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc, std::string& type, cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter);
+    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc,
+                              std::string& type, cpp11::function type_fun,
+                              cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter);
     /* Enforce connectivity for an image. */
     void create_connectivity(doubles_matrix vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims);
 
@@ -68,7 +74,9 @@ class Slic {
 };
 
 [[cpp11::register]]
-list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, bool centers, std::string type, cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int lims) {
+list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, bool centers,
+              std::string type, cpp11::function type_fun,
+              cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int lims) {
 
   // cout << "superpixelsize" << superpixelsize << endl;
   Rprintf("Step: %u\n", step);
@@ -76,7 +84,7 @@ list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, 
   // Rprintf("Vf: %f\n", vals(0, 0));
 
   Slic slic;
-  slic.generate_superpixels(mat, vals, step, nc, type, avg_fun_fun, avg_fun_name, iter);
+  slic.generate_superpixels(mat, vals, step, nc, type, type_fun, avg_fun_fun, avg_fun_name, iter);
   if (con){
     slic.create_connectivity(vals, avg_fun_fun, avg_fun_name, lims);
   }

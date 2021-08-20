@@ -82,11 +82,21 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     avg_fun_name = ""
     avg_fun_fun = avg_fun
   }
+  if (is.character(dist_fun)){
+    if (!(dist_fun %in% c("euclidean", "jsd", "dtw", philentropy::getDistMethods()))){
+      stop("The provided distance function ('dist_fun') does not exist!", call. = FALSE)
+    }
+    dist_type = dist_fun
+    dist_fun = function() ""
+  } else {
+    dist_type = ""
+  }
   if (missing(minarea)){
     minarea = 0
   }
   slic = run_slic(mat, vals = vals, step = step, nc = compactness, con = clean,
-                  centers = centers, type = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
+                  centers = centers, type = dist_type, type_fun = dist_fun,
+                  avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                   iter = iter, lims = minarea)
   if (!missing(transform)){
     if (transform == "to_LAB"){

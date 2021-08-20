@@ -1,5 +1,6 @@
 #include "distances.h"
 #include "dtw/include/DTW.hpp"
+// using namespace cpp11::literals; // so we can use ""_nm syntax
 
 double euclidean(std::vector<double>& values1, std::vector<double>& values2){
 
@@ -79,4 +80,18 @@ double custom_log2(const double& x){
   } else {
     return log(x)/log(2.0);
   }
+}
+
+double custom_distance(vector<double>& values1, vector<double>& values2, std::string& type){
+  // std::vector<double> values_all;
+  // cpp11::writable::doubles values_all;
+  // values_all.reserve(values1.size() + values2.size()); // preallocate memory
+  // values_all.insert(values_all.end(), values1.begin(), values1.end());
+  // values_all.insert(values_all.end(), values2.begin(), values2.end());
+  // values_all.attr("dim") = (2, values1.size());
+  //
+  // auto philentropy_distance = cpp11::package("philentropy")["distance"];
+  // philentropy_distance(values_all, "method"_nm = type);
+  auto single_distance = cpp11::package("philentropy")["dist_one_one"];
+  return single_distance(values1, values2, type);
 }
