@@ -3,7 +3,7 @@ v1_b = supercells(v1, 100, compactness = 1, clean = FALSE)
 v1_c = supercells(v1, step = 8, compactness = 1)
 my_minarea = 3
 v1_d = supercells(v1, step = 8, compactness = 1, minarea = my_minarea)
-v1_e = supercells(v1, step = 8, compactness = 0.1, avg_fun = "median", dist_fun = "jensen_shannon")
+v1_e = supercells(v1, step = 8, compactness = 0.1, avg_fun = "median", dist_fun = "jaccard")
 v1_f = supercells(v1, 100, compactness = 1, avg_fun = mean)
 
 test_that("supercells works for 1 var", {
