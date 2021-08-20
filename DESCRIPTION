@@ -1,6 +1,6 @@
 Package: supercells
 Title: Superpixels of Spatial Data
-Version: 0.0.3
+Version: 0.1.0
 Authors@R: c(
     person(given = "Jakub", family = "Nowosad", 
     role = c("aut", "cre"),
@@ -36,6 +36,7 @@ Suggests:
     motif (>= 0.4.3),
     stars
 Remotes:
-    nowosad/motif
+    nowosad/motif,
+    drostlab/philentropy
 Config/testthat/edition: 3
 VignetteBuilder: knitr
