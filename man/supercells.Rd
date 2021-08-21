@@ -26,16 +26,16 @@ You can use either \code{k} or \code{step}.}
 \item{compactness}{A compactness value. Larger values cause clusters to be more compact/even (square).
 A compactness value depends on the range of input cell values and selected distance measure.}
 
-\item{dist_fun}{A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon". Default: "euclidean"}
+\item{dist_fun}{A distance function. Currently implemented distance functions are "euclidean", "jsd", "dtw" (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}), or any user defined function accepting two vectors and returning one value. Default: "euclidean"}
 
-\item{avg_fun}{An averaging function - how the values of a supercells' centers are calculated?
+\item{avg_fun}{An averaging function - how the values of the supercells' centers are calculated?
 It accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::median()}) or one of internally implemented \code{"mean"} and \code{"median"}. Default: \code{"mean"}}
 
 \item{clean}{Should connectivity of the supercells be enforced?}
 
 \item{iter}{The number of iterations performed to create the output.}
 
-\item{transform}{Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default no transformation is performed.}
+\item{transform}{Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed.}
 
 \item{step}{The distance (number of cells) between initial supercells' centers. You can use either \code{k} or \code{step}.}
 

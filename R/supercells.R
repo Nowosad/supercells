@@ -7,17 +7,16 @@
 #' You can use either `k` or `step`.
 #' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
 #' A compactness value depends on the range of input cell values and selected distance measure.
-#' @param dist_fun A distance function. Currently implemented distance functions are "euclidean" and "jensen_shannon". Default: "euclidean"
-#' @param avg_fun An averaging function - how the values of a supercells' centers are calculated?
+#' @param dist_fun A distance function. Currently implemented distance functions are "euclidean", "jsd", "dtw" (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]), or any user defined function accepting two vectors and returning one value. Default: "euclidean"
+#' @param avg_fun An averaging function - how the values of the supercells' centers are calculated?
 #' It accepts any fitting R function (e.g., `base::mean()` or `stats::median()`) or one of internally implemented `"mean"` and `"median"`. Default: `"mean"`
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param iter The number of iterations performed to create the output.
 #' @param minarea Specifies the minimal size of a supercell (in cells). Only works when `clean = TRUE`.
 #' By default, when `clean = TRUE`, average area (A) is calculated based on the total number of cells divided by a number of superpixels.
 #' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
-#' @param iter The number of iterations performed to create the output.
 #' @param step The distance (number of cells) between initial supercells' centers. You can use either `k` or `step`.
-#' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default no transformation is performed.
+#' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed.
 #'
 #' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
 #'
