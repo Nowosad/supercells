@@ -37,6 +37,7 @@ Suggests:
     stars
 Remotes:
     nowosad/motif,
-    drostlab/philentropy
+    drostlab/philentropy,
+    rspatial/terra
 Config/testthat/edition: 3
 VignetteBuilder: knitr
