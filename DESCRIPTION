@@ -19,7 +19,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Imports:
     sf,
-    terra,
+    terra (>= 1.4-1),
     philentropy
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
