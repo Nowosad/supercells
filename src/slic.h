@@ -1,5 +1,8 @@
 #pragma once
-#include "cpp11.hpp"
+#include "cpp11/matrix.hpp"
+#include "cpp11/function.hpp"
+#include "cpp11/integers.hpp"
+#include "cpp11/list.hpp"
 #include <iostream>
 #include <vector>
 #include <map>
@@ -8,7 +11,7 @@
 
 using namespace std;
 using namespace cpp11;
-namespace writable = writable;
+namespace writable = cpp11::writable;
 
 // #define NR_ITERATIONS 10
 
