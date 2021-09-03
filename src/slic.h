@@ -8,7 +8,7 @@
 
 using namespace std;
 using namespace cpp11;
-namespace writable = cpp11::writable;
+namespace writable = writable;
 
 // #define NR_ITERATIONS 10
 
