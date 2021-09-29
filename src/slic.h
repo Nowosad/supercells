@@ -83,7 +83,6 @@ list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, doubl
 
   // cout << "superpixelsize" << superpixelsize << endl;
   Rprintf("Step: %u\n", step);
-  // Rprintf("Vu: %u\n", vals(0, 0));
   // Rprintf("Vf: %f\n", vals(0, 0));
 
   Slic slic;
