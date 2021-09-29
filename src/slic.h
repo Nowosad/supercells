@@ -77,7 +77,7 @@ class Slic {
 };
 
 [[cpp11::register]]
-list run_slic(integers mat, doubles_matrix vals, int step, double nc, bool con, bool centers,
+list run_slic(cpp11::integers mat, cpp11::doubles_matrix vals, int step, double nc, bool con, bool centers,
               std::string type, cpp11::function type_fun,
               cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int lims) {
 
