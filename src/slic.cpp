@@ -24,7 +24,7 @@ void Slic::clear_data() {
   mat_dims.clear();
 }
 
-void Slic::inits(integers mat, doubles_matrix vals,
+void Slic::inits(integers mat, doubles_matrix<> vals,
                  std::string& type, cpp11::function type_fun) {
   // cout << "inits" << endl;
 
@@ -105,7 +105,7 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
   return sqrt((vals_dist * vals_dist) + (coords_dist * coords_dist));
 }
 
-vector<int> Slic::find_local_minimum(doubles_matrix vals, int& y, int& x,
+vector<int> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
                                      std::string& type, cpp11::function type_fun) {
   double min_grad = FLT_MAX;
   // int min_grad = -1;
@@ -162,7 +162,7 @@ double mean(vector<double>& v){
   return mean;
 }
 
-void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, double nc,
+void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step, double nc,
                                 std::string& type, cpp11::function type_fun,
                                 cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter){
   // cout << "generate_superpixels" << endl;
@@ -332,7 +332,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix vals, double step, 
   Rprintf("\n");
 }
 
-void Slic::create_connectivity(doubles_matrix vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims) {
+void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims) {
   Rprintf("Cleaning connectivity: ");
   int label = 0;
   int adjlabel = 0;
@@ -521,11 +521,11 @@ void Slic::create_connectivity(doubles_matrix vals, cpp11::function avg_fun_fun,
   Rprintf("Completed\n");
 }
 
-writable::integers_matrix Slic::return_clusters(){
+writable::integers_matrix<> Slic::return_clusters(){
   int isize = clusters.size();
   int jsize = clusters[0].size();
 
-  writable::integers_matrix result(jsize, isize);
+  writable::integers_matrix<> result(jsize, isize);
 
   for (int i = 0; i < isize; i++) {
     for (int j = 0; j < jsize; j++) {
@@ -535,8 +535,8 @@ writable::integers_matrix Slic::return_clusters(){
   return result;
 }
 
-writable::doubles_matrix Slic::return_centers(){
-  writable::doubles_matrix result(centers.size(), 2);
+writable::doubles_matrix<> Slic::return_centers(){
+  writable::doubles_matrix<> result(centers.size(), 2);
   for (int i = 0; i < (int) centers.size(); i++){
     result(i, 1) = centers[i][0]; /*y*/
     result(i, 0) = centers[i][1]; /*x*/
@@ -544,8 +544,8 @@ writable::doubles_matrix Slic::return_centers(){
   return result;
 }
 
-writable::doubles_matrix Slic::return_centers_vals(){
-  writable::doubles_matrix result(centers_vals.size(), mat_dims[2]);
+writable::doubles_matrix<> Slic::return_centers_vals(){
+  writable::doubles_matrix<> result(centers_vals.size(), mat_dims[2]);
   for (int i = 0; i < (int) centers_vals.size(); i++){
     for (int nval = 0; nval < mat_dims[2]; nval++){
       result(i, nval) = centers_vals[i][nval];

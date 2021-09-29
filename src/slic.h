@@ -51,12 +51,12 @@ class Slic {
                         std::string& type, cpp11::function type_fun);
 
     /* Find the pixel with the lowest gradient in a 3x3 surrounding. */
-    vector<int> find_local_minimum(doubles_matrix vals, int& y, int& x,
+    vector<int> find_local_minimum(doubles_matrix<> vals, int& y, int& x,
                                    std::string& type, cpp11::function type_fun);
 
     /* Remove and initialize the 2d vectors. */
     void clear_data();
-    void inits(integers mat, doubles_matrix vals,
+    void inits(integers mat, doubles_matrix<> vals,
                std::string& type, cpp11::function type_fun);
 
   public:
@@ -65,19 +65,19 @@ class Slic {
     ~Slic();
 
     /* Generate an over-segmentation for an image. */
-    void generate_superpixels(integers mat, doubles_matrix vals, double step, double nc,
+    void generate_superpixels(integers mat, doubles_matrix<> vals, double step, double nc,
                               std::string& type, cpp11::function type_fun,
                               cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter);
     /* Enforce connectivity for an image. */
-    void create_connectivity(doubles_matrix vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims);
+    void create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims);
 
-    writable::doubles_matrix return_centers();
-    writable::doubles_matrix return_centers_vals();
-    writable::integers_matrix return_clusters();
+    writable::doubles_matrix<> return_centers();
+    writable::doubles_matrix<> return_centers_vals();
+    writable::integers_matrix<> return_clusters();
 };
 
 [[cpp11::register]]
-list run_slic(cpp11::integers mat, cpp11::doubles_matrix vals, int step, double nc, bool con, bool centers,
+list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double nc, bool con, bool centers,
               std::string type, cpp11::function type_fun,
               cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int lims) {
 
