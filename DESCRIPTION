@@ -22,7 +22,7 @@ Imports:
     terra (>= 1.4-1),
     philentropy
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 LinkingTo: 
     cpp11
 SystemRequirements: C++11
