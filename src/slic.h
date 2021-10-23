@@ -25,7 +25,7 @@ class Slic {
     vector<int> mat_dims;
 
     /* The values of the centers. */
-    vector<vector<double> > centers;
+    vector<vector<int> > centers;
     vector<vector<double> > centers_vals;
 
     /* The number of occurrences of each center. */
@@ -42,6 +42,9 @@ class Slic {
     // double euclidean(vector<double>& values1, vector<double>& values2);
     // double manhattan(vector<double>& values1, vector<double>& values2);
     // double jensen_shannon(vector<double>& values1, vector<double>& values2);
+
+    void create_centers(vector<int> mat_dims, doubles_matrix<> vals,
+                        std::string& type, cpp11::function type_fun, double step);
 
     double get_vals_dist(vector<double>& values1, vector<double>& values2,
                          std::string& type, cpp11::function type_fun);
@@ -71,7 +74,7 @@ class Slic {
     /* Enforce connectivity for an image. */
     void create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims);
 
-    writable::doubles_matrix<> return_centers();
+    writable::integers_matrix<> return_centers();
     writable::doubles_matrix<> return_centers_vals();
     writable::integers_matrix<> return_clusters();
 };
