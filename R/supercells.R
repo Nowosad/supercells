@@ -97,6 +97,14 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
                   centers = centers, type = dist_type, type_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                   iter = iter, lims = minarea)
+  if (iter == 0){
+    slic_sf = data.frame(stats::na.omit(slic[[2]]))
+    slic_sf[["X1"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["X1"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
+    slic_sf[["X2"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["X2"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
+    slic_sf = sf::st_as_sf(slic_sf, coords = c("X1", "X2"))
+    st_crs(slic_sf) = terra::crs(x)
+    return(slic_sf)
+  }
   if (!missing(transform)){
     if (transform == "to_LAB"){
       slic[[3]] = grDevices::convertColor(slic[[3]], from = "Lab", to = "sRGB") * 255
@@ -130,3 +138,8 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
 #   values(x) = new_vals
 #   x
 # }
+
+x = vol_slic1
+centers_to_dims = function(x){
+  sf::st_coordinates(st_geometry(x))
+}
