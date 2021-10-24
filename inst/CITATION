@@ -1,0 +1,11 @@
+citHeader("To cite supercells in publications, please use:")
+
+citEntry(entry = "InProceedings",
+  author = c(person("Jakub", "Nowosad"), person("Tomasz", "Stepinski")),
+  title = "Generalizing the Simple Linear Iterative Clustering (SLIC) superpixels",
+  booktitle = "GIScience 2021 Short Paper Proceedings",
+  year  = "2021",
+  publisher = "eScholarship, University of California",
+  doi = "10.25436/E2QP4R",
+  textVersion = "Nowosad, J., & Stepinski, T. (2021). Generalizing the Simple Linear Iterative Clustering (SLIC) superpixels. In GIScience 2021 Short Paper Proceedings. 11th International Conference on Geographic Information Science. September 27-30: Vol. 2021. Poznań (p. Poland (Online).). eScholarship, University of California. https://doi.org/10.25436/E2QP4R"
+)
