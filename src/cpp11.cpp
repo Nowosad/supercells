@@ -6,16 +6,16 @@
 #include <R_ext/Visibility.h>
 
 // slic.h
-list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double nc, bool con, bool centers, std::string type, cpp11::function type_fun, cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int lims);
-extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP nc, SEXP con, SEXP centers, SEXP type, SEXP type_fun, SEXP avg_fun_fun, SEXP avg_fun_name, SEXP iter, SEXP lims) {
+list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double nc, bool con, bool centers, std::string type, cpp11::function type_fun, cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int lims, cpp11::integers_matrix<> input_centers);
+extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP nc, SEXP con, SEXP centers, SEXP type, SEXP type_fun, SEXP avg_fun_fun, SEXP avg_fun_name, SEXP iter, SEXP lims, SEXP input_centers) {
   BEGIN_CPP11
-    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<cpp11::integers>>(mat), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(nc), cpp11::as_cpp<cpp11::decay_t<bool>>(con), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(type), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(type_fun), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(avg_fun_fun), cpp11::as_cpp<cpp11::decay_t<std::string>>(avg_fun_name), cpp11::as_cpp<cpp11::decay_t<int>>(iter), cpp11::as_cpp<cpp11::decay_t<int>>(lims)));
+    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<cpp11::integers>>(mat), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(nc), cpp11::as_cpp<cpp11::decay_t<bool>>(con), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(type), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(type_fun), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(avg_fun_fun), cpp11::as_cpp<cpp11::decay_t<std::string>>(avg_fun_name), cpp11::as_cpp<cpp11::decay_t<int>>(iter), cpp11::as_cpp<cpp11::decay_t<int>>(lims), cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(input_centers)));
   END_CPP11
 }
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
-    {"_supercells_run_slic", (DL_FUNC) &_supercells_run_slic, 12},
+    {"_supercells_run_slic", (DL_FUNC) &_supercells_run_slic, 13},
     {NULL, NULL, 0}
 };
 }
