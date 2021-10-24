@@ -30,9 +30,13 @@ You can install the development version from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("remotes")
-remotes::install_github("Nowosad/supercells")
+install.packages("supercells", repos = "https://nowosad.r-universe.dev")
 ```
+
+<!-- ``` r -->
+<!-- # install.packages("remotes") -->
+<!-- remotes::install_github("Nowosad/supercells") -->
+<!-- ``` -->
 
 ## Example
 
@@ -64,7 +68,8 @@ See the package’s vignettes:
     layer](https://nowosad.github.io/supercells/articles/articles/one_var.html)
 2.  [Superpixels of an RGB
     raster](https://nowosad.github.io/supercells/articles/articles/rgb_vars.html)
-    <!-- 3. [Superpixels of spatial categorical patterns](https://nowosad.github.io/supercells/articles/motifels.html) -->
+3.  [Superpixels of spatial categorical
+    patterns](https://nowosad.github.io/supercells/articles/motifels.html)
 
 Watch the presentations about this package and some related ideas:
 
