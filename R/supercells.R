@@ -60,7 +60,9 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   mat = dim(x)[1:2]
   mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cell = FALSE, na.rm = FALSE))
-  if (!missing(step) && !missing(k)){
+  if (inherits(k, "sf")){
+    new_centers = centers_to_dims(x, k)
+  } else if (!missing(step) && !missing(k)){
     stop("You can specify either k or step, not both", call. = FALSE)
   } else if (missing(step) && missing(k)){
     stop("You need to specify either k or step", call. = FALSE)
@@ -96,7 +98,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   slic = run_slic(mat, vals = vals, step = step, nc = compactness, con = clean,
                   centers = centers, type = dist_type, type_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                  iter = iter, lims = minarea)
+                  iter = iter, lims = minarea, input_centers = new_centers)
   if (iter == 0){
     slic_sf = data.frame(stats::na.omit(slic[[2]]))
     slic_sf[["X1"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["X1"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
@@ -115,31 +117,27 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   terra::ext(slic_sf) = terra::ext(x)
   terra::crs(slic_sf) = terra::crs(x)
   slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
+
+  empty_centers = slic[[2]][,1] != 0 & slic[[2]][,2] != 0
   # if (centers){
-    slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]]))
+    slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]][empty_centers, ]))
     names(slic_sf) = c("supercells", "x", "y", "geometry")
     slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
     slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
     slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     colnames(slic[[3]]) = names(x)
-    slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
+    slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]][empty_centers, ]))
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
 
   # }
   return(slic_sf)
 }
 
-# plot(x)
-# plot(slic_sf, add = TRUE, col = NA)
-# plot(vect(st_drop_geometry(slic_sf[c("x", "y")]), geom = c("x", "y")), add = TRUE, col = "red")
-# rgb_to_lab = function(x){
-#   new_vals = values(logo) / 255
-#   new_vals = convertColor(new_vals, from = "sRGB", to = "Lab")
-#   values(x) = new_vals
-#   x
-# }
-
-x = vol_slic1
-centers_to_dims = function(x){
-  sf::st_coordinates(st_geometry(x))
+centers_to_dims = function(x, y){
+  y_coords = sf::st_coordinates(st_geometry(y))
+  y_col = terra::colFromX(x, y_coords[, 1])
+  y_row = terra::rowFromY(x, y_coords[, 2])
+  center_dims = cbind(y_col, y_row)
+  storage.mode(center_dims) = "integer"
+  unique(center_dims)
 }
