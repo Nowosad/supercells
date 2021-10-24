@@ -22,11 +22,8 @@ dissimilarity measures.
 ## Installation
 
 <!-- You can install the released version of supercells from [CRAN](https://CRAN.R-project.org) with: -->
-
 <!-- ``` r -->
-
 <!-- install.packages("supercells") -->
-
 <!-- ``` -->
 
 You can install the development version from
@@ -42,7 +39,7 @@ remotes::install_github("Nowosad/supercells")
 ``` r
 library(supercells)
 library(terra)
-#> terra version 1.3.17
+#> terra version 1.4.15
 library(sf)
 #> Linking to GEOS 3.9.0, GDAL 3.2.2, PROJ 7.2.1
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
@@ -68,6 +65,17 @@ See the package’s vignettes:
 2.  [Superpixels of an RGB
     raster](https://nowosad.github.io/supercells/articles/articles/rgb_vars.html)
     <!-- 3. [Superpixels of spatial categorical patterns](https://nowosad.github.io/supercells/articles/motifels.html) -->
+
+Watch the presentations about this package and some related ideas:
+
+1.  Spatial segmentation in R using the supercells package, 2021-09-02,
+    OpenGeoHub Summer School -
+    [slides](https://nowosad.github.io/ogh2021),
+    [video](https://doi.org/10.5446/54880)
+2.  Generalizing the Simple Linear Iterative Clustering (SLIC)
+    superpixels, 2021-09-28, GIScience 2021 -
+    [slides](https://nowosad.github.io/giscience-2021),
+    [video](https://www.youtube.com/watch?v=AlyEFkyKLUw&t=2018s)
 
 ## Contribution
 

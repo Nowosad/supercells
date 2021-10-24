@@ -63,6 +63,11 @@ See the package's vignettes:
 2. [Superpixels of an RGB raster](https://nowosad.github.io/supercells/articles/articles/rgb_vars.html)
 <!-- 3. [Superpixels of spatial categorical patterns](https://nowosad.github.io/supercells/articles/motifels.html) -->
 
+Watch the presentations about this package and some related ideas:
+
+1. Spatial segmentation in R using the supercells package, 2021-09-02, OpenGeoHub Summer School - [slides](https://nowosad.github.io/ogh2021), [video](https://doi.org/10.5446/54880)
+2. Generalizing the Simple Linear Iterative Clustering (SLIC) superpixels, 2021-09-28, GIScience 2021 - [slides](https://nowosad.github.io/giscience-2021), [video](https://www.youtube.com/watch?v=AlyEFkyKLUw&t=2018s)
+
 ## Contribution
 
 Contributions to this package are welcome - let me know if you need other distance measures or transformations, have any suggestions, or spotted a bug. 
