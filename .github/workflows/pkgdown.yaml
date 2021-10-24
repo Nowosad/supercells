@@ -21,7 +21,7 @@ jobs:
 
       - name: Query dependencies
         run: |
-          install.packages(c('remotes', 'rcmdcheck'))
+          install.packages(c('remotes'))
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
@@ -44,11 +44,13 @@ jobs:
             libgeos-dev \
             libproj-dev \
             libharfbuzz-dev \
-            libfribidi-dev
+            libfribidi-dev \
+            libcurl4-openssl-dev
 
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
           remotes::install_cran("covr")
           install.packages("pkgdown")
         shell: Rscript {0}
