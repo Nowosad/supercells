@@ -36,14 +36,14 @@ void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,
         colour.push_back(val);
       }
 
-      // vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type, type_fun);
+      vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type, type_fun);
 
       /* Generate the center vector. */
-      // center.push_back(lm[0]);
-      // center.push_back(lm[1]);
+      center.push_back(lm[0]);
+      center.push_back(lm[1]);
 
-      center.push_back(nrowcenter);
-      center.push_back(ncolcenter);
+      // center.push_back(nrowcenter);
+      // center.push_back(ncolcenter);
 
       // Rprintf("C:%u C2:%u\n", lm[0], lm[1]);
 
@@ -55,11 +55,13 @@ void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,
   }
 }
 
-void Slic::create_centers2(integers_matrix input_centers, vector<int> mat_dims,
+void Slic::create_centers2(vector<int> mat_dims,
                            doubles_matrix<> vals, std::string& type,
-                           cpp11::function type_fun, double step) {
+                           cpp11::function type_fun, double step,
+                           integers_matrix<> input_centers) {
   for (int i = 0; i < input_centers.nrow(); i++){
-    int nrowcenter = input_centers(i, 1); int ncolcenter = (input_centers(i, 0);
+    int nrowcenter = input_centers(i, 1); int ncolcenter = input_centers(i, 0);
+    vector<int> center; center.reserve(2);
     int ncell = nrowcenter + (ncolcenter * mat_dims[1]);
     vector<double> colour; colour.reserve(mat_dims[2]);
     for (int nval = 0; nval < mat_dims[2]; nval++){
@@ -67,8 +69,15 @@ void Slic::create_centers2(integers_matrix input_centers, vector<int> mat_dims,
       colour.push_back(val);
     }
 
-    center.push_back(nrowcenter);
-    center.push_back(ncolcenter);
+
+    vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type, type_fun);
+
+    /* Generate the center vector. */
+    center.push_back(lm[0]);
+    center.push_back(lm[1]);
+
+    // center.push_back(nrowcenter);
+    // center.push_back(ncolcenter);
 
     centers.push_back(center);
     centers_vals.push_back(colour);
@@ -78,7 +87,8 @@ void Slic::create_centers2(integers_matrix input_centers, vector<int> mat_dims,
 }
 
 void Slic::inits(integers mat, doubles_matrix<> vals,
-                 std::string& type, cpp11::function type_fun) {
+                 std::string& type, cpp11::function type_fun,
+                 integers_matrix<> input_centers) {
   // cout << "inits" << endl;
 
   mat_dims.reserve(3);
@@ -99,7 +109,7 @@ void Slic::inits(integers mat, doubles_matrix<> vals,
     distances.push_back(distancemat);
   }
 
-  // Slic::create_centers(mat_dims, vals, type, type_fun, step);
+  Slic::create_centers2(mat_dims, vals, type, type_fun, step, input_centers);
 }
 
 double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2,
@@ -127,6 +137,9 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
   int y_dist = centers[ci][0] - y;
   int x_dist = centers[ci][1] - x;
   double ds = sqrt((y_dist * y_dist) + (x_dist * x_dist));
+
+  // Rprintf("vals_dist:%f vals_dist2:%f\n", dc, nc);
+  // Rprintf("coords_dist:%f coords_dist2:%f\n", ds, ns);
 
   double vals_dist = dc / nc;
   double coords_dist = ds / ns;
@@ -187,13 +200,15 @@ double median(vector<double>& v){
 
 double mean(vector<double>& v){
   double sum = std::accumulate(v.begin(), v.end(), 0.0);
+  // Rprintf("v.size():%f\n",v.size());
   double mean = sum / v.size();
   return mean;
 }
 
 void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step, double nc,
                                 std::string& type, cpp11::function type_fun,
-                                cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter){
+                                cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter,
+                                integers_matrix<> input_centers){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
@@ -202,10 +217,10 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
   Rprintf("Initialization: ");
   /* Clear previous data (if any), and re-initialize it. */
   clear_data();
-  inits(mat, vals, type, type_fun);
+  inits(mat, vals, type, type_fun, input_centers);
   Rprintf("Completed\n");
 
-  Rprintf("C:%u C2:%u", centers[0][0], centers[0][1]);
+  // Rprintf("C:%u C2:%u", centers[0][0], centers[0][1]);
 
   /* Run EM for 10 iterations (as prescribed by the algorithm). */
   for (int itr = 0; itr < iter; itr++) {
@@ -322,8 +337,14 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
       }
       // /* Normalize the clusters. */
       for (int l = 0; l < (int) centers.size(); l++) {
-        centers[l][0] /= center_counts[l];
-        centers[l][1] /= center_counts[l];
+        // Rprintf("center_counts:%u\n",center_counts[l]);
+        if (center_counts[l] > 0){
+          centers[l][0] /= center_counts[l];
+          centers[l][1] /= center_counts[l];
+        } else {
+          centers[l][0] = INT_MIN;
+          centers[l][1] = center_counts[l];
+        }
       }
     } else if (avg_fun_name == "mean"){
       // /* Compute the new cluster centers. */
@@ -351,10 +372,14 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
 
       // /* Normalize the clusters. */
       for (int l = 0; l < (int) centers.size(); l++) {
-        centers[l][0] /= center_counts[l];
-        centers[l][1] /= center_counts[l];
-        for (int nval = 0; nval < mat_dims[2]; nval++){
-          centers_vals[l][nval] /= center_counts[l];
+        if (center_counts[l] > 0){
+          // Rprintf("center_counts:%u\n",center_counts[l]);
+
+          centers[l][0] /= center_counts[l];
+          centers[l][1] /= center_counts[l];
+          for (int nval = 0; nval < mat_dims[2]; nval++){
+            centers_vals[l][nval] /= center_counts[l];
+          }
         }
       }
     }
@@ -362,7 +387,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
   }
   Rprintf("\n");
 
-  Rprintf("C:%u C2:%u", centers[0][0], centers[0][1]);
+  // Rprintf("C:%u C2:%u", centers[0][0], centers[0][1]);
 }
 
 void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims) {
