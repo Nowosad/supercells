@@ -1,6 +1,6 @@
 Package: supercells
 Title: Superpixels of Spatial Data
-Version: 0.1.2
+Version: 0.2.0
 Authors@R: c(
     person(given = "Jakub", family = "Nowosad", 
     role = c("aut", "cre"),
@@ -20,9 +20,10 @@ Encoding: UTF-8
 Imports:
     sf,
     terra (>= 1.4-1),
-    philentropy
+    philentropy (>= 0.6.0),
+    future.apply
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 LinkingTo: 
     cpp11
 SystemRequirements: C++11
@@ -36,8 +37,6 @@ Suggests:
     motif (>= 0.4.3),
     stars
 Remotes:
-    nowosad/motif,
-    drostlab/philentropy,
-    rspatial/terra
+    drostlab/philentropy
 Config/testthat/edition: 3
 VignetteBuilder: knitr

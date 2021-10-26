@@ -14,7 +14,8 @@ supercells(
   iter = 10,
   transform = NULL,
   step,
-  minarea
+  minarea,
+  chunks
 )
 }
 \arguments{

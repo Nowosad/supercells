@@ -52,14 +52,13 @@
 #' plot(ortho)
 #' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
-                      iter = 10, transform = NULL, step, minarea){
+                      iter = 10, transform = NULL, step, minarea, chunks){
   centers = TRUE
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input", call. = FALSE)
   }
   mat = dim(x)[1:2]
   mode(mat) = "integer"
-  vals = as.matrix(terra::as.data.frame(x, cell = FALSE, na.rm = FALSE))
   if (!missing(step) && !missing(k)){
     stop("You can specify either k or step, not both", call. = FALSE)
   } else if (missing(step) && missing(k)){
@@ -68,30 +67,54 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     superpixelsize = round((mat[1] * mat[2]) / k + 0.5)
     step = round(sqrt(superpixelsize) + 0.5)
   }
-  if (!missing(transform)){
-    if (transform == "to_LAB"){
-      vals = vals / 255
-      vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
-    }
-  }
   if (is.character(avg_fun)){
-    avg_fun_name = avg_fun
-    avg_fun_fun = function() ""
+    avg_fun_name = avg_fun; avg_fun_fun = function() ""
   } else {
-    avg_fun_name = ""
-    avg_fun_fun = avg_fun
+    avg_fun_name = ""; avg_fun_fun = avg_fun
   }
   if (is.character(dist_fun)){
     if (!(dist_fun %in% c("euclidean", "jsd", "dtw", philentropy::getDistMethods()))){
       stop("The provided distance function ('dist_fun') does not exist!", call. = FALSE)
     }
-    dist_type = dist_fun
-    dist_fun = function() ""
+    dist_type = dist_fun; dist_fun = function() ""
   } else {
     dist_type = ""
   }
   if (missing(minarea)){
     minarea = 0
+  }
+  # split
+  # ...
+  # apply
+  # slic_sf = run_slic_chunks(ext, x = x, vals = vals, step = step,
+  #                        nc = compactness, con = clean,
+  #                        centers = centers, type = dist_type, type_fun = dist_fun,
+  #                        avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
+  #                        iter = iter, lims = minarea, transform = transform)
+
+  slic_sf = future.apply::future_lapply(ext, run_slic_chunks, x = x, vals = vals,
+                                        step = step, nc = compactness, con = clean,
+                          centers = centers, type = dist_type, type_fun = dist_fun,
+                          avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
+                          iter = iter, lims = minarea, transform = transform)
+  # combine
+  slic_sf = update_supercells_ids(slic_sf)
+  return(slic_sf)
+}
+
+# ext = c(1, 10, 1, 10)
+run_slic_chunks = function(ext, x, step, compactness, dist_type,
+                           dist_fun, avg_fun_fun, avg_fun_name, clean,
+                           iter, minarea, transform){
+  x = x[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
+  mat = dim(x)[1:2]
+  mode(mat) = "integer"
+  vals = as.matrix(terra::as.data.frame(x, cell = FALSE, na.rm = FALSE))
+  if (!missing(transform)){
+    if (transform == "to_LAB"){
+      vals = vals / 255
+      vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
+    }
   }
   slic = run_slic(mat, vals = vals, step = step, nc = compactness, con = clean,
                   centers = centers, type = dist_type, type_fun = dist_fun,
@@ -107,26 +130,26 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   terra::ext(slic_sf) = terra::ext(x)
   terra::crs(slic_sf) = terra::crs(x)
   slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
-  # if (centers){
-    slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]]))
-    names(slic_sf) = c("supercells", "x", "y", "geometry")
-    slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
-    slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
-    slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
-    colnames(slic[[3]]) = names(x)
-    slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
-    slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
-
-  # }
+  slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]]))
+  names(slic_sf) = c("supercells", "x", "y", "geometry")
+  slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
+  slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
+  slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
+  colnames(slic[[3]]) = names(x)
+  slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
+  slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
   return(slic_sf)
 }
 
+# x = list(vol_slic1, vol_slic1, vol_slic1, vol_slic1)
+update_supercells_ids = function(x){
+  no_updates = length(x) - 1
+  max_1 = max(x[[1]][["supercells"]])
+  for (i in seq_len(no_updates)){
+    x[[i + 1]][["supercells"]] = x[[i]][["supercells"]] + max_1
+  }
+  x = do.call(rbind, x)
+  return(x)
+}
+# x = update_supercells_ids(x)
 # plot(x)
-# plot(slic_sf, add = TRUE, col = NA)
-# plot(vect(st_drop_geometry(slic_sf[c("x", "y")]), geom = c("x", "y")), add = TRUE, col = "red")
-# rgb_to_lab = function(x){
-#   new_vals = values(logo) / 255
-#   new_vals = convertColor(new_vals, from = "sRGB", to = "Lab")
-#   values(x) = new_vals
-#   x
-# }
