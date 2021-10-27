@@ -31,14 +31,14 @@
 #' # One variable
 #'
 #' vol = rast(system.file("raster/volcano.tif", package = "supercells"))
-#' vol_slic1 = supercells(vol, k = 50, compactness = 1)
+#' vol_slic1 = supercells(vol, k = 50, compactness = 1, chunks = 0.01)
 #' plot(vol)
 #' plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 #'
 #' # RGB variables
 #'
 #' ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
-#' ortho_slic1 = supercells(ortho, k = 1000, compactness = 10, transform = "to_LAB")
+#' ortho_slic1 = supercells(ortho, k = 1000, compactness = 10, transform = "to_LAB", chunks = 0.001)
 #' plot(ortho)
 #' plot(st_geometry(ortho_slic1), add = TRUE)
 #'
@@ -53,7 +53,6 @@
 #' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
                       iter = 10, transform = NULL, step, minarea, chunks){
-  centers = TRUE
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input", call. = FALSE)
   }
@@ -84,19 +83,19 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     minarea = 0
   }
   # split
-  # ...
+  chunk_ext = prep_chunks_ext(dim(x), limit = chunks)
+  # chunk_ext = prep_chunks_ext(dim(x), limit = 0.001)[3, , drop = FALSE]
   # apply
   # slic_sf = run_slic_chunks(ext, x = x, vals = vals, step = step,
   #                        nc = compactness, con = clean,
   #                        centers = centers, type = dist_type, type_fun = dist_fun,
   #                        avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
   #                        iter = iter, lims = minarea, transform = transform)
-
-  slic_sf = future.apply::future_lapply(ext, run_slic_chunks, x = x, vals = vals,
-                                        step = step, nc = compactness, con = clean,
-                          centers = centers, type = dist_type, type_fun = dist_fun,
-                          avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                          iter = iter, lims = minarea, transform = transform)
+  # future.apply::future_
+  slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
+                          step = step, compactness = compactness, dist_type = dist_type,
+                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
+                          clean = clean, iter = iter, minarea = minarea, transform = transform)
   # combine
   slic_sf = update_supercells_ids(slic_sf)
   return(slic_sf)
@@ -106,11 +105,12 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
 run_slic_chunks = function(ext, x, step, compactness, dist_type,
                            dist_fun, avg_fun_fun, avg_fun_name, clean,
                            iter, minarea, transform){
+  centers = TRUE
   x = x[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
   mat = dim(x)[1:2]
   mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cell = FALSE, na.rm = FALSE))
-  if (!missing(transform)){
+  if (!missing(transform) && !is.null(transform)){
     if (transform == "to_LAB"){
       vals = vals / 255
       vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
@@ -120,7 +120,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
                   centers = centers, type = dist_type, type_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                   iter = iter, lims = minarea)
-  if (!missing(transform)){
+  if (!missing(transform) && !is.null(transform)){
     if (transform == "to_LAB"){
       slic[[3]] = grDevices::convertColor(slic[[3]], from = "Lab", to = "sRGB") * 255
     }
@@ -144,12 +144,62 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
 # x = list(vol_slic1, vol_slic1, vol_slic1, vol_slic1)
 update_supercells_ids = function(x){
   no_updates = length(x) - 1
-  max_1 = max(x[[1]][["supercells"]])
   for (i in seq_len(no_updates)){
-    x[[i + 1]][["supercells"]] = x[[i]][["supercells"]] + max_1
+    prev_max = max(x[[i]][["supercells"]])
+    x[[i + 1]][["supercells"]] = x[[i + 1]][["supercells"]] + prev_max
   }
   x = do.call(rbind, x)
   return(x)
 }
 # x = update_supercells_ids(x)
 # plot(x)
+
+pred_mem_usage = function(dim_x){
+  mem_bytes = dim_x[1] * dim_x[2] * dim_x[3] * 8 #in bytes
+  mem_gb = mem_bytes / (1024 * 1024 * 1024)
+  mem_gb
+}
+
+optimize_chunk_size = function(dim_x, limit, by = 500){
+  min_diff_memory = function(a, dim_x, limit){
+    abs((dim_x[3] * a^2 * 8 / (1024 * 1024 * 1024)) - limit)
+  }
+  opti = optimize(min_diff_memory,
+                  interval = c(seq(100, max(dim_x[1:2]), by = by), max(dim_x[1:2])),
+                  dim_x, limit)
+  return(opti$minimum)
+}
+
+prep_chunks_ext = function(dim_x, limit){
+  if (pred_mem_usage(dim_x) > limit){
+    wsize = optimize_chunk_size(dim_x, limit, by = 500)
+    dims1 = ceiling(seq.int(0, to = dim_x[1],
+                            length.out = as.integer((dim_x[1] - 1) / wsize + 1) + 1))
+    dims2 = ceiling(seq.int(0, to = dim_x[2],
+                            length.out = as.integer((dim_x[2] - 1) / wsize + 1) + 1))
+
+    row_dims = seq_along(dims1)[-length(dims1)]
+    col_dims = seq_along(dims2)[-length(dims2)]
+    n_chunks = max(row_dims) * max(col_dims)
+    row_cols_chunks = cbind(min_row = integer(length = n_chunks),
+                            max_row = integer(length = n_chunks),
+                            min_col = integer(length = n_chunks),
+                            max_col = integer(length = n_chunks))
+    l = 0
+    for (i in row_dims){
+      for (j in col_dims){
+        l = l + 1
+        row_cols_chunks[l, 1] = dims1[i] + 1
+        row_cols_chunks[l, 2] = dims1[i + 1]
+        row_cols_chunks[l, 3] = dims2[j] + 1
+        row_cols_chunks[l, 4] = dims2[j + 1]
+      }
+    }
+  } else{
+    row_cols_chunks = cbind(min_row = 1,
+                            max_row = 1,
+                            min_col = dim_x[1],
+                            max_col = dim_x[2])
+  }
+  return(row_cols_chunks)
+}
