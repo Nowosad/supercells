@@ -197,8 +197,8 @@ prep_chunks_ext = function(dim_x, limit){
     }
   } else{
     row_cols_chunks = cbind(min_row = 1,
-                            max_row = 1,
-                            min_col = dim_x[1],
+                            max_row = dim_x[1],
+                            min_col = 1,
                             max_col = dim_x[2])
   }
   return(row_cols_chunks)
