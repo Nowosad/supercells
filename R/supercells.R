@@ -52,7 +52,7 @@
 #' plot(ortho)
 #' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
-                      iter = 10, transform = NULL, step, minarea, chunks){
+                      iter = 10, transform = NULL, step, minarea, chunks = FALSE){
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input", call. = FALSE)
   }
@@ -177,8 +177,16 @@ optimize_chunk_size = function(dim_x, limit, by = 500){
 }
 
 prep_chunks_ext = function(dim_x, limit){
-  if (pred_mem_usage(dim_x) > limit){
+  if (is.numeric(limit)){
+    wsize = limit
+    limit = 0
+  } else if (!limit){
+    limit = Inf
+  } else {
+    limit = 1 #hardcoded limit
     wsize = optimize_chunk_size(dim_x, limit, by = 500)
+  }
+  if (pred_mem_usage(dim_x) > limit){
     dims1 = ceiling(seq.int(0, to = dim_x[1],
                             length.out = as.integer((dim_x[1] - 1) / wsize + 1) + 1))
     dims2 = ceiling(seq.int(0, to = dim_x[2],
