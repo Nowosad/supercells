@@ -92,6 +92,9 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   #                        avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
   #                        iter = iter, lims = minarea, transform = transform)
   # future.apply::future_
+  if (!in_memory(x)){
+    x = terra::sources(x)[["source"]][[1]]
+  }
   slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
                           step = step, compactness = compactness, dist_type = dist_type,
                           dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
@@ -106,6 +109,9 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
                            dist_fun, avg_fun_fun, avg_fun_name, clean,
                            iter, minarea, transform){
   centers = TRUE
+  if (is.character(x)){
+    x = rast(x)
+  }
   x = x[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
   mat = dim(x)[1:2]
   mode(mat) = "integer"
@@ -202,4 +208,8 @@ prep_chunks_ext = function(dim_x, limit){
                             max_col = dim_x[2])
   }
   return(row_cols_chunks)
+}
+
+in_memory = function(x){
+  terra::sources(x)[["source"]] == ""
 }
