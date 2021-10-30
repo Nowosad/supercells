@@ -15,7 +15,7 @@ supercells(
   transform = NULL,
   step,
   minarea,
-  chunks
+  chunks = FALSE
 )
 }
 \arguments{
@@ -43,6 +43,8 @@ It accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::med
 \item{minarea}{Specifies the minimal size of a supercell (in cells). Only works when \code{clean = TRUE}.
 By default, when \code{clean = TRUE}, average area (A) is calculated based on the total number of cells divided by a number of superpixels.
 Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)}
+
+\item{chunks}{Should the input (\code{x}) be split into chunks before deriving supercells? Either \code{FALSE} (default), \code{TRUE} (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).}
 }
 \value{
 An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell

@@ -17,6 +17,7 @@
 #' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
 #' @param step The distance (number of cells) between initial supercells' centers. You can use either `k` or `step`.
 #' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed.
+#' @param chunks Should the input (`x`) be split into chunks before deriving supercells? Either `FALSE` (default), `TRUE` (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).
 #'
 #' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
 #'
@@ -31,14 +32,14 @@
 #' # One variable
 #'
 #' vol = rast(system.file("raster/volcano.tif", package = "supercells"))
-#' vol_slic1 = supercells(vol, k = 50, compactness = 1, chunks = 0.01)
+#' vol_slic1 = supercells(vol, k = 50, compactness = 1)
 #' plot(vol)
 #' plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 #'
 #' # RGB variables
 #'
 #' ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
-#' ortho_slic1 = supercells(ortho, k = 1000, compactness = 10, transform = "to_LAB", chunks = 0.001)
+#' ortho_slic1 = supercells(ortho, k = 1000, compactness = 10, transform = "to_LAB")
 #' plot(ortho)
 #' plot(st_geometry(ortho_slic1), add = TRUE)
 #'
@@ -95,6 +96,8 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   if (!in_memory(x)){
     x = terra::sources(x)[["source"]][[1]]
   }
+  oopts = options(future.globals.maxSize = +Inf)
+  on.exit(options(oopts))
   slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
                           step = step, compactness = compactness, dist_type = dist_type,
                           dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
@@ -110,7 +113,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
                            iter, minarea, transform){
   centers = TRUE
   if (is.character(x)){
-    x = rast(x)
+    x = terra::rast(x)
   }
   x = x[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
   mat = dim(x)[1:2]
@@ -170,7 +173,7 @@ optimize_chunk_size = function(dim_x, limit, by = 500){
   min_diff_memory = function(a, dim_x, limit){
     abs((dim_x[3] * a^2 * 8 / (1024 * 1024 * 1024)) - limit)
   }
-  opti = optimize(min_diff_memory,
+  opti = stats::optimize(min_diff_memory,
                   interval = c(seq(100, max(dim_x[1:2]), by = by), max(dim_x[1:2])),
                   dim_x, limit)
   return(opti$minimum)
