@@ -96,7 +96,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   if (!in_memory(x)){
     x = terra::sources(x)[["source"]][[1]]
   }
-  oopts = options(future.globals.maxSize = +Inf)
+  oopts = options(future.globals.maxSize = +Inf, future.seed = TRUE)
   on.exit(options(oopts))
   slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
                           step = step, compactness = compactness, dist_type = dist_type,
