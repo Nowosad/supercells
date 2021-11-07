@@ -139,20 +139,23 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
   terra::ext(slic_sf) = terra::ext(x)
   terra::crs(slic_sf) = terra::crs(x)
   slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
-  slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]]))
-  names(slic_sf) = c("supercells", "x", "y", "geometry")
-  slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
-  slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
-  slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
-  colnames(slic[[3]]) = names(x)
-  slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
-  slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
-  slic_sf = sf::st_cast(slic_sf, "MULTIPOLYGON")
-  return(slic_sf)
+  if (nrow(slic_sf) > 0){
+    slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]]))
+    names(slic_sf) = c("supercells", "x", "y", "geometry")
+    slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
+    slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
+    slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
+    colnames(slic[[3]]) = names(x)
+    slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
+    slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
+    slic_sf = sf::st_cast(slic_sf, "MULTIPOLYGON")
+    return(slic_sf)
+  }
 }
 
 # x = list(vol_slic1, vol_slic1, vol_slic1, vol_slic1)
 update_supercells_ids = function(x){
+  x = x[lapply(x, length) > 0]
   no_updates = length(x) - 1
   for (i in seq_len(no_updates)){
     prev_max = max(x[[i]][["supercells"]])
