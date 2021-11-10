@@ -18,6 +18,7 @@
 #' @param step The distance (number of cells) between initial supercells' centers. You can use either `k` or `step`.
 #' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed.
 #' @param chunks Should the input (`x`) be split into chunks before deriving supercells? Either `FALSE` (default), `TRUE` (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).
+#' @param future TRUE/FALSE
 #'
 #' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
 #'
@@ -53,7 +54,7 @@
 #' plot(ortho)
 #' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
-                      iter = 10, transform = NULL, step, minarea, chunks = FALSE){
+                      iter = 10, transform = NULL, step, minarea, chunks = FALSE, future = FALSE){
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input", call. = FALSE)
   }
@@ -96,12 +97,21 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   if (!in_memory(x)){
     x = terra::sources(x)[["source"]][[1]]
   }
-  oopts = options(future.globals.maxSize = +Inf)
-  on.exit(options(oopts))
-  slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
-                          step = step, compactness = compactness, dist_type = dist_type,
-                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                          clean = clean, iter = iter, minarea = minarea, transform = transform, future.seed = TRUE)
+  if (future){
+    oopts = options(future.globals.maxSize = +Inf)
+    on.exit(options(oopts))
+    slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
+                                         step = step, compactness = compactness, dist_type = dist_type,
+                                         dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
+                                         clean = clean, iter = iter, minarea = minarea, transform = transform, future.seed = TRUE)
+  } else{
+    slic_sf = apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
+                                         step = step, compactness = compactness, dist_type = dist_type,
+                                         dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
+                                         clean = clean, iter = iter, minarea = minarea, transform = transform)
+  }
+
+
   # combine
   slic_sf = update_supercells_ids(slic_sf)
   return(slic_sf)

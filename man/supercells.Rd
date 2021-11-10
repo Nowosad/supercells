@@ -15,7 +15,8 @@ supercells(
   transform = NULL,
   step,
   minarea,
-  chunks = FALSE
+  chunks = FALSE,
+  future = FALSE
 )
 }
 \arguments{
@@ -45,6 +46,8 @@ By default, when \code{clean = TRUE}, average area (A) is calculated based on th
 Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)}
 
 \item{chunks}{Should the input (\code{x}) be split into chunks before deriving supercells? Either \code{FALSE} (default), \code{TRUE} (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).}
+
+\item{future}{TRUE/FALSE}
 }
 \value{
 An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
