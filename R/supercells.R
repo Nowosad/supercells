@@ -126,9 +126,11 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
     x = terra::rast(x)
   }
   x = x[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
+  ext_x = terra::ext(x)
   mat = dim(x)[1:2]
   mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cell = FALSE, na.rm = FALSE))
+
   if (!missing(transform) && !is.null(transform)){
     if (transform == "to_LAB"){
       vals = vals / 255
@@ -146,15 +148,15 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
   }
   slic_sf = terra::rast(slic[[1]])
   terra::NAflag(slic_sf) = -1
-  terra::ext(slic_sf) = terra::ext(x)
   terra::crs(slic_sf) = terra::crs(x)
+  terra::ext(slic_sf) = ext_x
   slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
   if (nrow(slic_sf) > 0){
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]]))
     names(slic_sf) = c("supercells", "x", "y", "geometry")
     slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
-    slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
-    slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
+    slic_sf[["x"]] = as.vector(ext_x)[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
+    slic_sf[["y"]] = as.vector(ext_x)[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     colnames(slic[[3]]) = names(x)
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
