@@ -60,7 +60,10 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   }
   mat = dim(x)[1:2]
   mode(mat) = "integer"
-  if (!missing(step) && !missing(k)){
+  new_centers = matrix(c(0L, 0L), ncol = 2)
+  if (!missing(k) && inherits(k, "sf")){
+    new_centers = centers_to_dims(x, k)
+  } else if (!missing(step) && !missing(k)){
     stop("You can specify either k or step, not both", call. = FALSE)
   } else if (missing(step) && missing(k)){
     stop("You need to specify either k or step", call. = FALSE)
@@ -86,14 +89,6 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   }
   # split
   chunk_ext = prep_chunks_ext(dim(x), limit = chunks)
-  # chunk_ext = prep_chunks_ext(dim(x), limit = 0.001)[3, , drop = FALSE]
-  # apply
-  # slic_sf = run_slic_chunks(ext, x = x, vals = vals, step = step,
-  #                        nc = compactness, con = clean,
-  #                        centers = centers, type = dist_type, type_fun = dist_fun,
-  #                        avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-  #                        iter = iter, lims = minarea, transform = transform)
-  # future.apply::future_
   if (!in_memory(x)){
     x = terra::sources(x)[["source"]][[1]]
   }
@@ -103,12 +98,12 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
                                          step = step, compactness = compactness, dist_type = dist_type,
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                                         clean = clean, iter = iter, minarea = minarea, transform = transform, future.seed = TRUE)
+                                         clean = clean, iter = iter, minarea = minarea, transform = transform, new_centers = new_centers, future.seed = TRUE)
   } else{
     slic_sf = apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
                                          step = step, compactness = compactness, dist_type = dist_type,
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                                         clean = clean, iter = iter, minarea = minarea, transform = transform)
+                                         clean = clean, iter = iter, minarea = minarea, transform = transform, new_centers = new_centers)
   }
 
 
@@ -120,7 +115,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
 # ext = c(1, 10, 1, 10)
 run_slic_chunks = function(ext, x, step, compactness, dist_type,
                            dist_fun, avg_fun_fun, avg_fun_name, clean,
-                           iter, minarea, transform){
+                           iter, minarea, transform, new_centers){
   centers = TRUE
   if (is.character(x)){
     x = terra::rast(x)
@@ -131,7 +126,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
   mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cell = FALSE, na.rm = FALSE))
 
-  if (!missing(transform) && !is.null(transform)){
+  if (!is.null(transform)){
     if (transform == "to_LAB"){
       vals = vals / 255
       vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
@@ -140,8 +135,16 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
   slic = run_slic(mat, vals = vals, step = step, nc = compactness, con = clean,
                   centers = centers, type = dist_type, type_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                  iter = iter, lims = minarea)
-  if (!missing(transform) && !is.null(transform)){
+                  iter = iter, lims = minarea, input_centers = new_centers)
+  if (iter == 0){
+    slic_sf = data.frame(stats::na.omit(slic[[2]]))
+    slic_sf[["X1"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["X1"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
+    slic_sf[["X2"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["X2"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
+    slic_sf = sf::st_as_sf(slic_sf, coords = c("X1", "X2"))
+    sf::st_crs(slic_sf) = terra::crs(x)
+    return(slic_sf)
+  }
+  if (!is.null(transform)){
     if (transform == "to_LAB"){
       slic[[3]] = grDevices::convertColor(slic[[3]], from = "Lab", to = "sRGB") * 255
     }
@@ -152,20 +155,20 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
   terra::ext(slic_sf) = ext_x
   slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
   if (nrow(slic_sf) > 0){
-    slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]]))
+    empty_centers = slic[[2]][,1] != 0 | slic[[2]][,2] != 0
+    slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]][empty_centers, ]))
     names(slic_sf) = c("supercells", "x", "y", "geometry")
     slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
     slic_sf[["x"]] = as.vector(ext_x)[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
     slic_sf[["y"]] = as.vector(ext_x)[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     colnames(slic[[3]]) = names(x)
-    slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]]))
+    slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]][empty_centers, , drop = FALSE]))
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
     slic_sf = sf::st_cast(slic_sf, "MULTIPOLYGON")
     return(slic_sf)
   }
 }
 
-# x = list(vol_slic1, vol_slic1, vol_slic1, vol_slic1)
 update_supercells_ids = function(x){
   x = x[lapply(x, length) > 0]
   no_updates = length(x) - 1
@@ -176,8 +179,6 @@ update_supercells_ids = function(x){
   x = do.call(rbind, x)
   return(x)
 }
-# x = update_supercells_ids(x)
-# plot(x)
 
 pred_mem_usage = function(dim_x){
   mem_bytes = dim_x[1] * dim_x[2] * dim_x[3] * 8 #in bytes
@@ -239,4 +240,13 @@ prep_chunks_ext = function(dim_x, limit){
 
 in_memory = function(x){
   terra::sources(x)[["source"]] == ""
+}
+
+centers_to_dims = function(x, y){
+  y_coords = sf::st_coordinates(sf::st_geometry(y))
+  y_col = terra::colFromX(x, y_coords[, 1])
+  y_row = terra::rowFromY(x, y_coords[, 2])
+  center_dims = cbind(y_col, y_row)
+  storage.mode(center_dims) = "integer"
+  unique(center_dims)
 }
