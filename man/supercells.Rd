@@ -16,7 +16,8 @@ supercells(
   step,
   minarea,
   chunks = FALSE,
-  future = FALSE
+  future = FALSE,
+  verbose = 0
 )
 }
 \arguments{
@@ -28,7 +29,7 @@ You can use either \code{k} or \code{step}.}
 \item{compactness}{A compactness value. Larger values cause clusters to be more compact/even (square).
 A compactness value depends on the range of input cell values and selected distance measure.}
 
-\item{dist_fun}{A distance function. Currently implemented distance functions are "euclidean", "jsd", "dtw" (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}), or any user defined function accepting two vectors and returning one value. Default: "euclidean"}
+\item{dist_fun}{A distance function. Currently implemented distance functions are \code{"euclidean"}, \code{"jsd"}, \code{"dtw"} (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}), or any user defined function accepting two vectors and returning one value. Default: \code{"euclidean"}}
 
 \item{avg_fun}{An averaging function - how the values of the supercells' centers are calculated?
 It accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::median()}) or one of internally implemented \code{"mean"} and \code{"median"}. Default: \code{"mean"}}
@@ -42,12 +43,14 @@ It accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::med
 \item{step}{The distance (number of cells) between initial supercells' centers. You can use either \code{k} or \code{step}.}
 
 \item{minarea}{Specifies the minimal size of a supercell (in cells). Only works when \code{clean = TRUE}.
-By default, when \code{clean = TRUE}, average area (A) is calculated based on the total number of cells divided by a number of superpixels.
+By default, when \code{clean = TRUE}, average area (A) is calculated based on the total number of cells divided by a number of supercells
 Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)}
 
 \item{chunks}{Should the input (\code{x}) be split into chunks before deriving supercells? Either \code{FALSE} (default), \code{TRUE} (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).}
 
-\item{future}{TRUE/FALSE}
+\item{future}{Should the future package be used for parallelization of the calculations? Default: \code{FALSE}. If \code{TRUE}, you need to specify \code{future::plan()}.}
+
+\item{verbose}{An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).}
 }
 \value{
 An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell

@@ -1,5 +1,4 @@
 #include "slic.h"
-#include "distances.h"
 
 typedef multimap<int, int> IntToIntMap;
 typedef IntToIntMap::iterator mapIter;
@@ -69,15 +68,13 @@ void Slic::create_centers2(vector<int> mat_dims,
       colour.push_back(val);
     }
 
-
-    vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type, type_fun);
-
+    // vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type, type_fun);
     /* Generate the center vector. */
-    center.push_back(lm[0]);
-    center.push_back(lm[1]);
+    // center.push_back(lm[0]);
+    // center.push_back(lm[1]);
 
-    // center.push_back(nrowcenter);
-    // center.push_back(ncolcenter);
+    center.push_back(nrowcenter);
+    center.push_back(ncolcenter);
 
     centers.push_back(center);
     centers_vals.push_back(colour);
@@ -142,9 +139,6 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
   int x_dist = centers[ci][1] - x;
   double ds = sqrt((y_dist * y_dist) + (x_dist * x_dist));
 
-  // Rprintf("vals_dist:%f vals_dist2:%f\n", dc, nc);
-  // Rprintf("coords_dist:%f coords_dist2:%f\n", ds, ns);
-
   double vals_dist = dc / nc;
   double coords_dist = ds / ns;
 
@@ -154,13 +148,10 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
 vector<int> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
                                      std::string& type, cpp11::function type_fun) {
   double min_grad = FLT_MAX;
-  // int min_grad = -1;
 
   vector<int> loc_min(2);
   loc_min.at(0) = y;
   loc_min.at(1) = x;
-
-  // cout << "loc min start: " << loc_min[0] << " " << loc_min[1] << endl;
 
   for (int i = x - 1; i < x + 2; i++) {
     for (int j = y - 1; j < y + 2; j++) {
@@ -196,43 +187,28 @@ vector<int> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
   return loc_min;
 }
 
-double median(vector<double>& v){
-  size_t n = v.size() / 2;
-  nth_element(v.begin(), v.begin()+n, v.end());
-  return v[n];
-}
-
-double mean(vector<double>& v){
-  double sum = std::accumulate(v.begin(), v.end(), 0.0);
-  // Rprintf("v.size():%f\n",v.size());
-  double mean = sum / v.size();
-  return mean;
-}
-
 void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step, double nc,
                                 std::string& type, cpp11::function type_fun,
                                 cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter,
-                                integers_matrix<> input_centers){
+                                integers_matrix<> input_centers,
+                                int verbose){
   // cout << "generate_superpixels" << endl;
   this->step = step;
   this->nc = nc;
   this->ns = step;
 
-  Rprintf("Initialization: ");
+  if (verbose > 0) Rprintf("Initialization: ");
   /* Clear previous data (if any), and re-initialize it. */
   clear_data();
   inits(mat, vals, type, type_fun, input_centers);
-  Rprintf("Completed\n");
-
-  // Rprintf("C:%u C2:%u", centers[0][0], centers[0][1]);
+  if (verbose > 0) Rprintf("Completed\n");
 
   /* Run EM for 10 iterations (as prescribed by the algorithm). */
   for (int itr = 0; itr < iter; itr++) {
 
-    Rprintf("Iteration: %u/%u\r", itr + 1, iter);
-    // cout << "Iteration: " << itr + 1;
+    if (verbose > 0) Rprintf("Iteration: %u/%u\r", itr + 1, iter);
 
-    /* Reset distance values. */
+        /* Reset distance values. */
     for (int i = 0; i < mat_dims[1]; i++) {
       for (int j = 0; j < mat_dims[0]; j++) {
         distances[i][j] = FLT_MAX;
@@ -244,10 +220,6 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         for (int n = centers[l][0] - step; n < centers[l][0] + step; n++) {
 
           if (m >= 0 && m < mat_dims[1] && n >= 0 && n < mat_dims[0]) {
-
-            // cout << "centers[l][1]" << centers[l][1] << ": m: " << m << ": centers[l][0]: " << centers[l][0] << ": n: "<< n << endl;
-
-            // int colour = mat(n, m);
 
             int ncell = m + (n * mat_dims[1]);
 
@@ -261,13 +233,10 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
               int nanr = is_na(val);
               count_na = count_na + nanr;
             }
-
             /*check NAN*/
             if (count_na > 0){
               continue;
             }
-            // cpp11::
-
             double d = compute_dist(l, n, m, colour, type, type_fun);
 
             /* Update cluster allocation if the cluster minimizes the
@@ -313,35 +282,26 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         pair<mapIter, mapIter> keyRange = c_id_centers_vals.equal_range(c_id);
         vector<vector<double> > centers_vals_c_id(mat_dims[2]);
         // Iterate over all map elements with key == theKey
-        for (s_it = keyRange.first;  s_it != keyRange.second;  ++s_it){
+        for (s_it = keyRange.first; s_it != keyRange.second; ++s_it){
           int ncell = (*s_it).second;
             for (int nval = 0; nval < mat_dims[2]; nval++){
               double val = vals(ncell, nval);
-              // Rprintf("val: %f\n", val);
               centers_vals_c_id[nval].push_back(val);
             }
         }
         for (int nval = 0; nval < mat_dims[2]; nval++){
           // calculate
           if (avg_fun_name == "median"){
-            // Rprintf("\nmedian: %f\n", median(centers_vals_c_id[nval]));
-            // double a = median(centers_vals_c_id[nval]);
-            // cout << a << "\n" << endl;
             centers_vals[c_id][nval] = median(centers_vals_c_id[nval]);
           } else if (avg_fun_name == "mean2"){
             centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
           } else if (avg_fun_name.empty()){
-            // use user-defined function
-            // Rprintf("\nexternalfun: %f\n", avg_fun_fun(centers_vals_c_id[nval]));
-            // double a = avg_fun_fun(centers_vals_c_id[nval]);
-            // cout << a << "\n" << endl;
             centers_vals[c_id][nval] = avg_fun_fun(centers_vals_c_id[nval]);
           }
         }
       }
-      // /* Normalize the clusters. */
+      // /* Normalize the cluster centers. */
       for (int l = 0; l < (int) centers.size(); l++) {
-        // Rprintf("center_counts:%u\n",center_counts[l]);
         if (center_counts[l] > 0){
           centers[l][0] /= center_counts[l];
           centers[l][1] /= center_counts[l];
@@ -374,11 +334,9 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         }
       }
 
-      // /* Normalize the clusters. */
+      // /* Normalize the clusters  (and their centers). */
       for (int l = 0; l < (int) centers.size(); l++) {
         if (center_counts[l] > 0){
-          // Rprintf("center_counts:%u\n",center_counts[l]);
-
           centers[l][0] /= center_counts[l];
           centers[l][1] /= center_counts[l];
           for (int nval = 0; nval < mat_dims[2]; nval++){
@@ -389,13 +347,12 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
     }
 
   }
-  Rprintf("\n");
-
-  // Rprintf("C:%u C2:%u", centers[0][0], centers[0][1]);
+  if (verbose > 0) Rprintf("\n");
 }
 
-void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims) {
-  Rprintf("Cleaning connectivity: ");
+
+void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims, int verbose) {
+  if (verbose > 0) Rprintf("Cleaning connectivity: ");
   int label = 0;
   int adjlabel = 0;
   const int dx4[4] = {-1,  0,  1,  0};
@@ -405,9 +362,8 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
     lims = (mat_dims[1] * mat_dims[0]) / ((int)centers.size());
     lims = lims >> 2;
   }
-  // Rprintf("(Min size: %i\) ", lims);
 
-  for (int i = 0; i < mat_dims[1]; i++) {
+    for (int i = 0; i < mat_dims[1]; i++) {
     vector<int> ncl; ncl.reserve(mat_dims[0]);
     for (int j = 0; j < mat_dims[0]; j++) {
       ncl.push_back(-1);
@@ -471,9 +427,6 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
       }
     }
   }
-
-  // cout << "label" << label <<endl;
-  // cout << "new_clusters" << new_clusters.size() << " " << new_clusters[0].size() <<endl;
 
   clusters = new_clusters;
 
@@ -580,8 +533,9 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
 
   centers = new_centers;
   centers_vals = new_centers_vals;
-  Rprintf("Completed\n");
+  if (verbose > 0) Rprintf("Completed\n");
 }
+
 
 writable::integers_matrix<> Slic::return_clusters(){
   int isize = clusters.size();

@@ -8,6 +8,8 @@
 #include <map>
 #include <numeric>
 #include <float.h>
+#include "distances.h"
+#include "calc_stats.h"
 
 using namespace std;
 using namespace cpp11;
@@ -38,10 +40,6 @@ class Slic {
      * parameters. */
     int step, ns;
     double nc;
-
-    // double euclidean(vector<double>& values1, vector<double>& values2);
-    // double manhattan(vector<double>& values1, vector<double>& values2);
-    // double jensen_shannon(vector<double>& values1, vector<double>& values2);
 
     void create_centers(vector<int> mat_dims, doubles_matrix<> vals,
                         std::string& type, cpp11::function type_fun, double step);
@@ -76,9 +74,9 @@ class Slic {
     void generate_superpixels(integers mat, doubles_matrix<> vals, double step, double nc,
                               std::string& type, cpp11::function type_fun,
                               cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter,
-                              integers_matrix<> input_centers);
+                              integers_matrix<> input_centers, int verbose);
     /* Enforce connectivity for an image. */
-    void create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims);
+    void create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims, int verbose);
 
     writable::integers_matrix<> return_centers();
     writable::doubles_matrix<> return_centers_vals();
@@ -89,16 +87,17 @@ class Slic {
 list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double nc, bool con, bool centers,
               std::string type, cpp11::function type_fun,
               cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int lims,
-              cpp11::integers_matrix<> input_centers) {
+              cpp11::integers_matrix<> input_centers, int verbose) {
 
   // cout << "superpixelsize" << superpixelsize << endl;
-  Rprintf("Step: %u\n", step);
+  if (verbose > 0) Rprintf("Step: %u\n", step);
+
   // Rprintf("Vf: %f\n", vals(0, 0));
 
   Slic slic;
-  slic.generate_superpixels(mat, vals, step, nc, type, type_fun, avg_fun_fun, avg_fun_name, iter, input_centers);
+  slic.generate_superpixels(mat, vals, step, nc, type, type_fun, avg_fun_fun, avg_fun_name, iter, input_centers, verbose);
   if (con){
-    slic.create_connectivity(vals, avg_fun_fun, avg_fun_name, lims);
+    slic.create_connectivity(vals, avg_fun_fun, avg_fun_name, lims, verbose);
   }
   writable::list result(3);
   result.at(0) = slic.return_clusters();

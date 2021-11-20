@@ -7,18 +7,19 @@
 #' You can use either `k` or `step`.
 #' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
 #' A compactness value depends on the range of input cell values and selected distance measure.
-#' @param dist_fun A distance function. Currently implemented distance functions are "euclidean", "jsd", "dtw" (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]), or any user defined function accepting two vectors and returning one value. Default: "euclidean"
+#' @param dist_fun A distance function. Currently implemented distance functions are `"euclidean"`, `"jsd"`, `"dtw"` (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]), or any user defined function accepting two vectors and returning one value. Default: `"euclidean"`
 #' @param avg_fun An averaging function - how the values of the supercells' centers are calculated?
 #' It accepts any fitting R function (e.g., `base::mean()` or `stats::median()`) or one of internally implemented `"mean"` and `"median"`. Default: `"mean"`
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param iter The number of iterations performed to create the output.
 #' @param minarea Specifies the minimal size of a supercell (in cells). Only works when `clean = TRUE`.
-#' By default, when `clean = TRUE`, average area (A) is calculated based on the total number of cells divided by a number of superpixels.
+#' By default, when `clean = TRUE`, average area (A) is calculated based on the total number of cells divided by a number of supercells
 #' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
 #' @param step The distance (number of cells) between initial supercells' centers. You can use either `k` or `step`.
 #' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed.
 #' @param chunks Should the input (`x`) be split into chunks before deriving supercells? Either `FALSE` (default), `TRUE` (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).
-#' @param future TRUE/FALSE
+#' @param future Should the future package be used for parallelization of the calculations? Default: `FALSE`. If `TRUE`, you need to specify `future::plan()`.
+#' @param verbose An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).
 #'
 #' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
 #'
@@ -54,7 +55,7 @@
 #' plot(ortho)
 #' plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
-                      iter = 10, transform = NULL, step, minarea, chunks = FALSE, future = FALSE){
+                      iter = 10, transform = NULL, step, minarea, chunks = FALSE, future = FALSE, verbose = 0){
   if (!inherits(x, "SpatRaster")){
     stop("The SpatRaster class is expected as an input", call. = FALSE)
   }
@@ -74,7 +75,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   if (is.character(avg_fun)){
     avg_fun_name = avg_fun; avg_fun_fun = function() ""
   } else {
-    avg_fun_name = ""; avg_fun_fun = avg_fun
+    avg_fun_name = "";      avg_fun_fun = avg_fun
   }
   if (is.character(dist_fun)){
     if (!(dist_fun %in% c("euclidean", "jsd", "dtw", philentropy::getDistMethods()))){
@@ -87,25 +88,34 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   if (missing(minarea)){
     minarea = 0
   }
+  if (iter == 0){
+    clean = FALSE
+  }
   # split
   chunk_ext = prep_chunks_ext(dim(x), limit = chunks)
-  if (!in_memory(x)){
-    x = terra::sources(x)[["source"]][[1]]
-  }
   if (future){
+    if (in_memory(x)){
+        names_x = names(x)
+        x = terra::writeRaster(x, tempfile(fileext = ".tif"))
+        names(x) = names_x
+    }
+    if (!in_memory(x)){
+      x = terra::sources(x)[["source"]][[1]]
+    }
     oopts = options(future.globals.maxSize = +Inf)
     on.exit(options(oopts))
     slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
                                          step = step, compactness = compactness, dist_type = dist_type,
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                                         clean = clean, iter = iter, minarea = minarea, transform = transform, new_centers = new_centers, future.seed = TRUE)
+                                         clean = clean, iter = iter, minarea = minarea, transform = transform,
+                                         new_centers = new_centers, verbose = verbose, future.seed = TRUE)
   } else{
     slic_sf = apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
                                          step = step, compactness = compactness, dist_type = dist_type,
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                                         clean = clean, iter = iter, minarea = minarea, transform = transform, new_centers = new_centers)
+                                         clean = clean, iter = iter, minarea = minarea, transform = transform,
+                                         new_centers = new_centers, verbose = verbose)
   }
-
 
   # combine
   slic_sf = update_supercells_ids(slic_sf)
@@ -115,7 +125,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
 # ext = c(1, 10, 1, 10)
 run_slic_chunks = function(ext, x, step, compactness, dist_type,
                            dist_fun, avg_fun_fun, avg_fun_name, clean,
-                           iter, minarea, transform, new_centers){
+                           iter, minarea, transform, new_centers, verbose){
   centers = TRUE
   if (is.character(x)){
     x = terra::rast(x)
@@ -135,7 +145,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
   slic = run_slic(mat, vals = vals, step = step, nc = compactness, con = clean,
                   centers = centers, type = dist_type, type_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                  iter = iter, lims = minarea, input_centers = new_centers)
+                  iter = iter, lims = minarea, input_centers = new_centers, verbose = verbose)
   if (iter == 0){
     slic_sf = data.frame(stats::na.omit(slic[[2]]))
     slic_sf[["X1"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["X1"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
