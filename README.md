@@ -43,9 +43,9 @@ install.packages("supercells", repos = "https://nowosad.r-universe.dev")
 ``` r
 library(supercells)
 library(terra)
-#> terra version 1.4.15
+#> terra version 1.4.18
 library(sf)
-#> Linking to GEOS 3.9.0, GDAL 3.2.2, PROJ 7.2.1
+#> Linking to GEOS 3.9.2, GDAL 3.3.2, PROJ 8.2.0
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 plot(vol)
 ```
@@ -84,7 +84,7 @@ Watch the presentations about this package and some related ideas:
 
 ## Contribution
 
-Contributions to this package are welcome - let me know if you need
+Contributions to this package are welcome - let us know if you need
 other distance measures or transformations, have any suggestions, or
 spotted a bug. The preferred method of contribution is through a GitHub
 pull request. Feel also free to contact us by creating [an

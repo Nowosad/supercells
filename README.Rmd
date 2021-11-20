@@ -76,6 +76,6 @@ Watch the presentations about this package and some related ideas:
 
 ## Contribution
 
-Contributions to this package are welcome - let me know if you need other distance measures or transformations, have any suggestions, or spotted a bug. 
+Contributions to this package are welcome - let us know if you need other distance measures or transformations, have any suggestions, or spotted a bug. 
 The preferred method of contribution is through a GitHub pull request. 
 Feel also free to contact us by creating [an issue](https://github.com/nowosad/supercells/issues).
