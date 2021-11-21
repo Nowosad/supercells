@@ -56,8 +56,9 @@ void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,
 
 void Slic::create_centers2(vector<int> mat_dims,
                            doubles_matrix<> vals, std::string& type,
-                           cpp11::function type_fun, double step,
+                           cpp11::function type_fun,
                            integers_matrix<> input_centers) {
+
   for (int i = 0; i < input_centers.nrow(); i++){
     int nrowcenter = input_centers(i, 1); int ncolcenter = input_centers(i, 0);
     vector<int> center; center.reserve(2);
@@ -107,7 +108,7 @@ void Slic::inits(integers mat, doubles_matrix<> vals,
   }
 
   if (input_centers.nrow() > 1){
-    Slic::create_centers2(mat_dims, vals, type, type_fun, step, input_centers);
+    Slic::create_centers2(mat_dims, vals, type, type_fun, input_centers);
   } else{
     Slic::create_centers(mat_dims, vals, type, type_fun, step);
   }

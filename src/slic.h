@@ -46,7 +46,7 @@ class Slic {
 
     void create_centers2(vector<int> mat_dims,
                           doubles_matrix<> vals, std::string& type,
-                          cpp11::function type_fun, double step,
+                          cpp11::function type_fun,
                           integers_matrix<> input_centers);
 
     double get_vals_dist(vector<double>& values1, vector<double>& values2,
