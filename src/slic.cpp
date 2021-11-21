@@ -58,16 +58,17 @@ void Slic::create_centers2(vector<int> mat_dims,
                            doubles_matrix<> vals, std::string& type,
                            cpp11::function type_fun,
                            integers_matrix<> input_centers) {
-
+  int ncell = 0;
   for (int i = 0; i < input_centers.nrow(); i++){
     int nrowcenter = input_centers(i, 1); int ncolcenter = input_centers(i, 0);
     vector<int> center; center.reserve(2);
-    int ncell = nrowcenter + (ncolcenter * mat_dims[1]);
+    // int ncell = nrowcenter + (ncolcenter * mat_dims[1]);
     vector<double> colour; colour.reserve(mat_dims[2]);
     for (int nval = 0; nval < mat_dims[2]; nval++){
       double val = vals(ncell, nval);
       colour.push_back(val);
     }
+    ncell++;
 
     vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type, type_fun);
     /* Generate the center vector. */
