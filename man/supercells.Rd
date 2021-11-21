@@ -21,10 +21,11 @@ supercells(
 )
 }
 \arguments{
-\item{x}{An object of class SpatRaster (terra)}
+\item{x}{An object of class SpatRaster (terra) or class stars (stars)}
 
 \item{k}{The number of supercells desired by the user (the output number can be slightly different!).
-You can use either \code{k} or \code{step}.}
+You can use either \code{k} or \code{step}.
+It is also possible to provide a set of points (an \code{sf} object) a \code{k} together with the \code{step} value to create custom cluster centers.}
 
 \item{compactness}{A compactness value. Larger values cause clusters to be more compact/even (square).
 A compactness value depends on the range of input cell values and selected distance measure.}
@@ -48,7 +49,7 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
 
 \item{chunks}{Should the input (\code{x}) be split into chunks before deriving supercells? Either \code{FALSE} (default), \code{TRUE} (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).}
 
-\item{future}{Should the future package be used for parallelization of the calculations? Default: \code{FALSE}. If \code{TRUE}, you need to specify \code{future::plan()}.}
+\item{future}{Should the future package be used for parallelization of the calculations? Default: \code{FALSE}. If \code{TRUE}, you also need to specify \code{future::plan()}.}
 
 \item{verbose}{An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).}
 }

@@ -68,13 +68,13 @@ void Slic::create_centers2(vector<int> mat_dims,
       colour.push_back(val);
     }
 
-    // vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type, type_fun);
+    vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, type, type_fun);
     /* Generate the center vector. */
-    // center.push_back(lm[0]);
-    // center.push_back(lm[1]);
+    center.push_back(lm[0]);
+    center.push_back(lm[1]);
 
-    center.push_back(nrowcenter);
-    center.push_back(ncolcenter);
+    // center.push_back(nrowcenter);
+    // center.push_back(ncolcenter);
 
     centers.push_back(center);
     centers_vals.push_back(colour);

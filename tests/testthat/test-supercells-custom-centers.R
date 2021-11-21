@@ -1,3 +1,4 @@
+set.seed(2021-11-21)
 y1 = sf::st_sf(geom = sf::st_sample(sf::st_as_sfc(sf::st_bbox(v1)), 100, type = "random"))
 y2 = sf::st_sf(geom = sf::st_sample(sf::st_as_sfc(sf::st_bbox(v1)), 100, type = "regular"))
 y3 = sf::st_sf(geom = sf::st_sample(sf::st_as_sfc(sf::st_bbox(v1)), 100, type = "hexagonal"))

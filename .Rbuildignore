@@ -6,3 +6,4 @@
 ^data-raw$
 ^codecov\.yml$
 ^vignettes/articles$
+^vignettes
