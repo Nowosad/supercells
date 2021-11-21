@@ -8,7 +8,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: "`r system.file('refs.bib', package = 'supercells')`"
-nocite: '@*'
+nocite: '@achanta2012slic'
 ---
 
 ```{r, include = FALSE}
@@ -27,7 +27,7 @@ A large number of methods for creating superpixels were developed in the last de
 
 The **supercells** package aims to utilize the concept of superpixels to a variety of spatial data. 
 This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters).
-Therefore, It enables not only to find areas that look similar on an RGB (satellite) image, but also to regionalize areas with comparable values of one or more variables.
+Therefore, it enables not only to find areas that look similar on an RGB (satellite) image, but also to regionalize areas with comparable values of one or more variables.
 
 This vignette shows how to use the **supercells** package on an RGB raster dataset.
 To reproduce the following results on your own computer, install and attach the packages:
@@ -35,7 +35,7 @@ To reproduce the following results on your own computer, install and attach the 
 ```{r, message=FALSE}
 library(supercells)    # superpixels for spatial data
 library(terra)         # spatial raster data reading and handling
-library(sf)            # spatial raster data reading and handling
+library(sf)            # spatial vector data reading and handling
 ```
 
 The first step is to read the input data.
