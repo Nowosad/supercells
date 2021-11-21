@@ -43,7 +43,7 @@ install.packages("supercells", repos = "https://nowosad.r-universe.dev")
 ``` r
 library(supercells)
 library(terra)
-#> terra version 1.4.18
+#> terra version 1.4.21
 library(sf)
 #> Linking to GEOS 3.9.2, GDAL 3.3.2, PROJ 8.2.0
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
@@ -69,7 +69,7 @@ See the package’s vignettes:
 2.  [Superpixels of an RGB
     raster](https://nowosad.github.io/supercells/articles/articles/rgb_vars.html)
 3.  [Superpixels of spatial categorical
-    patterns](https://nowosad.github.io/supercells/articles/motifels.html)
+    patterns](https://nowosad.github.io/supercells/articles/articles/motifels.html)
 
 Watch the presentations about this package and some related ideas:
 
