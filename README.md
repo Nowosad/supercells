@@ -70,6 +70,8 @@ See the package’s vignettes:
     raster](https://nowosad.github.io/supercells/articles/articles/rgb_vars.html)
 3.  [Superpixels of spatial categorical
     patterns](https://nowosad.github.io/supercells/articles/articles/motifels.html)
+4.  [Experimental features of the supercells
+    package](https://nowosad.github.io/supercells/articles/articles/experimental.html)
 
 Watch the presentations about this package and some related ideas:
 
