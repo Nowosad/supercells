@@ -72,8 +72,8 @@ See the package's vignettes:
 
 Watch the presentations about this package and some related ideas:
 
-1. Spatial segmentation in R using the supercells package, 2021-09-02, OpenGeoHub Summer School - [slides](https://nowosad.github.io/ogh2021), [video](https://doi.org/10.5446/54880)
-2. Generalizing the Simple Linear Iterative Clustering (SLIC) superpixels, 2021-09-28, GIScience 2021 - [slides](https://nowosad.github.io/giscience-2021), [video](https://www.youtube.com/watch?v=AlyEFkyKLUw&t=2018s)
+1. *Spatial segmentation in R using the supercells package*, 2021-09-02, OpenGeoHub Summer School - [slides](https://nowosad.github.io/ogh2021), [video](https://doi.org/10.5446/54880)
+2. *Generalizing the Simple Linear Iterative Clustering (SLIC) superpixels*, 2021-09-28, GIScience 2021 - [slides](https://nowosad.github.io/giscience-2021), [video](https://www.youtube.com/watch?v=AlyEFkyKLUw&t=2018s)
 
 ## Contribution
 
