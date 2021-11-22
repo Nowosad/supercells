@@ -5,7 +5,7 @@
 #' @param x An object of class SpatRaster (terra) or class stars (stars)
 #' @param k The number of supercells desired by the user (the output number can be slightly different!).
 #' You can use either `k` or `step`.
-#' It is also possible to provide a set of points (an `sf` object) a `k` together with the `step` value to create custom cluster centers.
+#' It is also possible to provide a set of points (an `sf` object) as `k` together with the `step` value to create custom cluster centers.
 #' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
 #' A compactness value depends on the range of input cell values and selected distance measure.
 #' @param dist_fun A distance function. Currently implemented distance functions are `"euclidean"`, `"jsd"`, `"dtw"` (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]), or any user defined function accepting two vectors and returning one value. Default: `"euclidean"`
@@ -17,7 +17,7 @@
 #' By default, when `clean = TRUE`, average area (A) is calculated based on the total number of cells divided by a number of supercells
 #' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
 #' @param step The distance (number of cells) between initial supercells' centers. You can use either `k` or `step`.
-#' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed.
+#' @param transform Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed. (This argument is experimental and may be removed in the future).
 #' @param chunks Should the input (`x`) be split into chunks before deriving supercells? Either `FALSE` (default), `TRUE` (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).
 #' @param future Should the future package be used for parallelization of the calculations? Default: `FALSE`. If `TRUE`, you also need to specify `future::plan()`.
 #' @param verbose An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).
@@ -218,18 +218,19 @@ prep_chunks_ext = function(dim_x, limit){
   if (is.numeric(limit)){
     wsize = limit
     limit = 0
+    dims1 = ceiling(seq_last(0, to = dim_x[1], by = wsize))
+    dims2 = ceiling(seq_last(0, to = dim_x[2], by = wsize))
   } else if (!limit){
     limit = Inf
   } else {
     limit = 1 #hardcoded limit
     wsize = optimize_chunk_size(dim_x, limit, by = 500)
-  }
-  if (pred_mem_usage(dim_x) > limit){
     dims1 = ceiling(seq.int(0, to = dim_x[1],
                             length.out = as.integer((dim_x[1] - 1) / wsize + 1) + 1))
     dims2 = ceiling(seq.int(0, to = dim_x[2],
                             length.out = as.integer((dim_x[2] - 1) / wsize + 1) + 1))
-
+  }
+  if (pred_mem_usage(dim_x) > limit){
     row_dims = seq_along(dims1)[-length(dims1)]
     col_dims = seq_along(dims2)[-length(dims2)]
     n_chunks = max(row_dims) * max(col_dims)
@@ -267,4 +268,13 @@ centers_to_dims = function(x, y){
   center_dims = cbind(y_col, y_row)
   storage.mode(center_dims) = "integer"
   unique(center_dims)
+}
+
+seq_last = function(from, to, by){
+  vec = do.call(what = seq.int, args = list(from, to, by))
+  if (tail(vec, 1) != to) {
+    return(c(vec, to))
+  } else {
+    return(vec)
+  }
 }
