@@ -27,7 +27,7 @@ RoxygenNote: 7.1.2
 LinkingTo: 
     cpp11
 SystemRequirements: C++11
-URL: https://github.com/Nowosad/supercells
+URL: https://nowosad.github.io/supercells
 BugReports: https://github.com/Nowosad/supercells/issues
 Suggests: 
     knitr,

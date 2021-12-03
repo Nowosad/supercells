@@ -7,3 +7,6 @@
 ^codecov\.yml$
 ^vignettes/articles$
 ^vignettes
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
