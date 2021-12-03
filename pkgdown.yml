@@ -1,9 +1,13 @@
 pandoc: 2.7.3
-pkgdown: 1.6.1
+pkgdown: 2.0.1
 pkgdown_sha: ~
 articles:
-  articles/motifels: motifels.html
-  articles/one_var: one_var.html
-  articles/rgb_vars: rgb_vars.html
-last_built: 2021-11-20T17:06Z
+  experimental: experimental.html
+  motifels: motifels.html
+  one_var: one_var.html
+  rgb_vars: rgb_vars.html
+last_built: 2021-12-03T18:59Z
+urls:
+  reference: https://nowosad.github.io/supercells/reference
+  article: https://nowosad.github.io/supercells/articles
 
