@@ -25,7 +25,7 @@ supercells(
 
 \item{k}{The number of supercells desired by the user (the output number can be slightly different!).
 You can use either \code{k} or \code{step}.
-It is also possible to provide a set of points (an \code{sf} object) a \code{k} together with the \code{step} value to create custom cluster centers.}
+It is also possible to provide a set of points (an \code{sf} object) as \code{k} together with the \code{step} value to create custom cluster centers.}
 
 \item{compactness}{A compactness value. Larger values cause clusters to be more compact/even (square).
 A compactness value depends on the range of input cell values and selected distance measure.}
@@ -39,7 +39,7 @@ It accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::med
 
 \item{iter}{The number of iterations performed to create the output.}
 
-\item{transform}{Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed.}
+\item{transform}{Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed. (This argument is experimental and may be removed in the future).}
 
 \item{step}{The distance (number of cells) between initial supercells' centers. You can use either \code{k} or \code{step}.}
 

@@ -272,7 +272,7 @@ centers_to_dims = function(x, y){
 
 seq_last = function(from, to, by){
   vec = do.call(what = seq.int, args = list(from, to, by))
-  if (tail(vec, 1) != to) {
+  if (utils::tail(vec, 1) != to) {
     return(c(vec, to))
   } else {
     return(vec)
