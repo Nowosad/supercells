@@ -81,7 +81,7 @@
 <dt>k</dt>
 <dd><p>The number of supercells desired by the user (the output number can be slightly different!).
 You can use either <code>k</code> or <code>step</code>.
-It is also possible to provide a set of points (an <code>sf</code> object) a <code>k</code> together with the <code>step</code> value to create custom cluster centers.</p></dd>
+It is also possible to provide a set of points (an <code>sf</code> object) as <code>k</code> together with the <code>step</code> value to create custom cluster centers.</p></dd>
 <dt>compactness</dt>
 <dd><p>A compactness value. Larger values cause clusters to be more compact/even (square).
 A compactness value depends on the range of input cell values and selected distance measure.</p></dd>
@@ -95,7 +95,7 @@ It accepts any fitting R function (e.g., <code><a href="https://rdrr.io/r/base/m
 <dt>iter</dt>
 <dd><p>The number of iterations performed to create the output.</p></dd>
 <dt>transform</dt>
-<dd><p>Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed.</p></dd>
+<dd><p>Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed. (This argument is experimental and may be removed in the future).</p></dd>
 <dt>step</dt>
 <dd><p>The distance (number of cells) between initial supercells' centers. You can use either <code>k</code> or <code>step</code>.</p></dd>
 <dt>minarea</dt>
