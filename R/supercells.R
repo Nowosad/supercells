@@ -143,6 +143,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
   mat = dim(x)[1:2]
   mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cell = FALSE, na.rm = FALSE))
+  mode(vals) = "double"
 
   if (!is.null(transform)){
     if (transform == "to_LAB"){
