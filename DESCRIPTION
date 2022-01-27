@@ -1,6 +1,6 @@
 Package: supercells
 Title: Superpixels of Spatial Data
-Version: 0.6.4
+Version: 0.6.5
 Authors@R: c(
     person(given = "Jakub", family = "Nowosad", 
     role = c("aut", "cre"),
@@ -21,7 +21,8 @@ Imports:
     sf,
     terra (>= 1.4-21),
     philentropy (>= 0.6.0),
-    future.apply
+    future.apply,
+    regional
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 LinkingTo: 
@@ -37,6 +38,7 @@ Suggests:
     motif (>= 0.4.3),
     stars
 Remotes:
-    drostlab/philentropy
+    drostlab/philentropy,
+    nowosad/regional
 Config/testthat/edition: 3
 VignetteBuilder: knitr
