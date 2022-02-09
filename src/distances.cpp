@@ -93,5 +93,8 @@ double custom_distance(vector<double>& values1, vector<double>& values2, std::st
   // auto philentropy_distance = cpp11::package("philentropy")["distance"];
   // philentropy_distance(values_all, "method"_nm = type);
   auto single_distance = cpp11::package("philentropy")["dist_one_one"];
-  return single_distance(values1, values2, type);
+  double p = NA_REAL;
+  bool testNA = false;
+  std::string unit = "log2";
+  return single_distance(values1, values2, type, p, testNA, unit);
 }

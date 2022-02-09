@@ -30,7 +30,7 @@ It is also possible to provide a set of points (an \code{sf} object) as \code{k}
 \item{compactness}{A compactness value. Larger values cause clusters to be more compact/even (square).
 A compactness value depends on the range of input cell values and selected distance measure.}
 
-\item{dist_fun}{A distance function. Currently implemented distance functions are \code{"euclidean"}, \code{"jsd"}, \code{"dtw"} (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}), or any user defined function accepting two vectors and returning one value. Default: \code{"euclidean"}}
+\item{dist_fun}{A distance function. Currently implemented distance functions are \code{"euclidean"}, \code{"jsd"}, \code{"dtw"} (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: \code{"euclidean"}}
 
 \item{avg_fun}{An averaging function - how the values of the supercells' centers are calculated?
 It accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::median()}) or one of internally implemented \code{"mean"} and \code{"median"}. Default: \code{"mean"}}

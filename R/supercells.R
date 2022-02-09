@@ -8,7 +8,7 @@
 #' It is also possible to provide a set of points (an `sf` object) as `k` together with the `step` value to create custom cluster centers.
 #' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
 #' A compactness value depends on the range of input cell values and selected distance measure.
-#' @param dist_fun A distance function. Currently implemented distance functions are `"euclidean"`, `"jsd"`, `"dtw"` (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]), or any user defined function accepting two vectors and returning one value. Default: `"euclidean"`
+#' @param dist_fun A distance function. Currently implemented distance functions are `"euclidean"`, `"jsd"`, `"dtw"` (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: `"euclidean"`
 #' @param avg_fun An averaging function - how the values of the supercells' centers are calculated?
 #' It accepts any fitting R function (e.g., `base::mean()` or `stats::median()`) or one of internally implemented `"mean"` and `"median"`. Default: `"mean"`
 #' @param clean Should connectivity of the supercells be enforced?
