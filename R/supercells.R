@@ -108,7 +108,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
         names(x) = names_x
     }
     if (!in_memory(x)){
-      x = terra::sources(x)[["source"]][[1]]
+      x = terra::sources(x)[[1]]
     }
     oopts = options(future.globals.maxSize = +Inf)
     on.exit(options(oopts))
@@ -259,7 +259,7 @@ prep_chunks_ext = function(dim_x, limit){
 }
 
 in_memory = function(x){
-  terra::sources(x)[["source"]] == ""
+  terra::sources(x) == ""
 }
 
 centers_to_dims = function(x, y){
