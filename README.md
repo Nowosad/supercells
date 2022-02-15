@@ -15,9 +15,8 @@ The goal of **supercells** is to utilize the concept of superpixels to a
 variety of spatial data. This package works on spatial data with one
 variable (e.g., continuous raster), many variables (e.g., RGB rasters),
 and spatial patterns (e.g., areas in categorical rasters). It is based
-on the SLIC algorithm (Achanta et al. (2012),
-<doi:10.1109/TPAMI.2012.120>), and readapts it to work with arbitrary
-dissimilarity measures.
+on the SLIC algorithm (Achanta et al. (2012)), and readapts it to work
+with arbitrary dissimilarity measures.
 
 ## Installation
 
@@ -43,9 +42,9 @@ install.packages("supercells", repos = "https://nowosad.r-universe.dev")
 ``` r
 library(supercells)
 library(terra)
-#> terra version 1.4.21
+#> terra 1.5.20
 library(sf)
-#> Linking to GEOS 3.9.2, GDAL 3.3.2, PROJ 8.2.0
+#> Linking to GEOS 3.9.2, GDAL 3.3.2, PROJ 8.2.1; sf_use_s2() is TRUE
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 plot(vol)
 ```
