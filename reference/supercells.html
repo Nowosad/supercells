@@ -135,23 +135,20 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
 <span class="r-plt img"><img src="supercells-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># RGB variables</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">ortho</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"raster/ortho.tif"</span>, package <span class="op">=</span> <span class="st">"supercells"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">ortho_slic1</span> <span class="op">=</span> <span class="fu">supercells</span><span class="op">(</span><span class="va">ortho</span>, k <span class="op">=</span> <span class="fl">1000</span>, compactness <span class="op">=</span> <span class="fl">10</span>, transform <span class="op">=</span> <span class="st">"to_LAB"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ortho</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">ortho_slic1</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-plt img"><img src="supercells-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">### RGB variables - colored output</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">rgb_to_hex</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/transpose.html" class="external-link">t</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, maxColorValue <span class="op">=</span> <span class="fl">255</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="va">avg_colors</span> <span class="op">=</span> <span class="fu">rgb_to_hex</span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">ortho_slic1</span><span class="op">[</span><span class="fl">4</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ortho</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">ortho_slic1</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="va">avg_colors</span><span class="op">)</span></span>
-<span class="r-plt img"><img src="supercells-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span class="co"># ortho = rast(system.file("raster/ortho.tif", package = "supercells"))</span></span>
+<span class="r-in"><span class="co"># ortho_slic1 = supercells(ortho, k = 1000, compactness = 10, transform = "to_LAB")</span></span>
+<span class="r-in"><span class="co"># plot(ortho)</span></span>
+<span class="r-in"><span class="co"># plot(st_geometry(ortho_slic1), add = TRUE)</span></span>
+<span class="r-in"><span class="co">#</span></span>
+<span class="r-in"><span class="co"># ### RGB variables - colored output</span></span>
+<span class="r-in"><span class="co">#</span></span>
+<span class="r-in"><span class="co"># rgb_to_hex = function(x){</span></span>
+<span class="r-in"><span class="co">#   apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))</span></span>
+<span class="r-in"><span class="co"># }</span></span>
+<span class="r-in"><span class="co"># avg_colors = rgb_to_hex(st_drop_geometry(ortho_slic1[4:6]))</span></span>
+<span class="r-in"><span class="co">#</span></span>
+<span class="r-in"><span class="co"># plot(ortho)</span></span>
+<span class="r-in"><span class="co"># plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
