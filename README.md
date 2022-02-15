@@ -8,7 +8,7 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
-coverage](https://codecov.io/gh/Nowosad/supercells/branch/master/graph/badge.svg)](https://codecov.io/gh/Nowosad/supercells?branch=master)
+coverage](https://codecov.io/gh/Nowosad/supercells/branch/master/graph/badge.svg)](https://app.codecov.io/gh/Nowosad/supercells?branch=master)
 <!-- badges: end -->
 
 The goal of **supercells** is to utilize the concept of superpixels to a
@@ -65,23 +65,23 @@ plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 See the package’s vignettes:
 
 1.  [Superpixels of a single raster
-    layer](https://nowosad.github.io/supercells/articles/articles/one_var.html)
+    layer](https://jakubnowosad.com/supercells/articles/articles/one_var.html)
 2.  [Superpixels of an RGB
-    raster](https://nowosad.github.io/supercells/articles/articles/rgb_vars.html)
+    raster](https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html)
 3.  [Superpixels of spatial categorical
-    patterns](https://nowosad.github.io/supercells/articles/articles/motifels.html)
+    patterns](https://jakubnowosad.com/supercells/articles/articles/motifels.html)
 4.  [Experimental features of the supercells
-    package](https://nowosad.github.io/supercells/articles/articles/experimental.html)
+    package](https://jakubnowosad.com/supercells/articles/articles/experimental.html)
 
 Watch the presentations about this package and some related ideas:
 
 1.  *Spatial segmentation in R using the supercells package*,
     2021-09-02, OpenGeoHub Summer School -
-    [slides](https://nowosad.github.io/ogh2021),
+    [slides](https://jakubnowosad.com/ogh2021/),
     [video](https://doi.org/10.5446/54880)
 2.  *Generalizing the Simple Linear Iterative Clustering (SLIC)
     superpixels*, 2021-09-28, GIScience 2021 -
-    [slides](https://nowosad.github.io/giscience-2021),
+    [slides](https://jakubnowosad.com/giscience-2021/),
     [video](https://www.youtube.com/watch?v=AlyEFkyKLUw&t=2018s)
 
 ## Contribution

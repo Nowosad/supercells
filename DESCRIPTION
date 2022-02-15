@@ -28,7 +28,7 @@ RoxygenNote: 7.1.2
 LinkingTo: 
     cpp11
 SystemRequirements: C++11
-URL: https://nowosad.github.io/supercells
+URL: https://jakubnowosad.com/supercells/
 BugReports: https://github.com/Nowosad/supercells/issues
 Suggests: 
     knitr,
@@ -38,7 +38,6 @@ Suggests:
     motif (>= 0.4.3),
     stars
 Remotes:
-    drostlab/philentropy,
     nowosad/regional
 Config/testthat/edition: 3
 VignetteBuilder: knitr

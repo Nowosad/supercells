@@ -13,7 +13,7 @@ Creates superpixels based on input spatial data. This package works on spatial d
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://nowosad.github.io/supercells}
+  \item \url{https://jakubnowosad.com/supercells/}
   \item Report bugs at \url{https://github.com/Nowosad/supercells/issues}
 }
 
