@@ -80,7 +80,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Superpixels of an RGB raster</h1>
                         <h4 data-toc-skip class="author">Jakub Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2022-02-14</h4>
+            <h4 data-toc-skip class="date">2022-02-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/HEAD/vignettes/articles/rgb_vars.Rmd" class="external-link"><code>vignettes/articles/rgb_vars.Rmd</code></a></small>
       <div class="d-none name"><code>rgb_vars.Rmd</code></div>
@@ -92,7 +92,7 @@
 <p>The <strong>supercells</strong> package aims to utilize the concept of superpixels to a variety of spatial data. This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters). Therefore, it enables not only to find areas that look similar on an RGB (satellite) image, but also to regionalize areas with comparable values of one or more variables.</p>
 <p>This vignette shows how to use the <strong>supercells</strong> package on an RGB raster dataset. To reproduce the following results on your own computer, install and attach the packages:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nowosad.github.io/supercells">supercells</a></span><span class="op">)</span>    <span class="co"># superpixels for spatial data</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jakubnowosad.com/supercells/" class="external-link">supercells</a></span><span class="op">)</span>    <span class="co"># superpixels for spatial data</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/terra/" class="external-link">terra</a></span><span class="op">)</span>         <span class="co"># spatial raster data reading and handling</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>            <span class="co"># spatial vector data reading and handling</span></code></pre></div>
 <p>The first step is to read the input data. This time our input data <code>ortho.tif</code>, included in the <strong>supercells</strong> package, contains three layers representing red, green, and blue satellite bands<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;It also has an empty square on the left part of the image for testing purposes.&lt;/p&gt;"><sup>1</sup></a>.</p>
