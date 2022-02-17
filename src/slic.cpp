@@ -162,27 +162,32 @@ vector<int> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
       int ncell2 = (i + 1) + (j * mat_dims[1]);
       int ncell3 = i + (j * mat_dims[1]);
 
+      // Rprintf("i:%u", i);
+      // Rprintf("j:%u", j);
+
       vector<double> colour1; colour1.reserve(mat_dims[2]);
       vector<double> colour2; colour2.reserve(mat_dims[2]);
       vector<double> colour3; colour3.reserve(mat_dims[2]);
 
-      for (int nval = 0; nval < mat_dims[2]; nval++){
-        double val1 = vals(ncell1, nval);
-        double val2 = vals(ncell2, nval);
-        double val3 = vals(ncell3, nval);
-        colour1.push_back(val1);
-        colour2.push_back(val2);
-        colour3.push_back(val3);
-      }
+      if (ncell1 < vals.nrow() && ncell2 < vals.nrow() && ncell3 < vals.nrow()){
+        for (int nval = 0; nval < mat_dims[2]; nval++){
+          double val1 = vals(ncell1, nval);
+          double val2 = vals(ncell2, nval);
+          double val3 = vals(ncell3, nval);
+          colour1.push_back(val1);
+          colour2.push_back(val2);
+          colour3.push_back(val3);
+        }
 
-      /* Compute horizontal and vertical gradients and keep track of the
-       minimum. */
-      double new_grad = get_vals_dist(colour1, colour3, type, type_fun) + get_vals_dist(colour2, colour3, type, type_fun);
+        /* Compute horizontal and vertical gradients and keep track of the
+         minimum. */
+        double new_grad = get_vals_dist(colour1, colour3, type, type_fun) + get_vals_dist(colour2, colour3, type, type_fun);
 
-      if (new_grad < min_grad) {
-        min_grad = new_grad;
-        loc_min.at(0) = j;
-        loc_min.at(1) = i;
+        if (new_grad < min_grad) {
+          min_grad = new_grad;
+          loc_min.at(0) = j;
+          loc_min.at(1) = i;
+        }
       }
     }
   }
