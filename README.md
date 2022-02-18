@@ -4,11 +4,14 @@
 # supercells <img src="man/figures/logo.png" align="right" width="150" />
 
 <!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/supercells)](https://CRAN.R-project.org/package=supercells)
 [![R-CMD-check](https://github.com/Nowosad/supercells/workflows/pkgdown/badge.svg)](https://github.com/Nowosad/supercells/actions)
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
 coverage](https://codecov.io/gh/Nowosad/supercells/branch/master/graph/badge.svg)](https://app.codecov.io/gh/Nowosad/supercells?branch=master)
+[![CRAN RStudio mirror
+downloads](http://cranlogs.r-pkg.org/badges/supercells)](https://cran.r-project.org/package=supercells)
 <!-- badges: end -->
 
 The goal of **supercells** is to utilize the concept of superpixels to a
@@ -20,10 +23,12 @@ with arbitrary dissimilarity measures.
 
 ## Installation
 
-<!-- You can install the released version of supercells from [CRAN](https://CRAN.R-project.org) with: -->
-<!-- ``` r -->
-<!-- install.packages("supercells") -->
-<!-- ``` -->
+You can install the released version of supercells from
+[CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("supercells")
+```
 
 You can install the development version from
 [GitHub](https://github.com/) with:
