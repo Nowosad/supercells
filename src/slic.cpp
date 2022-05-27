@@ -370,7 +370,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
     lims = lims >> 2;
   }
 
-    for (int i = 0; i < mat_dims[1]; i++) {
+  for (int i = 0; i < mat_dims[1]; i++) {
     vector<int> ncl; ncl.reserve(mat_dims[0]);
     for (int j = 0; j < mat_dims[0]; j++) {
       ncl.push_back(-1);
@@ -399,6 +399,8 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
           if (x >= 0 && x < mat_dims[1] && y >= 0 && y < mat_dims[0]) {
             if (new_clusters[x][y] >= 0) {
               adjlabel = new_clusters[x][y];
+            } else {
+              adjlabel = -1;
             }
           }
         }
@@ -416,6 +418,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
 
                 elements.push_back(element2);
                 new_clusters[x][y] = label;
+                // Rprintf("j:%u", label);
                 count += 1;
               }
             }
@@ -427,6 +430,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
         if (count <= lims) {
           for (int c = 0; c < count; c++) {
             new_clusters[elements[c][1]][elements[c][0]] = adjlabel;
+            // Rprintf("j:%u", adjlabel);
           }
           label = label - 1;
         }
