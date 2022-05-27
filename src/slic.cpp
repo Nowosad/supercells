@@ -361,7 +361,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
 void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int lims, int verbose) {
   if (verbose > 0) Rprintf("Cleaning connectivity: ");
   int label = 0;
-  int adjlabel = 0;
+  int adjlabel = -1;
   const int dx4[4] = {-1,  0,  1,  0};
   const int dy4[4] = { 0, -1,  0,  1};
 
@@ -399,8 +399,8 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
           if (x >= 0 && x < mat_dims[1] && y >= 0 && y < mat_dims[0]) {
             if (new_clusters[x][y] >= 0) {
               adjlabel = new_clusters[x][y];
-            } else {
-              adjlabel = -1;
+            // } else {
+            //   adjlabel = -1;
             }
           }
         }
@@ -420,6 +420,8 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
                 new_clusters[x][y] = label;
                 // Rprintf("j:%u", label);
                 count += 1;
+                // Rprintf("j:%u", count);
+
               }
             }
           }
@@ -435,6 +437,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
           label = label - 1;
         }
         label = label + 1;
+        adjlabel = -1;
       }
     }
   }
