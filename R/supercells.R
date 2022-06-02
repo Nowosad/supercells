@@ -85,7 +85,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     avg_fun_name = "";      avg_fun_fun = avg_fun
   }
   if (is.character(dist_fun)){
-    if (!(dist_fun %in% c("euclidean", "jsd", "dtw", philentropy::getDistMethods()))){
+    if (!(dist_fun %in% c("euclidean", "jsd", "dtw", "dtw2d", philentropy::getDistMethods()))){
       stop("The provided distance function ('dist_fun') does not exist!", call. = FALSE)
     }
     dist_type = dist_fun; dist_fun = function() ""
