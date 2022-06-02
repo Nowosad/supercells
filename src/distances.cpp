@@ -51,6 +51,30 @@ double dtw3(std::vector<double>& values1, std::vector<double>& values2){
   return(scost);
 }
 
+double dtw2d(std::vector<double>& values1, std::vector<double>& values2){
+  double p = 2;  // the p-norm to use; 2.0 = euclidean, 1.0 = manhattan
+  int len1 = values1.size() / 2;
+
+  std::vector<std::vector<double> > a;
+  std::vector<std::vector<double> > b;
+
+  a.reserve(len1);
+  b.reserve(len1);
+
+  for(int i = 0; i < len1; i++){
+    std::vector<double> pair1(2); std::vector<double> pair2(2);
+    pair1[0] = values1[i + (len1 - 1)];
+    pair1[1] = values1[i];
+    pair2[0] = values2[i + (len1 - 1)];
+    pair2[1] = values2[i];
+    a.push_back(pair1); b.push_back(pair2);
+  }
+
+  double scost = DTW::dtw_distance_only(a, b, p);
+  return(scost);
+}
+
+
 double jensen_shannon(vector<double>& values1, vector<double>& values2){
 
   int len1 = values1.size();

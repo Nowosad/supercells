@@ -123,6 +123,8 @@ double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2,
     return jensen_shannon(values1, values2);
   } else if (type == "dtw"){
     return dtw3(values1, values2);
+  } else if (type == "dtw2d"){
+    return dtw2d(values1, values2);
   } else if (type != ""){
     return custom_distance(values1, values2, type);
   } else {

@@ -6,9 +6,9 @@
 \alias{_PACKAGE}
 \title{supercells: Superpixels of Spatial Data}
 \description{
-\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Creates superpixels based on input spatial data. This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters). It is based on the SLIC algorithm (Achanta et al. (2012) <doi:10.1109/TPAMI.2012.120>), and readapts it to work with arbitrary dissimilarity measures.
+Creates superpixels based on input spatial data. This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters). It is based on the SLIC algorithm (Achanta et al. (2012) \doi{10.1109/TPAMI.2012.120}), and readapts it to work with arbitrary dissimilarity measures.
 }
 \seealso{
 Useful links:
