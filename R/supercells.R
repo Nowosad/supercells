@@ -182,7 +182,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
     colnames(slic[[3]]) = names(x)
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]][empty_centers, , drop = FALSE]))
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
-    slic_sf = sf::st_cast(slic_sf, "MULTIPOLYGON")
+    # slic_sf = sf::st_cast(slic_sf, "MULTIPOLYGON")
     return(slic_sf)
   }
 }
