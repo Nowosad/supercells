@@ -1,39 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nowosad.github.io/supercells/404.html</loc>
+    <loc>https://jakubnowosad.com/supercells/404.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/LICENSE.html</loc>
+    <loc>https://jakubnowosad.com/supercells/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/articles/experimental.html</loc>
+    <loc>https://jakubnowosad.com/supercells/articles/experimental.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/articles/index.html</loc>
+    <loc>https://jakubnowosad.com/supercells/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/articles/motifels.html</loc>
+    <loc>https://jakubnowosad.com/supercells/articles/main-function.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/articles/one_var.html</loc>
+    <loc>https://jakubnowosad.com/supercells/articles/motifels.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/articles/rgb_vars.html</loc>
+    <loc>https://jakubnowosad.com/supercells/articles/one_var.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/authors.html</loc>
+    <loc>https://jakubnowosad.com/supercells/articles/rgb_vars.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/index.html</loc>
+    <loc>https://jakubnowosad.com/supercells/authors.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/reference/index.html</loc>
+    <loc>https://jakubnowosad.com/supercells/index.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/reference/supercells-package.html</loc>
+    <loc>https://jakubnowosad.com/supercells/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://nowosad.github.io/supercells/reference/supercells.html</loc>
+    <loc>https://jakubnowosad.com/supercells/reference/supercells-package.html</loc>
+  </url>
+  <url>
+    <loc>https://jakubnowosad.com/supercells/reference/supercells.html</loc>
   </url>
 </urlset>
