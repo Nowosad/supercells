@@ -102,9 +102,9 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jakubnowosad.com/supercells/">supercells</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/terra/" class="external-link">terra</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; terra 1.5.20</span></span>
+<span><span class="co">#&gt; terra 1.6.3</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Linking to GEOS 3.9.2, GDAL 3.3.2, PROJ 8.2.1; sf_use_s2() is TRUE</span></span>
+<span><span class="co">#&gt; Linking to GEOS 3.10.2, GDAL 3.4.3, PROJ 8.2.1; sf_use_s2() is TRUE</span></span>
 <span><span class="va">vol</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"raster/volcano.tif"</span>, package <span class="op">=</span> <span class="st">"supercells"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
@@ -119,6 +119,7 @@
 </h2>
 <p>See the package’s vignettes:</p>
 <ol style="list-style-type: decimal">
+<li><a href="https://jakubnowosad.com/supercells/articles/main-function.html">The <code>supercells()</code> function</a></li>
 <li><a href="https://jakubnowosad.com/supercells/articles/articles/one_var.html">Superpixels of a single raster layer</a></li>
 <li><a href="https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
 <li><a href="https://jakubnowosad.com/supercells/articles/articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
@@ -133,6 +134,9 @@
 <em>Generalizing the Simple Linear Iterative Clustering (SLIC) superpixels</em>, 2021-09-28, GIScience 2021 - <a href="https://jakubnowosad.com/giscience-2021/" class="external-link">slides</a>, <a href="https://www.youtube.com/watch?v=AlyEFkyKLUw&amp;t=2018s" class="external-link">video</a>
 </li>
 </ol>
+<p>Read the related article:</p>
+<ol style="list-style-type: decimal"><li>Nowosad, J., Stepinski, T. (2021). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, <a href="https://doi.org/10.1016/j.jag.2022.102935" class="external-link uri">https://doi.org/10.1016/j.jag.2022.102935</a>
+</li></ol>
 </div>
 <div class="section level2">
 <h2 id="contribution">Contribution<a class="anchor" aria-label="anchor" href="#contribution"></a>
