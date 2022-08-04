@@ -65,15 +65,20 @@ plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 
 See the package's vignettes:
 
-1. [Superpixels of a single raster layer](https://jakubnowosad.com/supercells/articles/articles/one_var.html)
-2. [Superpixels of an RGB raster](https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html)
-3. [Superpixels of spatial categorical patterns](https://jakubnowosad.com/supercells/articles/articles/motifels.html)
-4. [Experimental features of the supercells package](https://jakubnowosad.com/supercells/articles/articles/experimental.html)
+1. [The `supercells()` function](https://jakubnowosad.com/supercells/articles/main-function.html)
+2. [Superpixels of a single raster layer](https://jakubnowosad.com/supercells/articles/articles/one_var.html)
+3. [Superpixels of an RGB raster](https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html)
+4. [Superpixels of spatial categorical patterns](https://jakubnowosad.com/supercells/articles/articles/motifels.html)
+5. [Experimental features of the supercells package](https://jakubnowosad.com/supercells/articles/articles/experimental.html)
 
 Watch the presentations about this package and some related ideas:
 
 1. *Spatial segmentation in R using the supercells package*, 2021-09-02, OpenGeoHub Summer School - [slides](https://jakubnowosad.com/ogh2021/), [video](https://doi.org/10.5446/54880)
 2. *Generalizing the Simple Linear Iterative Clustering (SLIC) superpixels*, 2021-09-28, GIScience 2021 - [slides](https://jakubnowosad.com/giscience-2021/), [video](https://www.youtube.com/watch?v=AlyEFkyKLUw&t=2018s)
+
+Read the related article:
+
+1. Nowosad, J., Stepinski, T. (2021). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935
 
 ## Contribution
 

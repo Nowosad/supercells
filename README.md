@@ -47,9 +47,9 @@ install.packages("supercells", repos = "https://nowosad.r-universe.dev")
 ``` r
 library(supercells)
 library(terra)
-#> terra 1.5.20
+#> terra 1.6.3
 library(sf)
-#> Linking to GEOS 3.9.2, GDAL 3.3.2, PROJ 8.2.1; sf_use_s2() is TRUE
+#> Linking to GEOS 3.10.2, GDAL 3.4.3, PROJ 8.2.1; sf_use_s2() is TRUE
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 plot(vol)
 ```
@@ -68,13 +68,15 @@ plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 
 See the package’s vignettes:
 
-1.  [Superpixels of a single raster
+1.  [The `supercells()`
+    function](https://jakubnowosad.com/supercells/articles/main-function.html)
+2.  [Superpixels of a single raster
     layer](https://jakubnowosad.com/supercells/articles/articles/one_var.html)
-2.  [Superpixels of an RGB
+3.  [Superpixels of an RGB
     raster](https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html)
-3.  [Superpixels of spatial categorical
+4.  [Superpixels of spatial categorical
     patterns](https://jakubnowosad.com/supercells/articles/articles/motifels.html)
-4.  [Experimental features of the supercells
+5.  [Experimental features of the supercells
     package](https://jakubnowosad.com/supercells/articles/articles/experimental.html)
 
 Watch the presentations about this package and some related ideas:
@@ -87,6 +89,13 @@ Watch the presentations about this package and some related ideas:
     superpixels*, 2021-09-28, GIScience 2021 -
     [slides](https://jakubnowosad.com/giscience-2021/),
     [video](https://www.youtube.com/watch?v=AlyEFkyKLUw&t=2018s)
+
+Read the related article:
+
+1.  Nowosad, J., Stepinski, T. (2021). Extended SLIC superpixels
+    algorithm for applications to non-imagery geospatial rasters.
+    International Journal of Applied Earth Observation and
+    Geoinformation, <https://doi.org/10.1016/j.jag.2022.102935>
 
 ## Contribution
 
