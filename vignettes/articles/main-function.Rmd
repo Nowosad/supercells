@@ -18,7 +18,8 @@ knitr::opts_chunk$set(
   # fig.height = 5
 )
 ```
-The main function in this package is called `supercells()`.
+
+The main function in this package [@Nowosad2022] is called `supercells()`.
 An overview of its arguments is shown in the table below.
 
 This function expects raster data with one or more layers (representing, for example, different bands, variables, or dates) in the form of a **terra**'s `SpatRaster` object or a **stars**'s `stars` object. 

@@ -47,9 +47,9 @@ install.packages("supercells", repos = "https://nowosad.r-universe.dev")
 ``` r
 library(supercells)
 library(terra)
-#> terra 1.6.3
+#> terra 1.6.49
 library(sf)
-#> Linking to GEOS 3.10.2, GDAL 3.4.3, PROJ 8.2.1; sf_use_s2() is TRUE
+#> Linking to GEOS 3.11.0, GDAL 3.5.2, PROJ 9.0.1; sf_use_s2() is TRUE
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 plot(vol)
 ```
@@ -92,7 +92,7 @@ Watch the presentations about this package and some related ideas:
 
 Read the related article:
 
-1.  Nowosad, J., Stepinski, T. (2021). Extended SLIC superpixels
+1.  Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels
     algorithm for applications to non-imagery geospatial rasters.
     International Journal of Applied Earth Observation and
     Geoinformation, <https://doi.org/10.1016/j.jag.2022.102935>
