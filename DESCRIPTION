@@ -1,6 +1,6 @@
 Package: supercells
 Title: Superpixels of Spatial Data
-Version: 0.9.1
+Version: 0.9.2
 Authors@R: c(
     person(given = "Jakub", family = "Nowosad", 
     role = c("aut", "cre"),
@@ -23,7 +23,7 @@ Imports:
     philentropy (>= 0.6.0),
     future.apply
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 LinkingTo: 
     cpp11
 SystemRequirements: C++11

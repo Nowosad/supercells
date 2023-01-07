@@ -39,7 +39,7 @@ It accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::med
 
 \item{iter}{The number of iterations performed to create the output.}
 
-\item{transform}{Transformation to be performed on the input. Currently implemented is "to_LAB" allowing to convert RGB raster to a raster in the LAB color space. By default, no transformation is performed. (This argument is experimental and may be removed in the future).}
+\item{transform}{Transformation to be performed on the input. By default, no transformation is performed. Currently available transformation is "to_LAB": first, the conversion from RGB to the LAB color space is applied, then the supercells algorithm is run, and afterward, a reverse transformation is performed on the obtained results. (This argument is experimental and may be removed in the future).}
 
 \item{step}{The distance (number of cells) between initial supercells' centers. You can use either \code{k} or \code{step}.}
 
