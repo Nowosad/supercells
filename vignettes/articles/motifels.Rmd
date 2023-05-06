@@ -53,7 +53,7 @@ This can be done with **motif** -- below, we calculate compositions of land cove
 ```{r, message = FALSE}
 comp_output = lsp_signature(landcover, type = "composition", window = 20,
                              normalization = "pdf", ordered = FALSE)
-comp_output = lsp_restructure(comp_output)
+#comp_output = lsp_restructure(comp_output)
 comp_output = lsp_add_terra(comp_output)
 comp_output
 ```
