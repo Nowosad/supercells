@@ -18,6 +18,7 @@
 #' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
 #' @param step The distance (number of cells) between initial supercells' centers. You can use either `k` or `step`.
 #' @param transform Transformation to be performed on the input. By default, no transformation is performed. Currently available transformation is "to_LAB": first, the conversion from RGB to the LAB color space is applied, then the supercells algorithm is run, and afterward, a reverse transformation is performed on the obtained results. (This argument is experimental and may be removed in the future).
+#' @param metadata Logical. If `TRUE`, the output object will have metadata columns ("supercells", "x", "y"). If `FALSE`, the output object will not have metadata columns.
 #' @param chunks Should the input (`x`) be split into chunks before deriving supercells? Either `FALSE` (default), `TRUE` (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).
 #' @param future Should the future package be used for parallelization of the calculations? Default: `FALSE`. If `TRUE`, you also need to specify `future::plan()`.
 #' @param verbose An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).
@@ -55,7 +56,7 @@
 #' # plot(ortho)
 #' # plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
-                      iter = 10, transform = NULL, step, minarea, chunks = FALSE, future = FALSE, verbose = 0){
+                      iter = 10, transform = NULL, step, minarea, metadata = TRUE, chunks = FALSE, future = FALSE, verbose = 0){
   if (!inherits(x, "SpatRaster")){
     if (inherits(x, "stars")){
       x = terra::rast(x)
@@ -126,6 +127,9 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
 
   # combine
   slic_sf = update_supercells_ids(slic_sf)
+  if (isFALSE(metadata)){
+    slic_sf = slic_sf[, -which(names(slic_sf) %in% c("supercells", "x", "y"))]
+  }
   return(slic_sf)
 }
 
