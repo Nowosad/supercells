@@ -1,13 +1,13 @@
 pandoc: 2.19.2
 pkgdown: 2.0.7.9000
-pkgdown_sha: c354aa7e5ea1f9936692494c28c89e5bdd31fc68
+pkgdown_sha: c9206802f2888992de92aa41f517ba7812f05331
 articles:
   experimental: experimental.html
   main-function: main-function.html
   motifels: motifels.html
   one_var: one_var.html
   rgb_vars: rgb_vars.html
-last_built: 2023-05-06T15:49Z
+last_built: 2023-08-07T08:15Z
 urls:
   reference: https://jakubnowosad.com/supercells/reference
   article: https://jakubnowosad.com/supercells/articles
