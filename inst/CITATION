@@ -1,13 +1,12 @@
 citHeader("To cite supercells in publications, please use:")
 
-citEntry(entry = "article",
+bibentry(bibtype = "Article",
   author = c(person("Jakub", "Nowosad"), person("Tomasz", "Stepinski")),
   title = "Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters",
   journal = "International Journal of Applied Earth Observation and Geoinformation",
   volume = "112",
   year  = "2022",
   doi = "10.1016/j.jag.2022.102935",
-  url = "https://doi.org/10.1016/j.jag.2022.102935",
+  #url = "https://doi.org/10.1016/j.jag.2022.102935",
   textVersion = "Nowosad, J., & Stepinski, T. F. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, 112, 102935."
-
 )
