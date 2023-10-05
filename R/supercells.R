@@ -171,6 +171,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
       slic[[3]] = grDevices::convertColor(slic[[3]], from = "Lab", to = "sRGB") * 255
     }
   }
+  if (nrow(slic[[2]]) == 0 || all(slic[[2]] == 0)) stop("I cannot return supercells. This may be due to a large number of missing values in the 'x' object. Try to either trim your data to the non-NA area (e.g., with 'terra::trim()') or increase the number of expected supercells.", call. = FALSE)
   slic_sf = terra::rast(slic[[1]])
   terra::NAflag(slic_sf) = -1
   terra::crs(slic_sf) = terra::crs(x)
