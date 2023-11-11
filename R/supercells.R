@@ -31,30 +31,28 @@
 #'
 #' @examples
 #' library(supercells)
-#' library(terra)
-#' library(sf)
 #' # One variable
 #'
-#' vol = rast(system.file("raster/volcano.tif", package = "supercells"))
+#' vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 #' vol_slic1 = supercells(vol, k = 50, compactness = 1)
-#' plot(vol)
-#' plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
+#' terra::plot(vol)
+#' plot(sf::st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 #'
 #' # RGB variables
-#' # ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
+#' # ortho = terra::rast(system.file("raster/ortho.tif", package = "supercells"))
 #' # ortho_slic1 = supercells(ortho, k = 1000, compactness = 10, transform = "to_LAB")
-#' # plot(ortho)
-#' # plot(st_geometry(ortho_slic1), add = TRUE)
+#' # terra::plot(ortho)
+#' # plot(sf::st_geometry(ortho_slic1), add = TRUE)
 #' #
 #' # ### RGB variables - colored output
 #' #
 #' # rgb_to_hex = function(x){
 #' #   apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
 #' # }
-#' # avg_colors = rgb_to_hex(st_drop_geometry(ortho_slic1[4:6]))
+#' # avg_colors = rgb_to_hex(sf::st_drop_geometry(ortho_slic1[4:6]))
 #' #
-#' # plot(ortho)
-#' # plot(st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
+#' # terra::plot(ortho)
+#' # plot(sf::st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
                       iter = 10, transform = NULL, step, minarea, metadata = TRUE, chunks = FALSE, future = FALSE, verbose = 0){
   if (!inherits(x, "SpatRaster")){
