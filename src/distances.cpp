@@ -3,7 +3,6 @@
 // using namespace cpp11::literals; // so we can use ""_nm syntax
 
 double euclidean(std::vector<double>& values1, std::vector<double>& values2){
-
   int len1 = values1.size();
   double dist = 0.0;
   double diff = 0.0;
@@ -16,7 +15,6 @@ double euclidean(std::vector<double>& values1, std::vector<double>& values2){
 }
 
 double manhattan(vector<double>& values1, vector<double>& values2){
-
   int len1 = values1.size();
   double dist = 0.0;
   double diff = 0.0;
@@ -76,7 +74,6 @@ double dtw2d(std::vector<double>& values1, std::vector<double>& values2){
 
 
 double jensen_shannon(vector<double>& values1, vector<double>& values2){
-
   int len1 = values1.size();
   double sum1       = 0.0;
   double sum2       = 0.0;
@@ -106,19 +103,10 @@ double custom_log2(const double& x){
   }
 }
 
-double custom_distance(vector<double>& values1, vector<double>& values2, std::string& type){
-  // std::vector<double> values_all;
-  // cpp11::writable::doubles values_all;
-  // values_all.reserve(values1.size() + values2.size()); // preallocate memory
-  // values_all.insert(values_all.end(), values1.begin(), values1.end());
-  // values_all.insert(values_all.end(), values2.begin(), values2.end());
-  // values_all.attr("dim") = (2, values1.size());
-  //
-  // auto philentropy_distance = cpp11::package("philentropy")["distance"];
-  // philentropy_distance(values_all, "method"_nm = type);
+double custom_distance(vector<double>& values1, vector<double>& values2, std::string& dist_name){
   auto single_distance = cpp11::package("philentropy")["dist_one_one"];
   double p = NA_REAL;
   bool testNA = false;
   std::string unit = "log2";
-  return single_distance(values1, values2, type, p, testNA, unit);
+  return single_distance(values1, values2, dist_name, p, testNA, unit);
 }

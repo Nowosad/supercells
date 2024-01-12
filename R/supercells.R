@@ -64,12 +64,12 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   }
   mat = dim(x)[1:2]
   mode(mat) = "integer"
-  new_centers = matrix(c(0L, 0L), ncol = 2)
+  input_centers = matrix(c(0L, 0L), ncol = 2)
   if (!missing(k) && inherits(k, "sf")){
     if (chunks > 0){
       stop(call. = FALSE, "Chunks cannot be used for custom cluster centers!")
     }
-    new_centers = centers_to_dims(x, k)
+    input_centers = centers_to_dims(x, k)
   } else if (!missing(step) && !missing(k)){
     stop("You can specify either k or step, not both", call. = FALSE)
   } else if (missing(step) && missing(k)){
@@ -87,9 +87,9 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     if (!(dist_fun %in% c("euclidean", "jsd", "dtw", "dtw2d", philentropy::getDistMethods()))){
       stop("The provided distance function ('dist_fun') does not exist!", call. = FALSE)
     }
-    dist_type = dist_fun; dist_fun = function() ""
+    dist_name = dist_fun; dist_fun = function() ""
   } else {
-    dist_type = ""
+    dist_name = ""
   }
   if (missing(minarea)){
     minarea = 0
@@ -111,16 +111,16 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     oopts = options(future.globals.maxSize = +Inf)
     on.exit(options(oopts))
     slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
-                                         step = step, compactness = compactness, dist_type = dist_type,
+                                         step = step, compactness = compactness, dist_name = dist_name,
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                                          clean = clean, iter = iter, minarea = minarea, transform = transform,
-                                         new_centers = new_centers, verbose = verbose, future.seed = TRUE)
+                                         input_centers = input_centers, verbose = verbose, future.seed = TRUE)
   } else{
     slic_sf = apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
-                                         step = step, compactness = compactness, dist_type = dist_type,
+                                         step = step, compactness = compactness, dist_name = dist_name,
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                                          clean = clean, iter = iter, minarea = minarea, transform = transform,
-                                         new_centers = new_centers, verbose = verbose)
+                                         input_centers = input_centers, verbose = verbose)
   }
 
   # combine
@@ -132,9 +132,9 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
 }
 
 # ext = c(1, 10, 1, 10)
-run_slic_chunks = function(ext, x, step, compactness, dist_type,
+run_slic_chunks = function(ext, x, step, compactness, dist_name,
                            dist_fun, avg_fun_fun, avg_fun_name, clean,
-                           iter, minarea, transform, new_centers, verbose){
+                           iter, minarea, transform, input_centers, verbose){
   centers = TRUE
   if (is.character(x)){
     x = terra::rast(x)
@@ -152,10 +152,10 @@ run_slic_chunks = function(ext, x, step, compactness, dist_type,
       vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
     }
   }
-  slic = run_slic(mat, vals = vals, step = step, nc = compactness, con = clean,
-                  centers = centers, type = dist_type, type_fun = dist_fun,
+  slic = run_slic(mat, vals = vals, step = step, compactness = compactness, clean = clean,
+                  centers = centers, dist_name = dist_name, dist_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                  iter = iter, lims = minarea, input_centers = new_centers, verbose = verbose)
+                  iter = iter, minarea = minarea, input_centers = input_centers, verbose = verbose)
   if (iter == 0){
     slic_sf = data.frame(stats::na.omit(slic[[2]]))
     slic_sf[["X1"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["X1"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
@@ -260,10 +260,12 @@ prep_chunks_ext = function(dim_x, limit){
   return(row_cols_chunks)
 }
 
+# check if raster is in memory
 in_memory = function(x){
   terra::sources(x) == ""
 }
 
+# converts sf object ('y') to a matrix of coordinates based on a raster ('x') dimensions
 centers_to_dims = function(x, y){
   y_coords = sf::st_coordinates(sf::st_geometry(y))
   y_col = terra::colFromX(x, y_coords[, 1])
@@ -273,6 +275,7 @@ centers_to_dims = function(x, y){
   unique(center_dims)
 }
 
+# creates a sequence of integers from 'from' to 'to' with a step 'by' (including the 'to' value)
 seq_last = function(from, to, by){
   vec = do.call(what = seq.int, args = list(from, to, by))
   if (utils::tail(vec, 1) != to) {
