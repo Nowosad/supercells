@@ -103,23 +103,6 @@ void Slic::inits(integers mat, doubles_matrix<> vals,
   }
 }
 
-double Slic::get_vals_dist(vector<double>& values1, vector<double>& values2,
-                           std::string& dist_name, cpp11::function dist_fun){
-  if (dist_name == "euclidean"){
-    return euclidean(values1, values2);
-  } else if (dist_name == "jsd"){
-    return jensen_shannon(values1, values2);
-  } else if (dist_name == "dtw"){
-    return dtw3(values1, values2);
-  } else if (dist_name == "dtw2d"){
-    return dtw2d(values1, values2);
-  } else if (dist_name != ""){
-    return custom_distance(values1, values2, dist_name);
-  } else {
-    return dist_fun(values1, values2);
-  }
-}
-
 double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
                           std::string& dist_name, cpp11::function dist_fun) {
 
@@ -180,6 +163,3 @@ vector<int> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
   }
   return loc_min;
 }
-
-
-

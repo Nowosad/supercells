@@ -54,10 +54,6 @@ class Slic {
                          std::string& dist_name, cpp11::function dist_fun,
                          integers_matrix<> input_centers);
 
-    /* Calculate the values distance between a center and an individual pixel. */
-    double get_vals_dist(vector<double>& values1, vector<double>& values2,
-                         std::string& dist_name, cpp11::function dist_fun);
-
     /* Compute the total (spatial and value) distance between a center and an individual pixel. */
     double compute_dist(int& ci, int& y, int& x, vector<double>& value,
                         std::string& dist_name, cpp11::function dist_fun);
