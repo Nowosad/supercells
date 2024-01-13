@@ -62,8 +62,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
       stop("The SpatRaster class is expected as an input", call. = FALSE)
     }
   }
-  mat = dim(x)[1:2]
-  mode(mat) = "integer"
+  # prepare initial supercells' centers
   input_centers = matrix(c(0L, 0L), ncol = 2)
   if (!missing(k) && inherits(k, "sf")){
     if (chunks > 0){
@@ -75,14 +74,17 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   } else if (missing(step) && missing(k)){
     stop("You need to specify either k or step", call. = FALSE)
   } else if (missing(step)){
+    mat = dim(x)[1:2]; mode(mat) = "integer"
     superpixelsize = round((mat[1] * mat[2]) / k + 0.5)
     step = round(sqrt(superpixelsize) + 0.5)
   }
+  # prepare averaging function (mean is the default)
   if (is.character(avg_fun)){
     avg_fun_name = avg_fun; avg_fun_fun = function() ""
   } else {
     avg_fun_name = "";      avg_fun_fun = avg_fun
   }
+  # prepare distance function (euclidean is the default)
   if (is.character(dist_fun)){
     if (!(dist_fun %in% c("euclidean", "jsd", "dtw", "dtw2d", philentropy::getDistMethods()))){
       stop("The provided distance function ('dist_fun') does not exist!", call. = FALSE)
@@ -91,14 +93,17 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   } else {
     dist_name = ""
   }
+  # prepare minarea
   if (missing(minarea)){
     minarea = 0
   }
+  # disables cleaning if iter = 0
   if (iter == 0){
     clean = FALSE
   }
-  # split
+  # get extents of chunks
   chunk_ext = prep_chunks_ext(dim(x), limit = chunks)
+  # run the algorithm on chunks
   if (future){
     if (in_memory(x)){
         names_x = names(x)
@@ -115,23 +120,24 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                                          clean = clean, iter = iter, minarea = minarea, transform = transform,
                                          input_centers = input_centers, verbose = verbose, future.seed = TRUE)
-  } else{
+  } else {
     slic_sf = apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
                                          step = step, compactness = compactness, dist_name = dist_name,
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                                          clean = clean, iter = iter, minarea = minarea, transform = transform,
                                          input_centers = input_centers, verbose = verbose)
   }
-
-  # combine
+  # combines the chunks results by updating supercells ids
   slic_sf = update_supercells_ids(slic_sf)
+  # removes metadata columns if metadata = FALSE
   if (isFALSE(metadata)){
     slic_sf = slic_sf[, -which(names(slic_sf) %in% c("supercells", "x", "y"))]
   }
+  # returns the result
   return(slic_sf)
 }
 
-# ext = c(1, 10, 1, 10)
+# run the algorithm on the area defined by 'ext'
 run_slic_chunks = function(ext, x, step, compactness, dist_name,
                            dist_fun, avg_fun_fun, avg_fun_name, clean,
                            iter, minarea, transform, input_centers, verbose){
@@ -139,23 +145,25 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
   if (is.character(x)){
     x = terra::rast(x)
   }
+  # crops the input to the chunk extent
   x = x[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
-  ext_x = terra::ext(x)
-  mat = dim(x)[1:2]
-  mode(mat) = "integer"
+  # gets the number of rows and columns, and the values of the input
+  mat = dim(x)[1:2]; mode(mat) = "integer"
   vals = as.matrix(terra::as.data.frame(x, cells = FALSE, na.rm = FALSE))
   mode(vals) = "double"
-
+  # transforms the input to LAB color space if transform = "to_LAB"
   if (!is.null(transform)){
     if (transform == "to_LAB"){
       vals = vals / 255
       vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
     }
   }
+  # runs the algorithm
   slic = run_slic(mat, vals = vals, step = step, compactness = compactness, clean = clean,
                   centers = centers, dist_name = dist_name, dist_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                   iter = iter, minarea = minarea, input_centers = input_centers, verbose = verbose)
+  # returns the initial centers if iter = 0
   if (iter == 0){
     slic_sf = data.frame(stats::na.omit(slic[[2]]))
     slic_sf[["X1"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["X1"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
@@ -164,24 +172,26 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
     sf::st_crs(slic_sf) = terra::crs(x)
     return(slic_sf)
   }
+  # transforms the output back to RGB color space if transform = "to_LAB"
   if (!is.null(transform)){
     if (transform == "to_LAB"){
       slic[[3]] = grDevices::convertColor(slic[[3]], from = "Lab", to = "sRGB") * 255
     }
   }
+  # prepares the output: an sf object with supercells' ids, coordinates, and average values
   if (nrow(slic[[2]]) == 0 || all(slic[[2]] == 0)) stop("I cannot return supercells. This may be due to a large number of missing values in the 'x' object. Try to either trim your data to the non-NA area (e.g., with 'terra::trim()') or increase the number of expected supercells.", call. = FALSE)
   slic_sf = terra::rast(slic[[1]])
   terra::NAflag(slic_sf) = -1
   terra::crs(slic_sf) = terra::crs(x)
-  terra::ext(slic_sf) = ext_x
+  terra::ext(slic_sf) = terra::ext(x)
   slic_sf = sf::st_as_sf(terra::as.polygons(slic_sf, dissolve = TRUE))
   if (nrow(slic_sf) > 0){
     empty_centers = slic[[2]][,1] != 0 | slic[[2]][,2] != 0
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[2]][empty_centers, ]))
     names(slic_sf) = c("supercells", "x", "y", "geometry")
     slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
-    slic_sf[["x"]] = as.vector(ext_x)[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
-    slic_sf[["y"]] = as.vector(ext_x)[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
+    slic_sf[["x"]] = as.vector(terra::ext(x))[[1]] + (slic_sf[["x"]] * terra::res(x)[[1]]) + (terra::res(x)[[1]]/2)
+    slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     colnames(slic[[3]]) = names(x)
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]][empty_centers, , drop = FALSE]))
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
@@ -190,6 +200,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
   }
 }
 
+# updates supercells ids for chunks
 update_supercells_ids = function(x){
   x = x[lapply(x, length) > 0]
   no_updates = length(x) - 1
@@ -201,12 +212,14 @@ update_supercells_ids = function(x){
   return(x)
 }
 
+# predicts (rough estimation) memory usage of the algorithm
 pred_mem_usage = function(dim_x){
   mem_bytes = dim_x[1] * dim_x[2] * dim_x[3] * 8 #in bytes
   mem_gb = mem_bytes / (1024 * 1024 * 1024)
   mem_gb
 }
 
+# looks for the optimal chunk size
 optimize_chunk_size = function(dim_x, limit, by = 500){
   min_diff_memory = function(a, dim_x, limit){
     abs((dim_x[3] * a^2 * 8 / (1024 * 1024 * 1024)) - limit)
@@ -217,6 +230,13 @@ optimize_chunk_size = function(dim_x, limit, by = 500){
   return(opti$minimum)
 }
 
+# prepares the extents of chunks:
+# if limit = FALSE, the extent of the whole input is returned
+# if limit = TRUE, the extent of the input is split into chunks, 
+#                  where the size of each raster chunk is optimized to be as close to
+#                  the (hardcoded) limit of 1GB as possible
+# if limit is numeric, the extent of the input is split into chunks,
+#                      where the width/height of each chunk is equal to the limit
 prep_chunks_ext = function(dim_x, limit){
   if (is.numeric(limit)){
     wsize = limit
@@ -251,7 +271,7 @@ prep_chunks_ext = function(dim_x, limit){
         row_cols_chunks[l, 4] = dims2[j + 1]
       }
     }
-  } else{
+  } else {
     row_cols_chunks = cbind(min_row = 1,
                             max_row = dim_x[1],
                             min_col = 1,

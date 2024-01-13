@@ -5,7 +5,6 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
                                 cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter,
                                 integers_matrix<> input_centers,
                                 int verbose){
-  // cout << "generate_superpixels" << endl;
   this->step = step;
   this->compactness = compactness;
 
@@ -15,7 +14,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
   inits(mat, vals, dist_name, dist_fun, input_centers);
   if (verbose > 0) Rprintf("Completed\n");
 
-  /* Run EM for 10 iterations (as prescribed by the algorithm). */
+  /* Run for provided number of iterations. */
   for (int itr = 0; itr < iter; itr++) {
 
     if (verbose > 0) Rprintf("Iteration: %u/%u\r", itr + 1, iter);
@@ -26,6 +25,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         distances[i][j] = FLT_MAX;
       }
     }
+
     for (int l = 0; l < (int) centers.size(); l++) {
       /* Only compare to pixels in a 2 x step by 2 x step region. */
       for (int m = centers[l][1] - step; m < centers[l][1] + step; m++) {
@@ -60,6 +60,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         }
       }
     }
+
     /* Clear the center values. */
     /* Clear the center_vals values. */
     for (int m = 0; m < (int) centers.size(); m++) {
@@ -69,7 +70,8 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
       }
       center_counts[m] = 0;
     }
-
+    
+    /* Compute the new cluster centers when the average function is not mean. */
     if (avg_fun_name != "mean"){
       multimap <int, int> c_id_centers_vals;
       for (int l = 0; l < mat_dims[1]; l++) {
@@ -119,7 +121,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         }
       }
     } else if (avg_fun_name == "mean"){
-      // /* Compute the new cluster centers. */
+      /* Compute the new cluster centers when the average function is mean. */
       for (int l = 0; l < mat_dims[1]; l++) {
         for (int k = 0; k < mat_dims[0]; k++) {
           int c_id = clusters[l][k];
@@ -141,8 +143,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
           }
         }
       }
-
-      // /* Normalize the clusters  (and their centers). */
+      /* Normalize the clusters (and their centers). */
       for (int l = 0; l < (int) centers.size(); l++) {
         if (center_counts[l] > 0){
           centers[l][0] /= center_counts[l];
@@ -153,7 +154,6 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         }
       }
     }
-
   }
   if (verbose > 0) Rprintf("\n");
 }
