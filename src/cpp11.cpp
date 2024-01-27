@@ -5,6 +5,13 @@
 #include "cpp11/declarations.hpp"
 #include <R_ext/Visibility.h>
 
+// run_compactness_estimation.cpp
+writable::doubles run_compactness_estimation(integers mat, doubles_matrix<> vals, double step, std::string dist_name, cpp11::function dist_fun, integers_matrix<> input_centers);
+extern "C" SEXP _supercells_run_compactness_estimation(SEXP mat, SEXP vals, SEXP step, SEXP dist_name, SEXP dist_fun, SEXP input_centers) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(run_compactness_estimation(cpp11::as_cpp<cpp11::decay_t<integers>>(mat), cpp11::as_cpp<cpp11::decay_t<doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<double>>(step), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun), cpp11::as_cpp<cpp11::decay_t<integers_matrix<>>>(input_centers)));
+  END_CPP11
+}
 // run_slic.cpp
 list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double compactness, bool clean, bool centers, std::string dist_name, cpp11::function dist_fun, cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int minarea, cpp11::integers_matrix<> input_centers, int verbose);
 extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP compactness, SEXP clean, SEXP centers, SEXP dist_name, SEXP dist_fun, SEXP avg_fun_fun, SEXP avg_fun_name, SEXP iter, SEXP minarea, SEXP input_centers, SEXP verbose) {
@@ -15,7 +22,8 @@ extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP compac
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
-    {"_supercells_run_slic", (DL_FUNC) &_supercells_run_slic, 14},
+    {"_supercells_run_compactness_estimation", (DL_FUNC) &_supercells_run_compactness_estimation,  6},
+    {"_supercells_run_slic",                   (DL_FUNC) &_supercells_run_slic,                   14},
     {NULL, NULL, 0}
 };
 }

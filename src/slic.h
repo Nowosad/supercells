@@ -75,6 +75,10 @@ class Slic {
     Slic();
     ~Slic();
 
+    writable::doubles estimate_compactness(integers mat, doubles_matrix<> vals, double step,
+                                           std::string& dist_name, cpp11::function dist_fun,
+                                           integers_matrix<> input_centers);
+
     /* Generate an over-segmentation for an image. */
     void generate_superpixels(integers mat, doubles_matrix<> vals, double step, double compactness,
                               std::string& dist_name, cpp11::function dist_fun,
