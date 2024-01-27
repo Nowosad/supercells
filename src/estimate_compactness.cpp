@@ -1,6 +1,6 @@
 #include "slic.h"
 
-writable::doubles Slic::estimate_compactness(integers mat, doubles_matrix<> vals, double step,
+doubles Slic::estimate_compactness(integers mat, doubles_matrix<> vals, double step,
                                 std::string& dist_name, cpp11::function dist_fun,
                                 integers_matrix<> input_centers){
 
@@ -18,7 +18,7 @@ writable::doubles Slic::estimate_compactness(integers mat, doubles_matrix<> vals
   }
   /////////////////////////////////
   //create vector that stores maximum value distance for each center
-  vector<double> max_dist; max_dist.reserve(centers.size());
+  writable::doubles max_dist; max_dist.reserve(centers.size());
 
   for (int l = 0; l < (int) centers.size(); l++) {
     double max_d = 0; //initialize maximum distance as 0
@@ -52,20 +52,23 @@ writable::doubles Slic::estimate_compactness(integers mat, doubles_matrix<> vals
       }
       max_dist[l] = max_d; //store maximum value for corresponding center
     }
+    // cout << max_dist[l] << endl;
   }
-  //summarize across cluster centers
-  writable::doubles est_compactness(4);
-  est_compactness[0] = *std::min_element(max_dist.begin(), max_dist.end()); //minimum across cluster centers
-  est_compactness[1] = median(max_dist); //median across cluster centers
-  est_compactness[2] = mean(max_dist); //mean across cluster centers
-  est_compactness[3] = *std::max_element(max_dist.begin(), max_dist.end()); //maximum across cluster centers
-  writable::strings names(4); //set names of output vector
-  names[0] = "min";
-  names[1] = "median";
-  names[2] = "mean";
-  names[3] = "max";
-  est_compactness.attr("names") = names;
-  return est_compactness; //return estimated compactness summary
+  // cout << max_dist[0] << endl;
+
+  // //summarize across cluster centers
+  // writable::doubles est_compactness(4);
+  // est_compactness[0] = *std::min_element(max_dist.begin(), max_dist.end()); //minimum across cluster centers
+  // est_compactness[1] = median(max_dist); //median across cluster centers
+  // est_compactness[2] = mean(max_dist); //mean across cluster centers
+  // est_compactness[3] = *std::max_element(max_dist.begin(), max_dist.end()); //maximum across cluster centers
+  // writable::strings names(4); //set names of output vector
+  // names[0] = "min";
+  // names[1] = "median";
+  // names[2] = "mean";
+  // names[3] = "max";
+  // est_compactness.attr("names") = names;
+  return max_dist; //return estimated compactness summary
 }
 
 

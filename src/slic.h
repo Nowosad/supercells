@@ -75,7 +75,7 @@ class Slic {
     Slic();
     ~Slic();
 
-    writable::doubles estimate_compactness(integers mat, doubles_matrix<> vals, double step,
+    doubles estimate_compactness(integers mat, doubles_matrix<> vals, double step,
                                            std::string& dist_name, cpp11::function dist_fun,
                                            integers_matrix<> input_centers);
 
