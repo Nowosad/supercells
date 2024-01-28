@@ -8,6 +8,6 @@ doubles run_compactness_estimation(integers mat, doubles_matrix<> vals, double s
   Slic slic;
 
   doubles result = slic.estimate_compactness(mat, vals, step, dist_name, dist_fun, input_centers);
-  cout << result[0] << endl;
+  // cout << result[0] << endl;
   return result;
 }

@@ -18,7 +18,7 @@ doubles Slic::estimate_compactness(integers mat, doubles_matrix<> vals, double s
   }
   /////////////////////////////////
   //create vector that stores maximum value distance for each center
-  writable::doubles max_dist; max_dist.reserve(centers.size());
+  writable::doubles max_dist(centers.size());
 
   for (int l = 0; l < (int) centers.size(); l++) {
     double max_d = 0; //initialize maximum distance as 0
