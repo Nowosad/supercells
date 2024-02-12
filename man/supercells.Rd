@@ -15,6 +15,7 @@ supercells(
   transform = NULL,
   step,
   minarea,
+  return_distances = FALSE,
   metadata = TRUE,
   chunks = FALSE,
   future = FALSE,

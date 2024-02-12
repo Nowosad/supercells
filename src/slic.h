@@ -32,7 +32,12 @@ class Slic {
     /* The values of the centers. */
     vector<vector<int> > centers;
     vector<vector<double> > centers_vals;
-
+        
+    /* The maximum distance values between the center and a pixel */
+    vector<double> max_distance_vals;
+    vector<double> max_distance_spatial;
+    vector<double> max_distance_total;
+    
     /* The number of occurrences of each center. */
     vector<int> center_counts;
 
@@ -57,6 +62,9 @@ class Slic {
     /* Compute the total (spatial and value) distance between a center and an individual pixel. */
     double compute_dist(int& ci, int& y, int& x, vector<double>& value,
                         std::string& dist_name, cpp11::function dist_fun);
+    
+    double get_spatial_dist(int& ci, int& y, int& x);
+    double get_total_dist(double values_distance, double spatial_distance);
 
     /* Find the pixel with the lowest gradient in a 3x3 surrounding. */
     vector<int> find_local_minimum(doubles_matrix<> vals, int& y, int& x,
@@ -79,6 +87,7 @@ class Slic {
     void generate_superpixels(integers mat, doubles_matrix<> vals, double step, double compactness,
                               std::string& dist_name, cpp11::function dist_fun,
                               cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter,
+                              bool return_distances,
                               integers_matrix<> input_centers, int verbose);
 
     /* Enforce connectivity for an image. */
@@ -91,4 +100,6 @@ class Slic {
     writable::integers_matrix<> return_clusters();
     /* Returns supercells centers' values*/
     writable::doubles_matrix<> return_centers_vals();
+    /* Returns max distance values*/
+    writable::doubles_matrix<> return_max_distances();
 };

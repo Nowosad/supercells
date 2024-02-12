@@ -6,16 +6,16 @@
 #include <R_ext/Visibility.h>
 
 // run_slic.cpp
-list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double compactness, bool clean, bool centers, std::string dist_name, cpp11::function dist_fun, cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int minarea, cpp11::integers_matrix<> input_centers, int verbose);
-extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP compactness, SEXP clean, SEXP centers, SEXP dist_name, SEXP dist_fun, SEXP avg_fun_fun, SEXP avg_fun_name, SEXP iter, SEXP minarea, SEXP input_centers, SEXP verbose) {
+list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double compactness, bool clean, bool centers, std::string dist_name, cpp11::function dist_fun, cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int minarea, bool return_distances, cpp11::integers_matrix<> input_centers, int verbose);
+extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP compactness, SEXP clean, SEXP centers, SEXP dist_name, SEXP dist_fun, SEXP avg_fun_fun, SEXP avg_fun_name, SEXP iter, SEXP minarea, SEXP return_distances, SEXP input_centers, SEXP verbose) {
   BEGIN_CPP11
-    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<cpp11::integers>>(mat), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<bool>>(clean), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(avg_fun_fun), cpp11::as_cpp<cpp11::decay_t<std::string>>(avg_fun_name), cpp11::as_cpp<cpp11::decay_t<int>>(iter), cpp11::as_cpp<cpp11::decay_t<int>>(minarea), cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(input_centers), cpp11::as_cpp<cpp11::decay_t<int>>(verbose)));
+    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<cpp11::integers>>(mat), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<bool>>(clean), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(avg_fun_fun), cpp11::as_cpp<cpp11::decay_t<std::string>>(avg_fun_name), cpp11::as_cpp<cpp11::decay_t<int>>(iter), cpp11::as_cpp<cpp11::decay_t<int>>(minarea), cpp11::as_cpp<cpp11::decay_t<bool>>(return_distances), cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(input_centers), cpp11::as_cpp<cpp11::decay_t<int>>(verbose)));
   END_CPP11
 }
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
-    {"_supercells_run_slic", (DL_FUNC) &_supercells_run_slic, 14},
+    {"_supercells_run_slic", (DL_FUNC) &_supercells_run_slic, 15},
     {NULL, NULL, 0}
 };
 }

@@ -3,7 +3,7 @@
 void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step, double compactness,
                                 std::string& dist_name, cpp11::function dist_fun,
                                 cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter,
-                                integers_matrix<> input_centers,
+                                bool return_distances, integers_matrix<> input_centers,
                                 int verbose){
   this->step = step;
   this->compactness = compactness;
@@ -25,8 +25,14 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         distances[i][j] = FLT_MAX;
       }
     }
+    cout << "Center: " << centers.size() << endl;
 
     for (int l = 0; l < (int) centers.size(); l++) {
+      // if (return_distances){
+        double max_spatial_dist = 0; //initialize maximum distance as 0
+        double max_vals_dist = 0; //initialize maximum distance as 0
+        double max_d = 0; //initialize maximum distance as 0
+      // }
       /* Only compare to pixels in a 2 x step by 2 x step region. */
       for (int m = centers[l][1] - step; m < centers[l][1] + step; m++) {
         for (int n = centers[l][0] - step; n < centers[l][0] + step; n++) {
@@ -48,7 +54,18 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
             if (count_na > 0){
               continue;
             }
-            double d = compute_dist(l, n, m, colour, dist_name, dist_fun);
+                   
+            double vals_dist = get_vals_dist(centers_vals[l], colour, dist_name, dist_fun);
+            double spatial_dist = get_spatial_dist(l, n, m);
+            double d = get_total_dist(vals_dist, spatial_dist);
+            // double d = compute_dist(l, n, m, colour, dist_name, dist_fun);
+            
+            if (itr == iter - 1 && return_distances){
+              //update maximum distance for a given center if value is greater than previous maximum
+              if(vals_dist > max_vals_dist) max_vals_dist = vals_dist; 
+              if(spatial_dist > max_spatial_dist) max_spatial_dist = spatial_dist;
+              if(d > max_d) max_d = d; 
+            }            
 
             /* Update cluster allocation if the cluster minimizes the
              distance. */
@@ -58,6 +75,13 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
             }
           }
         }
+      }
+      if (itr == iter - 1 && return_distances){
+        //store maximum value for corresponding center
+        max_distance_vals.push_back(max_vals_dist);
+        max_distance_spatial.push_back(max_spatial_dist);
+        max_distance_total.push_back(max_d);
+        // cout << "VALS:" << max_distance_vals[l] << "SPATIAL:" << max_distance_spatial[l] << "TOTAL:" << max_distance_total[l] << endl;
       }
     }
 

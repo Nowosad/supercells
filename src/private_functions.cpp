@@ -42,6 +42,10 @@ void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,
       centers.push_back(center);
       centers_vals.push_back(colour);
       center_counts.push_back(0);
+      /* Create placeholders for distance summaries*/
+      // max_distance_vals.push_back(NA_REAL);
+      // max_distance_spatial.push_back(NA_REAL);
+      // max_distance_total.push_back(NA_REAL);
     }
   }
 }
@@ -70,6 +74,10 @@ void Slic::create_centers2(vector<int> mat_dims,
     centers.push_back(center);
     centers_vals.push_back(colour);
     center_counts.push_back(0);
+    /* Create placeholders for distance summaries*/
+    // max_distance_vals.push_back(NA_REAL);
+    // max_distance_spatial.push_back(NA_REAL);
+    // max_distance_total.push_back(NA_REAL);
   }
 }
 
@@ -117,6 +125,18 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
   double dist1 = values_distance / compactness;
   double dist2 = spatial_distance / step;
 
+  return sqrt((dist1 * dist1) + (dist2 * dist2));
+}
+
+double Slic::get_spatial_dist(int& ci, int& y, int& x) {
+  int y_dist = centers[ci][0] - y;
+  int x_dist = centers[ci][1] - x;
+  return sqrt((y_dist * y_dist) + (x_dist * x_dist));
+}
+
+double Slic::get_total_dist(double values_distance, double spatial_distance) {
+  double dist1 = values_distance / compactness;
+  double dist2 = spatial_distance / step;
   return sqrt((dist1 * dist1) + (dist2 * dist2));
 }
 
