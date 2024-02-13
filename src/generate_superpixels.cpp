@@ -25,8 +25,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         distances[i][j] = FLT_MAX;
       }
     }
-    cout << "Center: " << centers.size() << endl;
-
+    // cout << "Center: " << centers.size() << endl;
     for (int l = 0; l < (int) centers.size(); l++) {
       // if (return_distances){
         double max_spatial_dist = 0; //initialize maximum distance as 0
