@@ -135,7 +135,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   slic_sf = update_supercells_ids(slic_sf)
   # removes metadata columns if metadata = FALSE
   if (isFALSE(metadata)){
-    slic_sf = slic_sf[, -which(names(slic_sf) %in% c("supercells", "x", "y", "spatial_dist", "value_dist", "total_dist"))]
+    slic_sf = slic_sf[, -which(names(slic_sf) %in% c("supercells", "x", "y"))]
   }
   # returns the result
   return(slic_sf)
@@ -208,9 +208,6 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]][empty_centers, , drop = FALSE]))
     if (return_distances){
       colnames(slic[[4]]) = c("max_value_dist", "max_spatial_dist", "max_total_dist")
-      # print(slic[[4]])
-      # print(length(empty_centers))
-      # slic_sf = cbind(slic_sf, slic[[4]])
       slic_sf = cbind(slic_sf, stats::na.omit(slic[[4]][empty_centers, , drop = FALSE]))
     }
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))

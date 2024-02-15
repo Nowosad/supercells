@@ -42,10 +42,6 @@ void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,
       centers.push_back(center);
       centers_vals.push_back(colour);
       center_counts.push_back(0);
-      /* Create placeholders for distance summaries*/
-      // max_distance_vals.push_back(NA_REAL);
-      // max_distance_spatial.push_back(NA_REAL);
-      // max_distance_total.push_back(NA_REAL);
     }
   }
 }
@@ -74,10 +70,6 @@ void Slic::create_centers2(vector<int> mat_dims,
     centers.push_back(center);
     centers_vals.push_back(colour);
     center_counts.push_back(0);
-    /* Create placeholders for distance summaries*/
-    // max_distance_vals.push_back(NA_REAL);
-    // max_distance_spatial.push_back(NA_REAL);
-    // max_distance_total.push_back(NA_REAL);
   }
 }
 

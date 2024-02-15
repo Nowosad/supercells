@@ -25,7 +25,6 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
         distances[i][j] = FLT_MAX;
       }
     }
-    // cout << "Center: " << centers.size() << endl;
     for (int l = 0; l < (int) centers.size(); l++) {
       // if (return_distances){
         double max_spatial_dist = 0; //initialize maximum distance as 0
@@ -53,18 +52,18 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
             if (count_na > 0){
               continue;
             }
-                   
+
             double vals_dist = get_vals_dist(centers_vals[l], colour, dist_name, dist_fun);
             double spatial_dist = get_spatial_dist(l, n, m);
             double d = get_total_dist(vals_dist, spatial_dist);
             // double d = compute_dist(l, n, m, colour, dist_name, dist_fun);
-            
+
             if (itr == iter - 1 && return_distances){
               //update maximum distance for a given center if value is greater than previous maximum
-              if(vals_dist > max_vals_dist) max_vals_dist = vals_dist; 
+              if(vals_dist > max_vals_dist) max_vals_dist = vals_dist;
               if(spatial_dist > max_spatial_dist) max_spatial_dist = spatial_dist;
-              if(d > max_d) max_d = d; 
-            }            
+              if(d > max_d) max_d = d;
+            }
 
             /* Update cluster allocation if the cluster minimizes the
              distance. */
@@ -93,7 +92,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
       }
       center_counts[m] = 0;
     }
-    
+
     /* Compute the new cluster centers when the average function is not mean. */
     if (avg_fun_name != "mean"){
       multimap <int, int> c_id_centers_vals;
