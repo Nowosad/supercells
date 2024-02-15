@@ -8,6 +8,7 @@
 #' It is also possible to provide a set of points (an `sf` object) as `k` together with the `step` value to create custom cluster centers.
 #' @param compactness A compactness value. Larger values cause clusters to be more compact/even (square).
 #' A compactness value depends on the range of input cell values and selected distance measure.
+#' See [get_initial_distances()]
 #' @param dist_fun A distance function. Currently implemented distance functions are `"euclidean"`, `"jsd"`, `"dtw"` (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: `"euclidean"`
 #' @param avg_fun An averaging function - how the values of the supercells' centers are calculated?
 #' It accepts any fitting R function (e.g., `base::mean()` or `stats::median()`) or one of internally implemented `"mean"` and `"median"`. Default: `"mean"`
@@ -78,6 +79,10 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     superpixelsize = round((mat[1] * mat[2]) / k + 0.5)
     step = round(sqrt(superpixelsize) + 0.5)
   }
+  # # check for compactness (negative compactness returns max distances)
+  # if (missing(compactness)){
+  #   stop("You need to specify compactness", call. = FALSE)
+  # }
   # prepare averaging function (mean is the default)
   if (is.character(avg_fun)){
     avg_fun_name = avg_fun; avg_fun_fun = function() ""
@@ -158,11 +163,19 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
       vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
     }
   }
+  # if compactness has two values, the second one is a flag that the max distances should be returned
+  if (length(compactness) == 2){
+    compactness = compactness[[1]]
+    return_distances = TRUE
+  } else {
+    return_distances = FALSE
+  }
   # runs the algorithm
   slic = run_slic(mat, vals = vals, step = step, compactness = compactness, clean = clean,
                   centers = centers, dist_name = dist_name, dist_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                  iter = iter, minarea = minarea, input_centers = input_centers, verbose = verbose)
+                  iter = iter, minarea = minarea, return_distances = return_distances,
+                  input_centers = input_centers, verbose = verbose)
   # returns the initial centers if iter = 0
   if (iter == 0){
     slic_sf = data.frame(stats::na.omit(slic[[2]]))
@@ -194,113 +207,12 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
     slic_sf[["y"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["y"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     colnames(slic[[3]]) = names(x)
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]][empty_centers, , drop = FALSE]))
+    if (return_distances){
+      colnames(slic[[4]]) = c("max_value_dist", "max_spatial_dist", "max_total_dist")
+      slic_sf = cbind(slic_sf, stats::na.omit(slic[[4]][empty_centers, , drop = FALSE]))
+    }
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
     # slic_sf = sf::st_cast(slic_sf, "MULTIPOLYGON")
     return(slic_sf)
-  }
-}
-
-# updates supercells ids for chunks
-update_supercells_ids = function(x){
-  x = x[lapply(x, length) > 0]
-  no_updates = length(x) - 1
-  for (i in seq_len(no_updates)){
-    prev_max = max(x[[i]][["supercells"]])
-    x[[i + 1]][["supercells"]] = x[[i + 1]][["supercells"]] + prev_max
-  }
-  x = do.call(rbind, x)
-  return(x)
-}
-
-# predicts (rough estimation) memory usage of the algorithm
-pred_mem_usage = function(dim_x){
-  mem_bytes = dim_x[1] * dim_x[2] * dim_x[3] * 8 #in bytes
-  mem_gb = mem_bytes / (1024 * 1024 * 1024)
-  mem_gb
-}
-
-# looks for the optimal chunk size
-optimize_chunk_size = function(dim_x, limit, by = 500){
-  min_diff_memory = function(a, dim_x, limit){
-    abs((dim_x[3] * a^2 * 8 / (1024 * 1024 * 1024)) - limit)
-  }
-  opti = stats::optimize(min_diff_memory,
-                  interval = c(seq(100, max(dim_x[1:2]), by = by), max(dim_x[1:2])),
-                  dim_x, limit)
-  return(opti$minimum)
-}
-
-# prepares the extents of chunks:
-# if limit = FALSE, the extent of the whole input is returned
-# if limit = TRUE, the extent of the input is split into chunks, 
-#                  where the size of each raster chunk is optimized to be as close to
-#                  the (hardcoded) limit of 1GB as possible
-# if limit is numeric, the extent of the input is split into chunks,
-#                      where the width/height of each chunk is equal to the limit
-prep_chunks_ext = function(dim_x, limit){
-  if (is.numeric(limit)){
-    wsize = limit
-    limit = 0
-    dims1 = ceiling(seq_last(0, to = dim_x[1], by = wsize))
-    dims2 = ceiling(seq_last(0, to = dim_x[2], by = wsize))
-  } else if (!limit){
-    limit = Inf
-  } else {
-    limit = 1 #hardcoded limit
-    wsize = optimize_chunk_size(dim_x, limit, by = 500)
-    dims1 = ceiling(seq.int(0, to = dim_x[1],
-                            length.out = as.integer((dim_x[1] - 1) / wsize + 1) + 1))
-    dims2 = ceiling(seq.int(0, to = dim_x[2],
-                            length.out = as.integer((dim_x[2] - 1) / wsize + 1) + 1))
-  }
-  if (pred_mem_usage(dim_x) > limit){
-    row_dims = seq_along(dims1)[-length(dims1)]
-    col_dims = seq_along(dims2)[-length(dims2)]
-    n_chunks = max(row_dims) * max(col_dims)
-    row_cols_chunks = cbind(min_row = integer(length = n_chunks),
-                            max_row = integer(length = n_chunks),
-                            min_col = integer(length = n_chunks),
-                            max_col = integer(length = n_chunks))
-    l = 0
-    for (i in row_dims){
-      for (j in col_dims){
-        l = l + 1
-        row_cols_chunks[l, 1] = dims1[i] + 1
-        row_cols_chunks[l, 2] = dims1[i + 1]
-        row_cols_chunks[l, 3] = dims2[j] + 1
-        row_cols_chunks[l, 4] = dims2[j + 1]
-      }
-    }
-  } else {
-    row_cols_chunks = cbind(min_row = 1,
-                            max_row = dim_x[1],
-                            min_col = 1,
-                            max_col = dim_x[2])
-  }
-  return(row_cols_chunks)
-}
-
-# check if raster is in memory
-in_memory = function(x){
-  terra::sources(x) == ""
-}
-
-# converts sf object ('y') to a matrix of coordinates based on a raster ('x') dimensions
-centers_to_dims = function(x, y){
-  y_coords = sf::st_coordinates(sf::st_geometry(y))
-  y_col = terra::colFromX(x, y_coords[, 1])
-  y_row = terra::rowFromY(x, y_coords[, 2])
-  center_dims = cbind(y_col, y_row)
-  storage.mode(center_dims) = "integer"
-  unique(center_dims)
-}
-
-# creates a sequence of integers from 'from' to 'to' with a step 'by' (including the 'to' value)
-seq_last = function(from, to, by){
-  vec = do.call(what = seq.int, args = list(from, to, by))
-  if (utils::tail(vec, 1) != to) {
-    return(c(vec, to))
-  } else {
-    return(vec)
   }
 }

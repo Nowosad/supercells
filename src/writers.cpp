@@ -32,3 +32,13 @@ writable::doubles_matrix<> Slic::return_centers_vals(){
   }
   return result;
 }
+
+writable::doubles_matrix<> Slic::return_max_distances(){
+  writable::doubles_matrix<> result(max_distance_total.size(), 3);
+  for (int i = 0; i < (int) max_distance_total.size(); i++){
+    result(i, 0) = max_distance_vals[i];
+    result(i, 1) = max_distance_spatial[i];
+    result(i, 2) = max_distance_total[i];
+  }
+  return result;
+}

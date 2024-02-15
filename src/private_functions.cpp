@@ -120,6 +120,18 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
   return sqrt((dist1 * dist1) + (dist2 * dist2));
 }
 
+double Slic::get_spatial_dist(int& ci, int& y, int& x) {
+  int y_dist = centers[ci][0] - y;
+  int x_dist = centers[ci][1] - x;
+  return sqrt((y_dist * y_dist) + (x_dist * x_dist));
+}
+
+double Slic::get_total_dist(double values_distance, double spatial_distance) {
+  double dist1 = values_distance / compactness;
+  double dist2 = spatial_distance / step;
+  return sqrt((dist1 * dist1) + (dist2 * dist2));
+}
+
 vector<int> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
                                      std::string& dist_name, cpp11::function dist_fun) {
   double min_grad = FLT_MAX;
