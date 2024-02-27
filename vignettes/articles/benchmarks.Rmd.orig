@@ -1,0 +1,213 @@
+---
+title: "Benchmarks of the supercells package"
+author: Jakub Nowosad
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Benchmarks of the supercells package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "`r system.file('refs.bib', package = 'supercells')`"
+---
+
+```{r benchmarks-1, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6.5#,
+  # fig.height = 5
+)
+```
+
+```{r benchmarks-2}
+#| echo = FALSE
+input_files_not_exist = !all(file.exists(c("lnd_low.tif", "lnd_mid.tif", "lnd_high.tif")))
+output_files_notexist = !all(file.exists(c("results_low.rds", "results_mid.rds", "results_high.rds")))
+```
+
+```{r benchmarks-3}
+#| message = FALSE
+library(terra)
+library(sf)
+library(supercells)
+library(bench)
+```
+
+```{r benchmarks-4}
+#| eval = input_files_not_exist
+library(rsi)
+my_point = st_sfc(st_point(c(22.850000, 54.250000)), crs = "EPSG:4326")
+my_point = st_transform(my_point, crs = "EPSG:2180")
+my_poly = st_sf(geom = st_buffer(my_point, dist = 5000))
+sa_landsat = get_landsat_imagery(my_poly,
+                                 start_date = "2023-09-01", end_date = "2023-10-31",
+                                 output_filename = tempfile(fileext = ".tif"))
+lnd_low = rast(sa_landsat)
+lnd_mid = disagg(lnd_low, 4)
+lnd_high = disagg(lnd_mid, 8)
+```
+
+```{r benchmarks-5}
+#| echo = FALSE,
+#| eval = input_files_not_exist
+writeRaster(lnd_low, "lnd_low.tif", overwrite = TRUE, filetype = "COG")
+writeRaster(lnd_mid, "lnd_mid.tif", overwrite = TRUE, filetype = "COG")
+writeRaster(lnd_high, "lnd_high.tif", overwrite = TRUE, filetype = "COG")
+```
+
+```{r benchmarks-6}
+#| echo = FALSE
+lnd_low = rast("lnd_low.tif")
+lnd_mid = rast("lnd_mid.tif")
+lnd_high = rast("lnd_high.tif")
+```
+
+```{r benchmarks-7}
+lnd_low
+```
+
+```{r benchmarks-8}
+#| eval = output_files_notexist,
+#| warning = FALSE
+results_low = bench::press(
+    step = c(10, 30, 100),
+    clean = c(TRUE, FALSE),
+    iter = c(1, 10),
+    {
+    bench::mark(
+        s = supercells(lnd_low, compactness = 1, step = step, clean = clean, iter = iter),
+        iterations = 10
+        )
+    }
+)
+```
+
+```{r benchmarks-9}
+#| eval = output_files_notexist,
+#| echo = FALSE
+saveRDS(results_low, "results_low.rds")
+```
+
+```{r benchmarks-10}
+#| echo = FALSE
+results_low = readRDS("results_low.rds")
+```
+
+```{r benchmarks-11}
+results_low
+```
+
+```{r benchmarks-12}
+lnd_mid
+```
+
+```{r benchmarks-13}
+#| eval = output_files_notexist,
+#| warning = FALSE
+results_mid = bench::press(
+    step = c(10, 30, 100),
+    clean = c(TRUE, FALSE),
+    iter = c(1, 10),
+    {
+    bench::mark(
+        s = supercells(lnd_mid, compactness = 1, step = step, clean = clean, iter = iter),
+        iterations = 10
+        )
+    }
+)
+```
+
+```{r benchmarks-14}
+#| eval = output_files_notexist,
+#| echo = FALSE
+saveRDS(results_mid, "results_mid.rds")
+```
+
+```{r benchmarks-15}
+#| echo = FALSE
+results_mid = readRDS("results_mid.rds")
+```
+
+```{r benchmarks-16}
+results_mid
+```
+
+```{r benchmarks-17}
+lnd_high
+```
+
+```{r benchmarks-18}
+#| eval = output_files_notexist,
+#| warning = FALSE
+results_high = bench::mark(
+        s = supercells(lnd_high, compactness = 1, step = 30, clean = FALSE, iter = 1),
+        iterations = 10
+)
+```
+
+```{r benchmarks-19}
+#| eval = output_files_notexist,
+#| echo = FALSE
+saveRDS(results_high, "results_high.rds")
+```
+
+```{r benchmarks-20}
+#| echo = FALSE
+results_high = readRDS("results_high.rds")
+```
+
+```{r benchmarks-21}
+results_high
+```
+
+  <!-- If you are benchmarking parallel code you must set `memory = FALSE`. -->
+
+```{r benchmarks-22}
+#| echo = FALSE,
+#| eval = FALSE,
+#| warning = FALSE
+results_high_chunks = bench::mark(
+        s = supercells(lnd_high, compactness = 1, step = 30, clean = FALSE, iter = 1,
+                       chunks = 1000, future = FALSE),
+        iterations = 10, memory = FALSE
+)
+results_high_chunks
+```
+
+```{r benchmarks-23}
+#| echo = FALSE,
+#| eval = FALSE
+saveRDS(results_high_chunks, "results_high_chunks.rds")
+```
+
+```{r benchmarks-24}
+#| echo = FALSE,
+#| eval = FALSE
+readRDS("results_high_chunks.rds")
+```
+
+```{r benchmarks-25}
+#| echo = FALSE,
+#| eval = FALSE,
+#| warning = FALSE
+library(future)
+plan(multisession, workers = 16)
+results_high_parallel = bench::mark(
+        s = supercells(lnd_high, compactness = 1, step = 30, clean = FALSE, iter = 1, 
+                       chunks = 1000, future = TRUE),
+        iterations = 10, memory = FALSE
+)
+results_high_parallel
+```
+
+```{r benchmarks-26}
+#| echo = FALSE,
+#| eval = FALSE
+saveRDS(results_high_parallel, "results_high_parallel.rds")
+```
+
+```{r benchmarks-27}
+#| echo = FALSE,
+#| eval = FALSE
+readRDS("results_high_parallel.rds")
+```
