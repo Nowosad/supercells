@@ -7,7 +7,6 @@ vignette: >
   %\VignetteIndexEntry{Benchmarks of the supercells package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: "/home/jakub/R/x86_64-pc-linux-gnu-library/4.3/supercells/refs.bib"
 ---
 
 

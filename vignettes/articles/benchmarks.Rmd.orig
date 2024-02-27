@@ -7,7 +7,6 @@ vignette: >
   %\VignetteIndexEntry{Benchmarks of the supercells package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: "`r system.file('refs.bib', package = 'supercells')`"
 ---
 
 ```{r benchmarks-1, include = FALSE}
