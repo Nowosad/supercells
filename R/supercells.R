@@ -96,6 +96,8 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   # prepare minarea
   if (missing(minarea)){
     minarea = 0
+  } else if (minarea > step^2) {
+    warning("The provided minarea value is larger than than the average supercell (step^2). The connectivity cleaning is likely to fail.", call. = FALSE)
   }
   # disables cleaning if iter = 0
   if (iter == 0){
@@ -232,7 +234,7 @@ optimize_chunk_size = function(dim_x, limit, by = 500){
 
 # prepares the extents of chunks:
 # if limit = FALSE, the extent of the whole input is returned
-# if limit = TRUE, the extent of the input is split into chunks, 
+# if limit = TRUE, the extent of the input is split into chunks,
 #                  where the size of each raster chunk is optimized to be as close to
 #                  the (hardcoded) limit of 1GB as possible
 # if limit is numeric, the extent of the input is split into chunks,
