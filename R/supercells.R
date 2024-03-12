@@ -150,7 +150,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
 
   # drop further layers (e.g. alpha band)
   if( nlyr(x) > 3){
-    x = subset(rgb, 1:3)
+    x = subset(x, 1:3)
     warning("The provided raster presents more than the expected channels: only the first three were kept")
   }
   
