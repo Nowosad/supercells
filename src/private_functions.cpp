@@ -24,7 +24,7 @@ void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,
                           std::string& dist_name, cpp11::function dist_fun, double step) {
   for (int ncolcenter = step/2; ncolcenter < mat_dims[1]; ncolcenter += step){
     for (int nrowcenter = step/2; nrowcenter < mat_dims[0]; nrowcenter += step){
-      vector<int> center; center.reserve(2);
+      vector<double> center; center.reserve(2);
       int ncell = ncolcenter + (nrowcenter * mat_dims[1]);
       vector<double> colour; colour.reserve(mat_dims[2]);
       for (int nval = 0; nval < mat_dims[2]; nval++){
@@ -32,7 +32,7 @@ void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,
         colour.push_back(val);
       }
 
-      vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, dist_name, dist_fun);
+      vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter, dist_name, dist_fun);
 
       /* Generate the center vector. */
       center.push_back(lm[0]);
@@ -53,7 +53,7 @@ void Slic::create_centers2(vector<int> mat_dims,
   int ncell = 0;
   for (int i = 0; i < input_centers.nrow(); i++){
     int nrowcenter = input_centers(i, 1); int ncolcenter = input_centers(i, 0);
-    vector<int> center; center.reserve(2);
+    vector<double> center; center.reserve(2);
     vector<double> colour; colour.reserve(mat_dims[2]);
     for (int nval = 0; nval < mat_dims[2]; nval++){
       double val = vals(ncell, nval);
@@ -61,7 +61,7 @@ void Slic::create_centers2(vector<int> mat_dims,
     }
     ncell++;
 
-    vector<int> lm = find_local_minimum(vals, nrowcenter, ncolcenter, dist_name, dist_fun);
+    vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter, dist_name, dist_fun);
 
     /* Generate the center vector. */
     center.push_back(lm[0]);
@@ -120,11 +120,11 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
   return sqrt((dist1 * dist1) + (dist2 * dist2));
 }
 
-vector<int> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
+vector<double> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
                                      std::string& dist_name, cpp11::function dist_fun) {
   double min_grad = FLT_MAX;
 
-  vector<int> loc_min(2);
+  vector<double> loc_min(2);
   loc_min.at(0) = y;
   loc_min.at(1) = x;
 

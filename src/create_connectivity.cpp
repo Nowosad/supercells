@@ -82,7 +82,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
 
   clusters = new_clusters;
 
-  vector<vector<int> > new_centers;
+  vector<vector<double> > new_centers;
   vector<vector<double> > new_centers_vals;
   vector<int> new_center_counts(label);
 
@@ -90,7 +90,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
   /* Clear the center _vals values. */
   for (int m = 0; m < (int) label; m++) {
 
-    vector<int> new_center(2);
+    vector<double> new_center(2);
     new_center[0] = new_center[1] = 0;
     new_centers.push_back(new_center);
 
