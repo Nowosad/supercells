@@ -147,6 +147,7 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
   if (is.character(x)){
     x = terra::rast(x)
   }
+  
   # crops the input to the chunk extent
   x = x[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
   # gets the number of rows and columns, and the values of the input
@@ -156,6 +157,10 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
   # transforms the input to LAB color space if transform = "to_LAB"
   if (!is.null(transform)){
     if (transform == "to_LAB"){
+      if (ncol(vals) > 3) {
+        vals = vals[, 1:3]
+        warning("The provided raster has more than three layers: only the first three were kept for calculations", call. = FALSE)
+      }
       vals = vals / 255
       vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
     }
