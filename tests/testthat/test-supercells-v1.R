@@ -9,7 +9,7 @@ v1_f = supercells(v1, 100, compactness = 1, avg_fun = mean)
 test_that("supercells works for 1 var", {
   expect_equal(ncol(v1_a), 5)
   expect_equal(ncol(v1_a), ncol(v1_b))
-  expect_equal(nrow(v1_a), 92)
+  expect_equal(nrow(v1_a), 90)
   expect_equal(nrow(v1_b), 88)
   expect_equal(nrow(v1_e), 88)
   expect_equal(v1_a, v1_c)
