@@ -1,6 +1,6 @@
 Package: supercells
 Title: Superpixels of Spatial Data
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
     person(given = "Jakub", family = "Nowosad", 
     role = c("aut", "cre"),
@@ -23,7 +23,7 @@ Imports:
     philentropy (>= 0.6.0),
     future.apply
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 LinkingTo: 
     cpp11
 URL: https://jakubnowosad.com/supercells/
