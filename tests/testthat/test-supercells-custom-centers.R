@@ -12,3 +12,4 @@ test_that("supercells works for custom centers", {
   expect_equal(ncol(vol_slic2), 5)
   expect_equal(ncol(vol_slic3), 5)
 })
+
