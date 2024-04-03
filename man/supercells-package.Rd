@@ -3,7 +3,6 @@
 \docType{package}
 \name{supercells-package}
 \alias{supercells-package}
-\alias{_PACKAGE}
 \title{supercells: Superpixels of Spatial Data}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}

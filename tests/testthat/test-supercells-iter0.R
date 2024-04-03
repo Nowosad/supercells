@@ -9,3 +9,4 @@ test_that("supercells works for 0 iter", {
   expect_equal(nrow(vol_slic0a), 100)
   expect_equal(nrow(vol_slic0b), 54)
 })
+
