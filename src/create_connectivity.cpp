@@ -137,7 +137,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
           new_centers_vals[c_id][nval] = mean(new_c_id_centers_vals[nval]);
         } else if (avg_fun_name.empty()){
           // use user-defined function
-          new_centers_vals[c_id][nval] = avg_fun_fun(new_c_id_centers_vals[nval]);
+          new_centers_vals[c_id][nval] = cpp11::as_cpp<double>(avg_fun_fun(new_c_id_centers_vals[nval]));
         }
       }
     }

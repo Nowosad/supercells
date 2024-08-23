@@ -15,7 +15,7 @@ double get_vals_dist(vector<double>& values1, vector<double>& values2,
   } else if (dist_name != ""){
     return custom_distance(values1, values2, dist_name);
   } else {
-    return dist_fun(values1, values2);
+    return cpp11::as_cpp<double>(dist_fun(values1, values2));
   }
 }
 
@@ -125,5 +125,5 @@ double custom_distance(vector<double>& values1, vector<double>& values2, std::st
   double p = NA_REAL;
   bool testNA = false;
   std::string unit = "log2";
-  return single_distance(values1, values2, dist_name, p, testNA, unit);
+  return cpp11::as_cpp<double>(single_distance(values1, values2, dist_name, p, testNA, unit));
 }
