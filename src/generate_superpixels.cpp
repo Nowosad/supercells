@@ -106,7 +106,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
           } else if (avg_fun_name == "mean2"){
             centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
           } else if (avg_fun_name.empty()){
-            centers_vals[c_id][nval] = avg_fun_fun(centers_vals_c_id[nval]);
+            centers_vals[c_id][nval] = cpp11::as_cpp<double>(avg_fun_fun(centers_vals_c_id[nval]));
           }
         }
       }
