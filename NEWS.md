@@ -1,3 +1,7 @@
+# supercells 1.0.3
+
+* C++ code improvements (Avoid implicit conversion from sexp to double, see #39)
+
 # supercells 1.0.2
 
 * Fixes centroid coordinates (see #32)
