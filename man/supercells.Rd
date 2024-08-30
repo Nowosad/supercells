@@ -33,7 +33,7 @@ A compactness value depends on the range of input cell values and selected dista
 
 \item{dist_fun}{A distance function. Currently implemented distance functions are \code{"euclidean"}, \code{"jsd"}, \code{"dtw"} (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: \code{"euclidean"}}
 
-\item{avg_fun}{An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions \code{"mean"} and \code{"median"} (provided with quotation marks), but also accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::median()}, provided as plain function name: \code{mean}). Default: \code{"mean"}.}
+\item{avg_fun}{An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions \code{"mean"} and \code{"median"} (provided with quotation marks), but also accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::median()}, provided as plain function name: \code{mean}). Default: \code{"mean"}. See details for more information.}
 
 \item{clean}{Should connectivity of the supercells be enforced?}
 
@@ -60,6 +60,9 @@ An sf object with several columns: (1) supercells - an id of each supercell, (2)
 }
 \description{
 Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
+}
+\details{
+If you want to use additional arguments for the averaging function (\code{avg_fun}), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: \code{my_mean = function(x) mean(x, na.rm = TRUE)} and then provide \code{avg_fun = my_mean.}
 }
 \examples{
 library(supercells)
