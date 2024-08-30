@@ -1,6 +1,7 @@
 # supercells 1.0.3
 
 * C++ code improvements (Avoid implicit conversion from sexp to double, see #39)
+* Improves documentation of the `fun_avg` argument (see #41)
 
 # supercells 1.0.2
 

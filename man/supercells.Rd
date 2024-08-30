@@ -33,8 +33,7 @@ A compactness value depends on the range of input cell values and selected dista
 
 \item{dist_fun}{A distance function. Currently implemented distance functions are \code{"euclidean"}, \code{"jsd"}, \code{"dtw"} (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: \code{"euclidean"}}
 
-\item{avg_fun}{An averaging function - how the values of the supercells' centers are calculated?
-It accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::median()}) or one of internally implemented \code{"mean"} and \code{"median"}. Default: \code{"mean"}}
+\item{avg_fun}{An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions \code{"mean"} and \code{"median"} (provided with quotation marks), but also accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::median()}, provided as plain function name: \code{mean}). Default: \code{"mean"}.}
 
 \item{clean}{Should connectivity of the supercells be enforced?}
 

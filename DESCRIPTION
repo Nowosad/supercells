@@ -23,7 +23,7 @@ Imports:
     philentropy (>= 0.6.0),
     future.apply
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 LinkingTo: 
     cpp11
 URL: https://jakubnowosad.com/supercells/
