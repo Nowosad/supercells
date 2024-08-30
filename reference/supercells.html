@@ -89,8 +89,7 @@ A compactness value depends on the range of input cell values and selected dista
 
 
 <dt id="arg-avg-fun">avg_fun<a class="anchor" aria-label="anchor" href="#arg-avg-fun"></a></dt>
-<dd><p>An averaging function - how the values of the supercells' centers are calculated?
-It accepts any fitting R function (e.g., <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">base::mean()</a></code> or <code><a href="https://rdrr.io/r/stats/median.html" class="external-link">stats::median()</a></code>) or one of internally implemented <code>"mean"</code> and <code>"median"</code>. Default: <code>"mean"</code></p></dd>
+<dd><p>An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions <code>"mean"</code> and <code>"median"</code> (provided with quotation marks), but also accepts any fitting R function (e.g., <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">base::mean()</a></code> or <code><a href="https://rdrr.io/r/stats/median.html" class="external-link">stats::median()</a></code>, provided as plain function name: <code>mean</code>). Default: <code>"mean"</code>.</p></dd>
 
 
 <dt id="arg-clean">clean<a class="anchor" aria-label="anchor" href="#arg-clean"></a></dt>
