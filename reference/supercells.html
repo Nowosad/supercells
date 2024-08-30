@@ -89,7 +89,7 @@ A compactness value depends on the range of input cell values and selected dista
 
 
 <dt id="arg-avg-fun">avg_fun<a class="anchor" aria-label="anchor" href="#arg-avg-fun"></a></dt>
-<dd><p>An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions <code>"mean"</code> and <code>"median"</code> (provided with quotation marks), but also accepts any fitting R function (e.g., <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">base::mean()</a></code> or <code><a href="https://rdrr.io/r/stats/median.html" class="external-link">stats::median()</a></code>, provided as plain function name: <code>mean</code>). Default: <code>"mean"</code>.</p></dd>
+<dd><p>An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions <code>"mean"</code> and <code>"median"</code> (provided with quotation marks), but also accepts any fitting R function (e.g., <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">base::mean()</a></code> or <code><a href="https://rdrr.io/r/stats/median.html" class="external-link">stats::median()</a></code>, provided as plain function name: <code>mean</code>). Default: <code>"mean"</code>. See details for more information.</p></dd>
 
 
 <dt id="arg-clean">clean<a class="anchor" aria-label="anchor" href="#arg-clean"></a></dt>
@@ -133,6 +133,10 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>If you want to use additional arguments for the averaging function (<code>avg_fun</code>), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: <code>my_mean = function(x) mean(x, na.rm = TRUE)</code> and then provide <code>avg_fun = my_mean.</code></p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
