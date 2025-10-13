@@ -30,7 +30,7 @@ class Slic {
     vector<int> mat_dims;
 
     /* The values of the centers. */
-    vector<vector<double> > centers;
+    vector<vector<int> > centers;
     vector<vector<double> > centers_vals;
 
     /* The number of occurrences of each center. */
@@ -59,7 +59,7 @@ class Slic {
                         std::string& dist_name, cpp11::function dist_fun);
 
     /* Find the pixel with the lowest gradient in a 3x3 surrounding. */
-    vector<double> find_local_minimum(doubles_matrix<> vals, int& y, int& x,
+    vector<int> find_local_minimum(doubles_matrix<> vals, int& y, int& x,
                                    std::string& dist_name, cpp11::function dist_fun);
 
     /* Remove and initialize the 2d vectors. */
@@ -86,7 +86,7 @@ class Slic {
 
     /* Writes the results to a format usable by R/cpp11. */
     /* Returns final pixel assignments */
-    writable::doubles_matrix<> return_centers();
+    writable::integers_matrix<> return_centers();
     /* Returns supercells centers*/
     writable::integers_matrix<> return_clusters();
     /* Returns supercells centers' values*/
