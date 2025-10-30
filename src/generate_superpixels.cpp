@@ -70,7 +70,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
       }
       center_counts[m] = 0;
     }
-    
+
     /* Compute the new cluster centers when the average function is not mean. */
     if (avg_fun_name != "mean"){
       multimap <int, int> c_id_centers_vals;
@@ -116,7 +116,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
           centers[l][0] /= center_counts[l];
           centers[l][1] /= center_counts[l];
         } else {
-          centers[l][0] = INT_MIN;
+          centers[l][0] = -DBL_MAX;
           centers[l][1] = center_counts[l];
         }
       }
