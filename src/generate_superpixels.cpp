@@ -61,8 +61,7 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
       }
     }
 
-    /* Clear the center values. */
-    /* Clear the center_vals values. */
+    /* Clear the center values and reset for next iteration. */
     for (int m = 0; m < (int) centers.size(); m++) {
       centers[m][0] = centers[m][1] = 0;
       for (int n = 0; n < (int) centers_vals[0].size(); n++){
@@ -103,14 +102,12 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
           // calculate
           if (avg_fun_name == "median"){
             centers_vals[c_id][nval] = median(centers_vals_c_id[nval]);
-          } else if (avg_fun_name == "mean2"){
-            centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
           } else if (avg_fun_name.empty()){
             centers_vals[c_id][nval] = cpp11::as_cpp<double>(avg_fun_fun(centers_vals_c_id[nval]));
           }
         }
       }
-      // /* Normalize the cluster centers. */
+      /* Normalize the cluster centers. */
       for (int l = 0; l < (int) centers.size(); l++) {
         if (center_counts[l] > 0){
           centers[l][0] /= center_counts[l];

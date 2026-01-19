@@ -1,6 +1,5 @@
 #include "distances.h"
 #include "dtw/include/DTW.hpp"
-// using namespace cpp11::literals; // so we can use ""_nm syntax
 
 double get_vals_dist(vector<double>& values1, vector<double>& values2,
                            std::string& dist_name, cpp11::function dist_fun){
@@ -29,18 +28,6 @@ double euclidean(std::vector<double>& values1, std::vector<double>& values2){
     dist += diff * diff;
   }
   return sqrt(dist);
-}
-
-double manhattan(vector<double>& values1, vector<double>& values2){
-  int len1 = values1.size();
-  double dist = 0.0;
-  double diff = 0.0;
-
-  for (int i = 0; i < len1; i++){
-    diff = fabs(values1[i] - values2[i]);
-    dist += diff;
-  }
-  return dist;
 }
 
 double dtw3(std::vector<double>& values1, std::vector<double>& values2){

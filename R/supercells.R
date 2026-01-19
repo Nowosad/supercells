@@ -45,16 +45,6 @@
 #' # ortho_slic1 = supercells(ortho, k = 1000, compactness = 10, transform = "to_LAB")
 #' # terra::plot(ortho)
 #' # plot(sf::st_geometry(ortho_slic1), add = TRUE)
-#' #
-#' # ### RGB variables - colored output
-#' #
-#' # rgb_to_hex = function(x){
-#' #   apply(t(x), 2, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
-#' # }
-#' # avg_colors = rgb_to_hex(sf::st_drop_geometry(ortho_slic1[4:6]))
-#' #
-#' # terra::plot(ortho)
-#' # plot(sf::st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
                       iter = 10, transform = NULL, step, minarea, metadata = TRUE, chunks = FALSE, future = FALSE, verbose = 0){
   if (!inherits(x, "SpatRaster")){
@@ -204,7 +194,6 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
     colnames(slic[[3]]) = names(x)
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]][empty_centers, , drop = FALSE]))
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
-    # slic_sf = sf::st_cast(slic_sf, "MULTIPOLYGON")
     return(slic_sf)
   }
 }

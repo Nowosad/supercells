@@ -13,9 +13,6 @@
 
 using namespace std;
 using namespace cpp11;
-// namespace writable = cpp11::writable;
-
-// #define NR_ITERATIONS 10
 
 typedef multimap<int, int> IntToIntMap;
 typedef IntToIntMap::iterator mapIter;

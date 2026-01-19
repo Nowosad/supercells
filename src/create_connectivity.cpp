@@ -41,8 +41,6 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
           if (x >= 0 && x < mat_dims[1] && y >= 0 && y < mat_dims[0]) {
             if (new_clusters[x][y] >= 0) {
               adjlabel = new_clusters[x][y];
-            // } else {
-            //   adjlabel = -1;
             }
           }
         }
@@ -86,8 +84,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
   vector<vector<double> > new_centers_vals;
   vector<int> new_center_counts(label);
 
-  /* Clear the center values. */
-  /* Clear the center _vals values. */
+  /* Initialize the new center values. */
   for (int m = 0; m < (int) label; m++) {
 
     vector<double> new_center(2);
@@ -133,8 +130,6 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
         // calculate
         if (avg_fun_name == "median"){
           new_centers_vals[c_id][nval] = median(new_c_id_centers_vals[nval]);
-        } else if (avg_fun_name == "mean2"){
-          new_centers_vals[c_id][nval] = mean(new_c_id_centers_vals[nval]);
         } else if (avg_fun_name.empty()){
           // use user-defined function
           new_centers_vals[c_id][nval] = cpp11::as_cpp<double>(avg_fun_fun(new_c_id_centers_vals[nval]));
@@ -148,7 +143,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
       new_centers[l][1] /= new_center_counts[l];
     }
   } else if (avg_fun_name == "mean"){
-    // /* Compute the new cluster centers. */
+    /* Compute the new cluster centers. */
     for (int l = 0; l < (int) new_clusters.size(); l++) {
       for (int k = 0; k < (int) new_clusters[0].size(); k++) {
         int c_id = new_clusters[l][k];
@@ -172,7 +167,7 @@ void Slic::create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fu
         }
       }
     }
-    // /* Normalize the clusters. */
+    /* Normalize the cluster centers and values. */
     for (int l = 0; l < (int) label; l++) {
       new_centers[l][0] /= new_center_counts[l];
       new_centers[l][1] /= new_center_counts[l];

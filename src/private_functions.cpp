@@ -76,8 +76,6 @@ void Slic::create_centers2(vector<int> mat_dims,
 void Slic::inits(integers mat, doubles_matrix<> vals,
                  std::string& dist_name, cpp11::function dist_fun,
                  integers_matrix<> input_centers) {
-  // cout << "inits" << endl;
-
   mat_dims.reserve(3);
   mat_dims.push_back(mat.at(0));
   mat_dims.push_back(mat.at(1));
