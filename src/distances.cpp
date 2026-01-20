@@ -121,7 +121,7 @@ double custom_log2(const double& x){
 }
 
 double custom_distance(vector<double>& values1, vector<double>& values2, std::string& dist_name){
-  auto single_distance = cpp11::package("philentropy")["dist_one_one"];
+  static cpp11::function single_distance = cpp11::package("philentropy")["dist_one_one"];
   double p = NA_REAL;
   bool testNA = false;
   std::string unit = "log2";

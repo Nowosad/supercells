@@ -18,6 +18,11 @@ void Slic::clear_data() {
   centers_vals.clear();
   center_counts.clear();
   mat_dims.clear();
+  new_clusters.clear();
+  iter_mean_distance.clear();
+  iter_max_distance.clear();
+  iter_frac_changed.clear();
+  diagnostics_enabled = false;
 }
 
 void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,

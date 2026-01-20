@@ -4,13 +4,18 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
                                 std::string& dist_name, cpp11::function dist_fun,
                                 cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter,
                                 integers_matrix<> input_centers,
-                                int verbose){
+                                int verbose, bool diagnostics){
   this->step = step;
   this->compactness = compactness;
-
   if (verbose > 0) Rprintf("Initialization: ");
   /* Clear previous data (if any), and re-initialize it. */
   clear_data();
+  diagnostics_enabled = diagnostics;
+  if (diagnostics_enabled) {
+    iter_mean_distance.clear();
+    iter_max_distance.clear();
+    iter_frac_changed.clear();
+  }
   inits(mat, vals, dist_name, dist_fun, input_centers);
   if (verbose > 0) Rprintf("Completed\n");
 
@@ -18,6 +23,11 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
   for (int itr = 0; itr < iter; itr++) {
 
     if (verbose > 0) Rprintf("Iteration: %u/%u\r", itr + 1, iter);
+
+    vector<vector<int> > prev_clusters;
+    if (diagnostics_enabled) {
+      prev_clusters = clusters;
+    }
 
     /* Reset distance values. */
     for (int i = 0; i < mat_dims[1]; i++) {
@@ -152,6 +162,45 @@ void Slic::generate_superpixels(integers mat, doubles_matrix<> vals, double step
             centers_vals[l][nval] /= center_counts[l];
           }
         }
+      }
+    }
+
+    if (diagnostics_enabled) {
+      double sum_dist = 0.0;
+      double max_dist = 0.0;
+      int count = 0;
+      int changed = 0;
+      int total = 0;
+      for (int i = 0; i < mat_dims[1]; i++) {
+        for (int j = 0; j < mat_dims[0]; j++) {
+          int curr = clusters[i][j];
+          int prev = prev_clusters[i][j];
+          if (curr != -1 || prev != -1) {
+            total += 1;
+            if (curr != prev) {
+              changed += 1;
+            }
+          }
+          if (curr != -1 && distances[i][j] != FLT_MAX) {
+            sum_dist += distances[i][j];
+            if (distances[i][j] > max_dist) {
+              max_dist = distances[i][j];
+            }
+            count += 1;
+          }
+        }
+      }
+      if (count > 0) {
+        iter_mean_distance.push_back(sum_dist / count);
+        iter_max_distance.push_back(max_dist);
+      } else {
+        iter_mean_distance.push_back(NA_REAL);
+        iter_max_distance.push_back(NA_REAL);
+      }
+      if (total > 0) {
+        iter_frac_changed.push_back((double) changed / total);
+      } else {
+        iter_frac_changed.push_back(NA_REAL);
       }
     }
   }

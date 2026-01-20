@@ -1,7 +1,7 @@
 # run the algorithm on the area defined by 'ext'
 run_slic_chunks = function(ext, x, step, compactness, dist_name,
                            dist_fun, avg_fun_fun, avg_fun_name, clean,
-                           iter, minarea, transform, input_centers, verbose){
+                           iter, minarea, transform, input_centers, verbose, diagnostics = FALSE){
   centers = TRUE
   if (is.character(x)){
     x = terra::rast(x)
@@ -28,7 +28,8 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
   slic = run_slic(mat, vals = vals, step = step, compactness = compactness, clean = clean,
                   centers = centers, dist_name = dist_name, dist_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                  iter = iter, minarea = minarea, input_centers = input_centers, verbose = verbose)
+                  iter = iter, minarea = minarea, input_centers = input_centers, verbose = verbose,
+                  diagnostics = diagnostics)
   # returns the initial centers if iter = 0
   if (iter == 0){
     slic_sf = data.frame(stats::na.omit(slic[[2]]))
@@ -62,6 +63,9 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
     slic_sf = cbind(slic_sf, stats::na.omit(slic[[3]][empty_centers, , drop = FALSE]))
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
     # slic_sf = sf::st_cast(slic_sf, "MULTIPOLYGON")
+    if (diagnostics && !is.null(slic[[4]])) {
+      attr(slic_sf, "diagnostics") = slic[[4]]
+    }
     return(slic_sf)
   }
 }

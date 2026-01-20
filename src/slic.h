@@ -3,6 +3,7 @@
 #include "cpp11/function.hpp"
 #include "cpp11/integers.hpp"
 #include "cpp11/list.hpp"
+#include "cpp11/doubles.hpp"
 #include <iostream>
 #include <vector>
 #include <map>
@@ -39,6 +40,11 @@ class Slic {
     /* Initialize the new cluster matrix. */
     vector<vector<int> > new_clusters;
 
+    /* Diagnostics (only populated when enabled). */
+    bool diagnostics_enabled = false;
+    vector<double> iter_mean_distance;
+    vector<double> iter_max_distance;
+    vector<double> iter_frac_changed;
     /* The step size per cluster, and the color (nc) and distance (ns)
      * parameters. */
     int step;
@@ -79,7 +85,7 @@ class Slic {
     void generate_superpixels(integers mat, doubles_matrix<> vals, double step, double compactness,
                               std::string& dist_name, cpp11::function dist_fun,
                               cpp11::function avg_fun_fun, std::string& avg_fun_name, int iter,
-                              integers_matrix<> input_centers, int verbose);
+                              integers_matrix<> input_centers, int verbose, bool diagnostics);
 
     /* Enforce connectivity for an image. */
     void create_connectivity(doubles_matrix<> vals, cpp11::function avg_fun_fun, std::string& avg_fun_name, int minarea, int verbose);
@@ -91,4 +97,7 @@ class Slic {
     writable::integers_matrix<> return_clusters();
     /* Returns supercells centers' values*/
     writable::doubles_matrix<> return_centers_vals();
+
+    /* Builds diagnostics data for R. */
+    writable::list build_diagnostics(doubles_matrix<> vals, std::string& dist_name, cpp11::function dist_fun);
 };
