@@ -1,6 +1,11 @@
-#include "slic.h"
+#include "slic_core.h"
+#include "cpp11.hpp"
+#include "cpp11/list.hpp"
+#include "cpp11/matrix.hpp"
+#include "cpp11/doubles.hpp"
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
 static double mean_vec(const std::vector<double>& v) {
   if (v.empty()) {
@@ -10,15 +15,21 @@ static double mean_vec(const std::vector<double>& v) {
   return sum / v.size();
 }
 
-writable::list Slic::build_diagnostics(doubles_matrix<> vals, std::string& dist_name, cpp11::function dist_fun) {
+cpp11::writable::list build_diagnostics(const SlicCore& slic, const std::vector<double>& vals,
+                                       SlicCore::DistFn dist_fn) {
+  const auto& mat_dims = slic.mat_dims_ref();
+  const auto& clusters = slic.clusters_ref();
+  const auto& centers = slic.centers_ref();
+  const auto& centers_vals = slic.centers_vals_ref();
+
   int rows = mat_dims[0];
   int cols = mat_dims[1];
   int bands = mat_dims[2];
   int ncenters = centers.size();
 
-  writable::doubles_matrix<> per_pixel_spatial(rows, cols);
-  writable::doubles_matrix<> per_pixel_value(rows, cols);
-  writable::doubles_matrix<> per_pixel_combined(rows, cols);
+  cpp11::writable::doubles_matrix<> per_pixel_spatial(rows, cols);
+  cpp11::writable::doubles_matrix<> per_pixel_value(rows, cols);
+  cpp11::writable::doubles_matrix<> per_pixel_combined(rows, cols);
 
   std::vector<std::vector<double> > cluster_spatial(ncenters);
   std::vector<std::vector<double> > cluster_value(ncenters);
@@ -44,9 +55,9 @@ writable::list Slic::build_diagnostics(doubles_matrix<> vals, std::string& dist_
       pixel_values.clear();
       bool has_na = false;
       for (int nval = 0; nval < bands; nval++) {
-        double val = vals(ncell, nval);
+        double val = vals[ncell * bands + nval];
         pixel_values.push_back(val);
-        if (is_na(val)) {
+        if (std::isnan(val)) {
           has_na = true;
         }
       }
@@ -57,15 +68,15 @@ writable::list Slic::build_diagnostics(doubles_matrix<> vals, std::string& dist_
         continue;
       }
 
-      double value_dist = get_vals_dist(centers_vals[cid], pixel_values, dist_name, dist_fun);
+      double value_dist = dist_fn(centers_vals[cid], pixel_values);
       int y_dist = centers[cid][0] - j;
       int x_dist = centers[cid][1] - i;
       double spatial_dist = sqrt((y_dist * y_dist) + (x_dist * x_dist));
 
       double combined_dist = NA_REAL;
-      if (compactness != 0.0 && step != 0.0) {
-        double dist1 = value_dist / compactness;
-        double dist2 = spatial_dist / step;
+      if (slic.compactness_value() != 0.0 && slic.step_value() != 0.0) {
+        double dist1 = value_dist / slic.compactness_value();
+        double dist2 = spatial_dist / slic.step_value();
         combined_dist = sqrt((dist1 * dist1) + (dist2 * dist2));
       }
 
@@ -77,20 +88,19 @@ writable::list Slic::build_diagnostics(doubles_matrix<> vals, std::string& dist_
       cluster_value[cid].push_back(value_dist);
       all_spatial.push_back(spatial_dist);
       all_value.push_back(value_dist);
-
     }
   }
 
-  writable::doubles mean_value(ncenters);
-  writable::doubles mean_spatial(ncenters);
-  writable::doubles ratio_mean(ncenters);
+  cpp11::writable::doubles mean_value(ncenters);
+  cpp11::writable::doubles mean_spatial(ncenters);
+  cpp11::writable::doubles ratio_mean(ncenters);
   for (int i = 0; i < ncenters; i++) {
     double mv = mean_vec(cluster_value[i]);
     double ms = mean_vec(cluster_spatial[i]);
     mean_value[i] = mv;
     mean_spatial[i] = ms;
-    if (compactness != 0.0 && step != 0.0 && ms > 0.0) {
-      ratio_mean[i] = (mv / compactness) / (ms / step);
+    if (slic.compactness_value() != 0.0 && slic.step_value() != 0.0 && ms > 0.0) {
+      ratio_mean[i] = (mv / slic.compactness_value()) / (ms / slic.step_value());
     } else {
       ratio_mean[i] = NA_REAL;
     }
@@ -98,16 +108,16 @@ writable::list Slic::build_diagnostics(doubles_matrix<> vals, std::string& dist_
 
   std::vector<double> weighted_value;
   std::vector<double> weighted_spatial;
-  if (compactness != 0.0) {
+  if (slic.compactness_value() != 0.0) {
     weighted_value.reserve(all_value.size());
     for (size_t i = 0; i < all_value.size(); i++) {
-      weighted_value.push_back(all_value[i] / compactness);
+      weighted_value.push_back(all_value[i] / slic.compactness_value());
     }
   }
-  if (step != 0.0) {
+  if (slic.step_value() != 0.0) {
     weighted_spatial.reserve(all_spatial.size());
     for (size_t i = 0; i < all_spatial.size(); i++) {
-      weighted_spatial.push_back(all_spatial[i] / step);
+      weighted_spatial.push_back(all_spatial[i] / slic.step_value());
     }
   }
 
@@ -115,40 +125,41 @@ writable::list Slic::build_diagnostics(doubles_matrix<> vals, std::string& dist_
   double value_mean = mean_vec(all_value);
   double w_spatial_mean = mean_vec(weighted_spatial);
   double w_value_mean = mean_vec(weighted_value);
-  writable::list iteration(3);
+
+  cpp11::writable::list iteration(3);
   iteration.names() = {"mean_distance", "max_distance", "frac_changed"};
-  writable::doubles iter_mean(iter_mean_distance.size());
-  writable::doubles iter_max(iter_max_distance.size());
-  writable::doubles iter_frac(iter_frac_changed.size());
-  for (size_t i = 0; i < iter_mean_distance.size(); i++) {
-    iter_mean[i] = iter_mean_distance[i];
-    iter_max[i] = iter_max_distance[i];
-    iter_frac[i] = iter_frac_changed[i];
+  cpp11::writable::doubles iter_mean(slic.iter_mean_distance_ref().size());
+  cpp11::writable::doubles iter_max(slic.iter_max_distance_ref().size());
+  cpp11::writable::doubles iter_frac(slic.iter_frac_changed_ref().size());
+  for (size_t i = 0; i < slic.iter_mean_distance_ref().size(); i++) {
+    iter_mean[i] = slic.iter_mean_distance_ref()[i];
+    iter_max[i] = slic.iter_max_distance_ref()[i];
+    iter_frac[i] = slic.iter_frac_changed_ref()[i];
   }
   iteration.at(0) = iter_mean;
   iteration.at(1) = iter_max;
   iteration.at(2) = iter_frac;
 
-  writable::list per_cluster(3);
+  cpp11::writable::list per_cluster(3);
   per_cluster.names() = {"mean_value", "mean_spatial", "ratio_mean"};
   per_cluster.at(0) = mean_value;
   per_cluster.at(1) = mean_spatial;
   per_cluster.at(2) = ratio_mean;
 
-  writable::list per_pixel(3);
+  cpp11::writable::list per_pixel(3);
   per_pixel.names() = {"spatial", "value", "combined"};
   per_pixel.at(0) = per_pixel_spatial;
   per_pixel.at(1) = per_pixel_value;
   per_pixel.at(2) = per_pixel_combined;
 
-  writable::list scale(4);
+  cpp11::writable::list scale(4);
   scale.names() = {"spatial_mean", "value_mean", "weighted_spatial_mean", "weighted_value_mean"};
   scale.at(0) = cpp11::as_sexp(spatial_mean);
   scale.at(1) = cpp11::as_sexp(value_mean);
   scale.at(2) = cpp11::as_sexp(w_spatial_mean);
   scale.at(3) = cpp11::as_sexp(w_value_mean);
 
-  writable::list result(4);
+  cpp11::writable::list result(4);
   result.names() = {"iteration", "per_cluster", "per_pixel", "scale"};
   result.at(0) = iteration;
   result.at(1) = per_cluster;
