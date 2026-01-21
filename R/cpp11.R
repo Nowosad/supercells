@@ -12,6 +12,6 @@ sc_metrics_pixels_cpp <- function(clusters, centers_xy, centers_vals, vals, step
   .Call(`_supercells_sc_metrics_pixels_cpp`, clusters, centers_xy, centers_vals, vals, step, compactness, dist_name, dist_fun)
 }
 
-run_slic <- function(mat, vals, step, compactness, clean, centers, dist_name, dist_fun, avg_fun_fun, avg_fun_name, iter, minarea, input_centers, verbose, diagnostics, iter_diagnostics) {
-  .Call(`_supercells_run_slic`, mat, vals, step, compactness, clean, centers, dist_name, dist_fun, avg_fun_fun, avg_fun_name, iter, minarea, input_centers, verbose, diagnostics, iter_diagnostics)
+run_slic <- function(mat, vals, step, compactness, clean, centers, dist_name, dist_fun, avg_fun_fun, avg_fun_name, iter, minarea, input_centers, verbose) {
+  .Call(`_supercells_run_slic`, mat, vals, step, compactness, clean, centers, dist_name, dist_fun, avg_fun_fun, avg_fun_name, iter, minarea, input_centers, verbose)
 }

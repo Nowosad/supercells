@@ -6,7 +6,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
                                     int step, double compactness, DistFn dist_fn_in, AvgFn avg_fn_in,
                                     const std::string& avg_fun_name_in, int iter,
                                     const std::vector<std::array<int, 2>>& input_centers,
-                                    int verbose, bool diagnostics) {
+                                    int verbose) {
   // Initialize state and seed cluster centers.
   if (verbose > 0) std::printf("Initialization: ");
   /* Clear previous data (if any), and re-initialize it. */
@@ -16,10 +16,6 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
   dist_fn = dist_fn_in;
   avg_fn = avg_fn_in;
   avg_fun_name = avg_fun_name_in;
-  diagnostics_enabled = diagnostics;
-  if (diagnostics_enabled) {
-    iter_mean_distance.clear();
-  }
   inits(mat_dims_in, vals, input_centers);
   if (verbose > 0) std::printf("Completed\n");
 
@@ -161,26 +157,6 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
       }
     }
 
-    // Diagnostics: track iteration-level convergence stats if enabled.
-    if (diagnostics_enabled) {
-      double sum_dist = 0.0;
-      int count = 0;
-      for (int i = 0; i < mat_dims[1]; i++) {
-        for (int j = 0; j < mat_dims[0]; j++) {
-          int curr = clusters[i][j];
-          if (curr != -1 && distances[i][j] != FLT_MAX) {
-            sum_dist += distances[i][j];
-            count += 1;
-          }
-        }
-      }
-      if (count > 0) {
-        iter_mean_distance.push_back(sum_dist / count);
-      } else {
-        double na = std::numeric_limits<double>::quiet_NaN();
-        iter_mean_distance.push_back(na);
-      }
-    }
   }
   if (verbose > 0) std::printf("\n");
 }

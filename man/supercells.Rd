@@ -18,9 +18,7 @@ supercells(
   metadata = TRUE,
   chunks = FALSE,
   future = FALSE,
-  verbose = 0,
-  diagnostics = FALSE,
-  iter_diagnostics = FALSE
+  verbose = 0
 )
 }
 \arguments{
@@ -56,13 +54,9 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
 \item{future}{Should the future package be used for parallelization of the calculations? Default: \code{FALSE}. If \code{TRUE}, you also need to specify \code{future::plan()}.}
 
 \item{verbose}{An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).}
-
-\item{diagnostics}{Logical. If \code{TRUE}, returns diagnostic information as an attribute (\code{diagnostics}) on the output. Diagnostics are only available when the input is processed as a single chunk.}
-
-\item{iter_diagnostics}{Logical. If \code{TRUE}, returns iteration diagnostics as an attribute (\code{iter_diagnostics}) on the output. Iteration diagnostics are only available when the input is processed as a single chunk.}
 }
 \value{
-An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell. When \code{diagnostics = TRUE}, a diagnostics list is attached as an attribute named \code{diagnostics}.
+An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell.
 }
 \description{
 Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
