@@ -68,5 +68,5 @@ automatic chunking based on size, or a numeric value for a fixed chunk size
 A SpatRaster with supercell IDs.
 }
 \description{
-Runs \code{\link[=sc_slic]{sc_slic()}} and rasterizes the resulting supercells.
+Runs the SLIC workflow and returns a raster of supercell IDs.
 }
