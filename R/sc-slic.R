@@ -33,9 +33,9 @@
 #' Attributes `step` and `compactness` are attached to the result.
 #' @export
 sc_slic = function(x, k = NULL, step = NULL, centers = NULL, compactness, dist_fun = "euclidean",
-                     avg_fun = "mean", clean = TRUE, iter = 10, transform = NULL,
-                     minarea, metadata = FALSE, chunks = FALSE, future = FALSE, verbose = 0,
-                     iter_diagnostics = FALSE) {
+                   avg_fun = "mean", clean = TRUE, iter = 10, transform = NULL,
+                   minarea, metadata = FALSE, chunks = FALSE, future = FALSE, verbose = 0,
+                   iter_diagnostics = FALSE) {
   prep = .sc_slic_prep(x, k, step, centers, compactness, dist_fun, avg_fun,
                        minarea, chunks, iter_diagnostics)
 
@@ -202,5 +202,5 @@ sc_slic = function(x, k = NULL, step = NULL, centers = NULL, compactness, dist_f
   if (!is.null(iter_attr)) {
     attr(slic_sf, "iter_diagnostics") = iter_attr
   }
-  return(slic_sf)
+  slic_sf
 }

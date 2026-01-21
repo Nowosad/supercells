@@ -1,6 +1,6 @@
 #' Create supercells as a raster
 #'
-#' Runs [sc_slic()] and rasterizes the resulting supercells.
+#' Runs the SLIC workflow and returns a raster of supercell IDs.
 #'
 #' @inheritParams sc_slic
 #'
@@ -19,13 +19,13 @@ sc_slic_raster = function(x, k = NULL, step = NULL, centers = NULL, compactness,
   }
 
   if (future) {
-    if (in_memory(x)) {
-      names_x = names(x)
-      x = terra::writeRaster(x, tempfile(fileext = ".tif"))
-      names(x) = names_x
+    if (in_memory(prep$x)) {
+      names_x = names(prep$x)
+      prep$x = terra::writeRaster(prep$x, tempfile(fileext = ".tif"))
+      names(prep$x) = names_x
     }
-    if (!in_memory(x)) {
-      x = terra::sources(x)[[1]]
+    if (!in_memory(prep$x)) {
+      prep$x = terra::sources(prep$x)[[1]]
     }
     oopts = options(future.globals.maxSize = +Inf)
     on.exit(options(oopts))
