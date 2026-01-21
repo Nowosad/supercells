@@ -19,6 +19,8 @@ void SlicCore::clear_data() {
   center_counts.clear();
   mat_dims.clear();
   new_clusters.clear();
+  iter_mean_distance.clear();
+  iter_diagnostics_enabled = false;
   vals_ptr = nullptr;
   bands = 0;
   dist_fn = nullptr;
