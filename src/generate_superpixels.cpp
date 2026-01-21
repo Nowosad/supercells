@@ -2,7 +2,7 @@
 #include "calc_stats.h"
 #include <limits>
 
-void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const double* vals_ptr_in,
+void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const std::vector<double>& vals,
                                     int step, double compactness, DistFn dist_fn_in, AvgFn avg_fn_in,
                                     const std::string& avg_fun_name_in, int iter,
                                     const std::vector<std::array<int, 2>>& input_centers,
@@ -19,20 +19,13 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const d
   diagnostics_enabled = diagnostics;
   if (diagnostics_enabled) {
     iter_mean_distance.clear();
-    iter_max_distance.clear();
-    iter_frac_changed.clear();
   }
-  inits(mat_dims_in, vals_ptr_in, input_centers);
+  inits(mat_dims_in, vals, input_centers);
   if (verbose > 0) std::printf("Completed\n");
 
   // Main SLIC loop: assign pixels -> update centers, for a fixed number of iterations.
   for (int itr = 0; itr < iter; itr++) {
     if (verbose > 0) std::printf("Iteration: %u/%u\r", itr + 1, iter);
-
-    std::vector<std::vector<int> > prev_clusters;
-    if (diagnostics_enabled) {
-      prev_clusters = clusters;
-    }
 
     // Reset per-pixel distances before assignment.
     for (int i = 0; i < mat_dims[1]; i++) {
@@ -53,7 +46,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const d
 
             int count_na = 0;
             for (int nval = 0; nval < mat_dims[2]; nval++) {
-              double val = value_at(ncell, nval);
+              double val = vals[ncell * mat_dims[2] + nval];
               colour.push_back(val);
               if (std::isnan(val)) {
                 count_na += 1;
@@ -108,7 +101,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const d
         for (s_it = keyRange.first; s_it != keyRange.second; ++s_it) {
           int ncell = (*s_it).second;
           for (int nval = 0; nval < mat_dims[2]; nval++) {
-            double val = value_at(ncell, nval);
+            double val = vals[ncell * mat_dims[2] + nval];
             centers_vals_c_id[nval].push_back(val);
           }
         }
@@ -144,7 +137,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const d
 
             std::vector<double> colour; colour.reserve(mat_dims[2]);
             for (int nval = 0; nval < mat_dims[2]; nval++) {
-              double val = value_at(ncell, nval);
+              double val = vals[ncell * mat_dims[2] + nval];
               colour.push_back(val);
             }
             centers[c_id][0] += k;
@@ -171,41 +164,21 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const d
     // Diagnostics: track iteration-level convergence stats if enabled.
     if (diagnostics_enabled) {
       double sum_dist = 0.0;
-      double max_dist = 0.0;
       int count = 0;
-      int changed = 0;
-      int total = 0;
       for (int i = 0; i < mat_dims[1]; i++) {
         for (int j = 0; j < mat_dims[0]; j++) {
           int curr = clusters[i][j];
-          int prev = prev_clusters[i][j];
-          if (curr != -1 || prev != -1) {
-            total += 1;
-            if (curr != prev) {
-              changed += 1;
-            }
-          }
           if (curr != -1 && distances[i][j] != FLT_MAX) {
             sum_dist += distances[i][j];
-            if (distances[i][j] > max_dist) {
-              max_dist = distances[i][j];
-            }
             count += 1;
           }
         }
       }
       if (count > 0) {
         iter_mean_distance.push_back(sum_dist / count);
-        iter_max_distance.push_back(max_dist);
       } else {
         double na = std::numeric_limits<double>::quiet_NaN();
         iter_mean_distance.push_back(na);
-        iter_max_distance.push_back(na);
-      }
-      if (total > 0) {
-        iter_frac_changed.push_back((double) changed / total);
-      } else {
-        iter_frac_changed.push_back(std::numeric_limits<double>::quiet_NaN());
       }
     }
   }

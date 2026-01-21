@@ -126,8 +126,8 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
       for (s_it = keyRange.first; s_it != keyRange.second; ++s_it) {
         int ncell = (*s_it).second;
         for (int nval = 0; nval < mat_dims[2]; nval++) {
-          double val = vals[ncell * mat_dims[2] + nval];
-          new_c_id_centers_vals[nval].push_back(val);
+            double val = vals[ncell * mat_dims[2] + nval];
+            new_c_id_centers_vals[nval].push_back(val);
         }
       }
       for (int nval = 0; nval < mat_dims[2]; nval++) {

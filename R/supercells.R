@@ -22,6 +22,7 @@
 #' @param future Should the future package be used for parallelization of the calculations? Default: `FALSE`. If `TRUE`, you also need to specify `future::plan()`.
 #' @param verbose An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).
 #' @param diagnostics Logical. If `TRUE`, returns diagnostic information as an attribute (`diagnostics`) on the output. Diagnostics are only available when the input is processed as a single chunk.
+#' @param iter_diagnostics Logical. If `TRUE`, returns iteration diagnostics as an attribute (`iter_diagnostics`) on the output. Iteration diagnostics are only available when the input is processed as a single chunk.
 #'
 #' @details
 #' If you want to use additional arguments for the averaging function (`avg_fun`), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: `my_mean = function(x) mean(x, na.rm = TRUE)` and then provide `avg_fun = my_mean.`
@@ -58,7 +59,7 @@
 #' # plot(sf::st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
                       iter = 10, transform = NULL, step, minarea, metadata = TRUE, chunks = FALSE, future = FALSE, verbose = 0,
-                      diagnostics = FALSE){
+                      diagnostics = FALSE, iter_diagnostics = FALSE){
   if (!inherits(x, "SpatRaster")){
     if (inherits(x, "stars")){
       x = terra::rast(x)
@@ -113,6 +114,10 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     warning("Diagnostics are only available when chunks = FALSE (single chunk). Diagnostics were disabled.", call. = FALSE)
     diagnostics = FALSE
   }
+  if (iter_diagnostics && nrow(chunk_ext) > 1) {
+    warning("Iteration diagnostics are only available when chunks = FALSE (single chunk). Iteration diagnostics were disabled.", call. = FALSE)
+    iter_diagnostics = FALSE
+  }
   # run the algorithm on chunks
   if (future){
     if (in_memory(x)){
@@ -130,22 +135,31 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                                          clean = clean, iter = iter, minarea = minarea, transform = transform,
                                          input_centers = input_centers, verbose = verbose, diagnostics = diagnostics,
+                                         iter_diagnostics = iter_diagnostics,
                                          future.seed = TRUE)
   } else {
     slic_sf = apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
                                          step = step, compactness = compactness, dist_name = dist_name,
                                          dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                                          clean = clean, iter = iter, minarea = minarea, transform = transform,
-                                         input_centers = input_centers, verbose = verbose, diagnostics = diagnostics)
+                                         input_centers = input_centers, verbose = verbose, diagnostics = diagnostics,
+                                         iter_diagnostics = iter_diagnostics)
   }
   # combines the chunks results by updating supercells ids
   diagnostics_attr = NULL
+  iter_diagnostics_attr = NULL
   if (diagnostics && is.list(slic_sf) && length(slic_sf) > 0) {
     diagnostics_attr = attr(slic_sf[[1]], "diagnostics")
+  }
+  if (iter_diagnostics && is.list(slic_sf) && length(slic_sf) > 0) {
+    iter_diagnostics_attr = attr(slic_sf[[1]], "iter_diagnostics")
   }
   slic_sf = update_supercells_ids(slic_sf)
   if (diagnostics && !is.null(diagnostics_attr)) {
     attr(slic_sf, "diagnostics") = diagnostics_attr
+  }
+  if (iter_diagnostics && !is.null(iter_diagnostics_attr)) {
+    attr(slic_sf, "iter_diagnostics") = iter_diagnostics_attr
   }
   # removes metadata columns if metadata = FALSE
   if (isFALSE(metadata)){

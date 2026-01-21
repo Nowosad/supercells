@@ -15,8 +15,20 @@ static double mean_vec(const std::vector<double>& v) {
   return sum / v.size();
 }
 
+cpp11::writable::list build_iter_diagnostics(const SlicCore& slic) {
+  cpp11::writable::list iteration(1);
+  iteration.names() = {"mean_distance"};
+  cpp11::writable::doubles iter_mean(slic.iter_mean_distance_ref().size());
+  for (size_t i = 0; i < slic.iter_mean_distance_ref().size(); i++) {
+    iter_mean[i] = slic.iter_mean_distance_ref()[i];
+  }
+  iteration.at(0) = iter_mean;
+
+  return iteration;
+}
+
 cpp11::writable::list build_diagnostics(const SlicCore& slic, const std::vector<double>& vals,
-                                       SlicCore::DistFn dist_fn) {
+                                        SlicCore::DistFn dist_fn) {
   const auto& mat_dims = slic.mat_dims_ref();
   const auto& clusters = slic.clusters_ref();
   const auto& centers = slic.centers_ref();
@@ -126,19 +138,7 @@ cpp11::writable::list build_diagnostics(const SlicCore& slic, const std::vector<
   double w_spatial_mean = mean_vec(weighted_spatial);
   double w_value_mean = mean_vec(weighted_value);
 
-  cpp11::writable::list iteration(3);
-  iteration.names() = {"mean_distance", "max_distance", "frac_changed"};
-  cpp11::writable::doubles iter_mean(slic.iter_mean_distance_ref().size());
-  cpp11::writable::doubles iter_max(slic.iter_max_distance_ref().size());
-  cpp11::writable::doubles iter_frac(slic.iter_frac_changed_ref().size());
-  for (size_t i = 0; i < slic.iter_mean_distance_ref().size(); i++) {
-    iter_mean[i] = slic.iter_mean_distance_ref()[i];
-    iter_max[i] = slic.iter_max_distance_ref()[i];
-    iter_frac[i] = slic.iter_frac_changed_ref()[i];
-  }
-  iteration.at(0) = iter_mean;
-  iteration.at(1) = iter_max;
-  iteration.at(2) = iter_frac;
+  cpp11::writable::list iteration = build_iter_diagnostics(slic);
 
   cpp11::writable::list per_cluster(3);
   per_cluster.names() = {"mean_value", "mean_spatial", "ratio_mean"};

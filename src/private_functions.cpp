@@ -20,8 +20,6 @@ void SlicCore::clear_data() {
   mat_dims.clear();
   new_clusters.clear();
   iter_mean_distance.clear();
-  iter_max_distance.clear();
-  iter_frac_changed.clear();
   diagnostics_enabled = false;
   vals_ptr = nullptr;
   bands = 0;

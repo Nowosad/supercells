@@ -7,6 +7,7 @@
 cpp11::writable::integers_matrix<> return_clusters(const SlicCore& slic);
 cpp11::writable::doubles_matrix<> return_centers(const SlicCore& slic);
 cpp11::writable::doubles_matrix<> return_centers_vals(const SlicCore& slic);
+cpp11::writable::list build_iter_diagnostics(const SlicCore& slic);
 cpp11::writable::list build_diagnostics(const SlicCore& slic, const std::vector<double>& vals,
                                         SlicCore::DistFn dist_fn);
 
@@ -14,7 +15,8 @@ cpp11::writable::list build_diagnostics(const SlicCore& slic, const std::vector<
 cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double compactness,
                      bool clean, bool centers, std::string dist_name, cpp11::function dist_fun,
                      cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int minarea,
-                     cpp11::integers_matrix<> input_centers, int verbose, bool diagnostics) {
+                     cpp11::integers_matrix<> input_centers, int verbose, bool diagnostics,
+                     bool iter_diagnostics) {
   if (verbose > 0) Rprintf("Step: %u\n", step);
 
   int ncell = vals.nrow();
@@ -50,15 +52,17 @@ cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step
     };
   }
 
+  bool iter_enabled = diagnostics || iter_diagnostics;
+
   SlicCore slic;
   slic.generate_superpixels(mat_dims, vals_vec, step, compactness, dist_cb, avg_cb,
-                            avg_fun_name, iter, centers_vec, verbose, diagnostics);
+                            avg_fun_name, iter, centers_vec, verbose, iter_enabled);
 
   if (clean) {
     slic.create_connectivity(vals_vec, avg_cb, avg_fun_name, minarea, verbose);
   }
 
-  cpp11::writable::list result(4);
+  cpp11::writable::list result(5);
   result.at(0) = return_clusters(slic);
   if (centers) {
     result.at(1) = return_centers(slic);
@@ -71,6 +75,11 @@ cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step
     result.at(3) = build_diagnostics(slic, vals_vec, dist_cb);
   } else {
     result.at(3) = R_NilValue;
+  }
+  if (iter_diagnostics) {
+    result.at(4) = build_iter_diagnostics(slic);
+  } else {
+    result.at(4) = R_NilValue;
   }
 
   return result;

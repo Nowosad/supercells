@@ -32,8 +32,6 @@ class SlicCore {
   const std::vector<int>& mat_dims_ref() const { return mat_dims; }
 
   const std::vector<double>& iter_mean_distance_ref() const { return iter_mean_distance; }
-  const std::vector<double>& iter_max_distance_ref() const { return iter_max_distance; }
-  const std::vector<double>& iter_frac_changed_ref() const { return iter_frac_changed; }
 
   int step_value() const { return step; }
   double compactness_value() const { return compactness; }
@@ -52,8 +50,6 @@ class SlicCore {
 
   bool diagnostics_enabled = false;
   std::vector<double> iter_mean_distance;
-  std::vector<double> iter_max_distance;
-  std::vector<double> iter_frac_changed;
 
   int step = 0;
   double compactness = 0.0;
