@@ -4,6 +4,10 @@ sc_metrics_clusters_cpp <- function(clusters, centers_xy, centers_vals, vals, st
   .Call(`_supercells_sc_metrics_clusters_cpp`, clusters, centers_xy, centers_vals, vals, step, compactness, dist_name, dist_fun)
 }
 
+sc_metrics_global_cpp <- function(clusters, centers_xy, centers_vals, vals, step, compactness, dist_name, dist_fun) {
+  .Call(`_supercells_sc_metrics_global_cpp`, clusters, centers_xy, centers_vals, vals, step, compactness, dist_name, dist_fun)
+}
+
 sc_metrics_pixels_cpp <- function(clusters, centers_xy, centers_vals, vals, step, compactness, dist_name, dist_fun) {
   .Call(`_supercells_sc_metrics_pixels_cpp`, clusters, centers_xy, centers_vals, vals, step, compactness, dist_name, dist_fun)
 }
