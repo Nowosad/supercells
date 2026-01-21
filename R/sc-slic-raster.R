@@ -11,20 +11,11 @@ sc_slic_raster = function(x, k = NULL, step = NULL, centers = NULL, compactness,
                           iter = 10, transform = NULL, minarea, metadata = FALSE,
                           chunks = FALSE, future = FALSE, verbose = 0,
                           iter_diagnostics = FALSE) {
-  x = .sc_create_input(x)
-  .sc_create_validate(k, step, centers, compactness, chunks)
+  prep = .sc_slic_prep(x, k, step, centers, compactness, dist_fun, avg_fun,
+                       minarea, chunks, iter_diagnostics)
 
   if (iter == 0) {
     stop("iter = 0 returns centers only; raster output is not available", call. = FALSE)
-  }
-  step = .sc_create_step(x, k, step)
-  input_centers = .sc_create_centers(x, centers)
-  funs = .sc_create_funs(dist_fun, avg_fun)
-  minarea = .sc_create_minarea(minarea, step)
-  chunk_ext = prep_chunks_ext(dim(x), limit = chunks)
-  if (iter_diagnostics && nrow(chunk_ext) > 1) {
-    warning("Iteration diagnostics are only available when chunks = FALSE (single chunk). Iteration diagnostics were disabled.", call. = FALSE)
-    iter_diagnostics = FALSE
   }
 
   if (future) {
@@ -38,20 +29,20 @@ sc_slic_raster = function(x, k = NULL, step = NULL, centers = NULL, compactness,
     }
     oopts = options(future.globals.maxSize = +Inf)
     on.exit(options(oopts))
-    res_list = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunk_raster, x = x,
-                                          step = step, compactness = compactness, dist_name = funs$dist_name,
-                                          dist_fun = funs$dist_fun, avg_fun_fun = funs$avg_fun_fun,
-                                          avg_fun_name = funs$avg_fun_name, clean = clean, iter = iter,
-                                          minarea = minarea, transform = transform, input_centers = input_centers,
-                                          verbose = verbose, iter_diagnostics = iter_diagnostics,
+    res_list = future.apply::future_apply(prep$chunk_ext, MARGIN = 1, run_slic_chunk_raster, x = prep$x,
+                                          step = prep$step, compactness = compactness, dist_name = prep$funs$dist_name,
+                                          dist_fun = prep$funs$dist_fun, avg_fun_fun = prep$funs$avg_fun_fun,
+                                          avg_fun_name = prep$funs$avg_fun_name, clean = clean, iter = iter,
+                                          minarea = prep$minarea, transform = transform, input_centers = prep$input_centers,
+                                          verbose = verbose, iter_diagnostics = prep$iter_diagnostics,
                                           future.seed = TRUE)
   } else {
-    res_list = apply(chunk_ext, MARGIN = 1, run_slic_chunk_raster, x = x,
-                     step = step, compactness = compactness, dist_name = funs$dist_name,
-                     dist_fun = funs$dist_fun, avg_fun_fun = funs$avg_fun_fun,
-                     avg_fun_name = funs$avg_fun_name, clean = clean, iter = iter,
-                     minarea = minarea, transform = transform, input_centers = input_centers,
-                     verbose = verbose, iter_diagnostics = iter_diagnostics)
+    res_list = apply(prep$chunk_ext, MARGIN = 1, run_slic_chunk_raster, x = prep$x,
+                     step = prep$step, compactness = compactness, dist_name = prep$funs$dist_name,
+                     dist_fun = prep$funs$dist_fun, avg_fun_fun = prep$funs$avg_fun_fun,
+                     avg_fun_name = prep$funs$avg_fun_name, clean = clean, iter = iter,
+                     minarea = prep$minarea, transform = transform, input_centers = prep$input_centers,
+                     verbose = verbose, iter_diagnostics = prep$iter_diagnostics)
   }
 
   if (is.list(res_list) && length(res_list) > 0 && !is.null(res_list[[1]]$iter0) && res_list[[1]]$iter0) {

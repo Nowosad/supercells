@@ -38,7 +38,9 @@ run_slic_chunk_raster = function(ext, x, step, compactness, dist_name,
     slic_sf[["X2"]] = as.vector(terra::ext(x))[[4]] - (slic_sf[["X2"]] * terra::res(x)[[2]]) - (terra::res(x)[[1]]/2)
     slic_sf = sf::st_as_sf(slic_sf, coords = c("X1", "X2"))
     sf::st_crs(slic_sf) = terra::crs(x)
-    return(list(iter0 = TRUE, centers_sf = slic_sf, iter_diagnostics = slic[[4]], names_x = names(x)))
+    return(list(iter0 = TRUE, raster = NULL, centers_sf = slic_sf,
+                centers = slic[[2]], centers_vals = slic[[3]],
+                iter_diagnostics = slic[[4]], names_x = names(x)))
   }
   # transforms the output back to RGB color space if transform = "to_LAB"
   if (!is.null(transform)){
@@ -52,7 +54,8 @@ run_slic_chunk_raster = function(ext, x, step, compactness, dist_name,
   terra::NAflag(slic_rast) = -1
   terra::crs(slic_rast) = terra::crs(x)
   terra::ext(slic_rast) = terra::ext(x)
-  list(iter0 = FALSE, raster = slic_rast, centers = slic[[2]], centers_vals = slic[[3]],
+  list(iter0 = FALSE, raster = slic_rast, centers_sf = NULL,
+       centers = slic[[2]], centers_vals = slic[[3]],
        iter_diagnostics = slic[[4]], names_x = names(x))
 }
 

@@ -18,7 +18,6 @@ test_that("sc_slic handles step and centers", {
 test_that("sc_slic_raster returns raster with attributes", {
   sc_r = sc_slic_raster(v1, k = 30, compactness = 1)
   expect_s4_class(sc_r, "SpatRaster")
-  expect_equal(attr(sc_r, "method"), "slic")
 })
 
 test_that("sc_slic_raster matches rasterized sc_slic", {

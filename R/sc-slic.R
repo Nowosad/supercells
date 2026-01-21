@@ -36,13 +36,30 @@ sc_slic = function(x, k = NULL, step = NULL, centers = NULL, compactness, dist_f
                      avg_fun = "mean", clean = TRUE, iter = 10, transform = NULL,
                      minarea, metadata = FALSE, chunks = FALSE, future = FALSE, verbose = 0,
                      iter_diagnostics = FALSE) {
-  x = .sc_create_input(x)
-  .sc_create_validate(k, step, centers, compactness, chunks)
+  prep = .sc_slic_prep(x, k, step, centers, compactness, dist_fun, avg_fun,
+                       minarea, chunks, iter_diagnostics)
 
   if (iter == 0) {
     clean = FALSE
   }
 
+  slic_sf = .sc_create_run(prep$x, prep$chunk_ext, prep$step, compactness,
+                           prep$funs$dist_name, prep$funs$dist_fun,
+                           prep$funs$avg_fun_name, prep$funs$avg_fun_fun,
+                           clean, iter, prep$minarea, transform, prep$input_centers,
+                           verbose, future, prep$iter_diagnostics)
+
+  iter_attr = NULL
+  if (prep$iter_diagnostics && is.list(slic_sf) && length(slic_sf) > 0) {
+    iter_attr = attr(slic_sf[[1]], "iter_diagnostics")
+  }
+  .sc_create_post(slic_sf, metadata, prep$step, compactness, iter_attr)
+}
+
+.sc_slic_prep = function(x, k, step, centers, compactness, dist_fun, avg_fun,
+                         minarea, chunks, iter_diagnostics) {
+  x = .sc_create_input(x)
+  .sc_create_validate(k, step, centers, compactness, chunks)
   step = .sc_create_step(x, k, step)
   input_centers = .sc_create_centers(x, centers)
   funs = .sc_create_funs(dist_fun, avg_fun)
@@ -52,18 +69,8 @@ sc_slic = function(x, k = NULL, step = NULL, centers = NULL, compactness, dist_f
     warning("Iteration diagnostics are only available when chunks = FALSE (single chunk). Iteration diagnostics were disabled.", call. = FALSE)
     iter_diagnostics = FALSE
   }
-
-  slic_sf = .sc_create_run(x, chunk_ext, step, compactness,
-                           funs$dist_name, funs$dist_fun,
-                           funs$avg_fun_name, funs$avg_fun_fun,
-                           clean, iter, minarea, transform, input_centers,
-                           verbose, future, iter_diagnostics)
-
-  iter_attr = NULL
-  if (iter_diagnostics && is.list(slic_sf) && length(slic_sf) > 0) {
-    iter_attr = attr(slic_sf[[1]], "iter_diagnostics")
-  }
-  .sc_create_post(slic_sf, metadata, step, compactness, iter_attr)
+  list(x = x, step = step, input_centers = input_centers, funs = funs,
+       minarea = minarea, chunk_ext = chunk_ext, iter_diagnostics = iter_diagnostics)
 }
 
 .sc_create_input = function(x) {
