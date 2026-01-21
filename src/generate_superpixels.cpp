@@ -2,11 +2,12 @@
 #include "calc_stats.h"
 #include <limits>
 
-void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const std::vector<double>& vals,
+void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const double* vals_ptr_in,
                                     int step, double compactness, DistFn dist_fn_in, AvgFn avg_fn_in,
                                     const std::string& avg_fun_name_in, int iter,
                                     const std::vector<std::array<int, 2>>& input_centers,
                                     int verbose, bool diagnostics) {
+  // Initialize state and seed cluster centers.
   if (verbose > 0) std::printf("Initialization: ");
   /* Clear previous data (if any), and re-initialize it. */
   clear_data();
@@ -21,10 +22,10 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
     iter_max_distance.clear();
     iter_frac_changed.clear();
   }
-  inits(mat_dims_in, vals, input_centers);
+  inits(mat_dims_in, vals_ptr_in, input_centers);
   if (verbose > 0) std::printf("Completed\n");
 
-  /* Run for provided number of iterations. */
+  // Main SLIC loop: assign pixels -> update centers, for a fixed number of iterations.
   for (int itr = 0; itr < iter; itr++) {
     if (verbose > 0) std::printf("Iteration: %u/%u\r", itr + 1, iter);
 
@@ -33,13 +34,14 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
       prev_clusters = clusters;
     }
 
-    /* Reset distance values. */
+    // Reset per-pixel distances before assignment.
     for (int i = 0; i < mat_dims[1]; i++) {
       for (int j = 0; j < mat_dims[0]; j++) {
         distances[i][j] = FLT_MAX;
       }
     }
 
+    // Assignment step: find the best center within a local window around each center.
     for (int l = 0; l < (int) centers.size(); l++) {
       /* Only compare to pixels in a 2 x step by 2 x step region. */
       for (int m = centers[l][1] - step; m < centers[l][1] + step; m++) {
@@ -51,7 +53,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
 
             int count_na = 0;
             for (int nval = 0; nval < mat_dims[2]; nval++) {
-              double val = vals[ncell * mat_dims[2] + nval];
+              double val = value_at(ncell, nval);
               colour.push_back(val);
               if (std::isnan(val)) {
                 count_na += 1;
@@ -74,8 +76,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
       }
     }
 
-    /* Clear the center values. */
-    /* Clear the center_vals values. */
+    // Update step: reset accumulators for center positions and values.
     for (int m = 0; m < (int) centers.size(); m++) {
       centers[m][0] = centers[m][1] = 0;
       for (int n = 0; n < (int) centers_vals[0].size(); n++) {
@@ -84,7 +85,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
       center_counts[m] = 0;
     }
 
-    /* Compute the new cluster centers when the average function is not mean. */
+    // Recompute centers using a non-mean (median/mean2/custom) aggregator.
     if (avg_fun_name != "mean") {
       IntToIntMap c_id_centers_vals;
       for (int l = 0; l < mat_dims[1]; l++) {
@@ -107,7 +108,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
         for (s_it = keyRange.first; s_it != keyRange.second; ++s_it) {
           int ncell = (*s_it).second;
           for (int nval = 0; nval < mat_dims[2]; nval++) {
-            double val = vals[ncell * mat_dims[2] + nval];
+            double val = value_at(ncell, nval);
             centers_vals_c_id[nval].push_back(val);
           }
         }
@@ -133,7 +134,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
         }
       }
     } else if (avg_fun_name == "mean") {
-      /* Compute the new cluster centers when the average function is mean. */
+      // Recompute centers using the standard mean aggregator.
       for (int l = 0; l < mat_dims[1]; l++) {
         for (int k = 0; k < mat_dims[0]; k++) {
           int c_id = clusters[l][k];
@@ -143,7 +144,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
 
             std::vector<double> colour; colour.reserve(mat_dims[2]);
             for (int nval = 0; nval < mat_dims[2]; nval++) {
-              double val = vals[ncell * mat_dims[2] + nval];
+              double val = value_at(ncell, nval);
               colour.push_back(val);
             }
             centers[c_id][0] += k;
@@ -167,6 +168,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
       }
     }
 
+    // Diagnostics: track iteration-level convergence stats if enabled.
     if (diagnostics_enabled) {
       double sum_dist = 0.0;
       double max_dist = 0.0;
