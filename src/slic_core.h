@@ -21,7 +21,7 @@ class SlicCore {
                             int step, double compactness, DistFn dist_fn, AvgFn avg_fn,
                             const std::string& avg_fun_name, int iter,
                             const std::vector<std::array<int, 2>>& input_centers,
-                            int verbose);
+                            int verbose, bool iter_diagnostics);
 
   void create_connectivity(const std::vector<double>& vals, AvgFn avg_fn,
                            const std::string& avg_fun_name, int minarea, int verbose);
@@ -30,6 +30,8 @@ class SlicCore {
   const std::vector<std::vector<double>>& centers_ref() const { return centers; }
   const std::vector<std::vector<double>>& centers_vals_ref() const { return centers_vals; }
   const std::vector<int>& mat_dims_ref() const { return mat_dims; }
+
+  const std::vector<double>& iter_mean_distance_ref() const { return iter_mean_distance; }
 
   int step_value() const { return step; }
   double compactness_value() const { return compactness; }
@@ -45,6 +47,9 @@ class SlicCore {
   std::vector<std::vector<double>> centers_vals;
   std::vector<int> center_counts;
   std::vector<std::vector<int>> new_clusters;
+
+  bool iter_diagnostics_enabled = false;
+  std::vector<double> iter_mean_distance;
 
   int step = 0;
   double compactness = 0.0;

@@ -3,5 +3,7 @@
 export(sc_metrics_clusters)
 export(sc_metrics_global)
 export(sc_metrics_pixels)
+export(sc_slic)
+export(sc_slic_raster)
 export(supercells)
 useDynLib(supercells, .registration = TRUE)
