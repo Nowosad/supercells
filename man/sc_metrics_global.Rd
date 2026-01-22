@@ -20,7 +20,29 @@ If missing, uses \code{attr(x, "compactness")} when available}
 If missing, uses \code{attr(x, "step")} when available}
 }
 \value{
-A data.frame with a single row of global metrics
+A data.frame with a single row of global metrics and columns:
+\describe{
+\item{step}{Step size used to generate supercells.}
+\item{compactness}{Compactness value used to generate supercells.}
+\item{n_supercells}{Number of supercells with at least one non-missing pixel.}
+\item{mean_value_dist}{Mean per-supercell value distance from pixels to their
+supercell centers, averaged across supercells.}
+\item{mean_spatial_dist}{Mean per-supercell spatial distance from pixels to
+their supercell centers, averaged across supercells; units are grid cells
+(row/column index distance), not map units.}
+\item{mean_combined_dist}{Mean per-supercell combined distance, computed from
+value and spatial distances using \code{compactness} and \code{step}, averaged across
+supercells.}
+\item{compactness_ratio_mean}{Mean ratio of scaled value distance to scaled
+spatial distance, averaged across supercells; \code{NA} when \code{compactness} or
+\code{step} is zero.}
+\item{mean_value_dist_w}{Value distance mean weighted by pixel counts per
+supercell.}
+\item{mean_spatial_dist_w}{Spatial distance mean weighted by pixel counts per
+supercell; units are grid cells (row/column index distance), not map units.}
+\item{mean_combined_dist_w}{Combined distance mean weighted by pixel counts
+per supercell; \code{NA} when \code{compactness} or \code{step} is zero.}
+}
 }
 \description{
 Computes global distance diagnostics for supercells
