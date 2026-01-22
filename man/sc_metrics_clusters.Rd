@@ -47,3 +47,6 @@ vol_sc = sc_slic(vol, step = 8, compactness = 1, metadata = TRUE)
 cl = sc_metrics_clusters(vol, vol_sc)
 head(cl)
 }
+\seealso{
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
+}

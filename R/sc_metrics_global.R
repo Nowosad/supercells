@@ -25,6 +25,7 @@
 #'   spatial distance, averaged across supercells; `NA` when `compactness` or
 #'   `step` is zero.}
 #' }
+#' @seealso [`sc_slic()`], [`sc_metrics_pixels()`], [`sc_metrics_clusters()`]
 #' @export
 #' @examples
 #' library(supercells)

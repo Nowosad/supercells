@@ -23,6 +23,7 @@
 #'   \item{combined}{Combined distance using `compactness` and `step` to
 #'   scale value and spatial distances.}
 #' }
+#' @seealso [`sc_slic()`], [`sc_metrics_clusters()`], [`sc_metrics_global()`]
 #' @export
 #' @examples
 #' library(supercells)

@@ -52,3 +52,6 @@ vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 vol_sc = sc_slic(vol, step = 8, compactness = 1)
 sc_metrics_global(vol, vol_sc)
 }
+\seealso{
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}
+}

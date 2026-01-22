@@ -18,6 +18,7 @@
 #'   \item{compactness_ratio}{Ratio of scaled value distance to scaled
 #'   spatial distance; `NA` when `compactness` or `step` is zero.}
 #' }
+#' @seealso [`sc_slic()`], [`sc_metrics_pixels()`], [`sc_metrics_global()`]
 #' @export
 #' @examples
 #' library(supercells)

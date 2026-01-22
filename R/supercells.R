@@ -24,11 +24,15 @@
 #'
 #' @details
 #' If you want to use additional arguments for the averaging function (`avg_fun`), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: `my_mean = function(x) mean(x, na.rm = TRUE)` and then provide `avg_fun = my_mean.`
+#' For raster IDs or point centers outputs, see [sc_slic_raster()] and
+#' [sc_slic_points()]. For evaluation and diagnostics, see
+#' [sc_metrics_pixels()], [sc_metrics_clusters()], and [sc_metrics_global()].
 #'
 #' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell.
 #'
 #' @references Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120
 #' @references Nowosad, J. Motif: an open-source R tool for pattern-based spatial analysis. Landscape Ecol (2021). https://doi.org/10.1007/s10980-020-01135-0
+#' @seealso [`sc_slic()`]
 #' @export
 #'
 #' @examples

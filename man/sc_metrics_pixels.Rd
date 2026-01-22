@@ -44,3 +44,6 @@ vol_sc = sc_slic(vol, step = 8, compactness = 1)
 metrics = sc_metrics_pixels(vol, vol_sc)
 terra::panel(metrics, nr = 1)
 }
+\seealso{
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
+}

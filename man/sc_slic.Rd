@@ -101,5 +101,6 @@ Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012).
 Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935
 }
 \seealso{
-\code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}
+\code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}},
+\code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
 }
