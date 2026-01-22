@@ -1,3 +1,29 @@
+slic_centers_points = function(centers, raster, centers_vals = NULL, names_x = NULL) {
+  centers_df = as.data.frame(centers)
+  empty_centers = centers_df[, 1] != 0 | centers_df[, 2] != 0
+  centers_df = centers_df[empty_centers, , drop = FALSE]
+  if (nrow(centers_df) == 0) {
+    empty_sf = sf::st_sf(supercells = integer(), x = double(), y = double(),
+                         geometry = sf::st_sfc(crs = terra::crs(raster)))
+    return(empty_sf)
+  }
+  names(centers_df) = c("x", "y")
+  ext = terra::ext(raster)
+  res = terra::res(raster)
+  centers_df[["x"]] = as.vector(ext)[[1]] + (centers_df[["x"]] * res[[1]]) + (res[[1]] / 2)
+  centers_df[["y"]] = as.vector(ext)[[4]] - (centers_df[["y"]] * res[[2]]) - (res[[1]] / 2)
+  centers_df[["supercells"]] = which(empty_centers)
+  if (!is.null(centers_vals)) {
+    if (!is.null(names_x)) {
+      colnames(centers_vals) = names_x
+    }
+    centers_df = cbind(centers_df, centers_vals[empty_centers, , drop = FALSE])
+  }
+  centers_sf = sf::st_as_sf(centers_df, coords = c("x", "y"), remove = FALSE)
+  sf::st_crs(centers_sf) = terra::crs(raster)
+  centers_sf
+}
+
 # run the algorithm on the area defined by 'ext'
 run_slic_chunk_raster = function(ext, x, step, compactness, dist_name,
                                  dist_fun, avg_fun_fun, avg_fun_name, clean,
@@ -59,6 +85,27 @@ run_slic_chunk_raster = function(ext, x, step, compactness, dist_name,
        iter_diagnostics = slic[[4]], names_x = names(x))
 }
 
+run_slic_chunk_points = function(ext, x, step, compactness, dist_name,
+                                 dist_fun, avg_fun_fun, avg_fun_name, clean,
+                                 iter, minarea, transform, input_centers, verbose,
+                                 iter_diagnostics = FALSE){
+  res = run_slic_chunk_raster(ext, x, step, compactness, dist_name,
+                             dist_fun, avg_fun_fun, avg_fun_name, clean,
+                             iter, minarea, transform, input_centers, verbose,
+                             iter_diagnostics)
+  if (res$iter0) {
+    raster_ref = if (is.character(x)) terra::rast(x) else x
+    raster_ref = raster_ref[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
+    points_sf = slic_centers_points(res$centers, raster_ref, res$centers_vals, res$names_x)
+  } else {
+    points_sf = slic_centers_points(res$centers, res$raster, res$centers_vals, res$names_x)
+  }
+  if (iter_diagnostics && !is.null(res$iter_diagnostics)) {
+    attr(points_sf, "iter_diagnostics") = res$iter_diagnostics
+  }
+  points_sf
+}
+
 run_slic_chunks = function(ext, x, step, compactness, dist_name,
                            dist_fun, avg_fun_fun, avg_fun_name, clean,
                            iter, minarea, transform, input_centers, verbose,
@@ -72,14 +119,12 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
   }
   slic_sf = sf::st_as_sf(terra::as.polygons(res$raster, dissolve = TRUE))
   if (nrow(slic_sf) > 0){
-    empty_centers = res$centers[,1] != 0 | res$centers[,2] != 0
-    slic_sf = cbind(slic_sf, stats::na.omit(res$centers[empty_centers, ]))
-    names(slic_sf) = c("supercells", "x", "y", "geometry")
+    names(slic_sf)[1] = "supercells"
+    centers_sf = slic_centers_points(res$centers, res$raster, res$centers_vals, res$names_x)
+    centers_df = sf::st_drop_geometry(centers_sf)
+    centers_df[["supercells"]] = NULL
+    slic_sf = cbind(slic_sf, centers_df)
     slic_sf[["supercells"]] = slic_sf[["supercells"]] + 1
-    slic_sf[["x"]] = as.vector(terra::ext(res$raster))[[1]] + (slic_sf[["x"]] * terra::res(res$raster)[[1]]) + (terra::res(res$raster)[[1]]/2)
-    slic_sf[["y"]] = as.vector(terra::ext(res$raster))[[4]] - (slic_sf[["y"]] * terra::res(res$raster)[[2]]) - (terra::res(res$raster)[[1]]/2)
-    colnames(res$centers_vals) = res$names_x
-    slic_sf = cbind(slic_sf, stats::na.omit(res$centers_vals[empty_centers, , drop = FALSE]))
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
     if (iter_diagnostics && !is.null(res$iter_diagnostics)) {
       attr(slic_sf, "iter_diagnostics") = res$iter_diagnostics

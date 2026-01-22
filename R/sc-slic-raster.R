@@ -1,6 +1,7 @@
 #' Create supercells as a raster
 #'
 #' Runs the SLIC workflow and returns a raster of supercell IDs.
+#' For polygon outputs, use `sc_slic`; for point centers, use `sc_slic_points`.
 #'
 #' @inheritParams sc_slic
 #'
@@ -12,37 +13,16 @@ sc_slic_raster = function(x, k = NULL, step = NULL, centers = NULL, compactness,
                           chunks = FALSE, future = FALSE, verbose = 0,
                           iter_diagnostics = FALSE) {
   prep = .sc_slic_prep(x, k, step, centers, compactness, dist_fun, avg_fun,
-                       minarea, chunks, iter_diagnostics)
+                       minarea, chunks, iter, transform, metadata, iter_diagnostics)
 
   if (iter == 0) {
     stop("iter = 0 returns centers only; raster output is not available", call. = FALSE)
   }
 
-  if (future) {
-    if (in_memory(prep$x)) {
-      names_x = names(prep$x)
-      prep$x = terra::writeRaster(prep$x, tempfile(fileext = ".tif"))
-      names(prep$x) = names_x
-    }
-    if (!in_memory(prep$x)) {
-      prep$x = terra::sources(prep$x)[[1]]
-    }
-    oopts = options(future.globals.maxSize = +Inf)
-    on.exit(options(oopts))
-    res_list = future.apply::future_apply(prep$chunk_ext, MARGIN = 1, run_slic_chunk_raster, x = prep$x,
-                                          step = prep$step, compactness = compactness, dist_name = prep$funs$dist_name,
-                                          dist_fun = prep$funs$dist_fun, avg_fun_fun = prep$funs$avg_fun_fun,
-                                          avg_fun_name = prep$funs$avg_fun_name, clean = clean, iter = iter,
-                                          minarea = prep$minarea, transform = transform, input_centers = prep$input_centers,
-                                          verbose = verbose, iter_diagnostics = prep$iter_diagnostics,
-                                          future.seed = TRUE)
+  if (nrow(prep$chunk_ext) == 1) {
+    res_list = list(.sc_slic_run_single_raster(prep, compactness, clean, iter, transform, verbose, future))
   } else {
-    res_list = apply(prep$chunk_ext, MARGIN = 1, run_slic_chunk_raster, x = prep$x,
-                     step = prep$step, compactness = compactness, dist_name = prep$funs$dist_name,
-                     dist_fun = prep$funs$dist_fun, avg_fun_fun = prep$funs$avg_fun_fun,
-                     avg_fun_name = prep$funs$avg_fun_name, clean = clean, iter = iter,
-                     minarea = prep$minarea, transform = transform, input_centers = prep$input_centers,
-                     verbose = verbose, iter_diagnostics = prep$iter_diagnostics)
+    res_list = .sc_slic_run_chunks_raster(prep, compactness, clean, iter, transform, verbose, future)
   }
 
   if (is.list(res_list) && length(res_list) > 0 && !is.null(res_list[[1]]$iter0) && res_list[[1]]$iter0) {
@@ -70,4 +50,18 @@ sc_slic_raster = function(x, k = NULL, step = NULL, centers = NULL, compactness,
   sc_rast = terra::ifel(is.na(sc_rast), NA, sc_rast + 1)
 
   sc_rast
+}
+
+.sc_slic_run_single_raster = function(prep, compactness, clean, iter, transform, verbose, future) {
+  ext = prep$chunk_ext[1, ]
+  run_slic_chunk_raster(ext, prep$x, step = prep$step, compactness = compactness,
+                        dist_name = prep$funs$dist_name, dist_fun = prep$funs$dist_fun,
+                        avg_fun_fun = prep$funs$avg_fun_fun, avg_fun_name = prep$funs$avg_fun_name,
+                        clean = clean, iter = iter, minarea = prep$minarea, transform = transform,
+                        input_centers = prep$input_centers, verbose = verbose,
+                        iter_diagnostics = prep$iter_diagnostics)
+}
+
+.sc_slic_run_chunks_raster = function(prep, compactness, clean, iter, transform, verbose, future) {
+  .sc_slic_apply_chunks(prep, run_slic_chunk_raster, compactness, clean, iter, transform, verbose, future)
 }

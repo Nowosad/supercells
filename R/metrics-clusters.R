@@ -2,12 +2,7 @@
 #'
 #' Computes per-cluster distance diagnostics.
 #'
-#' @param x An sf object returned by [supercells()].
-#' @param raster The input SpatRaster used to create `x`.
-#' @param dist_fun A distance function name or function, as in [supercells()].
-#' @param compactness A compactness value used for the supercells.
-#' @param step A step value used for the supercells.
-#'
+#' @inheritParams sc_metrics_pixels
 #' @return An sf object with one row per supercell.
 #' @export
 sc_metrics_clusters = function(x, raster, dist_fun = "euclidean", compactness, step) {

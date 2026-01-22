@@ -2,12 +2,7 @@
 #'
 #' Computes global distance diagnostics for supercells.
 #'
-#' @param x An sf object returned by [supercells()].
-#' @param raster The input SpatRaster used to create `x`.
-#' @param dist_fun A distance function name or function, as in [supercells()].
-#' @param compactness A compactness value used for the supercells.
-#' @param step A step value used for the supercells.
-#'
+#' @inheritParams sc_metrics_pixels
 #' @return A data.frame with a single row of global metrics.
 #' @export
 sc_metrics_global = function(x, raster, dist_fun = "euclidean", compactness, step) {

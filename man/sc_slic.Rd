@@ -73,3 +73,7 @@ Creates supercells from single- or multi-band rasters using a SLIC-style algorit
 The function supports either a target number of supercells (\code{k}) or a fixed grid
 spacing (\code{step}), as well as optional custom centers and chunked processing.
 }
+\details{
+Use \code{sc_slic} for polygon outputs. For raster IDs or point centers, see
+\code{sc_slic_raster} and \code{sc_slic_points}.
+}
