@@ -112,7 +112,7 @@ double jensen_shannon(const std::vector<double>& values1, const std::vector<doub
   return 0.5 * (sum1 + sum2);
 }
 
-double custom_log2(const double& x){
+double custom_log2(double x){
   if (x == 0.0){
     return NAN;
   } else {
