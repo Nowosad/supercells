@@ -16,19 +16,14 @@ cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step
 
   int ncell = vals.nrow();
   int bands = vals.ncol();
-  std::vector<double> vals_vec;
-  vals_vec.reserve(ncell * bands);
+  std::vector<double> vals_vec(ncell * bands);
   for (int i = 0; i < ncell; i++) {
     for (int j = 0; j < bands; j++) {
-      vals_vec.push_back(vals(i, j));
+      vals_vec[i * bands + j] = vals(i, j);
     }
   }
 
-  std::vector<int> mat_dims;
-  mat_dims.reserve(3);
-  mat_dims.push_back(mat.at(0));
-  mat_dims.push_back(mat.at(1));
-  mat_dims.push_back(bands);
+  std::vector<int> mat_dims = {mat.at(0), mat.at(1), bands};
 
   std::vector<std::array<int, 2>> centers_vec;
   centers_vec.reserve(input_centers.nrow());
