@@ -1,6 +1,6 @@
 Package: supercells
 Title: Superpixels of Spatial Data
-Version: 1.0.3
+Version: 1.9.99
 Authors@R: c(
     person(given = "Jakub", family = "Nowosad", 
     role = c("aut", "cre"),
@@ -17,6 +17,7 @@ Description: Creates superpixels based on input spatial data.
   It is based on the SLIC algorithm (Achanta et al. (2012) <doi:10.1109/TPAMI.2012.120>), and readapts it to work with arbitrary dissimilarity measures. 
 License: GPL (>= 3)
 Encoding: UTF-8
+Depends: R (>= 3.5.0)
 Imports:
     sf,
     terra (>= 1.4-21),

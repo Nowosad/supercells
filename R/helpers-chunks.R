@@ -1,13 +1,40 @@
 # updates supercells ids for chunks
-update_supercells_ids = function(x){
+offset_supercells_ids_sf = function(x){
   x = x[lapply(x, length) > 0]
-  no_updates = length(x) - 1
-  for (i in seq_len(no_updates)){
-    prev_max = max(x[[i]][["supercells"]])
-    x[[i + 1]][["supercells"]] = x[[i + 1]][["supercells"]] + prev_max
+  max_id = 0
+  for (i in seq_along(x)) {
+    if (max_id > 0) {
+      x[[i]][["supercells"]] = x[[i]][["supercells"]] + max_id
+    }
+    max_id = max(x[[i]][["supercells"]], na.rm = TRUE) + 1
   }
+  x
+}
+
+update_supercells_ids = function(x){
+  x = offset_supercells_ids_sf(x)
   x = do.call(rbind, x)
   return(x)
+}
+
+# update supercells ids for raster chunks (not needed for a single raster)
+offset_supercells_ids_raster = function(rasters){
+  if (length(rasters) <= 1) {
+    return(rasters)
+  }
+  max_id = 0
+  for (i in seq_along(rasters)) {
+    r = rasters[[i]]
+    if (max_id > 0) {
+      r = r + max_id
+    }
+    curr_max = terra::global(r, "max", na.rm = TRUE)[1, 1]
+    if (!is.na(curr_max)) {
+      max_id = curr_max + 1
+    }
+    rasters[[i]] = r
+  }
+  return(rasters)
 }
 
 # predicts (rough estimation) memory usage of the algorithm
