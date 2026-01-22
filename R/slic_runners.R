@@ -13,7 +13,7 @@ run_slic_chunk_raster = function(ext, x, step, compactness, dist_name,
 
   # gets the number of rows and columns, and the values of the input
   mat = dim(x)[1:2]; mode(mat) = "integer"
-  vals = as.matrix(terra::as.data.frame(x, cells = FALSE, na.rm = FALSE))
+  vals = terra::values(x, mat = TRUE, na.rm = FALSE)
   mode(vals) = "double"
 
   # transforms the input to LAB color space if transform = "to_LAB"
