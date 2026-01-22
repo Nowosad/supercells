@@ -3,8 +3,8 @@
 #' Computes per-pixel spatial, value, and combined distance diagnostics
 #'
 #' @param raster The input SpatRaster used to create `x`
-#' @param x An sf object returned by [supercells()]
-#' @param dist_fun A distance function name or function, as in [supercells()]
+#' @param x An sf object returned by [sc_slic()]
+#' @param dist_fun A distance function name or function, as in [sc_slic()]
 #' @param compactness A compactness value used for the supercells
 #' If missing, uses `attr(x, "compactness")` when available
 #' @param step A step value used for the supercells
@@ -14,7 +14,15 @@
 #' If `x` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers
 #'
-#' @return A SpatRaster with three layers: spatial, value, and combined
+#' @return A SpatRaster with three layers:
+#' \describe{
+#'   \item{spatial}{Spatial distance from each pixel to its supercell center
+#'   in grid-cell units (row/column index distance).}
+#'   \item{value}{Value distance from each pixel to its supercell center in
+#'   the raster value space.}
+#'   \item{combined}{Combined distance using `compactness` and `step` to
+#'   scale value and spatial distances.}
+#' }
 #' @export
 #' @examples
 #' library(supercells)

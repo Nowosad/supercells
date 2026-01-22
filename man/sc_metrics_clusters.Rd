@@ -9,9 +9,9 @@ sc_metrics_clusters(raster, x, dist_fun = "euclidean", compactness, step)
 \arguments{
 \item{raster}{The input SpatRaster used to create \code{x}}
 
-\item{x}{An sf object returned by \code{\link[=supercells]{supercells()}}}
+\item{x}{An sf object returned by \code{\link[=sc_slic]{sc_slic()}}}
 
-\item{dist_fun}{A distance function name or function, as in \code{\link[=supercells]{supercells()}}}
+\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}}
 
 \item{compactness}{A compactness value used for the supercells
 If missing, uses \code{attr(x, "compactness")} when available}
@@ -20,7 +20,18 @@ If missing, uses \code{attr(x, "compactness")} when available}
 If missing, uses \code{attr(x, "step")} when available}
 }
 \value{
-An sf object with one row per supercell
+An sf object with one row per supercell and columns:
+\describe{
+\item{supercells}{Supercell ID.}
+\item{mean_value_dist}{Mean value distance from pixels to the supercell
+center in value space.}
+\item{mean_spatial_dist}{Mean spatial distance from pixels to the
+supercell center in grid-cell units (row/column index distance).}
+\item{mean_combined_dist}{Mean combined distance using \code{compactness}
+and \code{step} to scale value and spatial distances.}
+\item{compactness_ratio}{Ratio of scaled value distance to scaled
+spatial distance; \code{NA} when \code{compactness} or \code{step} is zero.}
+}
 }
 \description{
 Computes per-cluster distance diagnostics

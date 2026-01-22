@@ -5,6 +5,7 @@
 #' For polygon outputs, use `sc_slic`; for raster IDs, use `sc_slic_raster`
 #'
 #' @inheritParams sc_slic
+#' @seealso [`sc_slic()`]
 #' @return An sf object with supercell centroid points and summary statistics
 #'
 #' @export

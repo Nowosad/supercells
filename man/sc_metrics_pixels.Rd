@@ -9,9 +9,9 @@ sc_metrics_pixels(raster, x, dist_fun = "euclidean", compactness, step)
 \arguments{
 \item{raster}{The input SpatRaster used to create \code{x}}
 
-\item{x}{An sf object returned by \code{\link[=supercells]{supercells()}}}
+\item{x}{An sf object returned by \code{\link[=sc_slic]{sc_slic()}}}
 
-\item{dist_fun}{A distance function name or function, as in \code{\link[=supercells]{supercells()}}}
+\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}}
 
 \item{compactness}{A compactness value used for the supercells
 If missing, uses \code{attr(x, "compactness")} when available}
@@ -20,7 +20,15 @@ If missing, uses \code{attr(x, "compactness")} when available}
 If missing, uses \code{attr(x, "step")} when available}
 }
 \value{
-A SpatRaster with three layers: spatial, value, and combined
+A SpatRaster with three layers:
+\describe{
+\item{spatial}{Spatial distance from each pixel to its supercell center
+in grid-cell units (row/column index distance).}
+\item{value}{Value distance from each pixel to its supercell center in
+the raster value space.}
+\item{combined}{Combined distance using \code{compactness} and \code{step} to
+scale value and spatial distances.}
+}
 }
 \description{
 Computes per-pixel spatial, value, and combined distance diagnostics

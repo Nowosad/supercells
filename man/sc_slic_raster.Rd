@@ -78,3 +78,6 @@ vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 vol_ids = sc_slic_raster(vol, step = 8, compactness = 1)
 terra::plot(vol_ids)
 }
+\seealso{
+\code{\link[=sc_slic]{sc_slic()}}
+}

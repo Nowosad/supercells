@@ -6,7 +6,18 @@
 #' @details
 #' If `x` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers
-#' @return An sf object with one row per supercell
+#' @return An sf object with one row per supercell and columns:
+#' \describe{
+#'   \item{supercells}{Supercell ID.}
+#'   \item{mean_value_dist}{Mean value distance from pixels to the supercell
+#'   center in value space.}
+#'   \item{mean_spatial_dist}{Mean spatial distance from pixels to the
+#'   supercell center in grid-cell units (row/column index distance).}
+#'   \item{mean_combined_dist}{Mean combined distance using `compactness`
+#'   and `step` to scale value and spatial distances.}
+#'   \item{compactness_ratio}{Ratio of scaled value distance to scaled
+#'   spatial distance; `NA` when `compactness` or `step` is zero.}
+#' }
 #' @export
 #' @examples
 #' library(supercells)

@@ -76,6 +76,15 @@ spacing (\code{step}), as well as optional custom centers and chunked processing
 \details{
 Use \code{sc_slic} for polygon outputs. For raster or point centers outputs, see
 \code{sc_slic_raster} and \code{sc_slic_points}.
+Evaluation and diagnostic options:
+\itemize{
+\item Iteration diagnostics: set \code{iter_diagnostics = TRUE} to attach an
+\code{iter_diagnostics} attribute (only available without chunking).
+\item Pixel diagnostics: \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}} for per-pixel spatial, value,
+and combined distances.
+\item Cluster diagnostics: \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}} for per-supercell summaries.
+\item Global diagnostics: \code{\link[=sc_metrics_global]{sc_metrics_global()}} for a single-row summary.
+}
 }
 \examples{
 library(supercells)

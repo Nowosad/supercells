@@ -5,6 +5,7 @@
 #' For polygon outputs, use `sc_slic`; for point centers, use `sc_slic_points`
 #'
 #' @inheritParams sc_slic
+#' @seealso [`sc_slic()`]
 #'
 #' @return A SpatRaster with supercell IDs
 #' @export

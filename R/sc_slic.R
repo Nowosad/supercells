@@ -7,6 +7,15 @@
 #' @details
 #' Use `sc_slic` for polygon outputs. For raster or point centers outputs, see
 #' `sc_slic_raster` and `sc_slic_points`.
+#' Evaluation and diagnostic options:
+#' \itemize{
+#'   \item Iteration diagnostics: set `iter_diagnostics = TRUE` to attach an
+#'   `iter_diagnostics` attribute (only available without chunking).
+#'   \item Pixel diagnostics: [sc_metrics_pixels()] for per-pixel spatial, value,
+#'   and combined distances.
+#'   \item Cluster diagnostics: [sc_metrics_clusters()] for per-supercell summaries.
+#'   \item Global diagnostics: [sc_metrics_global()] for a single-row summary.
+#' }
 #' @seealso [`sc_slic_raster()`], [`sc_slic_points()`]
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars).

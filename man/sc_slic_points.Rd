@@ -84,3 +84,6 @@ vol_pts = sc_slic_points(vol, step = 8, compactness = 1)
 terra::plot(vol)
 plot(sf::st_geometry(vol_pts), add = TRUE, pch = 16, cex = 0.4)
 }
+\seealso{
+\code{\link[=sc_slic]{sc_slic()}}
+}
