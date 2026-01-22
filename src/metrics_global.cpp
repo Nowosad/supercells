@@ -87,11 +87,6 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
   double compact_ratio_sum = 0.0;
   int active_clusters = 0;
 
-  double w_value_sum = 0.0;
-  double w_spatial_sum = 0.0;
-  double w_combined_sum = 0.0;
-  int total_count = 0;
-
   for (int i = 0; i < ncenters; i++) {
     if (count[i] <= 0) {
       continue;
@@ -106,11 +101,6 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
     if (compactness != 0.0 && step != 0 && ms > 0.0) {
       compact_ratio_sum += (mv / compactness) / (ms / step);
     }
-
-    w_value_sum += mv * count[i];
-    w_spatial_sum += ms * count[i];
-    w_combined_sum += mc * count[i];
-    total_count += count[i];
     active_clusters += 1;
   }
 
@@ -118,33 +108,20 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
   double mean_spatial = NA_REAL;
   double mean_combined = NA_REAL;
   double compact_ratio_mean = NA_REAL;
-  double mean_value_w = NA_REAL;
-  double mean_spatial_w = NA_REAL;
-  double mean_combined_w = NA_REAL;
-
   if (active_clusters > 0) {
     mean_value = mean_value_sum / active_clusters;
     mean_spatial = mean_spatial_sum / active_clusters;
     mean_combined = mean_combined_sum / active_clusters;
     compact_ratio_mean = compact_ratio_sum / active_clusters;
   }
-  if (total_count > 0) {
-    mean_value_w = w_value_sum / total_count;
-    mean_spatial_w = w_spatial_sum / total_count;
-    mean_combined_w = w_combined_sum / total_count;
-  }
 
-  cpp11::writable::list result(8);
+  cpp11::writable::list result(5);
   result.names() = {"n_supercells", "mean_value_dist", "mean_spatial_dist",
-                    "mean_combined_dist", "compactness_ratio_mean",
-                    "mean_value_dist_w", "mean_spatial_dist_w", "mean_combined_dist_w"};
+                    "mean_combined_dist", "compactness_ratio_mean"};
   result.at(0) = cpp11::as_sexp(active_clusters);
   result.at(1) = cpp11::as_sexp(mean_value);
   result.at(2) = cpp11::as_sexp(mean_spatial);
   result.at(3) = cpp11::as_sexp(mean_combined);
   result.at(4) = cpp11::as_sexp(compact_ratio_mean);
-  result.at(5) = cpp11::as_sexp(mean_value_w);
-  result.at(6) = cpp11::as_sexp(mean_spatial_w);
-  result.at(7) = cpp11::as_sexp(mean_combined_w);
   return result;
 }

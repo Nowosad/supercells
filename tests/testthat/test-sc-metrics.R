@@ -40,8 +40,7 @@ test_that("sc_metrics_global returns single-row data.frame", {
   expect_equal(nrow(gl), 1)
   expect_true(all(c("step", "compactness", "n_supercells",
                     "mean_value_dist", "mean_spatial_dist", "mean_combined_dist",
-                    "compactness_ratio_mean", "mean_value_dist_w",
-                    "mean_spatial_dist_w", "mean_combined_dist_w") %in% names(gl)))
+                    "compactness_ratio_mean") %in% names(gl)))
 })
 
 test_that("sc_metrics invalid dist_fun errors", {

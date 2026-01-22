@@ -24,12 +24,6 @@
 #'   \item{compactness_ratio_mean}{Mean ratio of scaled value distance to scaled
 #'   spatial distance, averaged across supercells; `NA` when `compactness` or
 #'   `step` is zero.}
-#'   \item{mean_value_dist_w}{Value distance mean weighted by pixel counts per
-#'   supercell.}
-#'   \item{mean_spatial_dist_w}{Spatial distance mean weighted by pixel counts per
-#'   supercell; units are grid cells (row/column index distance), not map units.}
-#'   \item{mean_combined_dist_w}{Combined distance mean weighted by pixel counts
-#'   per supercell; `NA` when `compactness` or `step` is zero.}
 #' }
 #' @export
 #' @examples
