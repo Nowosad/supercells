@@ -131,34 +131,39 @@ std::vector<double> SlicCore::find_local_minimum(const std::vector<double>& vals
   loc_min.at(0) = y;
   loc_min.at(1) = x;
 
+  int rows = mat_dims[0];
+  int cols = mat_dims[1];
+  int bands = mat_dims[2];
+
+  std::vector<double> colour1(bands);
+  std::vector<double> colour2(bands);
+  std::vector<double> colour3(bands);
+
   for (int i = x - 1; i < x + 2; i++) {
     for (int j = y - 1; j < y + 2; j++) {
+      if (i < 0 || j < 0 || i + 1 >= cols || j + 1 >= rows) {
+        continue;
+      }
 
-      int ncell1 = i + ((j + 1) * mat_dims[1]);
-      int ncell2 = (i + 1) + (j * mat_dims[1]);
-      int ncell3 = i + (j * mat_dims[1]);
+      int ncell1 = i + ((j + 1) * cols);
+      int ncell2 = (i + 1) + (j * cols);
+      int ncell3 = i + (j * cols);
 
-      std::vector<double> colour1; colour1.reserve(mat_dims[2]);
-      std::vector<double> colour2; colour2.reserve(mat_dims[2]);
-      std::vector<double> colour3; colour3.reserve(mat_dims[2]);
+      for (int nval = 0; nval < bands; nval++) {
+        int idx1 = ncell1 * bands + nval;
+        int idx2 = ncell2 * bands + nval;
+        int idx3 = ncell3 * bands + nval;
+        colour1[nval] = vals[idx1];
+        colour2[nval] = vals[idx2];
+        colour3[nval] = vals[idx3];
+      }
 
-      if (ncell1 < mat_dims[0] * mat_dims[1] && ncell2 < mat_dims[0] * mat_dims[1] && ncell3 < mat_dims[0] * mat_dims[1]) {
-        for (int nval = 0; nval < mat_dims[2]; nval++) {
-          double val1 = vals[ncell1 * mat_dims[2] + nval];
-          double val2 = vals[ncell2 * mat_dims[2] + nval];
-          double val3 = vals[ncell3 * mat_dims[2] + nval];
-          colour1.push_back(val1);
-          colour2.push_back(val2);
-          colour3.push_back(val3);
-        }
+      double new_grad = dist_fn(colour1, colour3) + dist_fn(colour2, colour3);
 
-        double new_grad = dist_fn(colour1, colour3) + dist_fn(colour2, colour3);
-
-        if (new_grad < min_grad) {
-          min_grad = new_grad;
-          loc_min.at(0) = j;
-          loc_min.at(1) = i;
-        }
+      if (new_grad < min_grad) {
+        min_grad = new_grad;
+        loc_min.at(0) = j;
+        loc_min.at(1) = i;
       }
     }
   }
