@@ -159,12 +159,9 @@ std::vector<double> SlicCore::find_local_minimum(const std::vector<double>& vals
       int ncell3 = i + (j * cols);
 
       for (int nval = 0; nval < bands; nval++) {
-        int idx1 = ncell1 * bands + nval;
-        int idx2 = ncell2 * bands + nval;
-        int idx3 = ncell3 * bands + nval;
-        colour1[nval] = vals[idx1];
-        colour2[nval] = vals[idx2];
-        colour3[nval] = vals[idx3];
+        colour1[nval] = vals[ncell1 * bands + nval];
+        colour2[nval] = vals[ncell2 * bands + nval];
+        colour3[nval] = vals[ncell3 * bands + nval];
       }
 
       double new_grad = dist_fn(colour1, colour3) + dist_fn(colour2, colour3);

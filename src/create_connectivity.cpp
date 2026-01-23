@@ -16,14 +16,7 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
     minarea = minarea >> 2;
   }
 
-  new_clusters.clear();
-  for (int i = 0; i < mat_dims[1]; i++) {
-    std::vector<int> ncl; ncl.reserve(mat_dims[0]);
-    for (int j = 0; j < mat_dims[0]; j++) {
-      ncl.push_back(-1);
-    }
-    new_clusters.push_back(ncl);
-  }
+  new_clusters.assign(mat_dims[1], std::vector<int>(mat_dims[0], -1));
 
   std::vector<std::array<int, 2>> elements;
   for (int i = 0; i < mat_dims[1]; i++) {
@@ -84,49 +77,33 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
 
   clusters = new_clusters;
 
-  std::vector<std::vector<double> > new_centers;
-  std::vector<std::vector<double> > new_centers_vals;
-  std::vector<int> new_center_counts(label);
-
-  /* Clear the center values. */
-  /* Clear the center _vals values. */
-  for (int m = 0; m < (int) label; m++) {
-    std::vector<double> new_center(2);
-    new_center[0] = new_center[1] = 0;
-    new_centers.push_back(new_center);
-
-    std::vector<double> new_center_val;
-    for (int n = 0; n < (int) mat_dims[2]; n++) {
-      new_center_val.push_back(0);
-    }
-    new_centers_vals.push_back(new_center_val);
-    new_center_counts[m] = 0;
-  }
+  std::vector<std::vector<double>> new_centers(label, std::vector<double>(2, 0));
+  std::vector<std::vector<double>> new_centers_vals(label, std::vector<double>(mat_dims[2], 0));
+  std::vector<int> new_center_counts(label, 0);
 
   if (avg_fun_name != "mean") {
-    IntToIntMap new_c_id_centers_vals;
+    std::vector<std::vector<int>> cluster_cells(label);
     std::vector<std::vector<double>> new_c_id_centers_vals_buf(mat_dims[2]);
     for (int l = 0; l < (int) new_clusters.size(); l++) {
       for (int k = 0; k < (int) new_clusters[0].size(); k++) {
         int c_id = new_clusters[l][k];
         if (c_id != -1) {
           int ncell = l + (k * mat_dims[1]);
-          new_c_id_centers_vals.insert(std::make_pair(c_id, ncell));
+          cluster_cells[c_id].push_back(ncell);
           new_centers[c_id][0] += k;
           new_centers[c_id][1] += l;
           new_center_counts[c_id] += 1;
         }
       }
     }
-    mapIter m_it, s_it;
-    for (m_it = new_c_id_centers_vals.begin(); m_it != new_c_id_centers_vals.end(); m_it = s_it) {
-      int c_id = (*m_it).first;
-      std::pair<mapIter, mapIter> keyRange = new_c_id_centers_vals.equal_range(c_id);
+    for (int c_id = 0; c_id < label; c_id++) {
+      if (cluster_cells[c_id].empty()) {
+        continue;
+      }
       for (int nval = 0; nval < mat_dims[2]; nval++) {
         new_c_id_centers_vals_buf[nval].clear();
       }
-      for (s_it = keyRange.first; s_it != keyRange.second; ++s_it) {
-        int ncell = (*s_it).second;
+      for (int ncell : cluster_cells[c_id]) {
         for (int nval = 0; nval < mat_dims[2]; nval++) {
             double val = vals[ncell * mat_dims[2] + nval];
             new_c_id_centers_vals_buf[nval].push_back(val);

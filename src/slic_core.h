@@ -4,7 +4,6 @@
 #include <cmath>
 #include <float.h>
 #include <functional>
-#include <map>
 #include <numeric>
 #include <string>
 #include <vector>
@@ -37,8 +36,6 @@ class SlicCore {
   double compactness_value() const { return compactness; }
 
  private:
-  using IntToIntMap = std::multimap<int, int>;
-  using mapIter = IntToIntMap::iterator;
 
   std::vector<std::vector<int>> clusters;
   std::vector<std::vector<double>> distances;

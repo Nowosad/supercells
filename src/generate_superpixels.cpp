@@ -89,13 +89,13 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
 
     // Recompute centers using a non-mean (median/mean2/custom) aggregator.
     if (avg_fun_name != "mean") {
-      IntToIntMap c_id_centers_vals;
+      std::vector<std::vector<int>> cluster_cells(centers.size());
       for (int l = 0; l < mat_dims[1]; l++) {
         for (int k = 0; k < mat_dims[0]; k++) {
           int c_id = clusters[l][k];
           if (c_id != -1) {
             int ncell = l + (k * mat_dims[1]);
-            c_id_centers_vals.insert(std::make_pair(c_id, ncell));
+            cluster_cells[c_id].push_back(ncell);
             centers[c_id][0] += k;
             centers[c_id][1] += l;
             center_counts[c_id] += 1;
@@ -103,22 +103,20 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
         }
       }
       std::vector<std::vector<double>> centers_vals_c_id_buf(mat_dims[2]);
-      mapIter m_it, s_it;
-      for (m_it = c_id_centers_vals.begin(); m_it != c_id_centers_vals.end(); m_it = s_it) {
-        int c_id = (*m_it).first;
-        std::pair<mapIter, mapIter> keyRange = c_id_centers_vals.equal_range(c_id);
+      for (int c_id = 0; c_id < (int) cluster_cells.size(); c_id++) {
+        if (cluster_cells[c_id].empty()) {
+          continue;
+        }
         for (int nval = 0; nval < mat_dims[2]; nval++) {
           centers_vals_c_id_buf[nval].clear();
         }
-        for (s_it = keyRange.first; s_it != keyRange.second; ++s_it) {
-          int ncell = (*s_it).second;
+        for (int ncell : cluster_cells[c_id]) {
           for (int nval = 0; nval < mat_dims[2]; nval++) {
             double val = vals[ncell * mat_dims[2] + nval];
             centers_vals_c_id_buf[nval].push_back(val);
           }
         }
         for (int nval = 0; nval < mat_dims[2]; nval++) {
-          // calculate
           if (avg_fun_name == "median") {
             centers_vals[c_id][nval] = median(centers_vals_c_id_buf[nval]);
           } else if (avg_fun_name == "mean2") {
@@ -149,8 +147,8 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
             int ncell = l + (k * mat_dims[1]);
 
             for (int nval = 0; nval < mat_dims[2]; nval++) {
-              double val = vals[ncell * mat_dims[2] + nval];
-              colour[nval] = val;
+            double val = vals[ncell * mat_dims[2] + nval];
+            colour[nval] = val;
             }
             centers[c_id][0] += k;
             centers[c_id][1] += l;

@@ -16,6 +16,7 @@ cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step
 
   int ncell = vals.nrow();
   int bands = vals.ncol();
+  // Copy vals into a contiguous vector for SlicCore processing
   std::vector<double> vals_vec(ncell * bands);
   for (int i = 0; i < ncell; i++) {
     for (int j = 0; j < bands; j++) {
