@@ -46,7 +46,7 @@ cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step
   slic.generate_superpixels(mat_dims, vals_vec, step, compactness, dist_cb, avg_cb,
                             avg_fun_name, iter, centers_vec, verbose, iter_diagnostics);
 
-  if (clean) {
+  if (clean && iter > 0) {
     slic.create_connectivity(vals_vec, avg_cb, avg_fun_name, minarea, verbose);
   }
 
