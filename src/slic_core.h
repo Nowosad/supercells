@@ -69,5 +69,4 @@ class SlicCore {
 
   double compute_dist(int ci, int y, int x, const std::vector<double>& values) const;
   std::vector<double> find_local_minimum(const std::vector<double>& vals, int y, int x);
-  double value_at(int ncell, int nval) const;
 };

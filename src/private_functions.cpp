@@ -105,10 +105,6 @@ void SlicCore::inits(const std::vector<int>& mat_dims_in, const std::vector<doub
   }
 }
 
-double SlicCore::value_at(int ncell, int nval) const {
-  return (*vals_ptr)[ncell * bands + nval];
-}
-
 /* Compute the total (spatial and value) distance between a center and an individual pixel. */
 double SlicCore::compute_dist(int ci, int y, int x, const std::vector<double>& values) const {
   double values_distance = dist_fn(centers_vals[ci], values);
