@@ -55,19 +55,21 @@ void SlicCore::create_centers(const std::vector<int>& mat_dims, const std::vecto
 /* Create centers of initial supercells based on the input provided by a user, adds their values, etc. */
 void SlicCore::create_centers2(const std::vector<int>& mat_dims, const std::vector<double>& vals,
                               const std::vector<std::array<int, 2>>& input_centers) {
-  int ncell = 0;
   for (size_t i = 0; i < input_centers.size(); i++) {
     int nrowcenter = input_centers[i][1];
     int ncolcenter = input_centers[i][0];
     std::vector<double> center; center.reserve(2);
     std::vector<double> colour; colour.reserve(mat_dims[2]);
+
+    std::vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter);
+
+    int lm_row = static_cast<int>(lm[0]);
+    int lm_col = static_cast<int>(lm[1]);
+    int ncell = lm_col + (lm_row * mat_dims[1]);
     for (int nval = 0; nval < mat_dims[2]; nval++) {
       double val = vals[ncell * mat_dims[2] + nval];
       colour.push_back(val);
     }
-    ncell++;
-
-    std::vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter);
 
     center.push_back(lm[0]);
     center.push_back(lm[1]);
