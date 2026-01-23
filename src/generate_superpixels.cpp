@@ -43,8 +43,11 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
     std::vector<double> colour(mat_dims[2]);
     for (int l = 0; l < (int) centers.size(); l++) {
       /* Only compare to pixels in a 2 x step by 2 x step region. */
-      for (int m = centers[l][1] - step; m < centers[l][1] + step; m++) {
-        for (int n = centers[l][0] - step; n < centers[l][0] + step; n++) {
+      // Use rounded centers for window bounds while preserving fractional centers elsewhere
+      int center_x = (int) std::round(centers[l][1]);
+      int center_y = (int) std::round(centers[l][0]);
+      for (int m = center_x - step; m < center_x + step; m++) {
+        for (int n = center_y - step; n < center_y + step; n++) {
           if (m >= 0 && m < mat_dims[1] && n >= 0 && n < mat_dims[0]) {
             int ncell = m + (n * mat_dims[1]);
 
