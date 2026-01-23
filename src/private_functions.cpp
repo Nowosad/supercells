@@ -111,7 +111,7 @@ void SlicCore::inits(const std::vector<int>& mat_dims_in, const std::vector<doub
     distances.push_back(distancemat);
   }
 
-  if (input_centers.size() > 1) {
+  if (input_centers.size() >= 1) {
     create_centers2(mat_dims, vals, input_centers);
   } else {
     create_centers(mat_dims, vals, step);

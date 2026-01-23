@@ -11,6 +11,11 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
   const int dx4[4] = {-1,  0,  1,  0};
   const int dy4[4] = { 0, -1,  0,  1};
 
+  if (centers.empty()) {
+    if (verbose > 0) std::printf("No centers available\n");
+    return;
+  }
+
   if (minarea == 0) {
     minarea = (mat_dims[1] * mat_dims[0]) / ((int)centers.size());
     minarea = minarea >> 2;
@@ -123,8 +128,10 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
 
     // /* Normalize the clusters. */
     for (int l = 0; l < (int) label; l++) {
-      new_centers[l][0] /= new_center_counts[l];
-      new_centers[l][1] /= new_center_counts[l];
+      if (new_center_counts[l] > 0) {
+        new_centers[l][0] /= new_center_counts[l];
+        new_centers[l][1] /= new_center_counts[l];
+      }
     }
   } else if (avg_fun_name == "mean") {
     // /* Compute the new cluster centers. */
@@ -153,10 +160,12 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
     }
     // /* Normalize the clusters. */
     for (int l = 0; l < (int) label; l++) {
-      new_centers[l][0] /= new_center_counts[l];
-      new_centers[l][1] /= new_center_counts[l];
-      for (int nval = 0; nval < mat_dims[2]; nval++) {
-        new_centers_vals[l][nval] /= new_center_counts[l];
+      if (new_center_counts[l] > 0) {
+        new_centers[l][0] /= new_center_counts[l];
+        new_centers[l][1] /= new_center_counts[l];
+        for (int nval = 0; nval < mat_dims[2]; nval++) {
+          new_centers_vals[l][nval] /= new_center_counts[l];
+        }
       }
     }
   }
