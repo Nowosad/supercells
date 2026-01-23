@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -132,16 +132,23 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell</p>
+    <p>An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>If you want to use additional arguments for the averaging function (<code>avg_fun</code>), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: <code>my_mean = function(x) mean(x, na.rm = TRUE)</code> and then provide <code>avg_fun = my_mean.</code></p>
+    <p>If you want to use additional arguments for the averaging function (<code>avg_fun</code>), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: <code>my_mean = function(x) mean(x, na.rm = TRUE)</code> and then provide <code>avg_fun = my_mean.</code>
+For raster IDs or point centers outputs, see <code><a href="sc_slic_raster.html">sc_slic_raster()</a></code> and
+<code><a href="sc_slic_points.html">sc_slic_points()</a></code>. For evaluation and diagnostics, see
+<code><a href="sc_metrics_pixels.html">sc_metrics_pixels()</a></code>, <code><a href="sc_metrics_clusters.html">sc_metrics_clusters()</a></code>, and <code><a href="sc_metrics_global.html">sc_metrics_global()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., &amp; Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120</p>
 <p>Nowosad, J. Motif: an open-source R tool for pattern-based spatial analysis. Landscape Ecol (2021). https://doi.org/10.1007/s10980-020-01135-0</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="sc_slic.html">sc_slic()</a></code></p></div>
     </div>
 
     <div class="section level2">

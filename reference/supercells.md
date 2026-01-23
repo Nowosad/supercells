@@ -123,7 +123,7 @@ supercells(
 
 An sf object with several columns: (1) supercells - an id of each
 supercell, (2) y and x coordinates, (3) one or more columns with average
-values of given variables in each supercell
+values of given variables in each supercell.
 
 ## Details
 
@@ -131,7 +131,16 @@ If you want to use additional arguments for the averaging function
 (`avg_fun`), you can create a custom function. For example, if you want
 to calculate the mean by removing missing values, you can use the
 following code: `my_mean = function(x) mean(x, na.rm = TRUE)` and then
-provide `avg_fun = my_mean.`
+provide `avg_fun = my_mean.` For raster IDs or point centers outputs,
+see
+[`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
+and
+[`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md).
+For evaluation and diagnostics, see
+[`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md),
+[`sc_metrics_clusters()`](https://jakubnowosad.com/supercells/reference/sc_metrics_clusters.md),
+and
+[`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md).
 
 ## References
 
@@ -143,6 +152,10 @@ Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence,
 Nowosad, J. Motif: an open-source R tool for pattern-based spatial
 analysis. Landscape Ecol (2021).
 https://doi.org/10.1007/s10980-020-01135-0
+
+## See also
+
+[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
 
 ## Examples
 
