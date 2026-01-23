@@ -1,3 +1,10 @@
+# supercells 1.7
+
+* `transform` support was removed from `sc_slic()`, `sc_slic_points()`, and `sc_slic_raster()` to keep them minimal
+* Legacy `supercells()` now uses `sc_slic()` while preserving `transform = "to_LAB"` behavior
+* Verbose argument moved to the end across R and C++ interfaces for consistency
+* Empty-cluster handling is now consistent across connectivity cleanup, preserving prior centers/values
+
 # supercells 1.6
 
 * Spatial distance uses the more precise (fractional) center positions instead of rounding them down
