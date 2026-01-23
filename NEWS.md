@@ -1,3 +1,13 @@
+# supercells 1.6
+
+* Spatial distance uses the more precise (fractional) center positions instead of rounding them down
+* Neighborhood search uses rounded center positions, so results can differ slightly from 1.5
+* Custom centers are handled more safely, with checks for invalid positions, etc.
+* Local-minimum search is more robust at edges and avoids extra allocations
+* Small-region cleanup is safer when no neighbor exists and avoids zero-division cases
+* Empty-center cases are handled safely, keeping previous centers/values when needed
+* Tests now use `tests/testthat/setup.R`, and expectations were updated for 1.6 behavior
+
 # supercells 1.5
 
 * Refactored core C++ SLIC implementation for clearer data flow, center updates, and diagnostics support, with related cleanup in supporting utilities
