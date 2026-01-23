@@ -25,6 +25,7 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
     new_clusters.push_back(ncl);
   }
 
+  std::vector<std::array<int, 2>> elements;
   for (int i = 0; i < mat_dims[1]; i++) {
     for (int j = 0; j < mat_dims[0]; j++) {
 
@@ -32,12 +33,8 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
 
         new_clusters[i][j] = label;
 
-        std::vector<int> element(2);
-        element.at(0) = j;
-        element.at(1) = i;
-
-        std::vector<std::vector<int> > elements;
-        elements.push_back(element);
+        elements.clear();
+        elements.push_back({j, i});
 
         /* Find an adjacent label, for possible use later. */
         for (int k = 0; k < 4; k++) {
@@ -57,11 +54,7 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
 
             if (x >= 0 && x < mat_dims[1] && y >= 0 && y < mat_dims[0]) {
               if (new_clusters[x][y] == -1 && clusters[i][j] == clusters[x][y]) {
-                std::vector<int> element2(2);
-                element2.at(0) = y;
-                element2.at(1) = x;
-
-                elements.push_back(element2);
+                elements.push_back({y, x});
                 new_clusters[x][y] = label;
                 count += 1;
               }
@@ -72,10 +65,16 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
         /* Use the earlier found adjacent label if a segment size is
          smaller than a limit. */
         if (count <= minarea) {
-          for (int c = 0; c < count; c++) {
-            new_clusters[elements[c][1]][elements[c][0]] = adjlabel;
+          int target = adjlabel;
+          if (target == -1) {
+            target = label;
           }
-          label = label - 1;
+          for (int c = 0; c < count; c++) {
+            new_clusters[elements[c][1]][elements[c][0]] = target;
+          }
+          if (adjlabel != -1) {
+            label = label - 1;
+          }
         }
         label = label + 1;
         adjlabel = -1;
@@ -106,6 +105,7 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
 
   if (avg_fun_name != "mean") {
     IntToIntMap new_c_id_centers_vals;
+    std::vector<std::vector<double>> new_c_id_centers_vals_buf(mat_dims[2]);
     for (int l = 0; l < (int) new_clusters.size(); l++) {
       for (int k = 0; k < (int) new_clusters[0].size(); k++) {
         int c_id = new_clusters[l][k];
@@ -122,22 +122,24 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
     for (m_it = new_c_id_centers_vals.begin(); m_it != new_c_id_centers_vals.end(); m_it = s_it) {
       int c_id = (*m_it).first;
       std::pair<mapIter, mapIter> keyRange = new_c_id_centers_vals.equal_range(c_id);
-      std::vector<std::vector<double> > new_c_id_centers_vals(mat_dims[2]);
+      for (int nval = 0; nval < mat_dims[2]; nval++) {
+        new_c_id_centers_vals_buf[nval].clear();
+      }
       for (s_it = keyRange.first; s_it != keyRange.second; ++s_it) {
         int ncell = (*s_it).second;
         for (int nval = 0; nval < mat_dims[2]; nval++) {
             double val = vals[ncell * mat_dims[2] + nval];
-            new_c_id_centers_vals[nval].push_back(val);
+            new_c_id_centers_vals_buf[nval].push_back(val);
         }
       }
       for (int nval = 0; nval < mat_dims[2]; nval++) {
         // calculate
         if (avg_fun_name == "median") {
-          new_centers_vals[c_id][nval] = median(new_c_id_centers_vals[nval]);
+          new_centers_vals[c_id][nval] = median(new_c_id_centers_vals_buf[nval]);
         } else if (avg_fun_name == "mean2") {
-          new_centers_vals[c_id][nval] = mean(new_c_id_centers_vals[nval]);
+          new_centers_vals[c_id][nval] = mean(new_c_id_centers_vals_buf[nval]);
         } else if (avg_fun_name.empty()) {
-          new_centers_vals[c_id][nval] = avg_fn(new_c_id_centers_vals[nval]);
+          new_centers_vals[c_id][nval] = avg_fn(new_c_id_centers_vals_buf[nval]);
         }
       }
     }
@@ -149,6 +151,7 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
     }
   } else if (avg_fun_name == "mean") {
     // /* Compute the new cluster centers. */
+    std::vector<double> colour(mat_dims[2]);
     for (int l = 0; l < (int) new_clusters.size(); l++) {
       for (int k = 0; k < (int) new_clusters[0].size(); k++) {
         int c_id = new_clusters[l][k];
@@ -156,10 +159,9 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
         if (c_id != -1) {
           int ncell = l + (k * mat_dims[1]);
 
-          std::vector<double> colour;
           for (int nval = 0; nval < mat_dims[2]; nval++) {
             double val = vals[ncell * mat_dims[2] + nval];
-            colour.push_back(val);
+            colour[nval] = val;
           }
 
           new_centers[c_id][0] += k;
