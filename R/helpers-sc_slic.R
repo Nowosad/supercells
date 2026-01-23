@@ -182,6 +182,5 @@
   if (!is.null(iter_attr)) {
     attr(slic_sf, "iter_diagnostics") = iter_attr
   }
-
   return(slic_sf)
 }

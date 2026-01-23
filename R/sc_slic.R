@@ -16,8 +16,8 @@
 #'   \item Cluster diagnostics: [sc_metrics_clusters()] for per-supercell summaries.
 #'   \item Global diagnostics: [sc_metrics_global()] for a single-row summary.
 #' }
-#' @seealso [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_metrics_pixels()`],
-#'   [`sc_metrics_clusters()`], [`sc_metrics_global()`]
+#' @seealso [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_plot_iter_diagnostics()`],
+#'   [`sc_metrics_pixels()`], [`sc_metrics_clusters()`], [`sc_metrics_global()`]
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars).
 #' @param step The distance (number of cells) between initial centers (alternative to `k`).

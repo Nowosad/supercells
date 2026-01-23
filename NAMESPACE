@@ -3,6 +3,7 @@
 export(sc_metrics_clusters)
 export(sc_metrics_global)
 export(sc_metrics_pixels)
+export(sc_plot_iter_diagnostics)
 export(sc_slic)
 export(sc_slic_points)
 export(sc_slic_raster)
