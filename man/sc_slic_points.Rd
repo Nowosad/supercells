@@ -76,7 +76,7 @@ For polygon outputs, use \code{sc_slic}; for raster IDs, use \code{sc_slic_raste
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 
-init_pts = sc_slic_points(vol, step = 20, compactness = 1, iter = 1)
+init_pts = sc_slic_points(vol, step = 20, compactness = 1, iter = 0)
 terra::plot(vol)
 plot(sf::st_geometry(init_pts), add = TRUE, pch = 3, col = "red")
 
