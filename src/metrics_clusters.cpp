@@ -17,17 +17,13 @@ cpp11::list sc_metrics_clusters_cpp(cpp11::integers_matrix<> clusters,
   int bands = vals.ncol();
   int ncenters = centers_vals.nrow();
 
+  // Copy center values into std::vector for distance computation
   std::vector<std::vector<double>> centers_vals_vec(ncenters, std::vector<double>(bands));
   for (int i = 0; i < ncenters; i++) {
     for (int nval = 0; nval < bands; nval++) {
       centers_vals_vec[i][nval] = centers_vals(i, nval);
     }
   }
-
-  auto dist_cb = [&](const std::vector<double>& values1,
-                     const std::vector<double>& values2) -> double {
-    return get_vals_dist(values1, values2, dist_name, dist_fun);
-  };
 
   std::vector<double> sum_value(ncenters, 0.0);
   std::vector<double> sum_spatial(ncenters, 0.0);
@@ -37,6 +33,7 @@ cpp11::list sc_metrics_clusters_cpp(cpp11::integers_matrix<> clusters,
   std::vector<double> pixel_values;
   pixel_values.reserve(bands);
 
+  // Per-pixel pass: accumulate distances into per-cluster sums
   for (int i = 0; i < cols; i++) {
     for (int j = 0; j < rows; j++) {
       int cid = clusters(j, i);
@@ -58,7 +55,8 @@ cpp11::list sc_metrics_clusters_cpp(cpp11::integers_matrix<> clusters,
         continue;
       }
 
-      double value_dist = dist_cb(centers_vals_vec[cid], pixel_values);
+      // Compute value- and spatial-space distances to the cluster center
+      double value_dist = get_vals_dist(centers_vals_vec[cid], pixel_values, dist_name, dist_fun);
       double center_x = centers_xy(cid, 0);
       double center_y = centers_xy(cid, 1);
       double y_dist = center_y - j;
@@ -72,6 +70,7 @@ cpp11::list sc_metrics_clusters_cpp(cpp11::integers_matrix<> clusters,
         combined_dist = sqrt((dist1 * dist1) + (dist2 * dist2));
       }
 
+      // Accumulate sums; combined is only counted when well-defined
       sum_value[cid] += value_dist;
       sum_spatial[cid] += spatial_dist;
       if (!std::isnan(combined_dist)) {
@@ -87,6 +86,7 @@ cpp11::list sc_metrics_clusters_cpp(cpp11::integers_matrix<> clusters,
   cpp11::writable::doubles mean_combined(ncenters);
   cpp11::writable::doubles compactness_ratio(ncenters);
 
+  // Convert sums into per-cluster means and compactness ratios
   for (int i = 0; i < ncenters; i++) {
     if (count[i] > 0) {
       double mv = sum_value[i] / count[i];

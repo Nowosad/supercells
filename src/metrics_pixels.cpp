@@ -60,7 +60,7 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
 
       /* value distance */
       double value_dist = get_vals_dist(centers_vals_vec[cid], pixel_values, dist_name, dist_fun);
-      
+
       /* spatial distance */
       double center_x = centers_xy(cid, 0);
       double center_y = centers_xy(cid, 1);
