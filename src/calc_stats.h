@@ -1,8 +1,7 @@
-#include <float.h>
-#include <vector>
+#pragma once
 #include <algorithm>
 #include <numeric>
-using namespace std;
+#include <vector>
 
-double median(vector<double>& v);
-double mean(vector<double>& v);
+double median(std::vector<double>& v);
+double mean(const std::vector<double>& v);

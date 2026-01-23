@@ -2,8 +2,8 @@
 #include "dtw/include/DTW.hpp"
 // using namespace cpp11::literals; // so we can use ""_nm syntax
 
-double get_vals_dist(vector<double>& values1, vector<double>& values2,
-                           std::string& dist_name, cpp11::function dist_fun){
+double get_vals_dist(const std::vector<double>& values1, const std::vector<double>& values2,
+                     const std::string& dist_name, cpp11::function dist_fun){
   if (dist_name == "euclidean"){
     return euclidean(values1, values2);
   } else if (dist_name == "jsd"){
@@ -19,7 +19,7 @@ double get_vals_dist(vector<double>& values1, vector<double>& values2,
   }
 }
 
-double euclidean(std::vector<double>& values1, std::vector<double>& values2){
+double euclidean(const std::vector<double>& values1, const std::vector<double>& values2){
   int len1 = values1.size();
   double dist = 0.0;
   double diff = 0.0;
@@ -31,7 +31,7 @@ double euclidean(std::vector<double>& values1, std::vector<double>& values2){
   return sqrt(dist);
 }
 
-double manhattan(vector<double>& values1, vector<double>& values2){
+double manhattan(const std::vector<double>& values1, const std::vector<double>& values2){
   int len1 = values1.size();
   double dist = 0.0;
   double diff = 0.0;
@@ -43,7 +43,7 @@ double manhattan(vector<double>& values1, vector<double>& values2){
   return dist;
 }
 
-double dtw3(std::vector<double>& values1, std::vector<double>& values2){
+double dtw3(const std::vector<double>& values1, const std::vector<double>& values2){
   double p = 2;  // the p-norm to use; 2.0 = euclidean, 1.0 = manhattan
   int len1 = values1.size();
 
@@ -66,7 +66,7 @@ double dtw3(std::vector<double>& values1, std::vector<double>& values2){
   return(scost);
 }
 
-double dtw2d(std::vector<double>& values1, std::vector<double>& values2){
+double dtw2d(const std::vector<double>& values1, const std::vector<double>& values2){
   double p = 2;  // the p-norm to use; 2.0 = euclidean, 1.0 = manhattan
   int len1 = values1.size() / 2;
 
@@ -90,7 +90,7 @@ double dtw2d(std::vector<double>& values1, std::vector<double>& values2){
 }
 
 
-double jensen_shannon(vector<double>& values1, vector<double>& values2){
+double jensen_shannon(const std::vector<double>& values1, const std::vector<double>& values2){
   int len1 = values1.size();
   double sum1       = 0.0;
   double sum2       = 0.0;
@@ -112,7 +112,7 @@ double jensen_shannon(vector<double>& values1, vector<double>& values2){
   return 0.5 * (sum1 + sum2);
 }
 
-double custom_log2(const double& x){
+double custom_log2(double x){
   if (x == 0.0){
     return NAN;
   } else {
@@ -120,8 +120,8 @@ double custom_log2(const double& x){
   }
 }
 
-double custom_distance(vector<double>& values1, vector<double>& values2, std::string& dist_name){
-  auto single_distance = cpp11::package("philentropy")["dist_one_one"];
+double custom_distance(const std::vector<double>& values1, const std::vector<double>& values2, const std::string& dist_name){
+  static cpp11::function single_distance = cpp11::package("philentropy")["dist_one_one"];
   double p = NA_REAL;
   bool testNA = false;
   std::string unit = "log2";

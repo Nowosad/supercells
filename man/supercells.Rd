@@ -56,13 +56,16 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
 \item{verbose}{An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).}
 }
 \value{
-An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell
+An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell.
 }
 \description{
 Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
 }
 \details{
 If you want to use additional arguments for the averaging function (\code{avg_fun}), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: \code{my_mean = function(x) mean(x, na.rm = TRUE)} and then provide \code{avg_fun = my_mean.}
+For raster IDs or point centers outputs, see \code{\link[=sc_slic_raster]{sc_slic_raster()}} and
+\code{\link[=sc_slic_points]{sc_slic_points()}}. For evaluation and diagnostics, see
+\code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}, and \code{\link[=sc_metrics_global]{sc_metrics_global()}}.
 }
 \examples{
 library(supercells)
@@ -93,4 +96,7 @@ plot(sf::st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120
 
 Nowosad, J. Motif: an open-source R tool for pattern-based spatial analysis. Landscape Ecol (2021). https://doi.org/10.1007/s10980-020-01135-0
+}
+\seealso{
+\code{\link[=sc_slic]{sc_slic()}}
 }

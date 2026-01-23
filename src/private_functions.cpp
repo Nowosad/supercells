@@ -1,44 +1,50 @@
-#include "slic.h"
+#include "slic_core.h"
 
 /* Constructor. Nothing is done here. */
-Slic::Slic() {
+SlicCore::SlicCore() {
 
 }
 
 /* Destructor. Clear any present data. */
-Slic::~Slic() {
+SlicCore::~SlicCore() {
   clear_data();
 }
 
 /* Clear the data as saved by the algorithm. */
-void Slic::clear_data() {
+void SlicCore::clear_data() {
   clusters.clear();
   distances.clear();
   centers.clear();
   centers_vals.clear();
   center_counts.clear();
   mat_dims.clear();
+  new_clusters.clear();
+  iter_mean_distance.clear();
+  iter_diagnostics_enabled = false;
+  vals_ptr = nullptr;
+  bands = 0;
+  dist_fn = nullptr;
+  avg_fn = nullptr;
+  avg_fun_name.clear();
 }
 
-void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,
-                          std::string& dist_name, cpp11::function dist_fun, double step) {
-  for (int ncolcenter = step/2; ncolcenter < mat_dims[1]; ncolcenter += step){
-    for (int nrowcenter = step/2; nrowcenter < mat_dims[0]; nrowcenter += step){
-      vector<double> center; center.reserve(2);
+/* Create centers of initial supercells, adds their values, etc. */
+void SlicCore::create_centers(const std::vector<int>& mat_dims, const std::vector<double>& vals, int step) {
+  for (int ncolcenter = step / 2; ncolcenter < mat_dims[1]; ncolcenter += step) {
+    for (int nrowcenter = step / 2; nrowcenter < mat_dims[0]; nrowcenter += step) {
+      std::vector<double> center; center.reserve(2);
       int ncell = ncolcenter + (nrowcenter * mat_dims[1]);
-      vector<double> colour; colour.reserve(mat_dims[2]);
-      for (int nval = 0; nval < mat_dims[2]; nval++){
-        double val = vals(ncell, nval);
+      std::vector<double> colour; colour.reserve(mat_dims[2]);
+      for (int nval = 0; nval < mat_dims[2]; nval++) {
+        double val = vals[ncell * mat_dims[2] + nval];
         colour.push_back(val);
       }
 
-      vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter, dist_name, dist_fun);
+      std::vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter);
 
-      /* Generate the center vector. */
       center.push_back(lm[0]);
       center.push_back(lm[1]);
 
-      /* Append to vector of centers. */
       centers.push_back(center);
       centers_vals.push_back(colour);
       center_counts.push_back(0);
@@ -46,24 +52,23 @@ void Slic::create_centers(vector<int> mat_dims, doubles_matrix<> vals,
   }
 }
 
-void Slic::create_centers2(vector<int> mat_dims,
-                           doubles_matrix<> vals, std::string& dist_name,
-                           cpp11::function dist_fun,
-                           integers_matrix<> input_centers) {
+/* Create centers of initial supercells based on the input provided by a user, adds their values, etc. */
+void SlicCore::create_centers2(const std::vector<int>& mat_dims, const std::vector<double>& vals,
+                              const std::vector<std::array<int, 2>>& input_centers) {
   int ncell = 0;
-  for (int i = 0; i < input_centers.nrow(); i++){
-    int nrowcenter = input_centers(i, 1); int ncolcenter = input_centers(i, 0);
-    vector<double> center; center.reserve(2);
-    vector<double> colour; colour.reserve(mat_dims[2]);
-    for (int nval = 0; nval < mat_dims[2]; nval++){
-      double val = vals(ncell, nval);
+  for (size_t i = 0; i < input_centers.size(); i++) {
+    int nrowcenter = input_centers[i][1];
+    int ncolcenter = input_centers[i][0];
+    std::vector<double> center; center.reserve(2);
+    std::vector<double> colour; colour.reserve(mat_dims[2]);
+    for (int nval = 0; nval < mat_dims[2]; nval++) {
+      double val = vals[ncell * mat_dims[2] + nval];
       colour.push_back(val);
     }
     ncell++;
 
-    vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter, dist_name, dist_fun);
+    std::vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter);
 
-    /* Generate the center vector. */
     center.push_back(lm[0]);
     center.push_back(lm[1]);
 
@@ -73,22 +78,19 @@ void Slic::create_centers2(vector<int> mat_dims,
   }
 }
 
-void Slic::inits(integers mat, doubles_matrix<> vals,
-                 std::string& dist_name, cpp11::function dist_fun,
-                 integers_matrix<> input_centers) {
-  // cout << "inits" << endl;
-
-  mat_dims.reserve(3);
-  mat_dims.push_back(mat.at(0));
-  mat_dims.push_back(mat.at(1));
-  mat_dims.push_back(vals.ncol());
+/* Initialize the clusters, distances, and centers. */
+void SlicCore::inits(const std::vector<int>& mat_dims_in, const std::vector<double>& vals,
+                     const std::vector<std::array<int, 2>>& input_centers) {
+  mat_dims = mat_dims_in;
+  bands = mat_dims[2];
+  vals_ptr = &vals;
 
   clusters.reserve(mat_dims[1]);
   distances.reserve(mat_dims[1]);
-  for (int ncol = 0; ncol < mat_dims[1]; ncol++){
-    vector<int> cluster; cluster.reserve(mat_dims[0]);
-    vector<double> distancemat; distancemat.reserve(mat_dims[0]);
-    for (int nrow = 0; nrow < mat_dims[0]; nrow++){
+  for (int ncol = 0; ncol < mat_dims[1]; ncol++) {
+    std::vector<int> cluster; cluster.reserve(mat_dims[0]);
+    std::vector<double> distancemat; distancemat.reserve(mat_dims[0]);
+    for (int nrow = 0; nrow < mat_dims[0]; nrow++) {
       cluster.push_back(-1);
       distancemat.push_back(FLT_MAX);
     }
@@ -96,20 +98,21 @@ void Slic::inits(integers mat, doubles_matrix<> vals,
     distances.push_back(distancemat);
   }
 
-  if (input_centers.nrow() > 1){
-    Slic::create_centers2(mat_dims, vals, dist_name, dist_fun, input_centers);
-  } else{
-    Slic::create_centers(mat_dims, vals, dist_name, dist_fun, step);
+  if (input_centers.size() > 1) {
+    create_centers2(mat_dims, vals, input_centers);
+  } else {
+    create_centers(mat_dims, vals, step);
   }
 }
 
-double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
-                          std::string& dist_name, cpp11::function dist_fun) {
+double SlicCore::value_at(int ncell, int nval) const {
+  return (*vals_ptr)[ncell * bands + nval];
+}
 
-  /*vals distance*/
-  double values_distance = get_vals_dist(centers_vals[ci], values, dist_name, dist_fun);
+/* Compute the total (spatial and value) distance between a center and an individual pixel. */
+double SlicCore::compute_dist(int ci, int y, int x, const std::vector<double>& values) const {
+  double values_distance = dist_fn(centers_vals[ci], values);
 
-  /*coords distance*/
   int y_dist = centers[ci][0] - y;
   int x_dist = centers[ci][1] - x;
   double spatial_distance = sqrt((y_dist * y_dist) + (x_dist * x_dist));
@@ -120,11 +123,11 @@ double Slic::compute_dist(int& ci, int& y, int& x, vector<double>& values,
   return sqrt((dist1 * dist1) + (dist2 * dist2));
 }
 
-vector<double> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
-                                     std::string& dist_name, cpp11::function dist_fun) {
+/* Find the pixel with the lowest gradient in a 3x3 surrounding. */
+std::vector<double> SlicCore::find_local_minimum(const std::vector<double>& vals, int y, int x) {
   double min_grad = FLT_MAX;
 
-  vector<double> loc_min(2);
+  std::vector<double> loc_min(2);
   loc_min.at(0) = y;
   loc_min.at(1) = x;
 
@@ -135,23 +138,21 @@ vector<double> Slic::find_local_minimum(doubles_matrix<> vals, int& y, int& x,
       int ncell2 = (i + 1) + (j * mat_dims[1]);
       int ncell3 = i + (j * mat_dims[1]);
 
-      vector<double> colour1; colour1.reserve(mat_dims[2]);
-      vector<double> colour2; colour2.reserve(mat_dims[2]);
-      vector<double> colour3; colour3.reserve(mat_dims[2]);
+      std::vector<double> colour1; colour1.reserve(mat_dims[2]);
+      std::vector<double> colour2; colour2.reserve(mat_dims[2]);
+      std::vector<double> colour3; colour3.reserve(mat_dims[2]);
 
-      if (ncell1 < vals.nrow() && ncell2 < vals.nrow() && ncell3 < vals.nrow()){
-        for (int nval = 0; nval < mat_dims[2]; nval++){
-          double val1 = vals(ncell1, nval);
-          double val2 = vals(ncell2, nval);
-          double val3 = vals(ncell3, nval);
+      if (ncell1 < mat_dims[0] * mat_dims[1] && ncell2 < mat_dims[0] * mat_dims[1] && ncell3 < mat_dims[0] * mat_dims[1]) {
+        for (int nval = 0; nval < mat_dims[2]; nval++) {
+          double val1 = vals[ncell1 * mat_dims[2] + nval];
+          double val2 = vals[ncell2 * mat_dims[2] + nval];
+          double val3 = vals[ncell3 * mat_dims[2] + nval];
           colour1.push_back(val1);
           colour2.push_back(val2);
           colour3.push_back(val3);
         }
 
-        /* Compute horizontal and vertical gradients and keep track of the
-         minimum. */
-        double new_grad = get_vals_dist(colour1, colour3, dist_name, dist_fun) + get_vals_dist(colour2, colour3, dist_name, dist_fun);
+        double new_grad = dist_fn(colour1, colour3) + dist_fn(colour2, colour3);
 
         if (new_grad < min_grad) {
           min_grad = new_grad;
