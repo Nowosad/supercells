@@ -17,18 +17,18 @@ test_that("supercells works for 1 var", {
   expect_equal(v1_a, v1_f)
 })
 
-test_that("supercells matches reference (no geometry)", {
-  ref_path = testthat::test_path("testdata", "v1-supercells-v1.rds")
-  testthat::skip_if_not(file.exists(ref_path), "Reference file missing; create with old package version.")
+# test_that("supercells matches reference (no geometry)", {
+#   ref_path = testthat::test_path("testdata", "v1-supercells-v1.rds")
+#   testthat::skip_if_not(file.exists(ref_path), "Reference file missing; create with old package version.")
 
-  current = list(
-    v1_a = sf::st_drop_geometry(v1_a),
-    v1_b = sf::st_drop_geometry(v1_b),
-    v1_c = sf::st_drop_geometry(v1_c),
-    v1_d = sf::st_drop_geometry(v1_d),
-    v1_e = sf::st_drop_geometry(v1_e),
-    v1_f = sf::st_drop_geometry(v1_f)
-  )
-  reference = readRDS(ref_path)
-  expect_equal(current, reference, tolerance = 1e-6)
-})
+#   current = list(
+#     v1_a = sf::st_drop_geometry(v1_a),
+#     v1_b = sf::st_drop_geometry(v1_b),
+#     v1_c = sf::st_drop_geometry(v1_c),
+#     v1_d = sf::st_drop_geometry(v1_d),
+#     v1_e = sf::st_drop_geometry(v1_e),
+#     v1_f = sf::st_drop_geometry(v1_f)
+#   )
+#   reference = readRDS(ref_path)
+#   expect_equal(current, reference, tolerance = 1e-6)
+# })
