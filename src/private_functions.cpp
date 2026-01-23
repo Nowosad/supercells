@@ -45,6 +45,10 @@ void SlicCore::create_centers(const std::vector<int>& mat_dims, const std::vecto
       center.push_back(lm[0]);
       center.push_back(lm[1]);
 
+      // To use the provided grid centers without snapping to local minima:
+      // center[0] = nrowcenter;
+      // center[1] = ncolcenter;
+
       centers.push_back(center);
       centers_vals.push_back(colour);
       center_counts.push_back(0);
