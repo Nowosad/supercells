@@ -65,10 +65,17 @@ void SlicCore::create_centers2(const std::vector<int>& mat_dims, const std::vect
     std::vector<double> center; center.reserve(2);
     std::vector<double> colour; colour.reserve(mat_dims[2]);
 
+    if (nrowcenter < 0 || nrowcenter >= mat_dims[0] || ncolcenter < 0 || ncolcenter >= mat_dims[1]) {
+      continue;
+    }
+
     std::vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter);
 
     int lm_row = static_cast<int>(lm[0]);
     int lm_col = static_cast<int>(lm[1]);
+    if (lm_row < 0 || lm_row >= mat_dims[0] || lm_col < 0 || lm_col >= mat_dims[1]) {
+      continue;
+    }
     int ncell = lm_col + (lm_row * mat_dims[1]);
     for (int nval = 0; nval < mat_dims[2]; nval++) {
       double val = vals[ncell * mat_dims[2] + nval];
