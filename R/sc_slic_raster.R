@@ -16,19 +16,19 @@
 #' terra::plot(vol_ids)
 sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                          transform = NULL, k = NULL, centers = NULL,
-                          metadata = FALSE, chunks = FALSE, future = FALSE, verbose = 0,
-                          iter_diagnostics = FALSE) {
+                          k = NULL, centers = NULL, metadata = FALSE,
+                          chunks = FALSE, future = FALSE, iter_diagnostics = FALSE,
+                          verbose = 0) {
 
   # prep arguments
   prep_args = .sc_slic_prep_args(x, step, compactness, k, centers, dist_fun, avg_fun,
-                            minarea, chunks, iter, transform, metadata, iter_diagnostics)
+                            minarea, chunks, iter, metadata, iter_diagnostics)
 
   # run the exSLIC algorithm
   if (nrow(prep_args$chunk_ext) == 1) {
-    res_list = .sc_slic_run_single_raster(prep_args, compactness, clean, iter, transform, verbose, future)
+    res_list = .sc_slic_run_single_raster(prep_args, compactness, clean, iter, future, verbose)
   } else {
-    res_list = .sc_slic_run_chunks_raster(prep_args, compactness, clean, iter, transform, verbose, future)
+    res_list = .sc_slic_run_chunks_raster(prep_args, compactness, clean, iter, future, verbose)
   }
 
   # if (!is.list(res_list) || (is.list(res_list) && !is.list(res_list[[1]]))) {
@@ -46,17 +46,17 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
   return(sc_rast)
 }
 
-.sc_slic_run_single_raster = function(prep, compactness, clean, iter, transform, verbose, future) {
+.sc_slic_run_single_raster = function(prep, compactness, clean, iter, future, verbose) {
   ext = prep$chunk_ext[1, ]
   result = list(run_slic_chunk_raster(ext, prep$x, step = prep$step, compactness = compactness,
                                       dist_name = prep$funs$dist_name, dist_fun = prep$funs$dist_fun,
                                       avg_fun_fun = prep$funs$avg_fun_fun, avg_fun_name = prep$funs$avg_fun_name,
-                                      clean = clean, iter = iter, minarea = prep$minarea, transform = transform,
+                                      clean = clean, iter = iter, minarea = prep$minarea,
                                       input_centers = prep$input_centers, verbose = verbose,
                                       iter_diagnostics = prep$iter_diagnostics))
   return(result)
 }
 
-.sc_slic_run_chunks_raster = function(prep, compactness, clean, iter, transform, verbose, future) {
-  return(.sc_slic_apply_chunks(prep, run_slic_chunk_raster, compactness, clean, iter, transform, verbose, future))
+.sc_slic_run_chunks_raster = function(prep, compactness, clean, iter, future, verbose) {
+  return(.sc_slic_apply_chunks(prep, run_slic_chunk_raster, compactness, clean, iter, future, verbose = verbose))
 }

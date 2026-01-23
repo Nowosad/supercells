@@ -79,7 +79,7 @@ Next, we can plot each superpixel with its average color, but without the border
 
 ```{r, echo=-1}
 par(mar = c(0, 0, 0, 0))
-plot(st_geometry(ortho_slic1), border = NA, col = avg_colors)
+plot(st_geometry(ortho_slic1), border = avg_colors, col = avg_colors)
 ```
 
 Note that the above visualization is not an image - it is a set of colored superpixels.

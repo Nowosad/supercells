@@ -1,8 +1,8 @@
 # Run SLIC on the raster chunk defined by 'ext'
 run_slic_chunk_raster = function(ext, x, step, compactness, dist_name,
                                  dist_fun, avg_fun_fun, avg_fun_name, clean,
-                                 iter, minarea, transform, input_centers, verbose,
-                                 iter_diagnostics = FALSE){
+                                 iter, minarea, input_centers,
+                                 iter_diagnostics = FALSE, verbose = 0){
   centers = TRUE
   if (is.character(x)){
     x = terra::rast(x)
@@ -16,31 +16,12 @@ run_slic_chunk_raster = function(ext, x, step, compactness, dist_name,
   vals = terra::values(x, mat = TRUE, na.rm = FALSE)
   mode(vals) = "double"
 
-  # transforms the input to LAB color space if transform = "to_LAB"
-  if (!is.null(transform)){
-    if (transform == "to_LAB"){
-      if (ncol(vals) > 3) {
-        vals = vals[, 1:3]
-        warning("The provided raster has more than three layers: only the first three were kept for calculations", call. = FALSE)
-      }
-      vals = vals / 255
-      vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
-    }
-  }
-
   # runs the algorithm
-  slic = run_slic(mat, vals = vals, step = step, compactness = compactness, clean = clean,
+  slic = run_slic(mat = mat, vals = vals, step = step, compactness = compactness, clean = clean,
                   centers = centers, dist_name = dist_name, dist_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                   iter = iter, minarea = minarea, input_centers = input_centers,
-                  verbose = verbose, iter_diagnostics = iter_diagnostics)
-
-  # transforms the output back to RGB color space if transform = "to_LAB"
-  if (!is.null(transform)){
-    if (transform == "to_LAB"){
-      slic[[3]] = grDevices::convertColor(slic[[3]], from = "Lab", to = "sRGB") * 255
-    }
-  }
+                  iter_diagnostics = iter_diagnostics, verbose = verbose)
 
   if (iter == 0){
     # returns the initial centers if iter = 0
@@ -71,12 +52,12 @@ run_slic_chunk_raster = function(ext, x, step, compactness, dist_name,
 # Run SLIC on a chunk and return point centers instead of polygons
 run_slic_chunk_points = function(ext, x, step, compactness, dist_name,
                                  dist_fun, avg_fun_fun, avg_fun_name, clean,
-                                 iter, minarea, transform, input_centers, verbose,
-                                 iter_diagnostics = FALSE, metadata = TRUE){
+                                 iter, minarea, input_centers,
+                                 iter_diagnostics = FALSE, metadata = TRUE, verbose = 0){
   res = run_slic_chunk_raster(ext, x, step, compactness, dist_name,
                              dist_fun, avg_fun_fun, avg_fun_name, clean,
-                             iter, minarea, transform, input_centers, verbose,
-                             iter_diagnostics)
+                             iter, minarea, input_centers,
+                             iter_diagnostics = iter_diagnostics, verbose = verbose)
   if (res$iter0) {
     raster_ref = if (is.character(x)) terra::rast(x) else x
     raster_ref = raster_ref[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
@@ -96,12 +77,12 @@ run_slic_chunk_points = function(ext, x, step, compactness, dist_name,
 # Run SLIC on a chunk and return polygon supercells with attributes
 run_slic_chunks = function(ext, x, step, compactness, dist_name,
                            dist_fun, avg_fun_fun, avg_fun_name, clean,
-                           iter, minarea, transform, input_centers, verbose,
-                           iter_diagnostics = FALSE, metadata = TRUE){
+                           iter, minarea, input_centers,
+                           iter_diagnostics = FALSE, metadata = TRUE, verbose = 0){
   res = run_slic_chunk_raster(ext, x, step, compactness, dist_name,
                               dist_fun, avg_fun_fun, avg_fun_name, clean,
-                              iter, minarea, transform, input_centers, verbose,
-                              iter_diagnostics)
+                              iter, minarea, input_centers,
+                              iter_diagnostics = iter_diagnostics, verbose = verbose)
   if (res$iter0) {
     return(res$centers_sf)
   }

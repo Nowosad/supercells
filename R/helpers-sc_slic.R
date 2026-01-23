@@ -1,9 +1,9 @@
 # Shared helpers for sc_slic* workflows
 
 .sc_slic_prep_args = function(x, step, compactness, k, centers, dist_fun, avg_fun,
-                         minarea, chunks, iter, transform, metadata, iter_diagnostics) {
+                         minarea, chunks, iter, metadata, iter_diagnostics) {
   # Validate core arguments and types
-  .sc_slic_validate_args(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, transform, metadata, minarea)
+  .sc_slic_validate_args(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea)
   # Normalize input to SpatRaster
   x = .sc_prep_raster(x)
   # Resolve step from k when needed
@@ -36,7 +36,7 @@
               minarea = minarea, chunk_ext = chunk_ext, iter_diagnostics = iter_diagnostics))
 }
 
-.sc_slic_validate_args = function(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, transform, metadata, minarea) {
+.sc_slic_validate_args = function(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea) {
   if (!missing(metadata)) {
     if (!is.logical(metadata) || length(metadata) != 1 || is.na(metadata)) {
       stop("The 'metadata' argument must be TRUE or FALSE", call. = FALSE)
@@ -44,9 +44,6 @@
   }
   if (!is.numeric(iter) || length(iter) != 1 || is.na(iter) || iter < 0) {
     stop("The 'iter' argument must be a non-negative numeric value", call. = FALSE)
-  }
-  if (!is.null(transform) && !identical(transform, "to_LAB")) {
-    stop("The 'transform' argument must be NULL or 'to_LAB'", call. = FALSE)
   }
   if (!is.character(avg_fun) && !is.function(avg_fun)) {
     stop("The 'avg_fun' argument must be a string or a function", call. = FALSE)
@@ -125,7 +122,7 @@
   return(minarea)
 }
 
-.sc_slic_apply_chunks = function(prep, fun, compactness, clean, iter, transform, verbose, future, metadata = NULL) {
+.sc_slic_apply_chunks = function(prep, fun, compactness, clean, iter, future, metadata = NULL, verbose = 0) {
   args = list(
     x = prep$x,
     step = prep$step,
@@ -137,7 +134,6 @@
     clean = clean,
     iter = iter,
     minarea = prep$minarea,
-    transform = transform,
     input_centers = prep$input_centers,
     verbose = verbose,
     iter_diagnostics = prep$iter_diagnostics

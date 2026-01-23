@@ -13,14 +13,13 @@ sc_slic(
   clean = TRUE,
   minarea,
   iter = 10,
-  transform = NULL,
   k = NULL,
   centers = NULL,
   metadata = FALSE,
   chunks = FALSE,
   future = FALSE,
-  verbose = 0,
-  iter_diagnostics = FALSE
+  iter_diagnostics = FALSE,
+  verbose = 0
 )
 }
 \arguments{
@@ -44,9 +43,6 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{iter}{Number of iterations.}
 
-\item{transform}{Optional transformation applied before segmentation. Currently
-supports "to_LAB" for RGB inputs.}
-
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
 \item{centers}{Optional sf object of custom centers. Requires \code{step}.}
@@ -59,10 +55,10 @@ automatic chunking based on size, or a numeric value for a fixed chunk size
 
 \item{future}{Logical. Use future for parallelization?}
 
-\item{verbose}{Verbosity level.}
+\item{iter_diagnostics}{Logical. If \code{TRUE}, attaches iteration diagnostics as an
+attribute (\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
 
-\item{iter_diagnostics}{Logical. If \code{TRUE}, returns iteration diagnostics as an attribute
-(\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
+\item{verbose}{Verbosity level.}
 }
 \value{
 An sf object with the supercell polygons and summary statistics.

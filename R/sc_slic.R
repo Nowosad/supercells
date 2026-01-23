@@ -31,8 +31,6 @@
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param minarea Minimal size of a supercell (in cells).
 #' @param iter Number of iterations.
-#' @param transform Optional transformation applied before segmentation. Currently
-#' supports "to_LAB" for RGB inputs.
 #' @param k The number of supercells desired (alternative to `step`).
 #' @param centers Optional sf object of custom centers. Requires `step`.
 #' @param metadata Logical. Should metadata columns be kept?
@@ -41,8 +39,8 @@
 #' (in number of cells per side).
 #' @param future Logical. Use future for parallelization?
 #' @param verbose Verbosity level.
-#' @param iter_diagnostics Logical. If `TRUE`, returns iteration diagnostics as an attribute
-#' (`iter_diagnostics`) on the output. Only available when chunks are not used.
+#' @param iter_diagnostics Logical. If `TRUE`, attaches iteration diagnostics as an
+#' attribute (`iter_diagnostics`) on the output. Only available when chunks are not used.
 #'
 #' @return An sf object with the supercell polygons and summary statistics.
 #' Information on `step` and `compactness` are attached to the result as attributes.
@@ -60,22 +58,21 @@
 #' terra::plot(vol)
 #' plot(sf::st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
-                   avg_fun = "mean", clean = TRUE, minarea, iter = 10, transform = NULL,
+                   avg_fun = "mean", clean = TRUE, minarea, iter = 10,
                    k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
-                   future = FALSE, verbose = 0,
-                   iter_diagnostics = FALSE) {
+                   future = FALSE, iter_diagnostics = FALSE, verbose = 0) {
 
   prep_args = .sc_slic_prep_args(x, step, compactness, k, centers, dist_fun, avg_fun,
-                            minarea, chunks, iter, transform, metadata, iter_diagnostics)
+                            minarea, chunks, iter, metadata, iter_diagnostics)
 
   # if (iter == 0) {
   #   stop("iter = 0 returns centers only; polygon output is not available", call. = FALSE)
   # }
 
   slic_sf = if (nrow(prep_args$chunk_ext) == 1) {
-    .sc_slic_run_single_vector(prep_args, compactness, clean, iter, transform, verbose, future, metadata)
+    .sc_slic_run_single_vector(prep_args, compactness, clean, iter, future, metadata, verbose)
   } else {
-    .sc_slic_run_chunks_vector(prep_args, compactness, clean, iter, transform, verbose, future, metadata)
+    .sc_slic_run_chunks_vector(prep_args, compactness, clean, iter, future, metadata, verbose)
   }
 
   iter_attr = NULL
@@ -87,17 +84,17 @@ sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
   return(result)
 }
 
-.sc_slic_run_single_vector = function(prep, compactness, clean, iter, transform, verbose, future, metadata) {
+.sc_slic_run_single_vector = function(prep, compactness, clean, iter, future, metadata, verbose) {
   ext = prep$chunk_ext[1, ]
   return(list(run_slic_chunks(ext, prep$x, step = prep$step, compactness = compactness,
                               dist_name = prep$funs$dist_name, dist_fun = prep$funs$dist_fun,
                               avg_fun_fun = prep$funs$avg_fun_fun, avg_fun_name = prep$funs$avg_fun_name,
-                              clean = clean, iter = iter, minarea = prep$minarea, transform = transform,
+                              clean = clean, iter = iter, minarea = prep$minarea,
                               input_centers = prep$input_centers, verbose = verbose,
                               iter_diagnostics = prep$iter_diagnostics, metadata = metadata)))
 }
 
-.sc_slic_run_chunks_vector = function(prep, compactness, clean, iter, transform, verbose, future, metadata) {
-  return(.sc_slic_apply_chunks(prep, run_slic_chunks, compactness, clean, iter, transform, verbose, future,
-                               metadata = metadata))
+.sc_slic_run_chunks_vector = function(prep, compactness, clean, iter, future, metadata, verbose) {
+  return(.sc_slic_apply_chunks(prep, run_slic_chunks, compactness, clean, iter, future,
+                               metadata = metadata, verbose = verbose))
 }

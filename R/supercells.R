@@ -61,87 +61,97 @@
 #' # plot(sf::st_geometry(ortho_slic1), add = TRUE, col = avg_colors)
 supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean", clean = TRUE,
                       iter = 10, transform = NULL, step, minarea, metadata = TRUE, chunks = FALSE, future = FALSE, verbose = 0){
-  if (!inherits(x, "SpatRaster")){
-    if (inherits(x, "stars")){
+  if (iter == 0) {
+    clean = FALSE
+  }
+
+  centers_arg = NULL
+  if (!missing(k) && inherits(k, "sf")) {
+    centers_arg = k
+    k = NULL
+  }
+
+  if (!inherits(x, "SpatRaster")) {
+    if (inherits(x, "stars")) {
       x = terra::rast(x)
     } else{
       stop("The SpatRaster class is expected as an input", call. = FALSE)
     }
   }
-  # prepare initial supercells' centers
-  input_centers = matrix(c(0L, 0L), ncol = 2)
-  if (!missing(k) && inherits(k, "sf")){
-    if (chunks > 0){
-      stop(call. = FALSE, "Chunks cannot be used for custom cluster centers!")
+
+  trans = .supercells_transform_to_lab(x, transform)
+  x = trans$x
+
+  args = list(
+    x,
+    compactness = compactness,
+    dist_fun = dist_fun,
+    avg_fun = avg_fun,
+    clean = clean,
+    iter = iter,
+    metadata = metadata,
+    chunks = chunks,
+    future = future,
+    iter_diagnostics = FALSE,
+    verbose = verbose
+  )
+  if (!missing(step)) {
+    args$step = step
+  }
+  if (!missing(k)) {
+    args$k = k
+  }
+  if (!missing(minarea)) {
+    args$minarea = minarea
+  }
+  if (!is.null(centers_arg)) {
+    args$centers = centers_arg
+  }
+
+  slic_sf = do.call(sc_slic, args)
+  if (isTRUE(trans$did_transform)) {
+    names_x = names(x)
+    slic_sf = .supercells_transform_from_lab(slic_sf, names_x)
+  }
+  return(slic_sf)
+}
+
+.supercells_transform_to_lab = function(x, transform) {
+  if (is.null(transform)) {
+    return(list(x = x, did_transform = FALSE))
+  }
+  if (!identical(transform, "to_LAB")) {
+    stop("The 'transform' argument must be NULL or 'to_LAB'", call. = FALSE)
+  }
+  if (terra::nlyr(x) < 3) {
+    stop("The 'transform = \"to_LAB\"' option requires at least three layers", call. = FALSE)
+  }
+  if (terra::nlyr(x) > 3) {
+    warning("The provided raster has more than three layers: only the first three were kept for calculations", call. = FALSE)
+    x = x[[1:3]]
+  }
+  vals = terra::values(x, mat = TRUE, na.rm = FALSE)
+  vals = vals / 255
+  vals = grDevices::convertColor(vals, from = "sRGB", to = "Lab")
+  x_lab = x
+  terra::values(x_lab) = vals
+  return(list(x = x_lab, did_transform = TRUE))
+}
+
+.supercells_transform_from_lab = function(slic_sf, names_x) {
+  value_cols = names_x
+  if (is.null(value_cols) || length(value_cols) != 3 || !all(value_cols %in% names(slic_sf))) {
+    value_cols = setdiff(names(slic_sf), c("supercells", "x", "y", "geometry"))
+    if (length(value_cols) < 3) {
+      return(slic_sf)
     }
-    input_centers = centers_to_dims(x, k)
-  } else if (!missing(step) && !missing(k)){
-    stop("You can specify either k or step, not both", call. = FALSE)
-  } else if (missing(step) && missing(k)){
-    stop("You need to specify either k or step", call. = FALSE)
-  } else if (missing(step)){
-    mat = dim(x)[1:2]; mode(mat) = "integer"
-    superpixelsize = round((mat[1] * mat[2]) / k + 0.5)
-    step = round(sqrt(superpixelsize) + 0.5)
+    value_cols = value_cols[1:3]
   }
-  # prepare averaging function (mean is the default)
-  if (is.character(avg_fun)){
-    avg_fun_name = avg_fun; avg_fun_fun = function() ""
-  } else {
-    avg_fun_name = "";      avg_fun_fun = avg_fun
-  }
-  # prepare distance function (euclidean is the default)
-  if (is.character(dist_fun)){
-    if (!(dist_fun %in% c("euclidean", "jsd", "dtw", "dtw2d", philentropy::getDistMethods()))){
-      stop("The provided distance function ('dist_fun') does not exist!", call. = FALSE)
-    }
-    dist_name = dist_fun; dist_fun = function() ""
-  } else {
-    dist_name = ""
-  }
-  # prepare minarea
-  if (missing(minarea)){
-    minarea = 0
-  } else if (minarea > step^2) {
-    warning("The provided minarea value is larger than than the average supercell (step^2). The connectivity cleaning is likely to fail.", call. = FALSE)
-  }
-  # disables cleaning if iter = 0
-  if (iter == 0){
-    clean = FALSE
-  }
-  # get extents of chunks
-  chunk_ext = prep_chunks_ext(dim(x), limit = chunks)
-  # run the algorithm on chunks
-  if (future){
-    if (in_memory(x)){
-        names_x = names(x)
-        x = terra::writeRaster(x, tempfile(fileext = ".tif"))
-        names(x) = names_x
-    }
-    if (!in_memory(x)){
-      x = terra::sources(x)[[1]]
-    }
-    oopts = options(future.globals.maxSize = +Inf)
-    on.exit(options(oopts))
-    slic_sf = future.apply::future_apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
-                                         step = step, compactness = compactness, dist_name = dist_name,
-                                         dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                                         clean = clean, iter = iter, minarea = minarea, transform = transform,
-                                         input_centers = input_centers, verbose = verbose,
-                                         future.seed = TRUE)
-  } else {
-    slic_sf = apply(chunk_ext, MARGIN = 1, run_slic_chunks, x = x,
-                                         step = step, compactness = compactness, dist_name = dist_name,
-                                         dist_fun = dist_fun, avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
-                                         clean = clean, iter = iter, minarea = minarea, transform = transform,
-                                         input_centers = input_centers, verbose = verbose)
-  }
-  # combines the chunks results by updating supercells ids
-  slic_sf = update_supercells_ids(slic_sf)
-  # removes metadata columns if metadata = FALSE
-  if (isFALSE(metadata)){
-    slic_sf = slic_sf[, -which(names(slic_sf) %in% c("supercells", "x", "y"))]
-  }
-  # returns the result
+
+  vals = as.matrix(sf::st_drop_geometry(slic_sf)[, value_cols, drop = FALSE])
+  storage.mode(vals) = "double"
+  vals = grDevices::convertColor(vals, from = "Lab", to = "sRGB") * 255
+  vals = pmin(pmax(vals, 0), 255)
+  slic_sf[, value_cols] = vals
   return(slic_sf)
 }
