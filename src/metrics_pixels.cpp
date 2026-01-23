@@ -28,11 +28,6 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
     }
   }
 
-  auto dist_cb = [&](const std::vector<double>& values1,
-                     const std::vector<double>& values2) -> double {
-    return get_vals_dist(values1, values2, dist_name, dist_fun);
-  };
-
   std::vector<double> pixel_values;
   pixel_values.reserve(bands);
 
@@ -63,13 +58,17 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
         continue;
       }
 
-      double value_dist = dist_cb(centers_vals_vec[cid], pixel_values);
+      /* value distance */
+      double value_dist = get_vals_dist(centers_vals_vec[cid], pixel_values, dist_name, dist_fun);
+      
+      /* spatial distance */
       double center_x = centers_xy(cid, 0);
       double center_y = centers_xy(cid, 1);
       double y_dist = center_y - j;
       double x_dist = center_x - i;
       double spatial_dist = sqrt((y_dist * y_dist) + (x_dist * x_dist));
 
+      /* combined distance*/
       double combined_dist = NA_REAL;
       if (compactness != 0.0 && step != 0) {
         double dist1 = value_dist / compactness;
