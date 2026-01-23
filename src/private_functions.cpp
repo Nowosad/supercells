@@ -109,8 +109,8 @@ void SlicCore::inits(const std::vector<int>& mat_dims_in, const std::vector<doub
 double SlicCore::compute_dist(int ci, int y, int x, const std::vector<double>& values) const {
   double values_distance = dist_fn(centers_vals[ci], values);
 
-  int y_dist = centers[ci][0] - y;
-  int x_dist = centers[ci][1] - x;
+  double y_dist = centers[ci][0] - y;
+  double x_dist = centers[ci][1] - x;
   double spatial_distance = sqrt((y_dist * y_dist) + (x_dist * x_dist));
 
   double dist1 = values_distance / compactness;
