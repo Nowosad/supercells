@@ -102,26 +102,29 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
           }
         }
       }
+      std::vector<std::vector<double>> centers_vals_c_id_buf(mat_dims[2]);
       mapIter m_it, s_it;
       for (m_it = c_id_centers_vals.begin(); m_it != c_id_centers_vals.end(); m_it = s_it) {
         int c_id = (*m_it).first;
         std::pair<mapIter, mapIter> keyRange = c_id_centers_vals.equal_range(c_id);
-        std::vector<std::vector<double> > centers_vals_c_id(mat_dims[2]);
+        for (int nval = 0; nval < mat_dims[2]; nval++) {
+          centers_vals_c_id_buf[nval].clear();
+        }
         for (s_it = keyRange.first; s_it != keyRange.second; ++s_it) {
           int ncell = (*s_it).second;
           for (int nval = 0; nval < mat_dims[2]; nval++) {
             double val = vals[ncell * mat_dims[2] + nval];
-            centers_vals_c_id[nval].push_back(val);
+            centers_vals_c_id_buf[nval].push_back(val);
           }
         }
         for (int nval = 0; nval < mat_dims[2]; nval++) {
           // calculate
           if (avg_fun_name == "median") {
-            centers_vals[c_id][nval] = median(centers_vals_c_id[nval]);
+            centers_vals[c_id][nval] = median(centers_vals_c_id_buf[nval]);
           } else if (avg_fun_name == "mean2") {
-            centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
+            centers_vals[c_id][nval] = mean(centers_vals_c_id_buf[nval]);
           } else if (avg_fun_name.empty()) {
-            centers_vals[c_id][nval] = avg_fn(centers_vals_c_id[nval]);
+            centers_vals[c_id][nval] = avg_fn(centers_vals_c_id_buf[nval]);
           }
         }
       }
