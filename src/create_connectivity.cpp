@@ -82,13 +82,16 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
 
   clusters = new_clusters;
 
+  const auto prev_centers = centers;
+  const auto prev_centers_vals = centers_vals;
   std::vector<std::vector<double>> new_centers(label, std::vector<double>(2, 0));
   std::vector<std::vector<double>> new_centers_vals(label, std::vector<double>(mat_dims[2], 0));
   std::vector<int> new_center_counts(label, 0);
 
+  std::vector<std::vector<int>> cluster_cells(label);
+  std::vector<std::vector<double>> new_c_id_centers_vals_buf(mat_dims[2]);
+  std::vector<double> colour(mat_dims[2]);
   if (avg_fun_name != "mean") {
-    std::vector<std::vector<int>> cluster_cells(label);
-    std::vector<std::vector<double>> new_c_id_centers_vals_buf(mat_dims[2]);
     for (int l = 0; l < (int) new_clusters.size(); l++) {
       for (int k = 0; k < (int) new_clusters[0].size(); k++) {
         int c_id = new_clusters[l][k];
@@ -131,11 +134,13 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
       if (new_center_counts[l] > 0) {
         new_centers[l][0] /= new_center_counts[l];
         new_centers[l][1] /= new_center_counts[l];
+      } else if (l < (int) prev_centers.size()) {
+        new_centers[l] = prev_centers[l];
+        new_centers_vals[l] = prev_centers_vals[l];
       }
     }
   } else if (avg_fun_name == "mean") {
     // /* Compute the new cluster centers. */
-    std::vector<double> colour(mat_dims[2]);
     for (int l = 0; l < (int) new_clusters.size(); l++) {
       for (int k = 0; k < (int) new_clusters[0].size(); k++) {
         int c_id = new_clusters[l][k];
@@ -166,6 +171,9 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
         for (int nval = 0; nval < mat_dims[2]; nval++) {
           new_centers_vals[l][nval] /= new_center_counts[l];
         }
+      } else if (l < (int) prev_centers.size()) {
+        new_centers[l] = prev_centers[l];
+        new_centers_vals[l] = prev_centers_vals[l];
       }
     }
   }
