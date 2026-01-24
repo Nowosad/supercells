@@ -91,7 +91,11 @@ run_slic_chunks = function(ext, x, step, compactness, dist_name,
     names(slic_sf)[1] = "supercells"
     centers_sf = slic_centers_points(res$centers, res$raster, res$centers_vals, res$names_x)
     centers_df = sf::st_drop_geometry(centers_sf)
-    centers_df[["supercells"]] = NULL
+    if ("supercells" %in% names(centers_df)) {
+      centers_df = centers_df[centers_df[["supercells"]] %in% slic_sf[["supercells"]], , drop = FALSE]
+      centers_df = centers_df[match(slic_sf[["supercells"]], centers_df[["supercells"]]), , drop = FALSE]
+      centers_df[["supercells"]] = NULL
+    }
     slic_sf = cbind(slic_sf, centers_df)
     if (!isTRUE(metadata)) {
       slic_sf = slic_sf[, setdiff(names(slic_sf), c("x", "y")), drop = FALSE]
