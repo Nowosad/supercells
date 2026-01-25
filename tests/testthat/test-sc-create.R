@@ -37,7 +37,7 @@ test_that("sc_slic_raster assigns unique ids across chunks", {
     "rounded up",
     fixed = TRUE
   )
-  chunk_ext = prep_chunks_ext(dim(v1), limit = ceiling(chunks / step) * step)
+  chunk_ext = .sc_chunk_extents(dim(v1), limit = ceiling(chunks / step) * step)
   ranges = lapply(seq_len(nrow(chunk_ext)), function(i) {
     ext = chunk_ext[i, ]
     chunk = sc_r[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]

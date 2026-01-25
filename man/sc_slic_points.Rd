@@ -25,7 +25,7 @@ sc_slic_points(
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
-\item{step}{The distance (number of cells) between initial centers (alternative to \code{k}).}
+\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
 
 \item{compactness}{A compactness value.}
 
@@ -66,20 +66,22 @@ An sf object with supercell centroid points and summary statistics
 \description{
 Runs the SLIC workflow and returns supercell centroids as points.
 Use \code{iter = 0} to return the initial centers before iterations.
-For polygon outputs, use \code{sc_slic}; for raster IDs, use \code{sc_slic_raster}
+For polygon outputs, use \code{\link[=sc_slic]{sc_slic()}}; for raster output, use \code{\link[=sc_slic_raster]{sc_slic_raster()}}
 }
 \examples{
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 
-init_pts = sc_slic_points(vol, step = 20, compactness = 1, iter = 0)
+# initial centers (only after local minima placement, no iterations)
+init_pts = sc_slic_points(vol, step = 12, compactness = 1, iter = 0)
 terra::plot(vol)
 plot(sf::st_geometry(init_pts), add = TRUE, pch = 3, col = "red")
 
-vol_pts = sc_slic_points(vol, step = 8, compactness = 1)
+# final supercell centers
+vol_pts = sc_slic_points(vol, step = 12, compactness = 1)
 terra::plot(vol)
-plot(sf::st_geometry(vol_pts), add = TRUE, pch = 16, cex = 0.4)
+plot(sf::st_geometry(vol_pts), add = TRUE, pch = 16, col = "red")
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_slic_raster]{sc_slic_raster()}}
 }

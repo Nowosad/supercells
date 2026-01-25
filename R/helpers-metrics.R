@@ -1,10 +1,10 @@
-# Normalize inputs and parameters for metrics functions
+# .sc_metrics_prep: normalize inputs and parameters for metrics functions
 # Inputs: raster and supercells; outputs include prepared matrices and metadata
 # Handles missing metadata by deriving centers and ids from geometry
 .sc_metrics_prep = function(raster, x, dist_fun, compactness, step) {
 
   # prepare arguments
-  raster = .sc_prep_raster(raster)
+  raster = .sc_util_prep_raster(raster)
 
   if (!inherits(x, "sf")) {
     stop("The 'x' argument must be an sf object returned by sc_slic()", call. = FALSE)
@@ -58,7 +58,7 @@
   vals = as.matrix(terra::as.data.frame(raster, cells = FALSE, na.rm = FALSE))
   storage.mode(vals) = "double"
 
-  dist_prep = .sc_prep_dist_fun(dist_fun)
+  dist_prep = .sc_util_prep_dist_fun(dist_fun)
 
   result = list(
     raster = raster,

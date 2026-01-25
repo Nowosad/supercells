@@ -25,7 +25,7 @@ sc_slic(
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
-\item{step}{The distance (number of cells) between initial centers (alternative to \code{k}).}
+\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
 
 \item{compactness}{A compactness value.}
 
@@ -70,12 +70,13 @@ The function supports either a target number of supercells (\code{k}) or a fixed
 spacing (\code{step}), as well as optional custom centers and chunked processing.
 }
 \details{
-Use \code{sc_slic} for polygon outputs. For raster or point centers outputs, see
-\code{sc_slic_raster} and \code{sc_slic_points}.
+Use \code{\link[=sc_slic]{sc_slic()}} for polygon outputs. For raster or point centers outputs, see
+\code{\link[=sc_slic_raster]{sc_slic_raster()}} and \code{\link[=sc_slic_points]{sc_slic_points()}}.
 Evaluation and diagnostic options:
 \itemize{
 \item Iteration diagnostics: set \code{iter_diagnostics = TRUE} to attach an
-\code{iter_diagnostics} attribute (only available without chunking).
+\code{iter_diagnostics} attribute (only available without chunking). Use
+\code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}} to visualize the convergence over iterations.
 \item Pixel diagnostics: \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}} for per-pixel spatial, value,
 and combined distances.
 \item Cluster diagnostics: \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}} for per-supercell summaries.

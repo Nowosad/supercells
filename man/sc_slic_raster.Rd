@@ -25,7 +25,7 @@ sc_slic_raster(
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
-\item{step}{The distance (number of cells) between initial centers (alternative to \code{k}).}
+\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
 
 \item{compactness}{A compactness value.}
 
@@ -66,7 +66,7 @@ A SpatRaster with supercell IDs
 \description{
 Runs the SLIC workflow and returns a raster of supercell IDs
 IDs are 1-based and are unique across chunks when chunking is used
-For polygon outputs, use \code{sc_slic}; for point centers, use \code{sc_slic_points}
+For polygon outputs, use \code{\link[=sc_slic]{sc_slic()}}; for point centers, use \code{\link[=sc_slic_points]{sc_slic_points()}}
 }
 \examples{
 library(supercells)

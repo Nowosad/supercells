@@ -108,7 +108,11 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     args$centers = centers_arg
   }
 
-  slic_sf = do.call(sc_slic, args)
+  if (iter == 0) {
+    slic_sf = do.call(sc_slic_points, args)
+  } else {
+    slic_sf = do.call(sc_slic, args)
+  }
   if (isTRUE(trans$did_transform)) {
     names_x = names(x)
     slic_sf = .supercells_transform_from_lab(slic_sf, names_x)

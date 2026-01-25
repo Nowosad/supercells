@@ -1,13 +1,15 @@
-# Shared helpers for sc_slic* workflows
+# shared helpers for sc_slic workflows
 
-.sc_slic_prep_args = function(x, step, compactness, k, centers, dist_fun, avg_fun,
-                         minarea, chunks, iter, metadata, iter_diagnostics) {
+# prepare and validate slic arguments
+.sc_slic_prep_args = function(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
+                              k, centers, metadata, chunks, future, iter_diagnostics, verbose) {
   # Validate core arguments and types
   .sc_slic_validate_args(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea)
   # Normalize input to SpatRaster
-  x = .sc_prep_raster(x)
+  x = .sc_util_prep_raster(x)
   # Resolve step from k when needed
   step = .sc_slic_prep_step(x, step, k)
+  # Adjust numeric chunks to match step size
   if (is.numeric(chunks)) {
     if (chunks < step) {
       stop("The 'chunks' argument must be >= 'step' when numeric", call. = FALSE)
@@ -25,7 +27,7 @@
   # Validate and normalize minarea
   minarea = .sc_slic_prep_minarea(minarea, step)
   # Compute chunk extents based on size/limits
-  chunk_ext = prep_chunks_ext(dim(x), limit = chunks)
+  chunk_ext = .sc_chunk_extents(dim(x), limit = chunks)
   # Disable iter diagnostics when chunking is active
   if (iter_diagnostics && nrow(chunk_ext) > 1) {
     warning("Iteration diagnostics are only available when chunks = FALSE (single chunk). Iteration diagnostics were disabled.", call. = FALSE)
@@ -33,9 +35,13 @@
   }
   # Package prep results for downstream functions
   return(list(x = x, step = step, input_centers = input_centers, funs = funs,
-              minarea = minarea, chunk_ext = chunk_ext, iter_diagnostics = iter_diagnostics))
+              minarea = minarea, chunk_ext = chunk_ext,
+              iter_diagnostics = iter_diagnostics, metadata = metadata,
+              compactness = compactness, clean = clean, iter = iter,
+              future = future, verbose = verbose))
 }
 
+# validate slic arguments and types
 .sc_slic_validate_args = function(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea) {
   if (!missing(metadata)) {
     if (!is.logical(metadata) || length(metadata) != 1 || is.na(metadata)) {
@@ -89,6 +95,7 @@
   return(invisible(TRUE))
 }
 
+# derive step from k when needed
 .sc_slic_prep_step = function(x, step, k) {
   if (!is.null(step)) {
     return(step)
@@ -98,20 +105,23 @@
   return(round(sqrt(superpixelsize) + 0.5))
 }
 
+# normalize custom centers or create placeholder
 .sc_slic_prep_centers = function(x, centers) {
   if (is.null(centers)) {
     return(matrix(c(0L, 0L), ncol = 2))
   }
-  return(centers_to_dims(x, centers))
+  return(.sc_util_centers_to_dims(x, centers))
 }
 
+# resolve distance and averaging functions
 .sc_slic_prep_funs = function(dist_fun, avg_fun) {
-  avg_prep = .sc_prep_avg_fun(avg_fun)
-  dist_prep = .sc_prep_dist_fun(dist_fun)
+  avg_prep = .sc_util_prep_avg_fun(avg_fun)
+  dist_prep = .sc_util_prep_dist_fun(dist_fun)
   return(list(dist_name = dist_prep$dist_name, dist_fun = dist_prep$dist_fun,
               avg_fun_name = avg_prep$avg_fun_name, avg_fun_fun = avg_prep$avg_fun_fun))
 }
 
+# validate and normalize minarea
 .sc_slic_prep_minarea = function(minarea, step) {
   if (missing(minarea)) {
     return(0)
@@ -122,61 +132,76 @@
   return(minarea)
 }
 
-.sc_slic_apply_chunks = function(prep, fun, compactness, clean, iter, future, metadata = NULL, verbose = 0) {
-  args = list(
-    x = prep$x,
-    step = prep$step,
-    compactness = compactness,
-    dist_name = prep$funs$dist_name,
-    dist_fun = prep$funs$dist_fun,
-    avg_fun_fun = prep$funs$avg_fun_fun,
-    avg_fun_name = prep$funs$avg_fun_name,
-    clean = clean,
-    iter = iter,
-    minarea = prep$minarea,
-    input_centers = prep$input_centers,
-    verbose = verbose,
-    iter_diagnostics = prep$iter_diagnostics
-  )
-  if (!is.null(metadata)) {
-    args$metadata = metadata
-  }
-
+# apply slic over chunks with optional future backend
+.sc_slic_apply_chunks = function(chunk_ext, fun, args, future) {
   if (future) {
-    if (in_memory(prep$x)) {
-      names_x = names(prep$x)
-      prep$x = terra::writeRaster(prep$x, tempfile(fileext = ".tif"))
-      names(prep$x) = names_x
+    if (.sc_util_in_memory(args$x)) {
+      names_x = names(args$x)
+      args$x = terra::writeRaster(args$x, tempfile(fileext = ".tif"))
+      names(args$x) = names_x
+    } else {
+      args$x = terra::sources(args$x)[[1]]
     }
-    if (!in_memory(prep$x)) {
-      prep$x = terra::sources(prep$x)[[1]]
-    }
-    args$x = prep$x
     oopts = options(future.globals.maxSize = +Inf)
     on.exit(options(oopts))
-    return(do.call(future.apply::future_apply, c(list(prep$chunk_ext, MARGIN = 1, FUN = fun), args, list(future.seed = TRUE))))
+    return(do.call(future.apply::future_apply, c(list(chunk_ext, MARGIN = 1, FUN = fun), args, list(future.seed = TRUE))))
   } else {
-    return(do.call(apply, c(list(prep$chunk_ext, MARGIN = 1, FUN = fun), args)))
+    return(do.call(apply, c(list(chunk_ext, MARGIN = 1, FUN = fun), args)))
   }
 }
 
-.sc_slic_post = function(slic_sf, metadata, step, compactness, iter_attr) {
+# add iter diagnostics attribute when enabled
+.sc_slic_add_iter_attr = function(chunks, iter_diagnostics) {
+  if (isTRUE(iter_diagnostics) && length(chunks) > 0) {
+    return(attr(chunks[[1]], "iter_diagnostics"))
+  }
+  NULL
+}
 
-  slic_sf = update_supercells_ids(slic_sf)
+# finalize slic output with ids, metadata, and attributes
+.sc_slic_post = function(chunks, prep, iter_attr) {
 
-  if (!isTRUE(metadata)) {
+  slic_sf = .sc_chunk_update_ids(chunks)
+
+  if (!isTRUE(prep$metadata)) {
     remove_cols = intersect(names(slic_sf), c("supercells", "x", "y"))
     if (length(remove_cols) > 0) {
       slic_sf = slic_sf[, -which(names(slic_sf) %in% remove_cols)]
     }
   }
 
-  attr(slic_sf, "step") = step
-  attr(slic_sf, "compactness") = compactness
+  attr(slic_sf, "step") = prep$step
+  attr(slic_sf, "compactness") = prep$compactness
   attr(slic_sf, "method") = "slic"
   class(slic_sf) = c(class(slic_sf), "supercells")
   if (!is.null(iter_attr)) {
     attr(slic_sf, "iter_diagnostics") = iter_attr
   }
   return(slic_sf)
+}
+
+# dispatch slic run for single or chunked input
+.sc_slic_segment = function(prep, single_runner, chunk_runner) {
+  args = list(
+    x = prep$x,
+    step = prep$step,
+    compactness = prep$compactness,
+    dist_name = prep$funs$dist_name,
+    dist_fun = prep$funs$dist_fun,
+    avg_fun_fun = prep$funs$avg_fun_fun,
+    avg_fun_name = prep$funs$avg_fun_name,
+    clean = prep$clean,
+    iter = prep$iter,
+    minarea = prep$minarea,
+    input_centers = prep$input_centers,
+    verbose = prep$verbose,
+    iter_diagnostics = prep$iter_diagnostics,
+    metadata = prep$metadata
+  )
+  if (nrow(prep$chunk_ext) == 1) {
+    list(chunks = list(do.call(single_runner, args)))
+  } else {
+    chunks = .sc_slic_apply_chunks(prep$chunk_ext, chunk_runner, args, prep$future)
+    list(chunks = chunks)
+  }
 }

@@ -1,5 +1,5 @@
-# updates supercells ids for chunks
-offset_supercells_ids_sf = function(x){
+# update supercells ids for chunked sf outputs
+.sc_chunk_offset_ids_sf = function(x){
   x = x[lapply(x, length) > 0]
   max_id = 0
   for (i in seq_along(x)) {
@@ -11,14 +11,15 @@ offset_supercells_ids_sf = function(x){
   x
 }
 
-update_supercells_ids = function(x){
-  x = offset_supercells_ids_sf(x)
+# combine chunked sf outputs with unique ids
+.sc_chunk_update_ids = function(x){
+  x = .sc_chunk_offset_ids_sf(x)
   x = do.call(rbind, x)
   return(x)
 }
 
-# update supercells ids for raster chunks (not needed for a single raster)
-offset_supercells_ids_raster = function(rasters){
+# update supercells ids for raster chunks
+.sc_chunk_offset_ids_raster = function(rasters){
   if (length(rasters) <= 1) {
     return(rasters)
   }
@@ -37,15 +38,15 @@ offset_supercells_ids_raster = function(rasters){
   return(rasters)
 }
 
-# predicts (rough estimation) memory usage of the algorithm
-pred_mem_usage = function(dim_x){
+# predict memory usage in gb
+.sc_chunk_mem_gb = function(dim_x){
   mem_bytes = dim_x[1] * dim_x[2] * dim_x[3] * 8 #in bytes
   mem_gb = mem_bytes / (1024 * 1024 * 1024)
   mem_gb
 }
 
-# looks for the optimal chunk size
-optimize_chunk_size = function(dim_x, limit, by = 500){
+# find an approximate optimal chunk size
+.sc_chunk_optimize_size = function(dim_x, limit, by = 500){
   min_diff_memory = function(a, dim_x, limit){
     abs((dim_x[3] * a^2 * 8 / (1024 * 1024 * 1024)) - limit)
   }
@@ -55,30 +56,30 @@ optimize_chunk_size = function(dim_x, limit, by = 500){
   return(opti$minimum)
 }
 
-# prepares the extents of chunks:
+# compute chunk extents for splitting
 # if limit = FALSE, the extent of the whole input is returned
 # if limit = TRUE, the extent of the input is split into chunks,
 #                  where the size of each raster chunk is optimized to be as close to
 #                  the (hardcoded) limit of 1GB as possible
 # if limit is numeric, the extent of the input is split into chunks,
 #                      where the width/height of each chunk is equal to the limit
-prep_chunks_ext = function(dim_x, limit){
+.sc_chunk_extents = function(dim_x, limit){
   if (is.numeric(limit)){
     wsize = limit
     limit = 0
-    dims1 = ceiling(seq_last(0, to = dim_x[1], by = wsize))
-    dims2 = ceiling(seq_last(0, to = dim_x[2], by = wsize))
+    dims1 = ceiling(.sc_util_seq_last(0, to = dim_x[1], by = wsize))
+    dims2 = ceiling(.sc_util_seq_last(0, to = dim_x[2], by = wsize))
   } else if (!limit){
     limit = Inf
   } else {
     limit = 1 #hardcoded limit
-    wsize = optimize_chunk_size(dim_x, limit, by = 500)
+    wsize = .sc_chunk_optimize_size(dim_x, limit, by = 500)
     dims1 = ceiling(seq.int(0, to = dim_x[1],
                             length.out = as.integer((dim_x[1] - 1) / wsize + 1) + 1))
     dims2 = ceiling(seq.int(0, to = dim_x[2],
                             length.out = as.integer((dim_x[2] - 1) / wsize + 1) + 1))
   }
-  if (pred_mem_usage(dim_x) > limit){
+  if (.sc_chunk_mem_gb(dim_x) > limit){
     row_dims = seq_along(dims1)[-length(dims1)]
     col_dims = seq_along(dims2)[-length(dims2)]
     n_chunks = max(row_dims) * max(col_dims)
