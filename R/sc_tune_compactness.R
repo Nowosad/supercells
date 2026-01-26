@@ -45,11 +45,11 @@ sc_tune_compactness = function(raster, step = NULL, compactness = 1,
                        k = k, centers = centers, metadata = TRUE,
                        chunks = FALSE, future = FALSE)
 
-  metrics = sc_metrics_pixels(raster, pts, dist_fun = dist_fun,
-                              compactness = compactness, step = step,
-                              scale = FALSE, metrics = c("spatial", "value"))
-
   step_used = if (is.null(step)) attr(pts, "step") else step
+
+  metrics = sc_metrics_pixels(raster, pts, dist_fun = dist_fun,
+                              compactness = compactness, step = step_used,
+                              scale = FALSE, metrics = c("spatial", "value"))
 
   if (missing(sample_size)) {
     sample_size = Inf
