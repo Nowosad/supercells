@@ -39,7 +39,7 @@ test_that("sc_metrics_global returns single-row data.frame", {
   expect_s3_class(gl, "data.frame")
   expect_equal(nrow(gl), 1)
   expect_true(all(c("step", "compactness", "n_supercells",
-                    "mean_value_dist", "mean_spatial_dist", "mean_combined_dist",
+                    "mean_value_dist_scaled", "mean_spatial_dist_scaled", "mean_combined_dist",
                     "balance") %in% names(gl)))
 })
 

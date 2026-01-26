@@ -6,6 +6,7 @@
 #' Requires `x` with metadata columns (`supercells`, `x`, `y`)
 #' If they are missing, they are derived from geometry and row order
 #' Set `metadata = TRUE` when calling `sc_slic()` or `supercells()`
+#' Metrics are averaged across supercells (each supercell has equal weight).
 #'
 #' @inheritParams sc_metrics_pixels
 #' @param metrics Character vector of metrics to return. Options:
@@ -34,6 +35,8 @@
 #'   \item{balance}{Mean absolute log ratio of scaled value distance to scaled
 #'   spatial distance; 0 indicates balance.}
 #' }
+#' When `scale = TRUE`, `mean_spatial_dist` and `mean_value_dist` are returned as
+#' `mean_spatial_dist_scaled` and `mean_value_dist_scaled`.
 #' @seealso [`sc_slic()`], [`sc_metrics_pixels()`], [`sc_metrics_supercells()`]
 #' @export
 #' @examples
@@ -50,17 +53,28 @@ sc_metrics_global = function(raster, x, dist_fun = "euclidean", scale = TRUE,
                               step = prep$step, compactness = prep$compactness,
                               dist_name = prep$dist_name, dist_fun = prep$dist_fun)
 
-  results = cbind(data.frame(step = prep$step, compactness = prep$compactness), out)
-  results$balance = abs(log(results$balance))
+  metrics_df = data.frame(
+    mean_value_dist = out[["mean_value_dist"]],
+    mean_spatial_dist = out[["mean_spatial_dist"]],
+    mean_combined_dist = out[["mean_combined_dist"]],
+    balance = abs(log(out[["balance"]]))
+  )
   if (isTRUE(scale)) {
-    results$mean_value_dist = results$mean_value_dist / prep$compactness
-    results$mean_spatial_dist = results$mean_spatial_dist / prep$step
+    metrics_df$mean_value_dist = metrics_df$mean_value_dist / prep$compactness
+    metrics_df$mean_spatial_dist = metrics_df$mean_spatial_dist / prep$step
   }
-  if (any(!metrics %in% names(results))) {
-    bad = metrics[!metrics %in% names(results)]
+  if (any(!metrics %in% names(metrics_df))) {
+    bad = metrics[!metrics %in% names(metrics_df)]
     stop(sprintf("Unknown metrics: %s", paste(bad, collapse = ", ")), call. = FALSE)
   }
-  results = cbind(results[, c("step", "compactness", "n_supercells"), drop = FALSE],
-                  results[, metrics, drop = FALSE])
+  out_metrics = metrics_df[, metrics, drop = FALSE]
+  if (isTRUE(scale)) {
+    names(out_metrics) = sub("^mean_spatial_dist$", "mean_spatial_dist_scaled", names(out_metrics))
+    names(out_metrics) = sub("^mean_value_dist$", "mean_value_dist_scaled", names(out_metrics))
+  }
+  results = cbind(
+    data.frame(step = prep$step, compactness = prep$compactness, n_supercells = out[["n_supercells"]]),
+    out_metrics
+  )
   return(results)
 }
