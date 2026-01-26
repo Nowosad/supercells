@@ -1,8 +1,12 @@
 # supercells 1.7
 
+* Added `sc_tune_compactness()` to estimate compactness from a light SLIC run and pixel metrics
+* Metrics API update: `sc_metrics_clusters()` renamed to `sc_metrics_supercells()`; `metrics` now uses consistent names (`spatial`, `value`, `combined`, `balance`) across pixels/supercells/global, with scaled outputs suffixed by `_scaled`
+* Balance metrics now use the absolute log ratio of scaled value/spatial distances for clearer interpretation
+* `iter = 0` is now only supported for point outputs; `sc_slic()`/`sc_slic_raster()` error with guidance when used with polygons/rasters
 * `transform` support was removed from `sc_slic()`, `sc_slic_points()`, and `sc_slic_raster()` to keep them minimal
 * Legacy `supercells()` now uses `sc_slic()` while preserving `transform = "to_LAB"` behavior
-* Verbose argument moved to the end across R and C++ interfaces for consistency
+* Verbose argument moved to the end of the argument list across R and C++ interfaces for consistency
 * Empty-cluster handling is now consistent across connectivity cleanup, preserving prior centers/values
 
 # supercells 1.6
