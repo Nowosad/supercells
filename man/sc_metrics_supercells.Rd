@@ -21,8 +21,8 @@ sc_metrics_supercells(
 
 \item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.}
 
-\item{scale}{Logical. If \code{TRUE}, returns \code{spatial} and \code{value} as scaled
-distances (\code{spatial_scaled}, \code{value_scaled}).}
+\item{scale}{Logical. If \code{TRUE}, scales spatial and value distances; output
+columns are named with the \code{_scaled} suffix.}
 
 \item{metrics}{Character vector of metric ideas to return. Options:
 \code{"spatial"}, \code{"value"}, \code{"combined"}, \code{"balance"}. Default:
@@ -46,10 +46,10 @@ Interpretation:
 Metrics:
 \describe{
 \item{supercells}{Supercell ID.}
-\item{spatial}{Mean spatial distance from pixels to the supercell center
+\item{spatial}{Mean spatial distance from cells to the supercell center
 in grid-cell units (row/column index distance). Returned as
 \code{mean_spatial_dist} (or \code{mean_spatial_dist_scaled} when \code{scale = TRUE}).}
-\item{value}{Mean value distance from pixels to the supercell center in
+\item{value}{Mean value distance from cells to the supercell center in
 value space. Returned as \code{mean_value_dist} (or \code{mean_value_dist_scaled}
 when \code{scale = TRUE}).}
 \item{combined}{Mean combined distance using \code{compactness} and \code{step}

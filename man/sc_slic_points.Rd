@@ -61,10 +61,10 @@ attribute (\code{iter_diagnostics}) on the output. Only available when chunks ar
 \item{verbose}{Verbosity level.}
 }
 \value{
-An sf object with supercell centroid points and summary statistics
+An sf object with supercell center points and summary statistics
 }
 \description{
-Runs the SLIC workflow and returns supercell centroids as points.
+Runs the SLIC workflow and returns supercell centers as points.
 Use \code{iter = 0} to return the initial centers before iterations.
 For polygon outputs, use \code{\link[=sc_slic]{sc_slic()}}; for raster output, use \code{\link[=sc_slic_raster]{sc_slic_raster()}}
 }

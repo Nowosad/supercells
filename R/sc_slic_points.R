@@ -1,12 +1,12 @@
 #' Create supercells as points
 #'
-#' Runs the SLIC workflow and returns supercell centroids as points.
+#' Runs the SLIC workflow and returns supercell centers as points.
 #' Use \code{iter = 0} to return the initial centers before iterations.
 #' For polygon outputs, use [`sc_slic()`]; for raster output, use [`sc_slic_raster()`]
 #'
 #' @inheritParams sc_slic
 #' @seealso [`sc_slic()`], [`sc_slic_raster()`]
-#' @return An sf object with supercell centroid points and summary statistics
+#' @return An sf object with supercell center points and summary statistics
 #'
 #' @export
 #'

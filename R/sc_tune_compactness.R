@@ -1,9 +1,9 @@
 #' Estimate compactness from a light SLIC run
 #'
-#' Runs a short SLIC segmentation (default `iter = 1`) and uses pixel-level
+#' Runs a short SLIC segmentation (default `iter = 1`) and uses cell-level
 #' distances to estimate a compactness value where value and spatial distances
 #' are balanced for the chosen `step`.
-#' Summaries are pixel-weighted medians over the (sampled) pixels.
+#' Summaries are cell-weighted medians over the (sampled) cells.
 #'
 #' @param raster A `SpatRaster`.
 #' @param step The distance (number of cells) between initial centers (alternative is `k`).

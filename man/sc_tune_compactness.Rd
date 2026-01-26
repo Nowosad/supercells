@@ -51,10 +51,10 @@ A one-row data frame with columns \code{step}, \code{median_value_dist},
 \code{median_spatial_dist}, and \code{compactness}.
 }
 \description{
-Runs a short SLIC segmentation (default \code{iter = 1}) and uses pixel-level
+Runs a short SLIC segmentation (default \code{iter = 1}) and uses cell-level
 distances to estimate a compactness value where value and spatial distances
 are balanced for the chosen \code{step}.
-Summaries are pixel-weighted medians over the (sampled) pixels.
+Summaries are cell-weighted medians over the (sampled) cells.
 }
 \examples{
 library(terra)

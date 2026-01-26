@@ -9,6 +9,8 @@
 #' Metrics are averaged across supercells (each supercell has equal weight).
 #'
 #' @inheritParams sc_metrics_pixels
+#' @param scale Logical. If `TRUE`, scales spatial and value distances; output
+#' columns are named with the `_scaled` suffix.
 #' @param metrics Character vector of metric ideas to return. Options:
 #' `"spatial"`, `"value"`, `"combined"`, `"balance"`. Default:
 #' `c("spatial", "value", "combined", "balance")`.
@@ -24,10 +26,10 @@
 #'   \item{step}{Step size used to generate supercells.}
 #'   \item{compactness}{Compactness value used to generate supercells.}
 #'   \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
-#'   \item{mean_value_dist}{Mean per-supercell value distance from pixels to their
+#'   \item{mean_value_dist}{Mean per-supercell value distance from cells to their
 #'   supercell centers, averaged across supercells. Returned as `mean_value_dist`
 #'   (or `mean_value_dist_scaled` when `scale = TRUE`).}
-#'   \item{mean_spatial_dist}{Mean per-supercell spatial distance from pixels to
+#'   \item{mean_spatial_dist}{Mean per-supercell spatial distance from cells to
 #'   their supercell centers, averaged across supercells; units are grid cells
 #'   (row/column index distance), not map units. Returned as `mean_spatial_dist`
 #'   (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
