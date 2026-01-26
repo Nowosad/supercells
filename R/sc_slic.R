@@ -22,7 +22,7 @@
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars).
 #' @param step The distance (number of cells) between initial centers (alternative is `k`).
-#' @param compactness A compactness value.
+#' @param compactness A compactness value. Use [`sc_tune_compactness()`] to estimate it.
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.

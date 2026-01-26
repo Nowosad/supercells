@@ -58,6 +58,8 @@ supercells.}
 \item{balance}{Mean absolute log ratio of scaled value distance to scaled
 spatial distance; 0 indicates balance.}
 }
+When \code{scale = TRUE}, \code{mean_spatial_dist} and \code{mean_value_dist} are returned as
+\code{mean_spatial_dist_scaled} and \code{mean_value_dist_scaled}.
 }
 \description{
 Computes global distance diagnostics for supercells
@@ -66,6 +68,7 @@ Computes global distance diagnostics for supercells
 Requires \code{x} with metadata columns (\code{supercells}, \code{x}, \code{y})
 If they are missing, they are derived from geometry and row order
 Set \code{metadata = TRUE} when calling \code{sc_slic()} or \code{supercells()}
+Metrics are averaged across supercells (each supercell has equal weight).
 }
 \examples{
 library(supercells)
