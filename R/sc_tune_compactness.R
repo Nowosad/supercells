@@ -8,6 +8,9 @@
 #' @param raster A `SpatRaster`.
 #' @param step The distance (number of cells) between initial centers (alternative is `k`).
 #' @param compactness Starting compactness for the pilot run.
+#' @param value_scale Optional scale factor applied to the median value distance
+#' before computing compactness. Use `"auto"` to divide by `sqrt(nlyr(raster))`
+#' (useful for high-dimensional embeddings). Default: `"auto"`.
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.
@@ -38,7 +41,7 @@ sc_tune_compactness = function(raster, step = NULL, compactness = 1,
                                         dist_fun = "euclidean", avg_fun = "mean",
                                         clean = TRUE, minarea, iter = 1,
                                         k = NULL, centers = NULL,
-                                        sample_size = 10000) {
+                                        sample_size = 10000, value_scale = "auto") {
   pts = sc_slic_points(raster, step = step, compactness = compactness,
                        dist_fun = dist_fun, avg_fun = avg_fun,
                        clean = clean, minarea = minarea, iter = iter,
@@ -57,6 +60,18 @@ sc_tune_compactness = function(raster, step = NULL, compactness = 1,
   med = terra::global(metrics, stats::median, na.rm = TRUE, maxcell = sample_size)
   median_spatial_dist = med[1, 1]
   median_value_dist = med[2, 1]
+
+  if (is.character(value_scale)) {
+    if (identical(value_scale, "auto")) {
+      value_scale = sqrt(terra::nlyr(raster))
+    } else {
+      stop("value_scale must be numeric or 'auto'", call. = FALSE)
+    }
+  }
+  if (!is.numeric(value_scale) || length(value_scale) != 1 || is.na(value_scale) || value_scale <= 0) {
+    stop("value_scale must be a single positive number or 'auto'", call. = FALSE)
+  }
+  median_value_dist = median_value_dist / value_scale
 
   compactness = median_value_dist * step_used / median_spatial_dist
 

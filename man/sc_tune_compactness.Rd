@@ -15,7 +15,8 @@ sc_tune_compactness(
   iter = 1,
   k = NULL,
   centers = NULL,
-  sample_size = 10000
+  sample_size = 10000,
+  value_scale = "auto"
 )
 }
 \arguments{
@@ -45,6 +46,10 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{sample_size}{Optional limit on the number of pixels used for the summary
 (passed to \code{terra::global()} as \code{maxcell}).}
+
+\item{value_scale}{Optional scale factor applied to the median value distance
+before computing compactness. Use \code{"auto"} to divide by
+\code{sqrt(nlyr(raster))} (useful for high-dimensional embeddings). Default: \code{"auto"}.}
 }
 \value{
 A one-row data frame with columns \code{step}, \code{median_value_dist},
