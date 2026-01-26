@@ -9,7 +9,7 @@ sc_metrics_supercells(
   x,
   dist_fun = "euclidean",
   scale = TRUE,
-  metrics = c("mean_spatial_dist", "mean_value_dist", "mean_combined_dist", "balance"),
+  metrics = c("spatial", "value", "combined", "balance"),
   compactness,
   step
 )
@@ -24,10 +24,9 @@ sc_metrics_supercells(
 \item{scale}{Logical. If \code{TRUE}, returns \code{spatial} and \code{value} as scaled
 distances (\code{spatial_scaled}, \code{value_scaled}).}
 
-\item{metrics}{Character vector of metrics to return. Options:
-\code{"mean_spatial_dist"}, \code{"mean_value_dist"}, \code{"mean_combined_dist"},
-\code{"balance"}. Default:
-\code{c("mean_spatial_dist", "mean_value_dist", "mean_combined_dist", "balance")}.}
+\item{metrics}{Character vector of metric ideas to return. Options:
+\code{"spatial"}, \code{"value"}, \code{"combined"}, \code{"balance"}. Default:
+\code{c("spatial", "value", "combined", "balance")}.}
 
 \item{compactness}{A compactness value used for the supercells
 If missing, uses \code{attr(x, "compactness")} when available}
@@ -47,17 +46,17 @@ Interpretation:
 Metrics:
 \describe{
 \item{supercells}{Supercell ID.}
-\item{mean_value_dist}{Mean value distance from pixels to the supercell
-center in value space.}
-\item{mean_spatial_dist}{Mean spatial distance from pixels to the
-supercell center in grid-cell units (row/column index distance).}
-\item{mean_combined_dist}{Mean combined distance using \code{compactness}
-and \code{step} to scale value and spatial distances.}
-\item{balance}{Absolute log ratio of scaled value distance to
-scaled spatial distance; 0 indicates balance, larger values indicate dominance.}
+\item{spatial}{Mean spatial distance from pixels to the supercell center
+in grid-cell units (row/column index distance). Returned as
+\code{mean_spatial_dist} (or \code{mean_spatial_dist_scaled} when \code{scale = TRUE}).}
+\item{value}{Mean value distance from pixels to the supercell center in
+value space. Returned as \code{mean_value_dist} (or \code{mean_value_dist_scaled}
+when \code{scale = TRUE}).}
+\item{combined}{Mean combined distance using \code{compactness} and \code{step}
+to scale value and spatial distances. Returned as \code{mean_combined_dist}.}
+\item{balance}{Absolute log ratio of scaled value distance to scaled
+spatial distance; 0 indicates balance, larger values indicate dominance.}
 }
-When \code{scale = TRUE}, \code{mean_spatial_dist} and \code{mean_value_dist} are returned as
-\code{mean_spatial_dist_scaled} and \code{mean_value_dist_scaled}.
 }
 \description{
 Computes per-supercell distance diagnostics

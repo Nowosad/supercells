@@ -9,7 +9,7 @@ sc_metrics_global(
   x,
   dist_fun = "euclidean",
   scale = TRUE,
-  metrics = c("mean_spatial_dist", "mean_value_dist", "mean_combined_dist", "balance"),
+  metrics = c("spatial", "value", "combined", "balance"),
   compactness,
   step
 )
@@ -24,9 +24,9 @@ sc_metrics_global(
 \item{scale}{Logical. If \code{TRUE}, returns \code{spatial} and \code{value} as scaled
 distances (\code{spatial_scaled}, \code{value_scaled}).}
 
-\item{metrics}{Character vector of metrics to return. Options:
-\code{"mean_spatial_dist"}, \code{"mean_value_dist"}, \code{"mean_combined_dist"}, \code{"balance"}.
-Default: \code{c("mean_spatial_dist", "mean_value_dist", "mean_combined_dist", "balance")}.}
+\item{metrics}{Character vector of metric ideas to return. Options:
+\code{"spatial"}, \code{"value"}, \code{"combined"}, \code{"balance"}. Default:
+\code{c("spatial", "value", "combined", "balance")}.}
 
 \item{compactness}{A compactness value used for the supercells
 If missing, uses \code{attr(x, "compactness")} when available}
@@ -48,13 +48,15 @@ Interpretation:
 \item{compactness}{Compactness value used to generate supercells.}
 \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 \item{mean_value_dist}{Mean per-supercell value distance from pixels to their
-supercell centers, averaged across supercells.}
+supercell centers, averaged across supercells. Returned as \code{mean_value_dist}
+(or \code{mean_value_dist_scaled} when \code{scale = TRUE}).}
 \item{mean_spatial_dist}{Mean per-supercell spatial distance from pixels to
 their supercell centers, averaged across supercells; units are grid cells
-(row/column index distance), not map units.}
+(row/column index distance), not map units. Returned as \code{mean_spatial_dist}
+(or \code{mean_spatial_dist_scaled} when \code{scale = TRUE}).}
 \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 value and spatial distances using \code{compactness} and \code{step}, averaged across
-supercells.}
+supercells. Returned as \code{mean_combined_dist}.}
 \item{balance}{Mean absolute log ratio of scaled value distance to scaled
 spatial distance; 0 indicates balance.}
 }
