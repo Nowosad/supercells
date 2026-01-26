@@ -65,7 +65,7 @@ Creates supercells based on single- or multi-band spatial raster data. It uses a
 If you want to use additional arguments for the averaging function (\code{avg_fun}), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: \code{my_mean = function(x) mean(x, na.rm = TRUE)} and then provide \code{avg_fun = my_mean.}
 For raster IDs or point centers outputs, see \code{\link[=sc_slic_raster]{sc_slic_raster()}} and
 \code{\link[=sc_slic_points]{sc_slic_points()}}. For evaluation and diagnostics, see
-\code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}, and \code{\link[=sc_metrics_global]{sc_metrics_global()}}.
+\code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}, and \code{\link[=sc_metrics_global]{sc_metrics_global()}}.
 }
 \examples{
 library(supercells)

@@ -83,7 +83,7 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
   double mean_value_sum = 0.0;
   double mean_spatial_sum = 0.0;
   double mean_combined_sum = 0.0;
-  double compact_ratio_sum = 0.0;
+  double balance_ratio_sum = 0.0;
   int active_clusters = 0;
 
   // Aggregate per-cluster means into global summaries
@@ -99,7 +99,7 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
     mean_combined_sum += mc;
 
     if (compactness != 0.0 && step != 0 && ms > 0.0) {
-      compact_ratio_sum += (mv / compactness) / (ms / step);
+      balance_ratio_sum += (mv / compactness) / (ms / step);
     }
     active_clusters += 1;
   }
@@ -107,21 +107,21 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
   double mean_value = NA_REAL;
   double mean_spatial = NA_REAL;
   double mean_combined = NA_REAL;
-  double compact_ratio_mean = NA_REAL;
+  double balance_ratio_mean = NA_REAL;
   if (active_clusters > 0) {
     mean_value = mean_value_sum / active_clusters;
     mean_spatial = mean_spatial_sum / active_clusters;
     mean_combined = mean_combined_sum / active_clusters;
-    compact_ratio_mean = compact_ratio_sum / active_clusters;
+    balance_ratio_mean = balance_ratio_sum / active_clusters;
   }
 
   cpp11::writable::list result(5);
   result.names() = {"n_supercells", "mean_value_dist", "mean_spatial_dist",
-                    "mean_combined_dist", "compactness_ratio_mean"};
+                    "mean_combined_dist", "balance"};
   result.at(0) = cpp11::as_sexp(active_clusters);
   result.at(1) = cpp11::as_sexp(mean_value);
   result.at(2) = cpp11::as_sexp(mean_spatial);
   result.at(3) = cpp11::as_sexp(mean_combined);
-  result.at(4) = cpp11::as_sexp(compact_ratio_mean);
+  result.at(4) = cpp11::as_sexp(balance_ratio_mean);
   return result;
 }

@@ -4,14 +4,29 @@
 \alias{sc_metrics_pixels}
 \title{Pixel-level supercells metrics}
 \usage{
-sc_metrics_pixels(raster, x, dist_fun = "euclidean", compactness, step)
+sc_metrics_pixels(
+  raster,
+  x,
+  dist_fun = "euclidean",
+  scale = TRUE,
+  metrics = c("spatial", "value", "combined"),
+  compactness,
+  step
+)
 }
 \arguments{
 \item{raster}{The input SpatRaster used to create \code{x}}
 
 \item{x}{An sf object returned by \code{\link[=sc_slic]{sc_slic()}}}
 
-\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}}
+\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.}
+
+\item{scale}{Logical. If \code{TRUE}, returns \code{spatial} and \code{value} as scaled
+distances (\code{spatial_scaled}, \code{value_scaled}).}
+
+\item{metrics}{Character vector of metrics to return. Options:
+\code{"spatial"}, \code{"value"}, \code{"combined"}, \code{"balance"}.
+Default: \code{c("spatial", "value", "combined")}.}
 
 \item{compactness}{A compactness value used for the supercells
 If missing, uses \code{attr(x, "compactness")} when available}
@@ -20,30 +35,41 @@ If missing, uses \code{attr(x, "compactness")} when available}
 If missing, uses \code{attr(x, "step")} when available}
 }
 \value{
-A SpatRaster with three layers:
+A SpatRaster with one or more layers depending on \code{metrics}.
+Interpretation:
+\describe{
+\item{spatial}{Lower values indicate more compact supercells.}
+\item{value}{Lower values indicate more homogeneous supercells.}
+\item{combined}{Overall distance; mainly useful for ranking.}
+\item{balance}{0 indicates balance; larger values indicate dominance of one term.}
+}
+Metrics:
 \describe{
 \item{spatial}{Spatial distance from each pixel to its supercell center
 in grid-cell units (row/column index distance).}
 \item{value}{Value distance from each pixel to its supercell center in
 the raster value space.}
-\item{combined}{Combined distance using \code{compactness} and \code{step} to
-scale value and spatial distances.}
+\item{combined}{Combined distance using \code{compactness} and \code{step}.}
+\item{balance}{Absolute log ratio of scaled value distance to scaled
+spatial distance; 0 indicates balance. Always computed from scaled components.}
 }
+When \code{scale = TRUE}, \code{spatial} and \code{value} are returned as
+\code{spatial_scaled} and \code{value_scaled}.
 }
 \description{
-Computes per-pixel spatial, value, and combined distance diagnostics
+Computes per-pixel distance diagnostics from each pixel to its supercell center
 }
 \details{
 If \code{x} lacks \code{supercells}, \code{x}, or \code{y} columns, they are derived from geometry
-and row order, which may differ from the original centers
+and row order, which may differ from the original centers.
 }
 \examples{
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
-vol_sc = sc_slic(vol, step = 8, compactness = 1)
-metrics = sc_metrics_pixels(vol, vol_sc)
+vol_sc = sc_slic(vol, step = 8, compactness = 7)
+metrics = sc_metrics_pixels(vol, vol_sc, scale = TRUE)
 terra::panel(metrics, nr = 1)
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
 }

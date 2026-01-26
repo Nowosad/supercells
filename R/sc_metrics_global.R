@@ -8,7 +8,17 @@
 #' Set `metadata = TRUE` when calling `sc_slic()` or `supercells()`
 #'
 #' @inheritParams sc_metrics_pixels
+#' @param metrics Character vector of metrics to return. Options:
+#' `"mean_spatial_dist"`, `"mean_value_dist"`, `"mean_combined_dist"`, `"balance"`.
+#' Default: `c("mean_spatial_dist", "mean_value_dist", "mean_combined_dist", "balance")`.
 #' @return A data.frame with a single row of global metrics and columns:
+#' Interpretation:
+#' \describe{
+#'   \item{mean_value_dist}{Lower values indicate more homogeneous supercells.}
+#'   \item{mean_spatial_dist}{Lower values indicate more compact supercells.}
+#'   \item{mean_combined_dist}{Overall distance; mainly useful for ranking.}
+#'   \item{balance}{0 indicates balance between value and spatial terms.}
+#' }
 #' \describe{
 #'   \item{step}{Step size used to generate supercells.}
 #'   \item{compactness}{Compactness value used to generate supercells.}
@@ -21,23 +31,36 @@
 #'   \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 #'   value and spatial distances using `compactness` and `step`, averaged across
 #'   supercells.}
-#'   \item{compactness_ratio_mean}{Mean ratio of scaled value distance to scaled
-#'   spatial distance, averaged across supercells; `NA` when `compactness` or
-#'   `step` is zero.}
+#'   \item{balance}{Mean absolute log ratio of scaled value distance to scaled
+#'   spatial distance; 0 indicates balance.}
 #' }
-#' @seealso [`sc_slic()`], [`sc_metrics_pixels()`], [`sc_metrics_clusters()`]
+#' @seealso [`sc_slic()`], [`sc_metrics_pixels()`], [`sc_metrics_supercells()`]
 #' @export
 #' @examples
 #' library(supercells)
 #' vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
-#' vol_sc = sc_slic(vol, step = 8, compactness = 1)
+#' vol_sc = sc_slic(vol, step = 8, compactness = 7)
 #' sc_metrics_global(vol, vol_sc)
-sc_metrics_global = function(raster, x, dist_fun = "euclidean", compactness, step) {
+sc_metrics_global = function(raster, x, dist_fun = "euclidean", scale = TRUE,
+                             metrics = c("mean_spatial_dist", "mean_value_dist",
+                                         "mean_combined_dist", "balance"),
+                             compactness, step) {
   prep = .sc_metrics_prep(raster, x, dist_fun, compactness, step)
   out = sc_metrics_global_cpp(prep$clusters, prep$centers_xy, prep$centers_vals, prep$vals,
                               step = prep$step, compactness = prep$compactness,
                               dist_name = prep$dist_name, dist_fun = prep$dist_fun)
-  
+
   results = cbind(data.frame(step = prep$step, compactness = prep$compactness), out)
+  results$balance = abs(log(results$balance))
+  if (isTRUE(scale)) {
+    results$mean_value_dist = results$mean_value_dist / prep$compactness
+    results$mean_spatial_dist = results$mean_spatial_dist / prep$step
+  }
+  if (any(!metrics %in% names(results))) {
+    bad = metrics[!metrics %in% names(results)]
+    stop(sprintf("Unknown metrics: %s", paste(bad, collapse = ", ")), call. = FALSE)
+  }
+  results = cbind(results[, c("step", "compactness", "n_supercells"), drop = FALSE],
+                  results[, metrics, drop = FALSE])
   return(results)
 }

@@ -4,14 +4,29 @@
 \alias{sc_metrics_global}
 \title{Global supercells metrics}
 \usage{
-sc_metrics_global(raster, x, dist_fun = "euclidean", compactness, step)
+sc_metrics_global(
+  raster,
+  x,
+  dist_fun = "euclidean",
+  scale = TRUE,
+  metrics = c("mean_spatial_dist", "mean_value_dist", "mean_combined_dist", "balance"),
+  compactness,
+  step
+)
 }
 \arguments{
 \item{raster}{The input SpatRaster used to create \code{x}}
 
 \item{x}{An sf object returned by \code{\link[=sc_slic]{sc_slic()}}}
 
-\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}}
+\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.}
+
+\item{scale}{Logical. If \code{TRUE}, returns \code{spatial} and \code{value} as scaled
+distances (\code{spatial_scaled}, \code{value_scaled}).}
+
+\item{metrics}{Character vector of metrics to return. Options:
+\code{"mean_spatial_dist"}, \code{"mean_value_dist"}, \code{"mean_combined_dist"}, \code{"balance"}.
+Default: \code{c("mean_spatial_dist", "mean_value_dist", "mean_combined_dist", "balance")}.}
 
 \item{compactness}{A compactness value used for the supercells
 If missing, uses \code{attr(x, "compactness")} when available}
@@ -21,6 +36,13 @@ If missing, uses \code{attr(x, "step")} when available}
 }
 \value{
 A data.frame with a single row of global metrics and columns:
+Interpretation:
+\describe{
+\item{mean_value_dist}{Lower values indicate more homogeneous supercells.}
+\item{mean_spatial_dist}{Lower values indicate more compact supercells.}
+\item{mean_combined_dist}{Overall distance; mainly useful for ranking.}
+\item{balance}{0 indicates balance between value and spatial terms.}
+}
 \describe{
 \item{step}{Step size used to generate supercells.}
 \item{compactness}{Compactness value used to generate supercells.}
@@ -33,9 +55,8 @@ their supercell centers, averaged across supercells; units are grid cells
 \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 value and spatial distances using \code{compactness} and \code{step}, averaged across
 supercells.}
-\item{compactness_ratio_mean}{Mean ratio of scaled value distance to scaled
-spatial distance, averaged across supercells; \code{NA} when \code{compactness} or
-\code{step} is zero.}
+\item{balance}{Mean absolute log ratio of scaled value distance to scaled
+spatial distance; 0 indicates balance.}
 }
 }
 \description{
@@ -49,9 +70,9 @@ Set \code{metadata = TRUE} when calling \code{sc_slic()} or \code{supercells()}
 \examples{
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
-vol_sc = sc_slic(vol, step = 8, compactness = 1)
+vol_sc = sc_slic(vol, step = 8, compactness = 7)
 sc_metrics_global(vol, vol_sc)
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}
 }

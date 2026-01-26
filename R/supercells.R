@@ -26,7 +26,7 @@
 #' If you want to use additional arguments for the averaging function (`avg_fun`), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: `my_mean = function(x) mean(x, na.rm = TRUE)` and then provide `avg_fun = my_mean.`
 #' For raster IDs or point centers outputs, see [sc_slic_raster()] and
 #' [sc_slic_points()]. For evaluation and diagnostics, see
-#' [sc_metrics_pixels()], [sc_metrics_clusters()], and [sc_metrics_global()].
+#' [sc_metrics_pixels()], [sc_metrics_supercells()], and [sc_metrics_global()].
 #'
 #' @return An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell.
 #'

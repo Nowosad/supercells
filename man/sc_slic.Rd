@@ -79,7 +79,7 @@ Evaluation and diagnostic options:
 \code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}} to visualize the convergence over iterations.
 \item Pixel diagnostics: \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}} for per-pixel spatial, value,
 and combined distances.
-\item Cluster diagnostics: \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}} for per-supercell summaries.
+\item Cluster diagnostics: \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}} for per-supercell summaries.
 \item Global diagnostics: \code{\link[=sc_metrics_global]{sc_metrics_global()}} for a single-row summary.
 }
 }
@@ -99,5 +99,5 @@ Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for appli
 }
 \seealso{
 \code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}},
-\code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
+\code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
 }

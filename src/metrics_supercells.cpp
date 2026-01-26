@@ -6,7 +6,7 @@
 #include <vector>
 
 [[cpp11::register]]
-cpp11::list sc_metrics_clusters_cpp(cpp11::integers_matrix<> clusters,
+cpp11::list sc_metrics_supercells_cpp(cpp11::integers_matrix<> clusters,
                                     cpp11::doubles_matrix<> centers_xy,
                                     cpp11::doubles_matrix<> centers_vals,
                                     cpp11::doubles_matrix<> vals,
@@ -84,7 +84,7 @@ cpp11::list sc_metrics_clusters_cpp(cpp11::integers_matrix<> clusters,
   cpp11::writable::doubles mean_value(ncenters);
   cpp11::writable::doubles mean_spatial(ncenters);
   cpp11::writable::doubles mean_combined(ncenters);
-  cpp11::writable::doubles compactness_ratio(ncenters);
+  cpp11::writable::doubles balance_ratio(ncenters);
 
   // Convert sums into per-cluster means and compactness ratios
   for (int i = 0; i < ncenters; i++) {
@@ -96,25 +96,25 @@ cpp11::list sc_metrics_clusters_cpp(cpp11::integers_matrix<> clusters,
       mean_spatial[i] = ms;
       mean_combined[i] = mc;
       if (compactness != 0.0 && step != 0 && ms > 0.0) {
-        compactness_ratio[i] = (mv / compactness) / (ms / step);
+        balance_ratio[i] = (mv / compactness) / (ms / step);
       } else {
-        compactness_ratio[i] = NA_REAL;
+        balance_ratio[i] = NA_REAL;
       }
 
     } else {
       mean_value[i] = NA_REAL;
       mean_spatial[i] = NA_REAL;
       mean_combined[i] = NA_REAL;
-      compactness_ratio[i] = NA_REAL;
+      balance_ratio[i] = NA_REAL;
     }
   }
 
   cpp11::writable::list result(4);
   result.names() = {"mean_value_dist", "mean_spatial_dist", "mean_combined_dist",
-                    "compactness_ratio"};
+                    "balance"};
   result.at(0) = mean_value;
   result.at(1) = mean_spatial;
   result.at(2) = mean_combined;
-  result.at(3) = compactness_ratio;
+  result.at(3) = balance_ratio;
   return result;
 }
