@@ -38,11 +38,15 @@
   return(rasters)
 }
 
-# predict memory usage in gb
+# predict memory usage in gb (approximate, conservative)
+# Accounts for: R values matrix, duplicated values vector in C++,
+# and per-pixel distance/cluster buffers (assuming cleaning enabled).
 .sc_chunk_mem_gb = function(dim_x){
-  mem_bytes = dim_x[1] * dim_x[2] * dim_x[3] * 8 #in bytes
-  mem_gb = mem_bytes / (1024 * 1024 * 1024)
-  mem_gb
+  ncell = dim_x[1] * dim_x[2]
+  bands = dim_x[3]
+  bytes_per_cell = (16 * bands) + 16
+  mem_bytes = ncell * bytes_per_cell
+  mem_bytes / (1024 * 1024 * 1024)
 }
 
 # find an approximate optimal chunk size
@@ -72,7 +76,7 @@
   } else if (!limit){
     limit = Inf
   } else {
-    limit = 1 #hardcoded limit
+    limit = 4 #hardcoded limit
     wsize = .sc_chunk_optimize_size(dim_x, limit, by = 500)
     dims1 = ceiling(seq.int(0, to = dim_x[1],
                             length.out = as.integer((dim_x[1] - 1) / wsize + 1) + 1))
