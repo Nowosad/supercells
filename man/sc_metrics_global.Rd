@@ -22,7 +22,7 @@ sc_metrics_global(
 \item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.}
 
 \item{scale}{Logical. If \code{TRUE}, scales spatial and value distances; output
-columns are named with the \code{_scaled} suffix.}
+columns are named with the \verb{_scaled} suffix.}
 
 \item{metrics}{Character vector of metric ideas to return. Options:
 \code{"spatial"}, \code{"value"}, \code{"combined"}, \code{"balance"}. Default:

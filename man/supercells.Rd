@@ -59,7 +59,7 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
 An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell.
 }
 \description{
-Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC Superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
+Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
 }
 \details{
 If you want to use additional arguments for the averaging function (\code{avg_fun}), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: \code{my_mean = function(x) mean(x, na.rm = TRUE)} and then provide \code{avg_fun = my_mean.}
