@@ -61,6 +61,9 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
       }
     }
     out_file = tempfile(fileext = ".tif")
+    if (is.numeric(prep_args$verbose) && prep_args$verbose > 0) {
+      message("Merging chunk rasters...")
+    }
     if (is.null(dtype)) {
       merged = terra::merge(terra::sprc(chunk_files), filename = out_file, overwrite = TRUE)
     } else {
