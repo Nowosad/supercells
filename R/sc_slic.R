@@ -61,7 +61,7 @@
 #' plot(sf::st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
                    avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                   step_unit = c("cells", "map"), k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
+                   step_unit = "cells", k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
                    iter_diagnostics = FALSE, verbose = 0) {
 
   if (iter == 0) {

@@ -18,7 +18,7 @@
 #' terra::plot(vol_ids)
 sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                          step_unit = c("cells", "map"), k = NULL, centers = NULL, metadata = FALSE,
+                          step_unit = "cells", k = NULL, centers = NULL, metadata = FALSE,
                           chunks = FALSE,
                           iter_diagnostics = FALSE, verbose = 0) {
 
