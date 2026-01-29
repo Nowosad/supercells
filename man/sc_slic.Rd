@@ -17,7 +17,6 @@ sc_slic(
   centers = NULL,
   metadata = FALSE,
   chunks = FALSE,
-  future = FALSE,
   iter_diagnostics = FALSE,
   verbose = 0
 )
@@ -52,8 +51,6 @@ function must accept a numeric vector and return a single numeric value.}
 \item{chunks}{Chunking option. Use \code{FALSE} for no chunking, \code{TRUE} for
 automatic chunking based on size, or a numeric value for a fixed chunk size
 (in number of cells per side).}
-
-\item{future}{Logical. Use future for parallelization?}
 
 \item{iter_diagnostics}{Logical. If \code{TRUE}, attaches iteration diagnostics as an
 attribute (\code{iter_diagnostics}) on the output. Only available when chunks are not used.}

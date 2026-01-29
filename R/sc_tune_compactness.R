@@ -46,7 +46,7 @@ sc_tune_compactness = function(raster, step = NULL, compactness = 1,
                        dist_fun = dist_fun, avg_fun = avg_fun,
                        clean = clean, minarea = minarea, iter = iter,
                        k = k, centers = centers, metadata = TRUE,
-                       chunks = FALSE, future = FALSE)
+                       chunks = FALSE)
 
   step_used = if (is.null(step)) attr(pts, "step") else step
 

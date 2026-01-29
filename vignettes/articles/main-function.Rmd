@@ -52,7 +52,6 @@ The impact of the compactness value depends on the range of input cell values an
   `step`              A distance, in the number of cells, between initial supercells' centers
   `minarea`           A minimal size of the output supercells in cells
   `chunks`            A boolean or numeric value specifying if the input (x) should be split into chunks before deriving supercells
-  `future`            A boolean specifying if the future package should be used for parallelization of the calculations
   `verbose`           An integer specifying the verboseness of text messages printed during calculations
 
   : Table: Overview of the arguments accepted by the
@@ -88,13 +87,12 @@ This argument defines how many times supercells (and their centers) are recalcul
 
 By default, the `supercells` function, as R language, is single-threaded -- runs only on a single thread on the CPU and reads the input raster values into the computer memory.
 These features may limit the function's usability for raster datasets with millions or more cells and many variables, for which calculations can either be too slow or require more memory that is available. 
-To overcome the aforementioned issues, the `supercells` function has two related optional arguments - `chunks` and `future`.
+To overcome the aforementioned issues, the `supercells` function has the `chunks` argument.
 
 The `chunks` argument is set by default to `FALSE`. 
 However, when it is either `TRUE` or some numerical value, then the split, apply, combine procedure is used: input raster is divided into several chunks, each chunk is read into RAM independently and has a set of supercells derived; this process is repeated for every chunk, and all the results are combined into one final object. 
 When the user sets this argument to `TRUE`, the chunks' sizes are calculated automatically, while when the user provides a numerical value to this argument, then the input raster data is split into chunks with user-defined side length (in the number of pixels).
-The `future` argument is also set by default to `FALSE`. 
-If it is `TRUE`, the user also needs to specify how parallel processing should be performed and on how many CPU threads with `future::plan()`.
+The `chunks` argument is set by default to `FALSE`.
 
 The final argument is called `verbose`, which takes an integer value of 0 or larger, where 0 means no additional messages during the calculations, and 1 provides basic messages about the current calculation stage.
 

@@ -38,7 +38,6 @@
 #' @param chunks Chunking option. Use `FALSE` for no chunking, `TRUE` for
 #' automatic chunking based on size, or a numeric value for a fixed chunk size
 #' (in number of cells per side).
-#' @param future Logical. Use future for parallelization?
 #' @param verbose Verbosity level.
 #' @param iter_diagnostics Logical. If `TRUE`, attaches iteration diagnostics as an
 #' attribute (`iter_diagnostics`) on the output. Only available when chunks are not used.
@@ -61,14 +60,14 @@
 sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
                    avg_fun = "mean", clean = TRUE, minarea, iter = 10,
                    k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
-                   future = FALSE, iter_diagnostics = FALSE, verbose = 0) {
+                   iter_diagnostics = FALSE, verbose = 0) {
 
   if (iter == 0) {
     stop("iter = 0 returns centers only; polygon output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
   }
 
   prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                                 k, centers, metadata, chunks, future, iter_diagnostics, verbose)
+                                 k, centers, metadata, chunks, iter_diagnostics, verbose)
 
   segment = .sc_slic_segment(prep_args, .sc_run_full_polygons, .sc_run_chunk_polygons)
 

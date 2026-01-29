@@ -19,7 +19,7 @@
 sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
                           k = NULL, centers = NULL, metadata = FALSE,
-                          chunks = FALSE, future = FALSE,
+                          chunks = FALSE,
                           iter_diagnostics = FALSE, verbose = 0) {
 
   if (iter == 0) {
@@ -28,10 +28,10 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
 
   # prep arguments
   prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                            k, centers, metadata, chunks, future, iter_diagnostics, verbose)
+                            k, centers, metadata, chunks, iter_diagnostics, verbose)
 
   # segment once (single) or per chunk (chunked), returning a list of chunk results
-  if (nrow(prep_args$chunk_ext) > 1 && !isTRUE(prep_args$future)) {
+  if (nrow(prep_args$chunk_ext) > 1) {
     max_id = 0
     n_chunks = nrow(prep_args$chunk_ext)
     chunk_files = character(n_chunks)

@@ -167,7 +167,7 @@ results_high
 #| warning = FALSE
 results_high_chunks = bench::mark(
         s = supercells(lnd_high, compactness = 1, step = 30, clean = FALSE, iter = 1,
-                       chunks = 1000, future = FALSE),
+                       chunks = 1000),
         iterations = 10, memory = FALSE
 )
 results_high_chunks
@@ -189,11 +189,10 @@ readRDS("results_high_chunks.rds")
 #| echo = FALSE,
 #| eval = FALSE,
 #| warning = FALSE
-library(future)
 plan(multisession, workers = 16)
 results_high_parallel = bench::mark(
         s = supercells(lnd_high, compactness = 1, step = 30, clean = FALSE, iter = 1, 
-                       chunks = 1000, future = TRUE),
+                       chunks = 1000),
         iterations = 10, memory = FALSE
 )
 results_high_parallel

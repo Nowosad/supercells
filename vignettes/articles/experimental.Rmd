@@ -70,16 +70,15 @@ plot(sc_ortho)
 The large data support can be extended and used for parallel computations. 
 In this approach, we need to:
 
-1. Attach the **future** package.
+1. Skip parallel setup (parallel execution is no longer supported).
 2. Specify the parallelization strategy (the `plan()` function).
 3. Use `chunks = TRUE` or set `chunks` to some numeric value in `supercells()`.
-4. Set `future = TRUE` in `supercells()`.
+4. Use `chunks = TRUE` in `supercells()` if needed.
 
 ```{r, message=FALSE}
-library(future)
 plan(multisession, workers = 2)
 sc_ortho2 = supercells(ortho, k = 100, compactness = 1, 
-                       chunks = 150, future = TRUE)
+                       chunks = 150)
 ```
 
 The code above will divide the whole area into six chunks, and use two separate R sessions (`workers = 2`) to work on some chunks in parallel.

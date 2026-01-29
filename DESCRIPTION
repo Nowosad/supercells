@@ -1,6 +1,6 @@
 Package: supercells
 Title: Superpixels of Spatial Data
-Version: 1.7.1
+Version: 1.7.2
 Authors@R: c(
     person(given = "Jakub", family = "Nowosad", 
     role = c("aut", "cre"),
@@ -22,7 +22,6 @@ Imports:
     sf,
     terra (>= 1.4-21),
     philentropy (>= 0.6.0),
-    future.apply
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 LinkingTo: 

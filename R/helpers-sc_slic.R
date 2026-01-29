@@ -2,7 +2,7 @@
 
 # prepare and validate slic arguments
 .sc_slic_prep_args = function(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                              k, centers, metadata, chunks, future, iter_diagnostics, verbose) {
+                              k, centers, metadata, chunks, iter_diagnostics, verbose) {
   # Validate core arguments and types
   .sc_slic_validate_args(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea)
   # Normalize input to SpatRaster
@@ -38,7 +38,7 @@
               minarea = minarea, chunk_ext = chunk_ext,
               iter_diagnostics = iter_diagnostics, metadata = metadata,
               compactness = compactness, clean = clean, iter = iter,
-              future = future, verbose = verbose))
+              verbose = verbose))
 }
 
 # validate slic arguments and types
@@ -132,22 +132,9 @@
   return(minarea)
 }
 
-# apply slic over chunks with optional future backend
-.sc_slic_apply_chunks = function(chunk_ext, fun, args, future) {
-  if (future) {
-    if (.sc_util_in_memory(args$x)) {
-      names_x = names(args$x)
-      args$x = terra::writeRaster(args$x, tempfile(fileext = ".tif"))
-      names(args$x) = names_x
-    } else {
-      args$x = terra::sources(args$x)[[1]]
-    }
-    oopts = options(future.globals.maxSize = +Inf)
-    on.exit(options(oopts))
-    return(do.call(future.apply::future_apply, c(list(chunk_ext, MARGIN = 1, FUN = fun), args, list(future.seed = TRUE))))
-  } else {
-    return(do.call(apply, c(list(chunk_ext, MARGIN = 1, FUN = fun), args)))
-  }
+# apply slic over chunks
+.sc_slic_apply_chunks = function(chunk_ext, fun, args) {
+  return(do.call(apply, c(list(chunk_ext, MARGIN = 1, FUN = fun), args)))
 }
 
 # add iter diagnostics attribute when enabled
@@ -201,7 +188,7 @@
   if (nrow(prep$chunk_ext) == 1) {
     list(chunks = list(do.call(single_runner, args)))
   } else {
-    chunks = .sc_slic_apply_chunks(prep$chunk_ext, chunk_runner, args, prep$future)
+    chunks = .sc_slic_apply_chunks(prep$chunk_ext, chunk_runner, args)
     list(chunks = chunks)
   }
 }
