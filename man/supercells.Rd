@@ -49,7 +49,7 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
 
 \item{metadata}{Logical. If \code{TRUE}, the output object will have metadata columns ("supercells", "x", "y"). If \code{FALSE}, the output object will not have metadata columns.}
 
-\item{chunks}{Should the input (\code{x}) be split into chunks before deriving supercells? Either \code{FALSE} (default), \code{TRUE} (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells).}
+\item{chunks}{Should the input (\code{x}) be split into chunks before deriving supercells? Either \code{FALSE} (default), \code{TRUE} (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells). When \code{TRUE}, the memory limit can be set with \code{options(supercells.chunk_mem_gb = 4)}.}
 
 \item{future}{Should the future package be used for parallelization of the calculations? Default: \code{FALSE}. If \code{TRUE}, you also need to specify \code{future::plan()}.}
 

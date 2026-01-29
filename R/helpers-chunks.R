@@ -50,14 +50,28 @@
 }
 
 # find an approximate optimal chunk size
-.sc_chunk_optimize_size = function(dim_x, limit, by = 500){
-  min_diff_memory = function(a, dim_x, limit){
-    abs((dim_x[3] * a^2 * 8 / (1024 * 1024 * 1024)) - limit)
+.sc_chunk_optimize_size = function(dim_x, limit, step = NULL){
+  max_dim = max(dim_x[1:2])
+  bands = dim_x[3]
+  bytes_per_cell = (16 * bands) + 16
+  target_cells = floor((limit * 1024 * 1024 * 1024) / bytes_per_cell)
+  wsize = floor(sqrt(target_cells))
+  if (wsize < 1) {
+    wsize = 1
   }
-  opti = stats::optimize(min_diff_memory,
-                  interval = c(seq(100, max(dim_x[1:2]), by = by), max(dim_x[1:2])),
-                  dim_x, limit)
-  return(opti$minimum)
+  if (wsize > max_dim) {
+    wsize = max_dim
+  }
+  if (!is.null(step) && is.numeric(step) && length(step) == 1 && step > 0) {
+    wsize = floor(wsize / step) * step
+    if (wsize < step) {
+      wsize = step
+    }
+    if (wsize > max_dim) {
+      wsize = max_dim
+    }
+  }
+  return(wsize)
 }
 
 # compute chunk extents for splitting
@@ -67,7 +81,7 @@
 #                  the (hardcoded) limit of 1GB as possible
 # if limit is numeric, the extent of the input is split into chunks,
 #                      where the width/height of each chunk is equal to the limit
-.sc_chunk_extents = function(dim_x, limit){
+.sc_chunk_extents = function(dim_x, limit, step = NULL){
   if (is.numeric(limit)){
     wsize = limit
     limit = 0
@@ -76,8 +90,11 @@
   } else if (!limit){
     limit = Inf
   } else {
-    limit = 4 #hardcoded limit
-    wsize = .sc_chunk_optimize_size(dim_x, limit, by = 500)
+    limit = getOption("supercells.chunk_mem_gb", 4)
+    if (!is.numeric(limit) || length(limit) != 1 || is.na(limit) || limit <= 0) {
+      stop("The 'supercells.chunk_mem_gb' option must be a positive number", call. = FALSE)
+    }
+    wsize = .sc_chunk_optimize_size(dim_x, limit, step = step)
     dims1 = ceiling(seq.int(0, to = dim_x[1],
                             length.out = as.integer((dim_x[1] - 1) / wsize + 1) + 1))
     dims2 = ceiling(seq.int(0, to = dim_x[2],

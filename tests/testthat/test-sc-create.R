@@ -56,6 +56,16 @@ test_that("sc_slic_raster assigns unique ids across chunks", {
   }
 })
 
+test_that("auto chunk size aligns to step", {
+  step = 8
+  old_opt = getOption("supercells.chunk_mem_gb")
+  options(supercells.chunk_mem_gb = 0.001)
+  on.exit(options(supercells.chunk_mem_gb = old_opt), add = TRUE)
+  wsize = .sc_chunk_optimize_size(dim(v1), getOption("supercells.chunk_mem_gb"), step = step)
+  expect_true(wsize %% step == 0)
+  expect_true(wsize >= step)
+})
+
 test_that("sc_slic validates arguments", {
   expect_error(sc_slic(v1, k = 10), "compactness", fixed = TRUE)
   expect_error(sc_slic(v1, k = 10, step = 5, compactness = 1), "either 'k' or 'step'", fixed = TRUE)

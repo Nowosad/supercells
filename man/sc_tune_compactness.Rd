@@ -49,7 +49,8 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{value_scale}{Optional scale factor applied to the median value distance
 before computing compactness. Use \code{"auto"} to divide by
-\code{sqrt(nlyr(raster))} (useful for high-dimensional embeddings). Default: \code{"auto"}.}
+\code{sqrt(nlyr(raster)) * (step / 32)} (useful for high-dimensional embeddings and
+larger step sizes). Default: \code{"auto"}.}
 }
 \value{
 A one-row data frame with columns \code{step}, \code{median_value_dist},
