@@ -1,3 +1,5 @@
+# supercells 1.8
+
 # supercells 1.7
 
 * Added `sc_tune_compactness()` to estimate compactness from a light SLIC run and pixel metrics
