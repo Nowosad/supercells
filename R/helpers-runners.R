@@ -58,10 +58,9 @@
   # prepares the output: a raster of supercell ids plus centers and values
   if (nrow(slic[[2]]) == 0 || all(slic[[2]] == 0, na.rm = TRUE)) stop("I cannot return supercells. This may be due to a large number of missing values in the 'x' object. Try to either trim your data to the non-NA area (e.g., with 'terra::trim()') or increase the number of expected supercells.", call. = FALSE)
   slic[[1]] = slic[[1]] + 1
-  slic_rast = terra::rast(slic[[1]])
+  slic_rast = x[[1]]
+  terra::values(slic_rast) = slic[[1]]
   terra::NAflag(slic_rast) = 0
-  terra::crs(slic_rast) = terra::crs(x)
-  terra::ext(slic_rast) = terra::ext(x)
   result = list(iter0 = FALSE, raster = slic_rast, centers_sf = NULL,
                 centers = slic[[2]], centers_vals = slic[[3]],
                 iter_diagnostics = slic[[4]], names_x = names(x))

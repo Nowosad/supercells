@@ -27,7 +27,7 @@
   # Validate and normalize minarea
   minarea = .sc_slic_prep_minarea(minarea, step)
   # Compute chunk extents based on size/limits
-  chunk_ext = .sc_chunk_extents(dim(x), limit = chunks)
+  chunk_ext = .sc_chunk_extents(dim(x), limit = chunks, step = step)
   # Disable iter diagnostics when chunking is active
   if (iter_diagnostics && nrow(chunk_ext) > 1) {
     warning("Iteration diagnostics are only available when chunks = FALSE (single chunk). Iteration diagnostics were disabled.", call. = FALSE)

@@ -32,9 +32,13 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
 
   # segment once (single) or per chunk (chunked), returning a list of chunk results
   if (nrow(prep_args$chunk_ext) > 1) {
-    max_id = 0
     n_chunks = nrow(prep_args$chunk_ext)
+    expected_ids = .sc_chunk_expected_ids(prep_args$chunk_ext, prep_args$step)
+    offsets = .sc_chunk_offsets(prep_args$chunk_ext, prep_args$step)
+    max_expected = if (all(is.na(expected_ids))) NA_real_ else max(offsets + expected_ids, na.rm = TRUE)
+    dtype = .sc_chunk_id_datatype(max_expected)
     chunk_files = character(n_chunks)
+    on.exit(unlink(chunk_files), add = TRUE)
     for (i in seq_len(n_chunks)) {
       if (is.numeric(prep_args$verbose) && prep_args$verbose > 0) {
         message(sprintf("Processing chunk %d/%d", i, n_chunks))
@@ -47,19 +51,23 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
                                  prep_args$input_centers, prep_args$iter_diagnostics,
                                  prep_args$metadata, prep_args$verbose)
       r = res[["raster"]]
-      if (max_id > 0) {
-        r = r + max_id
-      }
-      curr_max = terra::global(r, "max", na.rm = TRUE)[1, 1]
-      if (!is.na(curr_max)) {
-        max_id = curr_max + 1
+      if (!is.na(offsets[i]) && offsets[i] > 0) {
+        r = r + offsets[i]
       }
       chunk_files[i] = tempfile(fileext = ".tif")
-      terra::writeRaster(r, chunk_files[i], overwrite = TRUE)
+      if (is.null(dtype)) {
+        terra::writeRaster(r, filename = chunk_files[i], overwrite = TRUE)
+      } else {
+        terra::writeRaster(r, filename = chunk_files[i], overwrite = TRUE, datatype = dtype)
+      }
     }
     out_file = tempfile(fileext = ".tif")
-    merged = terra::merge(terra::sprc(chunk_files), filename = out_file, overwrite = TRUE)
-    on.exit(unlink(chunk_files), add = TRUE)
+    if (is.null(dtype)) {
+      merged = terra::merge(terra::sprc(chunk_files), filename = out_file, overwrite = TRUE)
+    } else {
+      merged = terra::merge(terra::sprc(chunk_files), filename = out_file, overwrite = TRUE,
+                            wopt = list(datatype = dtype))
+    }
     names(merged) = "supercells"
     return(merged)
   } else {

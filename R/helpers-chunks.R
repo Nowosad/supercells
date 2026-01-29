@@ -38,14 +38,20 @@
   return(rasters)
 }
 
+# approximate bytes per cell used by SLIC buffers (conservative)
+.sc_chunk_bytes_per_cell = function(bands) {
+  (16 * bands) + 16
+}
+
 # predict memory usage in gb (approximate, conservative)
 # Accounts for: R values matrix, duplicated values vector in C++,
 # and per-pixel distance/cluster buffers (assuming cleaning enabled).
 .sc_chunk_mem_gb = function(dim_x){
   ncell = dim_x[1] * dim_x[2]
   bands = dim_x[3]
-  bytes_per_cell = (16 * bands) + 16
-  mem_bytes = ncell * bytes_per_cell
+  bytes_per_cell = .sc_chunk_bytes_per_cell(bands)
+  overhead = 2
+  mem_bytes = ncell * bytes_per_cell * overhead
   mem_bytes / (1024 * 1024 * 1024)
 }
 
@@ -53,8 +59,9 @@
 .sc_chunk_optimize_size = function(dim_x, limit, step = NULL){
   max_dim = max(dim_x[1:2])
   bands = dim_x[3]
-  bytes_per_cell = (16 * bands) + 16
-  target_cells = floor((limit * 1024 * 1024 * 1024) / bytes_per_cell)
+  bytes_per_cell = .sc_chunk_bytes_per_cell(bands)
+  overhead = 2
+  target_cells = floor((limit * 1024 * 1024 * 1024) / (bytes_per_cell * overhead))
   wsize = floor(sqrt(target_cells))
   if (wsize < 1) {
     wsize = 1
@@ -84,6 +91,9 @@
 .sc_chunk_extents = function(dim_x, limit, step = NULL){
   if (is.numeric(limit)){
     wsize = limit
+    if (!is.null(step) && is.numeric(step) && length(step) == 1 && step > 0) {
+      wsize = ceiling(wsize / step) * step
+    }
     limit = 0
     dims1 = ceiling(.sc_util_seq_last(0, to = dim_x[1], by = wsize))
     dims2 = ceiling(.sc_util_seq_last(0, to = dim_x[2], by = wsize))
@@ -124,5 +134,53 @@
                             min_col = 1,
                             max_col = dim_x[2])
   }
+  storage.mode(row_cols_chunks) = "integer"
   return(row_cols_chunks)
+}
+
+# expected number of supercells for a chunk extent (upper bound)
+.sc_chunk_expected_ids = function(ext, step) {
+  if (is.null(step) || !is.numeric(step) || length(step) != 1 || is.na(step) || step <= 0) {
+    return(NA_integer_)
+  }
+  if (is.null(dim(ext))) {
+    ext = matrix(ext, nrow = 1)
+  }
+  nrows = ext[, 2] - ext[, 1] + 1
+  ncols = ext[, 4] - ext[, 3] + 1
+  as.integer(ceiling(nrows / step) * ceiling(ncols / step))
+}
+
+# deterministic per-chunk id offsets based on expected supercell counts
+.sc_chunk_offsets = function(chunk_ext, step) {
+  if (is.null(dim(chunk_ext))) {
+    chunk_ext = matrix(chunk_ext, nrow = 1)
+  }
+  if (nrow(chunk_ext) == 0) {
+    return(integer())
+  }
+  expected = .sc_chunk_expected_ids(chunk_ext, step)
+  if (any(is.na(expected))) {
+    return(rep(0L, nrow(chunk_ext)))
+  }
+  offsets = cumsum(c(0L, expected[-length(expected)]))
+  storage.mode(offsets) = "double"
+  offsets
+}
+
+# choose a compact integer datatype based on expected max id
+.sc_chunk_id_datatype = function(max_id) {
+  if (is.null(max_id) || is.na(max_id)) {
+    return(NULL)
+  }
+  if (max_id <= 255) {
+    return("INT1U")
+  }
+  if (max_id <= 65535) {
+    return("INT2U")
+  }
+  if (max_id <= 4294967295) {
+    return("INT4U")
+  }
+  "INT8U"
 }
