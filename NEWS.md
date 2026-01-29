@@ -8,6 +8,11 @@
 * Legacy `supercells()` now uses `sc_slic()` while preserving `transform = "to_LAB"` behavior
 * Verbose argument moved to the end of the argument list across R and C++ interfaces for consistency
 * Empty-cluster handling is now consistent across connectivity cleanup, preserving prior centers/values
+* `compactness = 0` now enables SLIC0-style adaptive compactness (per-center value scaling)
+* New `step_unit` parameter supports map-unit step sizes (converted to cells) with square-cell validation
+* Chunking defaults improved: memory estimates are more conservative, auto-chunking uses `options(supercells.chunk_mem_gb)`, and chunk sizes align to `step`
+* Chunked raster outputs now use deterministic ID offsets and file-backed merge for large inputs
+* Removed `future`-based parallel chunking option from SLIC functions
 
 # supercells 1.6
 
