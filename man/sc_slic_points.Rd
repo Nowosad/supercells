@@ -27,7 +27,8 @@ sc_slic_points(
 
 \item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
 
-\item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.}
+\item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
+Set \code{compactness = 0} to enable SLIC0-style adaptive compactness.}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.

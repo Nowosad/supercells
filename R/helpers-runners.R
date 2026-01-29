@@ -2,7 +2,7 @@
 
 # run slic on a chunk and return centers only (iter = 0)
 .sc_run_chunk_centers = function(ext, x, step, compactness, dist_name,
-                                 dist_fun, avg_fun_fun, avg_fun_name, clean,
+                                 adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                                  minarea, input_centers,
                                  iter_diagnostics = FALSE, verbose = 0) {
   centers = TRUE
@@ -15,8 +15,9 @@
   vals = terra::values(x, mat = TRUE, na.rm = FALSE)
   mode(vals) = "double"
 
-  slic = run_slic(mat = mat, vals = vals, step = step, compactness = compactness, clean = clean,
-                  centers = centers, dist_name = dist_name, dist_fun = dist_fun,
+  slic = run_slic(mat = mat, vals = vals, step = step, compactness = compactness,
+                  adaptive_compactness = adaptive_compactness, clean = clean, centers = centers,
+                  dist_name = dist_name, dist_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                   iter = 0, minarea = minarea, input_centers = input_centers,
                   iter_diagnostics = iter_diagnostics, verbose = verbose)
@@ -29,7 +30,7 @@
 
 # run slic on the raster chunk defined by ext
 .sc_run_chunk_raster = function(ext, x, step, compactness, dist_name,
-                                 dist_fun, avg_fun_fun, avg_fun_name, clean,
+                                 adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                                  iter, minarea, input_centers,
                                  iter_diagnostics = FALSE, metadata = TRUE, verbose = 0){
   if (iter == 0) {
@@ -49,8 +50,9 @@
   mode(vals) = "double"
 
   # runs the algorithm
-  slic = run_slic(mat = mat, vals = vals, step = step, compactness = compactness, clean = clean,
-                  centers = centers, dist_name = dist_name, dist_fun = dist_fun,
+  slic = run_slic(mat = mat, vals = vals, step = step, compactness = compactness,
+                  adaptive_compactness = adaptive_compactness, clean = clean, centers = centers,
+                  dist_name = dist_name, dist_fun = dist_fun,
                   avg_fun_fun = avg_fun_fun, avg_fun_name = avg_fun_name,
                   iter = iter, minarea = minarea, input_centers = input_centers,
                   iter_diagnostics = iter_diagnostics, verbose = verbose)
@@ -103,12 +105,12 @@
 
 # run slic on a chunk and return point centers instead of polygons
 .sc_run_chunk_points = function(ext, x, step, compactness, dist_name,
-                                 dist_fun, avg_fun_fun, avg_fun_name, clean,
+                                 adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                                  iter, minarea, input_centers,
                                  iter_diagnostics = FALSE, metadata = TRUE, verbose = 0){
   if (iter == 0) {
     res = .sc_run_chunk_centers(ext, x, step, compactness, dist_name,
-                               dist_fun, avg_fun_fun, avg_fun_name, clean,
+                               adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                                minarea, input_centers,
                                iter_diagnostics = iter_diagnostics, verbose = verbose)
     points_sf = .sc_run_centers_points(res$centers, res$raster_ref, res$centers_vals, res$names_x)
@@ -121,7 +123,7 @@
     return(points_sf)
   }
   res = .sc_run_chunk_raster(ext, x, step, compactness, dist_name,
-                             dist_fun, avg_fun_fun, avg_fun_name, clean,
+                             adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                              iter, minarea, input_centers,
                              iter_diagnostics = iter_diagnostics, verbose = verbose)
   points_sf = .sc_run_centers_points(res$centers, res$raster, res$centers_vals, res$names_x)
@@ -136,14 +138,14 @@
 
 # run slic on a chunk and return polygon supercells with attributes
 .sc_run_chunk_polygons = function(ext, x, step, compactness, dist_name,
-                           dist_fun, avg_fun_fun, avg_fun_name, clean,
+                           adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                            iter, minarea, input_centers,
                            iter_diagnostics = FALSE, metadata = TRUE, verbose = 0){
   if (iter == 0) {
     stop("iter = 0 returns centers only; polygon output is not available. Use sc_slic_points with iter = 0 to get initial centers.", call. = FALSE)
   }
   res = .sc_run_chunk_raster(ext, x, step, compactness, dist_name,
-                              dist_fun, avg_fun_fun, avg_fun_name, clean,
+                              adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                               iter, minarea, input_centers,
                               iter_diagnostics = iter_diagnostics, verbose = verbose)
   slic_sf = sf::st_as_sf(terra::as.polygons(res$raster, dissolve = TRUE))
@@ -179,30 +181,30 @@
 
 # run slic on a full raster and return point centers
 .sc_run_full_points = function(x, step, compactness, dist_name, dist_fun,
-                           avg_fun_fun, avg_fun_name, clean, iter, minarea,
+                           adaptive_compactness, avg_fun_fun, avg_fun_name, clean, iter, minarea,
                            input_centers, iter_diagnostics = FALSE,
                            metadata = TRUE, verbose = 0) {
-  .sc_run_full(x, .sc_run_chunk_points, step, compactness, dist_name, dist_fun,
-                    avg_fun_fun, avg_fun_name, clean, iter, minarea,
+  .sc_run_full(x, .sc_run_chunk_points, step, compactness, dist_name,
+                    adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean, iter, minarea,
                     input_centers, iter_diagnostics, metadata, verbose)
 }
 
 # run slic on a full raster and return raster ids
 .sc_run_full_raster = function(x, step, compactness, dist_name, dist_fun,
-                           avg_fun_fun, avg_fun_name, clean, iter, minarea,
+                           adaptive_compactness, avg_fun_fun, avg_fun_name, clean, iter, minarea,
                            input_centers, iter_diagnostics = FALSE,
                            metadata = TRUE, verbose = 0) {
-  .sc_run_full(x, .sc_run_chunk_raster, step, compactness, dist_name, dist_fun,
-                    avg_fun_fun, avg_fun_name, clean, iter, minarea,
+  .sc_run_full(x, .sc_run_chunk_raster, step, compactness, dist_name,
+                    adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean, iter, minarea,
                     input_centers, iter_diagnostics, metadata, verbose)
 }
 
 # run slic on a full raster and return polygon supercells
 .sc_run_full_polygons = function(x, step, compactness, dist_name, dist_fun,
-                             avg_fun_fun, avg_fun_name, clean, iter, minarea,
+                             adaptive_compactness, avg_fun_fun, avg_fun_name, clean, iter, minarea,
                              input_centers, iter_diagnostics = FALSE,
                              metadata = TRUE, verbose = 0) {
-  .sc_run_full(x, .sc_run_chunk_polygons, step, compactness, dist_name, dist_fun,
-                    avg_fun_fun, avg_fun_name, clean, iter, minarea,
+  .sc_run_full(x, .sc_run_chunk_polygons, step, compactness, dist_name,
+                    adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean, iter, minarea,
                     input_centers, iter_diagnostics, metadata, verbose)
 }

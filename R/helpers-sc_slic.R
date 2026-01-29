@@ -37,11 +37,14 @@
     iter_diagnostics = FALSE
   }
   verbose_cpp = if (is.numeric(verbose) && length(verbose) == 1 && !is.na(verbose) && verbose >= 2) verbose else 0
+  adaptive_compactness = is.numeric(compactness) && length(compactness) == 1 &&
+    !is.na(compactness) && compactness == 0
   # Package prep results for downstream functions
   return(list(x = x, step = step, input_centers = input_centers, funs = funs,
               minarea = minarea, chunk_ext = chunk_ext,
               iter_diagnostics = iter_diagnostics, metadata = metadata,
-              compactness = compactness, clean = clean, iter = iter,
+              compactness = compactness, adaptive_compactness = adaptive_compactness,
+              clean = clean, iter = iter,
               verbose = verbose, verbose_cpp = verbose_cpp))
 }
 
@@ -179,7 +182,7 @@
 
   attr(slic_sf, "step") = prep$step
   attr(slic_sf, "compactness") = prep$compactness
-  attr(slic_sf, "method") = "slic"
+  attr(slic_sf, "method") = if (isTRUE(prep$adaptive_compactness)) "slic0" else "slic"
   class(slic_sf) = c(class(slic_sf), "supercells")
   if (!is.null(iter_attr)) {
     attr(slic_sf, "iter_diagnostics") = iter_attr
@@ -193,6 +196,7 @@
     x = prep$x,
     step = prep$step,
     compactness = prep$compactness,
+    adaptive_compactness = prep$adaptive_compactness,
     dist_name = prep$funs$dist_name,
     dist_fun = prep$funs$dist_fun,
     avg_fun_fun = prep$funs$avg_fun_fun,

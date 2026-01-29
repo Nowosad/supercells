@@ -3,7 +3,8 @@
 #include <limits>
 
 void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const std::vector<double>& vals,
-                                    int step, double compactness, DistFn dist_fn_in, AvgFn avg_fn_in,
+                                    int step, double compactness, bool adaptive_compactness_in,
+                                    DistFn dist_fn_in, AvgFn avg_fn_in,
                                     const std::string& avg_fun_name_in, int iter,
                                     const std::vector<std::array<int, 2>>& input_centers,
                                     int verbose, bool iter_diagnostics) {
@@ -13,6 +14,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
   clear_data();
   this->step = step;
   this->compactness = compactness;
+  adaptive_compactness = adaptive_compactness_in;
   dist_fn = dist_fn_in;
   avg_fn = avg_fn_in;
   avg_fun_name = avg_fun_name_in;
@@ -32,8 +34,14 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
   std::vector<double> colour(mat_dims[2]);
   std::vector<std::vector<int>> cluster_cells(centers.size());
   std::vector<std::vector<double>> centers_vals_c_id_buf(mat_dims[2]);
+
   for (int itr = 0; itr < iter; itr++) {
     if (verbose > 0) std::printf("Iteration: %u/%u\r", itr + 1, iter);
+
+    if (adaptive_compactness) {
+      // SLIC0: update per-center value-distance scale before assignment.
+      compute_max_value_dist(vals, colour);
+    }
 
     // Reset per-pixel distances before assignment.
     for (int i = 0; i < mat_dims[1]; i++) {

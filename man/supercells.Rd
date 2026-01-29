@@ -28,7 +28,8 @@ You can use either \code{k} or \code{step}.
 It is also possible to provide a set of points (an \code{sf} object) as \code{k} together with the \code{step} value to create custom cluster centers.}
 
 \item{compactness}{A compactness value. Larger values cause supercells to be more compact/even (square).
-A compactness value depends on the range of input cell values and selected distance measure.}
+A compactness value depends on the range of input cell values and selected distance measure.
+Set \code{compactness = 0} to enable SLIC0-style adaptive compactness.}
 
 \item{dist_fun}{A distance function. Currently implemented distance functions are \code{"euclidean"}, \code{"jsd"}, \code{"dtw"} (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: \code{"euclidean"}}
 

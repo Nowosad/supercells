@@ -9,7 +9,7 @@ cpp11::writable::doubles_matrix<> return_centers(const SlicCore& slic);
 cpp11::writable::doubles_matrix<> return_centers_vals(const SlicCore& slic);
 [[cpp11::register]]
 cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double compactness,
-                     bool clean, bool centers, std::string dist_name, cpp11::function dist_fun,
+                     bool adaptive_compactness, bool clean, bool centers, std::string dist_name, cpp11::function dist_fun,
                      cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int minarea,
                      cpp11::integers_matrix<> input_centers, bool iter_diagnostics, int verbose) {
   if (verbose > 0) Rprintf("Step: %u\n", step);
@@ -44,7 +44,7 @@ cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step
   }
 
   SlicCore slic;
-  slic.generate_superpixels(mat_dims, vals_vec, step, compactness, dist_cb, avg_cb,
+  slic.generate_superpixels(mat_dims, vals_vec, step, compactness, adaptive_compactness, dist_cb, avg_cb,
                             avg_fun_name, iter, centers_vec, verbose, iter_diagnostics);
 
   if (clean && iter > 0) {

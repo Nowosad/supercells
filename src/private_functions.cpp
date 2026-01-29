@@ -19,6 +19,7 @@ void SlicCore::clear_data() {
   center_counts.clear();
   mat_dims.clear();
   new_clusters.clear();
+  max_value_dist.clear();
   iter_mean_distance.clear();
   iter_diagnostics_enabled = false;
   vals_ptr = nullptr;
@@ -26,6 +27,7 @@ void SlicCore::clear_data() {
   dist_fn = nullptr;
   avg_fn = nullptr;
   avg_fun_name.clear();
+  adaptive_compactness = false;
 }
 
 /* Create centers of initial supercells, adds their values, etc. */
@@ -132,7 +134,15 @@ double SlicCore::compute_dist(int ci, int y, int x, const std::vector<double>& v
   double x_dist = centers[ci][1] - x;
   double spatial_distance = sqrt((y_dist * y_dist) + (x_dist * x_dist));
 
-  double dist1 = values_distance / compactness;
+  double denom = compactness;
+  if (adaptive_compactness) {
+    if (ci >= 0 && ci < (int) max_value_dist.size() && max_value_dist[ci] > 0.0) {
+      denom = max_value_dist[ci];
+    } else {
+      denom = 1.0;
+    }
+  }
+  double dist1 = values_distance / denom;
   double dist2 = spatial_distance / step;
 
   return sqrt((dist1 * dist1) + (dist2 * dist2));
@@ -180,4 +190,40 @@ std::vector<double> SlicCore::find_local_minimum(const std::vector<double>& vals
     }
   }
   return loc_min;
+}
+
+// Compute per-center max value-distance within each local search window for SLIC0.
+void SlicCore::compute_max_value_dist(const std::vector<double>& vals, std::vector<double>& colour) {
+  max_value_dist.assign(centers.size(), 0.0);
+  for (int l = 0; l < (int) centers.size(); l++) {
+    double max_dist = 0.0;
+    int center_x = (int) std::round(centers[l][1]);
+    int center_y = (int) std::round(centers[l][0]);
+    for (int m = center_x - step; m < center_x + step; m++) {
+      for (int n = center_y - step; n < center_y + step; n++) {
+        if (m >= 0 && m < mat_dims[1] && n >= 0 && n < mat_dims[0]) {
+          int ncell = m + (n * mat_dims[1]);
+          int count_na = 0;
+          for (int nval = 0; nval < mat_dims[2]; nval++) {
+            double val = vals[ncell * mat_dims[2] + nval];
+            colour[nval] = val;
+            if (std::isnan(val)) {
+              count_na += 1;
+            }
+          }
+          if (count_na > 0) {
+            continue;
+          }
+          double d = dist_fn(centers_vals[l], colour);
+          if (d > max_dist) {
+            max_dist = d;
+          }
+        }
+      }
+    }
+    if (max_dist <= 0.0) {
+      max_dist = 1.0;
+    }
+    max_value_dist[l] = max_dist;
+  }
 }
