@@ -32,6 +32,8 @@
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param minarea Minimal size of a supercell (in cells).
 #' @param iter Number of iterations.
+#' @param step_unit Units for `step`. Use "cells" for pixel units or "map" for map units
+#' (converted to cells using raster resolution).
 #' @param k The number of supercells desired (alternative to `step`).
 #' @param centers Optional sf object of custom centers. Requires `step`.
 #' @param metadata Logical. Should metadata columns be kept?
@@ -59,13 +61,13 @@
 #' plot(sf::st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
                    avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                   k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
+                   step_unit = c("cells", "map"), k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
                    iter_diagnostics = FALSE, verbose = 0) {
 
   if (iter == 0) {
     stop("iter = 0 returns centers only; polygon output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
   }
-  prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
+  prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
                                 k, centers, metadata, chunks, iter_diagnostics, verbose)
 
   segment = .sc_slic_segment(prep_args, .sc_run_full_polygons, .sc_run_chunk_polygons)

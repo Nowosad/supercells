@@ -18,7 +18,7 @@
 #' terra::plot(vol_ids)
 sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                          k = NULL, centers = NULL, metadata = FALSE,
+                          step_unit = c("cells", "map"), k = NULL, centers = NULL, metadata = FALSE,
                           chunks = FALSE,
                           iter_diagnostics = FALSE, verbose = 0) {
 
@@ -26,7 +26,7 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
     stop("iter = 0 returns centers only; raster output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
   }
   # prep arguments
-  prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
+  prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
                             k, centers, metadata, chunks, iter_diagnostics, verbose)
 
   # segment once (single) or per chunk (chunked), returning a list of chunk results

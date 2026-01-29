@@ -1,14 +1,17 @@
 # shared helpers for sc_slic workflows
 
 # prepare and validate slic arguments
-.sc_slic_prep_args = function(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
+.sc_slic_prep_args = function(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
                               k, centers, metadata, chunks, iter_diagnostics, verbose) {
   # Validate core arguments and types
-  .sc_slic_validate_args(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea)
+  .sc_slic_validate_args(step, step_unit, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea)
   # Normalize input to SpatRaster
   x = .sc_util_prep_raster(x)
+  if (terra::is.lonlat(x)) {
+    warning("The input raster uses a geographic (lon/lat) CRS; consider projecting it before using SLIC", call. = FALSE)
+  }
   # Resolve step from k when needed
-  step = .sc_slic_prep_step(x, step, k)
+  step = .sc_slic_prep_step(x, step, k, step_unit)
   # Adjust numeric chunks to match step size
   if (is.numeric(chunks)) {
     if (chunks < step) {
@@ -43,10 +46,16 @@
 }
 
 # validate slic arguments and types
-.sc_slic_validate_args = function(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea) {
+.sc_slic_validate_args = function(step, step_unit, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea) {
   if (!missing(metadata)) {
     if (!is.logical(metadata) || length(metadata) != 1 || is.na(metadata)) {
       stop("The 'metadata' argument must be TRUE or FALSE", call. = FALSE)
+    }
+  }
+  if (!missing(step_unit)) {
+    if (!is.character(step_unit) || length(step_unit) != 1 || is.na(step_unit) ||
+        !(step_unit %in% c("cells", "map"))) {
+      stop("The 'step_unit' argument must be 'cells' or 'map'", call. = FALSE)
     }
   }
   if (!is.numeric(iter) || length(iter) != 1 || is.na(iter) || iter < 0) {
@@ -97,8 +106,18 @@
 }
 
 # derive step from k when needed
-.sc_slic_prep_step = function(x, step, k) {
+.sc_slic_prep_step = function(x, step, k, step_unit = "cells") {
   if (!is.null(step)) {
+    if (step_unit == "map") {
+      res = terra::res(x)
+      if (!isTRUE(all.equal(res[[1]], res[[2]]))) {
+        stop("Map-unit step requires square cells; res(x) has different x/y resolution", call. = FALSE)
+      }
+      step = round(step / res[[1]])
+      if (step < 1) {
+        step = 1
+      }
+    }
     return(step)
   }
   mat = dim(x)[1:2]
