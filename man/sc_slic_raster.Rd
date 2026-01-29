@@ -13,6 +13,7 @@ sc_slic_raster(
   clean = TRUE,
   minarea,
   iter = 10,
+  step_unit = "cells",
   k = NULL,
   centers = NULL,
   metadata = FALSE,
@@ -41,6 +42,9 @@ function must accept a numeric vector and return a single numeric value.}
 \item{minarea}{Minimal size of a supercell (in cells).}
 
 \item{iter}{Number of iterations.}
+
+\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units
+(converted to cells using raster resolution).}
 
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
