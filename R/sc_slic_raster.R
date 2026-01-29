@@ -25,7 +25,6 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
   if (iter == 0) {
     stop("iter = 0 returns centers only; raster output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
   }
-
   # prep arguments
   prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
                             k, centers, metadata, chunks, iter_diagnostics, verbose)
@@ -49,7 +48,7 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
                                  prep_args$funs$avg_fun_fun, prep_args$funs$avg_fun_name,
                                  prep_args$clean, prep_args$iter, prep_args$minarea,
                                  prep_args$input_centers, prep_args$iter_diagnostics,
-                                 prep_args$metadata, prep_args$verbose)
+                                 prep_args$metadata, prep_args$verbose_cpp)
       r = res[["raster"]]
       if (!is.na(offsets[i]) && offsets[i] > 0) {
         r = r + offsets[i]

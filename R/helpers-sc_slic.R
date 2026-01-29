@@ -33,12 +33,13 @@
     warning("Iteration diagnostics are only available when chunks = FALSE (single chunk). Iteration diagnostics were disabled.", call. = FALSE)
     iter_diagnostics = FALSE
   }
+  verbose_cpp = if (is.numeric(verbose) && length(verbose) == 1 && !is.na(verbose) && verbose >= 2) verbose else 0
   # Package prep results for downstream functions
   return(list(x = x, step = step, input_centers = input_centers, funs = funs,
               minarea = minarea, chunk_ext = chunk_ext,
               iter_diagnostics = iter_diagnostics, metadata = metadata,
               compactness = compactness, clean = clean, iter = iter,
-              verbose = verbose))
+              verbose = verbose, verbose_cpp = verbose_cpp))
 }
 
 # validate slic arguments and types
@@ -181,7 +182,7 @@
     iter = prep$iter,
     minarea = prep$minarea,
     input_centers = prep$input_centers,
-    verbose = prep$verbose,
+    verbose = prep$verbose_cpp,
     iter_diagnostics = prep$iter_diagnostics,
     metadata = prep$metadata
   )

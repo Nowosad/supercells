@@ -30,9 +30,8 @@ sc_slic_points = function(x, step = NULL, compactness, dist_fun = "euclidean",
   if (iter == 0) {
     clean = FALSE
   }
-
   prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                                 k, centers, metadata, chunks, iter_diagnostics, verbose)
+                                k, centers, metadata, chunks, iter_diagnostics, verbose)
 
   segment = .sc_slic_segment(prep_args, .sc_run_full_points, .sc_run_chunk_points)
 

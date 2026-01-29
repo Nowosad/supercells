@@ -65,9 +65,8 @@ sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
   if (iter == 0) {
     stop("iter = 0 returns centers only; polygon output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
   }
-
   prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                                 k, centers, metadata, chunks, iter_diagnostics, verbose)
+                                k, centers, metadata, chunks, iter_diagnostics, verbose)
 
   segment = .sc_slic_segment(prep_args, .sc_run_full_polygons, .sc_run_chunk_polygons)
 
