@@ -35,27 +35,41 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
     max_id = 0
     n_chunks = nrow(prep_args$chunk_ext)
     chunk_files = character(n_chunks)
+    halo = 2 * prep_args$step
+    nrows_x = dim(prep_args$x)[1]
+    ncols_x = dim(prep_args$x)[2]
     for (i in seq_len(n_chunks)) {
       if (is.numeric(prep_args$verbose) && prep_args$verbose > 0) {
         message(sprintf("Processing chunk %d/%d", i, n_chunks))
       }
       ext = prep_args$chunk_ext[i, ]
-      res = .sc_run_chunk_raster(ext, prep_args$x, prep_args$step, prep_args$compactness,
+      halo_ext = c(
+        max(1, ext[1] - halo),
+        min(nrows_x, ext[2] + halo),
+        max(1, ext[3] - halo),
+        min(ncols_x, ext[4] + halo)
+      )
+      res = .sc_run_chunk_raster(halo_ext, prep_args$x, prep_args$step, prep_args$compactness,
                                  prep_args$funs$dist_name, prep_args$funs$dist_fun,
                                  prep_args$funs$avg_fun_fun, prep_args$funs$avg_fun_name,
                                  prep_args$clean, prep_args$iter, prep_args$minarea,
                                  prep_args$input_centers, prep_args$iter_diagnostics,
                                  prep_args$metadata, prep_args$verbose)
       r = res[["raster"]]
+      row_start = ext[1] - halo_ext[1] + 1
+      row_end = ext[2] - halo_ext[1] + 1
+      col_start = ext[3] - halo_ext[3] + 1
+      col_end = ext[4] - halo_ext[3] + 1
+      r_core = r[row_start:row_end, col_start:col_end, drop = FALSE]
       if (max_id > 0) {
-        r = r + max_id
+        r_core = r_core + max_id
       }
-      curr_max = terra::global(r, "max", na.rm = TRUE)[1, 1]
+      curr_max = terra::global(r_core, "max", na.rm = TRUE)[1, 1]
       if (!is.na(curr_max)) {
         max_id = curr_max + 1
       }
       chunk_files[i] = tempfile(fileext = ".tif")
-      terra::writeRaster(r, chunk_files[i], overwrite = TRUE)
+      terra::writeRaster(r_core, chunk_files[i], overwrite = TRUE)
     }
     out_file = tempfile(fileext = ".tif")
     merged = terra::merge(terra::sprc(chunk_files), filename = out_file, overwrite = TRUE)
