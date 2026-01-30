@@ -12,6 +12,13 @@ extern "C" SEXP _supercells_sc_metrics_global_cpp(SEXP clusters, SEXP centers_xy
     return cpp11::as_sexp(sc_metrics_global_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(clusters), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_xy), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_vals), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<bool>>(adaptive_compactness), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
   END_CPP11
 }
+// metrics_local_mean.cpp
+cpp11::writable::doubles sc_metrics_local_mean_cpp(cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int rows, int cols, int step, std::string dist_name, cpp11::function dist_fun);
+extern "C" SEXP _supercells_sc_metrics_local_mean_cpp(SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP rows, SEXP cols, SEXP step, SEXP dist_name, SEXP dist_fun) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(sc_metrics_local_mean_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_xy), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_vals), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(rows), cpp11::as_cpp<cpp11::decay_t<int>>(cols), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
+  END_CPP11
+}
 // metrics_pixels.cpp
 cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters, cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int step, double compactness, bool adaptive_compactness, std::string dist_name, cpp11::function dist_fun);
 extern "C" SEXP _supercells_sc_metrics_pixels_cpp(SEXP clusters, SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP step, SEXP compactness, SEXP adaptive_compactness, SEXP dist_name, SEXP dist_fun) {
@@ -38,6 +45,7 @@ extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     {"_supercells_run_slic",                  (DL_FUNC) &_supercells_run_slic,                  16},
     {"_supercells_sc_metrics_global_cpp",     (DL_FUNC) &_supercells_sc_metrics_global_cpp,      9},
+    {"_supercells_sc_metrics_local_mean_cpp", (DL_FUNC) &_supercells_sc_metrics_local_mean_cpp,  8},
     {"_supercells_sc_metrics_pixels_cpp",     (DL_FUNC) &_supercells_sc_metrics_pixels_cpp,      9},
     {"_supercells_sc_metrics_supercells_cpp", (DL_FUNC) &_supercells_sc_metrics_supercells_cpp,  9},
     {NULL, NULL, 0}

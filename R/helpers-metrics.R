@@ -1,7 +1,13 @@
 # .sc_metrics_prep: normalize inputs and parameters for metrics functions
 # Inputs: raster and supercells; outputs include prepared matrices and metadata
 # Handles missing metadata by deriving centers and ids from geometry
-.sc_metrics_prep = function(raster, x, dist_fun, compactness, step) {
+.sc_metrics_prep = function(raster, x, dist_fun, compactness, step,
+                            include = c("clusters", "centers", "vals", "dist", "raster")) {
+
+  valid = c("clusters", "centers", "vals", "dist", "raster")
+  if (!all(include %in% valid)) {
+    stop("include must be one or more of: ", paste(valid, collapse = ", "), call. = FALSE)
+  }
 
   # prepare arguments
   raster = .sc_util_prep_raster(raster)
@@ -45,40 +51,50 @@
   x_df = x_df[order(x_df[["supercells"]]), , drop = FALSE]
 
   # prepare matrices for C++ function
-  center_x = terra::colFromX(raster, x_df[["x"]])
-  center_y = terra::rowFromY(raster, x_df[["y"]])
-  if (any(is.na(center_x)) || any(is.na(center_y))) {
-    stop("Some centers fall outside the raster extent", call. = FALSE)
-  }
-  centers_xy = cbind(center_x, center_y)
-  storage.mode(centers_xy) = "double"
-
-  centers_vals = as.matrix(x_df[, val_cols, drop = FALSE])
-  storage.mode(centers_vals) = "double"
-
-  cluster_rast = terra::rasterize(terra::vect(x_work), raster, field = "supercells")
-  clusters = terra::as.matrix(cluster_rast, wide = TRUE)
-  clusters = ifelse(is.na(clusters), -1L, clusters - 1L)
-  storage.mode(clusters) = "integer"
-
-  vals = as.matrix(terra::as.data.frame(raster, cells = FALSE, na.rm = FALSE))
-  storage.mode(vals) = "double"
-
-  dist_prep = .sc_util_prep_dist_fun(dist_fun)
-
   result = list(
-    raster = raster,
     x = x_work,
-    clusters = clusters,
-    centers_xy = centers_xy,
-    centers_vals = centers_vals,
-    vals = vals,
     step = step,
     compactness = compactness,
-    adaptive_compactness = adaptive_compactness,
-    dist_name = dist_prep$dist_name,
-    dist_fun = dist_prep$dist_fun
+    adaptive_compactness = adaptive_compactness
   )
+
+  if ("centers" %in% include) {
+    center_x = terra::colFromX(raster, x_df[["x"]])
+    center_y = terra::rowFromY(raster, x_df[["y"]])
+    if (any(is.na(center_x)) || any(is.na(center_y))) {
+      stop("Some centers fall outside the raster extent", call. = FALSE)
+    }
+    centers_xy = cbind(center_x, center_y)
+    storage.mode(centers_xy) = "double"
+    centers_vals = as.matrix(x_df[, val_cols, drop = FALSE])
+    storage.mode(centers_vals) = "double"
+    result$centers_xy = centers_xy
+    result$centers_vals = centers_vals
+  }
+
+  if ("clusters" %in% include) {
+    cluster_rast = terra::rasterize(terra::vect(x_work), raster, field = "supercells")
+    clusters = terra::as.matrix(cluster_rast, wide = TRUE)
+    clusters = ifelse(is.na(clusters), -1L, clusters - 1L)
+    storage.mode(clusters) = "integer"
+    result$clusters = clusters
+  }
+
+  if ("vals" %in% include) {
+    vals = as.matrix(terra::as.data.frame(raster, cells = FALSE, na.rm = FALSE))
+    storage.mode(vals) = "double"
+    result$vals = vals
+  }
+
+  if ("dist" %in% include) {
+    dist_prep = .sc_util_prep_dist_fun(dist_fun)
+    result$dist_name = dist_prep$dist_name
+    result$dist_fun = dist_prep$dist_fun
+  }
+
+  if ("raster" %in% include) {
+    result$raster = raster
+  }
 
   return(result)
 }
