@@ -81,7 +81,7 @@
   }
 
   if ("vals" %in% include) {
-    vals = as.matrix(terra::as.data.frame(raster, cells = FALSE, na.rm = FALSE))
+    vals = terra::values(x, mat = TRUE, na.rm = FALSE)
     storage.mode(vals) = "double"
     result$vals = vals
   }
