@@ -23,7 +23,8 @@
 #'   \item{mean_value_dist}{Lower values indicate more homogeneous supercells.}
 #'   \item{mean_spatial_dist}{Lower values indicate more compact supercells.}
 #'   \item{mean_combined_dist}{Overall distance; mainly useful for ranking.}
-#'   \item{balance}{0 indicates balance between value and spatial terms.}
+#'   \item{balance}{0 indicates balance between value and spatial terms; negative
+#'   values indicate spatial dominance; positive values indicate value dominance.}
 #' }
 #' \describe{
 #'   \item{step}{Step size used to generate supercells.}
@@ -39,7 +40,7 @@
 #'   \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 #'   value and spatial distances using `compactness` and `step`, averaged across
 #'   supercells. Returned as `mean_combined_dist`.}
-#'   \item{balance}{Mean absolute log ratio of scaled value distance to scaled
+#'   \item{balance}{Mean signed log ratio of scaled value distance to scaled
 #'   spatial distance; 0 indicates balance.}
 #' }
 #' When `scale = TRUE`, `mean_spatial_dist` and `mean_value_dist` are returned as
@@ -67,7 +68,7 @@ sc_metrics_global = function(raster, x, dist_fun = "euclidean", scale = TRUE,
   mean_value_dist = out[["mean_value_dist"]]
   mean_spatial_dist = out[["mean_spatial_dist"]]
   mean_combined_dist = out[["mean_combined_dist"]]
-  balance = abs(log(out[["balance"]]))
+  balance = log(out[["balance"]])
 
   if (isTRUE(scale)) {
     if (isTRUE(prep$adaptive_compactness)) {

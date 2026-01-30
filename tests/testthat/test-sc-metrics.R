@@ -31,6 +31,7 @@ test_that("sc_metrics_supercells returns sf with metrics", {
   expect_s3_class(cl, "sf")
   expect_true(all(c("supercells", "mean_value_dist_scaled", "mean_spatial_dist_scaled",
                     "mean_combined_dist", "balance") %in% names(cl)))
+  expect_true(all(is.finite(cl[["balance"]]) | is.na(cl[["balance"]])))
 })
 
 test_that("sc_metrics_global returns single-row data.frame", {
@@ -41,6 +42,7 @@ test_that("sc_metrics_global returns single-row data.frame", {
   expect_true(all(c("step", "compactness", "n_supercells",
                     "mean_value_dist_scaled", "mean_spatial_dist_scaled", "mean_combined_dist",
                     "balance") %in% names(gl)))
+  expect_true(is.finite(gl[["balance"]]) | is.na(gl[["balance"]]))
 })
 
 test_that("sc_metrics invalid dist_fun errors", {

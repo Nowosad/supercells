@@ -41,7 +41,8 @@ Interpretation:
 \item{spatial}{Lower values indicate more compact supercells.}
 \item{value}{Lower values indicate more homogeneous supercells.}
 \item{combined}{Overall distance; mainly useful for ranking.}
-\item{balance}{0 indicates balance; larger values indicate dominance of one term.}
+\item{balance}{0 indicates balance; negative values indicate spatial dominance;
+positive values indicate value dominance.}
 }
 Metrics:
 \describe{
@@ -50,7 +51,7 @@ in grid-cell units (row/column index distance).}
 \item{value}{Value distance from each pixel to its supercell center in
 the raster value space.}
 \item{combined}{Combined distance using \code{compactness} and \code{step}.}
-\item{balance}{Absolute log ratio of scaled value distance to scaled
+\item{balance}{Signed log ratio of scaled value distance to scaled
 spatial distance; 0 indicates balance. Always computed from scaled components.}
 }
 When \code{scale = TRUE}, \code{spatial} and \code{value} are returned as

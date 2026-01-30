@@ -28,7 +28,8 @@
 #'   \item{spatial}{Lower values indicate more compact supercells.}
 #'   \item{value}{Lower values indicate more homogeneous supercells.}
 #'   \item{combined}{Overall distance; mainly useful for ranking.}
-#'   \item{balance}{0 indicates balance; larger values indicate dominance of one term.}
+#'   \item{balance}{0 indicates balance; negative values indicate spatial dominance;
+#'   positive values indicate value dominance.}
 #' }
 #' Metrics:
 #' \describe{
@@ -37,7 +38,7 @@
 #'   \item{value}{Value distance from each pixel to its supercell center in
 #'   the raster value space.}
 #'   \item{combined}{Combined distance using `compactness` and `step`.}
-#'   \item{balance}{Absolute log ratio of scaled value distance to scaled
+#'   \item{balance}{Signed log ratio of scaled value distance to scaled
 #'   spatial distance; 0 indicates balance. Always computed from scaled components.}
 #' }
 #' When `scale = TRUE`, `spatial` and `value` are returned as
@@ -77,7 +78,7 @@ sc_metrics_pixels = function(raster, x, dist_fun = "euclidean", scale = TRUE,
       value = value_scaled
     }
     if ("balance" %in% metrics) {
-      balance = abs(log(value_scaled / spatial_scaled))
+      balance = log(value_scaled / spatial_scaled)
     }
   } 
 

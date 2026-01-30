@@ -41,7 +41,8 @@ Interpretation:
 \item{mean_value_dist}{Lower values indicate more homogeneous supercells.}
 \item{mean_spatial_dist}{Lower values indicate more compact supercells.}
 \item{mean_combined_dist}{Overall distance; mainly useful for ranking.}
-\item{balance}{0 indicates balance between value and spatial terms.}
+\item{balance}{0 indicates balance between value and spatial terms; negative
+values indicate spatial dominance; positive values indicate value dominance.}
 }
 \describe{
 \item{step}{Step size used to generate supercells.}
@@ -57,7 +58,7 @@ their supercell centers, averaged across supercells; units are grid cells
 \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 value and spatial distances using \code{compactness} and \code{step}, averaged across
 supercells. Returned as \code{mean_combined_dist}.}
-\item{balance}{Mean absolute log ratio of scaled value distance to scaled
+\item{balance}{Mean signed log ratio of scaled value distance to scaled
 spatial distance; 0 indicates balance.}
 }
 When \code{scale = TRUE}, \code{mean_spatial_dist} and \code{mean_value_dist} are returned as

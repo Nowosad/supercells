@@ -96,6 +96,9 @@
     }
     centers_df = cbind(centers_df, centers_vals[empty_centers, , drop = FALSE])
   }
+  if ("supercells" %in% names(centers_df)) {
+    centers_df = centers_df[, c("supercells", setdiff(names(centers_df), "supercells")), drop = FALSE]
+  }
 
   centers_sf = sf::st_as_sf(centers_df, coords = c("x", "y"), remove = FALSE)
   sf::st_crs(centers_sf) = terra::crs(raster)
@@ -114,6 +117,7 @@
                                minarea, input_centers,
                                iter_diagnostics = iter_diagnostics, verbose = verbose)
     points_sf = .sc_run_centers_points(res$centers, res$raster_ref, res$centers_vals, res$names_x)
+    # points_sf = stats::na.omit(points_sf)
     if (!isTRUE(metadata) && "x" %in% names(points_sf)) {
       points_sf = points_sf[, setdiff(names(points_sf), c("x", "y")), drop = FALSE]
     }
@@ -127,6 +131,11 @@
                              iter, minarea, input_centers,
                              iter_diagnostics = iter_diagnostics, verbose = verbose)
   points_sf = .sc_run_centers_points(res$centers, res$raster, res$centers_vals, res$names_x)
+  ids = unique(terra::values(res$raster, mat = FALSE))
+  ids = ids[!is.na(ids)]
+  points_sf = points_sf[points_sf[["supercells"]] %in% ids, , drop = FALSE]
+  points_sf = points_sf[match(ids, points_sf[["supercells"]]), , drop = FALSE]
+  points_sf = stats::na.omit(points_sf)
   if (!isTRUE(metadata) && "x" %in% names(points_sf)) {
     points_sf = points_sf[, setdiff(names(points_sf), c("x", "y")), drop = FALSE]
   }
