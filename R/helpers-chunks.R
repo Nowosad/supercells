@@ -18,24 +18,22 @@
   return(x)
 }
 
-# update supercells ids for raster chunks
-.sc_chunk_offset_ids_raster = function(rasters){
-  if (length(rasters) <= 1) {
-    return(rasters)
-  }
+# update supercells ids for raster chunks based on center counts
+.sc_chunk_offset_ids_raster_by_centers = function(chunks) {
   max_id = 0
-  for (i in seq_along(rasters)) {
-    r = rasters[[i]]
+  rasters = vector("list", length(chunks))
+  for (i in seq_along(chunks)) {
+    r = chunks[[i]][["raster"]]
     if (max_id > 0) {
       r = r + max_id
     }
-    curr_max = terra::global(r, "max", na.rm = TRUE)[1, 1]
-    if (!is.na(curr_max)) {
-      max_id = curr_max + 1
+    n_centers = nrow(chunks[[i]][["centers"]])
+    if (!is.na(n_centers) && n_centers > 0) {
+      max_id = max_id + n_centers
     }
     rasters[[i]] = r
   }
-  return(rasters)
+  rasters
 }
 
 # approximate bytes per cell used by SLIC buffers (conservative)
@@ -139,13 +137,7 @@
 }
 
 # expected number of supercells for a chunk extent (upper bound)
-.sc_chunk_expected_ids = function(ext, step) {
-  if (is.null(step) || !is.numeric(step) || length(step) != 1 || is.na(step) || step <= 0) {
-    return(NA_integer_)
-  }
-  if (is.null(dim(ext))) {
-    ext = matrix(ext, nrow = 1)
-  }
+.sc_chunk_expected_max_ids = function(ext, step) {
   nrows = ext[, 2] - ext[, 1] + 1
   ncols = ext[, 4] - ext[, 3] + 1
   as.integer(ceiling(nrows / step) * ceiling(ncols / step))
@@ -153,16 +145,7 @@
 
 # deterministic per-chunk id offsets based on expected supercell counts
 .sc_chunk_offsets = function(chunk_ext, step) {
-  if (is.null(dim(chunk_ext))) {
-    chunk_ext = matrix(chunk_ext, nrow = 1)
-  }
-  if (nrow(chunk_ext) == 0) {
-    return(integer())
-  }
-  expected = .sc_chunk_expected_ids(chunk_ext, step)
-  if (any(is.na(expected))) {
-    return(rep(0L, nrow(chunk_ext)))
-  }
+  expected = .sc_chunk_expected_max_ids(chunk_ext, step)
   offsets = cumsum(c(0L, expected[-length(expected)]))
   storage.mode(offsets) = "double"
   offsets
@@ -170,9 +153,6 @@
 
 # choose a compact integer datatype based on expected max id
 .sc_chunk_id_datatype = function(max_id) {
-  if (is.null(max_id) || is.na(max_id)) {
-    return(NULL)
-  }
   if (max_id <= 255) {
     return("INT1U")
   }

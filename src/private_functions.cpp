@@ -136,7 +136,7 @@ double SlicCore::compute_dist(int ci, int y, int x, const std::vector<double>& v
 
   double denom = compactness;
   if (adaptive_compactness) {
-    if (ci >= 0 && ci < (int) max_value_dist.size() && max_value_dist[ci] > 0.0) {
+    if (max_value_dist[ci] > 0.0) {
       denom = max_value_dist[ci];
     } else {
       denom = 1.0;

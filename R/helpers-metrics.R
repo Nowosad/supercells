@@ -17,9 +17,9 @@
   }
   adaptive_compactness = FALSE
   if (missing(compactness)) {
-    compactness = attr(x, "compactness")
     method = attr(x, "method")
     adaptive_compactness = isTRUE(identical(method, "slic0"))
+    compactness = attr(x, "compactness")
   } else if (is.character(compactness) && length(compactness) == 1 && !is.na(compactness) && compactness == "auto") {
     adaptive_compactness = TRUE
     compactness = 0

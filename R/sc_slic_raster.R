@@ -29,12 +29,14 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
   prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
                             k, centers, metadata, chunks, iter_diagnostics, verbose)
 
+
   # segment once (single) or per chunk (chunked), returning a list of chunk results
   if (nrow(prep_args$chunk_ext) > 1) {
     n_chunks = nrow(prep_args$chunk_ext)
-    expected_ids = .sc_chunk_expected_ids(prep_args$chunk_ext, prep_args$step)
-    max_expected = if (all(is.na(expected_ids))) NA_real_ else sum(expected_ids, na.rm = TRUE)
+    expected_ids = .sc_chunk_expected_max_ids(prep_args$chunk_ext, prep_args$step)
+    max_expected = sum(expected_ids)
     dtype = .sc_chunk_id_datatype(max_expected)
+    wopt = list(gdal = c("TILED=YES", "BLOCKXSIZE=256", "BLOCKYSIZE=256", "COMPRESS=NONE"), datatype = dtype)
     chunk_files = character(n_chunks)
     on.exit(unlink(chunk_files), add = TRUE)
     max_id = 0
@@ -59,39 +61,19 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
         max_id = max_id + n_centers
       }
       chunk_files[i] = tempfile(fileext = ".tif")
-      wopt = list(gdal = c("TILED=YES", "BLOCKXSIZE=256", "BLOCKYSIZE=256", "COMPRESS=NONE"))
-      if (is.null(dtype)) {
-        terra::writeRaster(r, filename = chunk_files[i], overwrite = TRUE, wopt = wopt)
-      } else {
-        terra::writeRaster(r, filename = chunk_files[i], overwrite = TRUE, wopt = wopt, datatype = dtype)
-      }
+      terra::writeRaster(r, filename = chunk_files[i], overwrite = TRUE, wopt = wopt)
     }
     out_file = tempfile(fileext = ".tif")
     if (is.numeric(prep_args$verbose) && prep_args$verbose > 0) {
       message("Merging chunk rasters...")
     }
-    wopt = list(gdal = c("TILED=YES", "BLOCKXSIZE=256", "BLOCKYSIZE=256", "COMPRESS=NONE"))
-    if (!is.null(dtype)) {
-      wopt[["datatype"]] = dtype
-    }
-    merged = terra::merge(terra::sprc(chunk_files), filename = out_file, overwrite = TRUE, wopt = wopt)
-    names(merged) = "supercells"
-    return(merged)
+    result = terra::merge(terra::sprc(chunk_files), filename = out_file, overwrite = TRUE, wopt = wopt)
   } else {
     segment = .sc_slic_segment(prep_args, .sc_run_full_raster, .sc_run_chunk_raster)
-
-    # merge/offset chunk rasters into a single ID raster
-    chunk_rasters = lapply(segment$chunks, `[[`, "raster")
-    chunk_rasters = .sc_chunk_offset_ids_raster(chunk_rasters)
-
-    if (length(chunk_rasters) == 1) {
-      result = chunk_rasters[[1]]
-      names(result) = "supercells"
-      return(result)
-    } else {
-      stitched = do.call(terra::merge, chunk_rasters)
-      names(stitched) = "supercells"
-      return(stitched)
-    }
+    # single chunk: offset ids and return the raster
+    chunk_rasters = .sc_chunk_offset_ids_raster_by_centers(segment$chunks)
+    result = chunk_rasters[[1]]
   }
+  names(result) = "supercells"
+  return(result)
 }
