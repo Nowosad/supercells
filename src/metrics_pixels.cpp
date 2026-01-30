@@ -1,4 +1,5 @@
 #include "distances.h"
+#include "metrics_helpers.h"
 #include "cpp11.hpp"
 #include "cpp11/list.hpp"
 #include "cpp11/matrix.hpp"
@@ -11,6 +12,7 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
                                   cpp11::doubles_matrix<> centers_vals,
                                   cpp11::doubles_matrix<> vals,
                                   int step, double compactness,
+                                  bool adaptive_compactness,
                                   std::string dist_name, cpp11::function dist_fun) {
   int rows = clusters.nrow();
   int cols = clusters.ncol();
@@ -20,6 +22,7 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
   cpp11::writable::doubles_matrix<> per_pixel_spatial(rows, cols);
   cpp11::writable::doubles_matrix<> per_pixel_value(rows, cols);
   cpp11::writable::doubles_matrix<> per_pixel_combined(rows, cols);
+  cpp11::writable::doubles_matrix<> per_pixel_value_scaled(rows, cols);
 
   std::vector<std::vector<double>> centers_vals_vec(ncenters, std::vector<double>(bands));
   for (int i = 0; i < ncenters; i++) {
@@ -31,6 +34,12 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
   std::vector<double> pixel_values;
   pixel_values.reserve(bands);
 
+  std::vector<double> max_value_dist;
+  if (adaptive_compactness) {
+    max_value_dist = sc_compute_max_value_dist(centers_vals_vec, centers_xy, vals,
+                                               rows, cols, bands, step, dist_name, dist_fun);
+  }
+
   for (int i = 0; i < cols; i++) {
     for (int j = 0; j < rows; j++) {
       int cid = clusters(j, i);
@@ -38,6 +47,7 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
         per_pixel_spatial(j, i) = NA_REAL;
         per_pixel_value(j, i) = NA_REAL;
         per_pixel_combined(j, i) = NA_REAL;
+        per_pixel_value_scaled(j, i) = NA_REAL;
         continue;
       }
 
@@ -55,6 +65,7 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
         per_pixel_spatial(j, i) = NA_REAL;
         per_pixel_value(j, i) = NA_REAL;
         per_pixel_combined(j, i) = NA_REAL;
+        per_pixel_value_scaled(j, i) = NA_REAL;
         continue;
       }
 
@@ -68,10 +79,15 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
       double x_dist = center_x - i;
       double spatial_dist = sqrt((y_dist * y_dist) + (x_dist * x_dist));
 
-      /* combined distance*/
+      double denom = compactness;
+      if (adaptive_compactness) {
+        denom = max_value_dist[cid];
+      }
+
+      /* combined distance */
       double combined_dist = NA_REAL;
-      if (compactness != 0.0 && step != 0) {
-        double dist1 = value_dist / compactness;
+      if (denom != 0.0 && step != 0) {
+        double dist1 = value_dist / denom;
         double dist2 = spatial_dist / step;
         combined_dist = sqrt((dist1 * dist1) + (dist2 * dist2));
       }
@@ -79,13 +95,15 @@ cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters,
       per_pixel_spatial(j, i) = spatial_dist;
       per_pixel_value(j, i) = value_dist;
       per_pixel_combined(j, i) = combined_dist;
+      per_pixel_value_scaled(j, i) = (denom != 0.0) ? value_dist / denom : NA_REAL;
     }
   }
 
-  cpp11::writable::list result(3);
-  result.names() = {"spatial", "value", "combined"};
+  cpp11::writable::list result(4);
+  result.names() = {"spatial", "value", "combined", "value_scaled"};
   result.at(0) = per_pixel_spatial;
   result.at(1) = per_pixel_value;
   result.at(2) = per_pixel_combined;
+  result.at(3) = per_pixel_value_scaled;
   return result;
 }

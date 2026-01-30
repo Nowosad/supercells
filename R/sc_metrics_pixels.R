@@ -18,6 +18,9 @@
 #' @details
 #' If `x` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers.
+#' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
+#' adaptive compactness, and scaled value distances are computed with the
+#' per-supercell max value distance.
 #'
 #' @return A SpatRaster with one or more layers depending on `metrics`.
 #' Interpretation:
@@ -59,6 +62,7 @@ sc_metrics_pixels = function(raster, x, dist_fun = "euclidean", scale = TRUE,
 
   out = sc_metrics_pixels_cpp(prep$clusters, prep$centers_xy, prep$centers_vals, prep$vals,
                               step = prep$step, compactness = prep$compactness,
+                              adaptive_compactness = prep$adaptive_compactness,
                               dist_name = prep$dist_name, dist_fun = prep$dist_fun)
 
   spatial = terra::rast(out[["spatial"]])
@@ -67,7 +71,7 @@ sc_metrics_pixels = function(raster, x, dist_fun = "euclidean", scale = TRUE,
 
   if (isTRUE(scale) || "balance" %in% metrics) {
     spatial_scaled = spatial / prep$step
-    value_scaled = value / prep$compactness
+    value_scaled = terra::rast(out[["value_scaled"]])
     if (isTRUE(scale)) {
       spatial = spatial_scaled
       value = value_scaled

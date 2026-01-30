@@ -11,6 +11,9 @@
 #' @details
 #' If `x` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers
+#' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
+#' adaptive compactness, and scaled value distances are computed with the
+#' per-supercell max value distance.
 #' @return An sf object with one row per supercell and columns:
 #' Interpretation:
 #' \describe{
@@ -54,6 +57,7 @@ sc_metrics_supercells = function(raster, x, dist_fun = "euclidean", scale = TRUE
 
   out = sc_metrics_supercells_cpp(prep$clusters, prep$centers_xy, prep$centers_vals, prep$vals,
                                 step = prep$step, compactness = prep$compactness,
+                                adaptive_compactness = prep$adaptive_compactness,
                                 dist_name = prep$dist_name, dist_fun = prep$dist_fun)
 
   mean_value_dist = out[["mean_value_dist"]]
@@ -62,7 +66,11 @@ sc_metrics_supercells = function(raster, x, dist_fun = "euclidean", scale = TRUE
   balance = abs(log(out[["balance"]]))
 
   if (isTRUE(scale)) {
-    mean_value_dist = mean_value_dist / prep$compactness
+    if (isTRUE(prep$adaptive_compactness)) {
+      mean_value_dist = out[["mean_value_dist_scaled"]]
+    } else {
+      mean_value_dist = mean_value_dist / prep$compactness
+    }
     mean_spatial_dist = mean_spatial_dist / prep$step
   }
 

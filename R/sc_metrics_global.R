@@ -7,6 +7,9 @@
 #' If they are missing, they are derived from geometry and row order
 #' Set `metadata = TRUE` when calling `sc_slic()` or `supercells()`
 #' Metrics are averaged across supercells (each supercell has equal weight).
+#' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
+#' adaptive compactness, and scaled value distances are computed with the
+#' per-supercell max value distance.
 #'
 #' @inheritParams sc_metrics_pixels
 #' @param scale Logical. If `TRUE`, scales spatial and value distances; output
@@ -58,6 +61,7 @@ sc_metrics_global = function(raster, x, dist_fun = "euclidean", scale = TRUE,
   prep = .sc_metrics_prep(raster, x, dist_fun, compactness, step)
   out = sc_metrics_global_cpp(prep$clusters, prep$centers_xy, prep$centers_vals, prep$vals,
                               step = prep$step, compactness = prep$compactness,
+                              adaptive_compactness = prep$adaptive_compactness,
                               dist_name = prep$dist_name, dist_fun = prep$dist_fun)
 
   mean_value_dist = out[["mean_value_dist"]]
@@ -66,7 +70,11 @@ sc_metrics_global = function(raster, x, dist_fun = "euclidean", scale = TRUE,
   balance = abs(log(out[["balance"]]))
 
   if (isTRUE(scale)) {
-    mean_value_dist = mean_value_dist / prep$compactness
+    if (isTRUE(prep$adaptive_compactness)) {
+      mean_value_dist = out[["mean_value_dist_scaled"]]
+    } else {
+      mean_value_dist = mean_value_dist / prep$compactness
+    }
     mean_spatial_dist = mean_spatial_dist / prep$step
   }
 

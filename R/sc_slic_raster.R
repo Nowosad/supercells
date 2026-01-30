@@ -33,25 +33,30 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
   if (nrow(prep_args$chunk_ext) > 1) {
     n_chunks = nrow(prep_args$chunk_ext)
     expected_ids = .sc_chunk_expected_ids(prep_args$chunk_ext, prep_args$step)
-    offsets = .sc_chunk_offsets(prep_args$chunk_ext, prep_args$step)
-    max_expected = if (all(is.na(expected_ids))) NA_real_ else max(offsets + expected_ids, na.rm = TRUE)
+    max_expected = if (all(is.na(expected_ids))) NA_real_ else sum(expected_ids, na.rm = TRUE)
     dtype = .sc_chunk_id_datatype(max_expected)
     chunk_files = character(n_chunks)
     on.exit(unlink(chunk_files), add = TRUE)
+    max_id = 0
     for (i in seq_len(n_chunks)) {
       if (is.numeric(prep_args$verbose) && prep_args$verbose > 0) {
         message(sprintf("Processing chunk %d/%d", i, n_chunks))
       }
       ext = prep_args$chunk_ext[i, ]
       res = .sc_run_chunk_raster(ext, prep_args$x, prep_args$step, prep_args$compactness,
-                                 prep_args$funs$dist_name, prep_args$funs$dist_fun,
+                                 prep_args$funs$dist_name, prep_args$adaptive_compactness,
+                                 prep_args$funs$dist_fun,
                                  prep_args$funs$avg_fun_fun, prep_args$funs$avg_fun_name,
                                  prep_args$clean, prep_args$iter, prep_args$minarea,
                                  prep_args$input_centers, prep_args$iter_diagnostics,
                                  prep_args$metadata, prep_args$verbose_cpp)
       r = res[["raster"]]
-      if (!is.na(offsets[i]) && offsets[i] > 0) {
-        r = r + offsets[i]
+      if (max_id > 0) {
+        r = r + max_id
+      }
+      n_centers = nrow(res[["centers"]])
+      if (!is.na(n_centers) && n_centers > 0) {
+        max_id = max_id + n_centers
       }
       chunk_files[i] = tempfile(fileext = ".tif")
       wopt = list(gdal = c("TILED=YES", "BLOCKXSIZE=256", "BLOCKYSIZE=256", "COMPRESS=NONE"))

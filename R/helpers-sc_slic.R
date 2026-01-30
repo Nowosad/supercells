@@ -37,8 +37,11 @@
     iter_diagnostics = FALSE
   }
   verbose_cpp = if (is.numeric(verbose) && length(verbose) == 1 && !is.na(verbose) && verbose >= 2) verbose else 0
-  adaptive_compactness = is.numeric(compactness) && length(compactness) == 1 &&
-    !is.na(compactness) && compactness == 0
+  adaptive_compactness = is.character(compactness) &&
+    length(compactness) == 1 && !is.na(compactness) && compactness == "auto"
+  if (adaptive_compactness) {
+    compactness = 0
+  }
   # Package prep results for downstream functions
   return(list(x = x, step = step, input_centers = input_centers, funs = funs,
               minarea = minarea, chunk_ext = chunk_ext,
@@ -101,6 +104,9 @@
   }
   if (missing(compactness)) {
     stop("The 'compactness' argument is required", call. = FALSE)
+  }
+  if (!is.numeric(compactness) && !(is.character(compactness) && length(compactness) == 1 && !is.na(compactness) && compactness == "auto")) {
+    stop("The 'compactness' argument must be numeric or 'auto'", call. = FALSE)
   }
   if (!missing(minarea) && (!is.numeric(minarea) || length(minarea) != 1 || is.na(minarea) || minarea < 0)) {
     stop("The 'minarea' argument must be a non-negative numeric value", call. = FALSE)

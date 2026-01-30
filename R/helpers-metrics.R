@@ -9,8 +9,14 @@
   if (!inherits(x, "sf")) {
     stop("The 'x' argument must be an sf object returned by sc_slic()", call. = FALSE)
   }
+  adaptive_compactness = FALSE
   if (missing(compactness)) {
     compactness = attr(x, "compactness")
+    method = attr(x, "method")
+    adaptive_compactness = isTRUE(identical(method, "slic0"))
+  } else if (is.character(compactness) && length(compactness) == 1 && !is.na(compactness) && compactness == "auto") {
+    adaptive_compactness = TRUE
+    compactness = 0
   }
   if (missing(step)) {
     step = attr(x, "step")
@@ -69,6 +75,7 @@
     vals = vals,
     step = step,
     compactness = compactness,
+    adaptive_compactness = adaptive_compactness,
     dist_name = dist_prep$dist_name,
     dist_fun = dist_prep$dist_fun
   )
