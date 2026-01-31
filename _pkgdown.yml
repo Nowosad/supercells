@@ -1,14 +1,7 @@
 url: https://jakubnowosad.com/supercells
 template:
   bootstrap: 5
-articles:
-  - title: Vignettes
-    contents:
-      - "main-function"
-      - "benchmarks"
-      - "one_var"
-      - "rgb_vars"
-      - "motifels"
+
 navbar:
  components:
    articles:
