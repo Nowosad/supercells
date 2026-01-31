@@ -17,7 +17,7 @@ navbar:
     - text: The supercells() function
       href: articles/main-function.html
     - text: Benchmarks
-      href: articles/benchmarks.html
+      href: articles/benchmarks_v1.html
     - text: Superpixels of a single raster layer
       href: articles/one_var.html
     - text: Superpixels of an RGB raster

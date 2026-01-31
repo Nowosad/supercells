@@ -19,6 +19,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+> **Version note:** This vignette documents the `supercells()` interface as it existed in version 1.0 of the package. Some arguments, defaults, and behaviors may differ in newer releases. For up-to-date details, see `?supercells` and the current reference docs.
+
 The main function in this package [@Nowosad2022] is called `supercells()`.
 An overview of its arguments is shown in the table below.
 
