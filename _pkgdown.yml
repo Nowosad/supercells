@@ -1,6 +1,14 @@
 url: https://jakubnowosad.com/supercells
 template:
   bootstrap: 5
+articles:
+  - title: Vignettes
+    contents:
+      - "main-function"
+      - "benchmarks"
+      - "one_var"
+      - "rgb_vars"
+      - "motifels"
 navbar:
  components:
    articles:
@@ -14,4 +22,12 @@ navbar:
     - text: -------
     - text: "Version 1.0"
     - text: The supercells() function
-      href: articles/main-function.Rmd
+      href: articles/main-function.html
+    - text: Benchmarks
+      href: articles/benchmarks.html
+    - text: Superpixels of a single raster layer
+      href: articles/one_var.html
+    - text: Superpixels of an RGB raster
+      href: articles/rgb_vars.html
+    - text: Superpixels of spatial categorical patterns
+      href: articles/motifels.html
