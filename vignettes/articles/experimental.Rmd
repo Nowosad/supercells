@@ -3,6 +3,7 @@ title: "Experimental features of the supercells package"
 author: Jakub Nowosad
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+draft: true
 vignette: >
   %\VignetteIndexEntry{Experimental features of the supercells package}
   %\VignetteEngine{knitr::rmarkdown}

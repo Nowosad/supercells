@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/supercells)](https://CRAN.R-project.org/package=supercells)
 [![R-CMD-check](https://github.com/Nowosad/supercells/workflows/pkgdown/badge.svg)](https://github.com/Nowosad/supercells/actions)
-[![Codecov test coverage](https://codecov.io/gh/Nowosad/supercells/branch/master/graph/badge.svg)](https://app.codecov.io/gh/Nowosad/supercells?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/Nowosad/supercells/branch/main/graph/badge.svg)](https://app.codecov.io/gh/Nowosad/supercells?branch=main)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/supercells)](https://cran.r-project.org/package=supercells)
 <!-- badges: end -->
 
@@ -48,6 +48,7 @@ install.packages("supercells", repos = "https://nowosad.r-universe.dev")
 ## Example
 
 ```{r}
+#| message: FALSE
 library(supercells)
 library(terra)
 library(sf)
@@ -55,10 +56,11 @@ vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 plot(vol)
 ```
 
-```{r, results='hide'}
-vol_slic1 = supercells(vol, k = 50, compactness = 1)
+```{r}
+#| results: 'hide'
+vol_slic1 = supercells(vol, k = 50, compactness = 7)
 plot(vol)
-plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
+plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.5, border = "red")
 ```
 
 ## Documentation
@@ -69,7 +71,6 @@ See the package's vignettes:
 2. [Superpixels of a single raster layer](https://jakubnowosad.com/supercells/articles/articles/one_var.html)
 3. [Superpixels of an RGB raster](https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html)
 4. [Superpixels of spatial categorical patterns](https://jakubnowosad.com/supercells/articles/articles/motifels.html)
-5. [Experimental features of the supercells package](https://jakubnowosad.com/supercells/articles/articles/experimental.html)
 
 Watch the presentations about this package and some related ideas:
 
@@ -78,10 +79,10 @@ Watch the presentations about this package and some related ideas:
 
 Read the related article:
 
-1. Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935
+1. Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, <https://doi.org/10.1016/j.jag.2022.102935>
 
 ## Contribution
 
-Contributions to this package are welcome - let us know if you need other distance measures or transformations, have any suggestions, or spotted a bug. 
+Contributions to this package are welcome -- let us know if you need other distance measures or transformations, have any suggestions, or spotted a bug. 
 The preferred method of contribution is through a GitHub pull request. 
 Feel also free to contact us by creating [an issue](https://github.com/nowosad/supercells/issues).
