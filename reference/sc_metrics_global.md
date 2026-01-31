@@ -144,6 +144,8 @@ library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 vol_sc = sc_slic(vol, step = 8, compactness = 7)
 sc_metrics_global(vol, vol_sc)
+#> Spherical geometry (s2) switched off
+#> Spherical geometry (s2) switched on
 #>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled
 #> 1    8           7           88                0.4718607              0.3701397
 #>   mean_combined_dist    balance

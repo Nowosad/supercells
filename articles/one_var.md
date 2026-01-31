@@ -1,5 +1,13 @@
 # Supercells of a single raster layer
 
+> **Version note:** This vignette documents the
+> [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> interface as it existed in version 1.0 of the package. Some arguments,
+> defaults, and behaviors may differ in newer releases. For up-to-date
+> details, see
+> [`?supercells`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> and the current reference docs.
+
 Superpixels are a collection of segmentation concepts of grouping pixels
 with similar characteristics. In this package, we refer to them as
 supercells. It is often used in computer vision to delineate parts of

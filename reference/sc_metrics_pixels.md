@@ -123,5 +123,7 @@ library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 vol_sc = sc_slic(vol, step = 8, compactness = 7)
 metrics = sc_metrics_pixels(vol, vol_sc, scale = TRUE)
+#> Spherical geometry (s2) switched off
+#> Spherical geometry (s2) switched on
 terra::panel(metrics, nr = 1)
 ```

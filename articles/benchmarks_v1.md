@@ -1,5 +1,13 @@
 # Benchmarks of the supercells package
 
+> **Version note:** This vignette documents the
+> [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> interface as it existed in version 1.0 of the package. Some arguments,
+> defaults, and behaviors may differ in newer releases. For up-to-date
+> details, see
+> [`?supercells`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> and the current reference docs.
+
 ``` r
 library(terra)
 library(sf)

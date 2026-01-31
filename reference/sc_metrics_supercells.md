@@ -125,6 +125,8 @@ library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 vol_sc = sc_slic(vol, step = 8, compactness = 7)
 cl = sc_metrics_supercells(vol, vol_sc)
+#> Spherical geometry (s2) switched off
+#> Spherical geometry (s2) switched on
 head(cl)
 #> Simple feature collection with 6 features and 5 fields
 #> Geometry type: POLYGON

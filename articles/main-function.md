@@ -1,5 +1,13 @@
 # The supercells() function
 
+> **Version note:** This vignette documents the
+> [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> interface as it existed in version 1.0 of the package. Some arguments,
+> defaults, and behaviors may differ in newer releases. For up-to-date
+> details, see
+> [`?supercells`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> and the current reference docs.
+
 The main function in this package (Nowosad and Stepinski 2022) is called
 [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md).
 An overview of its arguments is shown in the table below.

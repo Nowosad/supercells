@@ -3,7 +3,7 @@
 ### All vignettes
 
 - [Benchmarks of the supercells
-  package](https://jakubnowosad.com/supercells/articles/benchmarks.md):
+  package](https://jakubnowosad.com/supercells/articles/benchmarks_v1.md):
 - [The supercells()
   function](https://jakubnowosad.com/supercells/articles/main-function.md):
 - [Supercells of spatial categorical
