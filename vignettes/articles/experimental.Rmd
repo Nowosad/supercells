@@ -19,12 +19,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-Superpixels is a collection of segmentation concepts of grouping pixels with similar characteristics.
+Superpixels are a collection of segmentation concepts of grouping pixels with similar characteristics.
+In this package, we refer to them as supercells.
 It is often used in computer vision to delineate parts of RGB images that are more meaningful and easier to analyze.
 When applied to RGB images, each superpixel contains similar colors that also could represent real-world objects.
 A large number of methods for creating superpixels were developed in the last decades, with the SLIC algorithm (Achanta et al. (2012), <doi:10.1109/TPAMI.2012.120>) being the most prominent.
 
-The **supercells** package aims to utilize the concept of superpixels to a variety of spatial data. 
+The **supercells** package aims to utilize the concept of supercells for a variety of spatial data. 
 This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters).
 Therefore, it enables not only to find areas that look similar on an RGB (satellite) image, but also to regionalize areas with comparable values of one or more variables.
 
@@ -32,7 +33,7 @@ This vignette shows some experimental features of the **supercells** package.
 To reproduce the following results on your own computer, install and attach the packages:
 
 ```{r, message=FALSE}
-library(supercells)    # superpixels for spatial data
+library(supercells)    # supercells for spatial data
 library(terra)         # spatial raster data reading and handling
 library(sf)            # spatial vector data reading and handling
 ```
@@ -69,16 +70,15 @@ plot(sc_ortho)
 The large data support can be extended and used for parallel computations. 
 In this approach, we need to:
 
-1. Attach the **future** package.
+1. Skip parallel setup (parallel execution is no longer supported).
 2. Specify the parallelization strategy (the `plan()` function).
 3. Use `chunks = TRUE` or set `chunks` to some numeric value in `supercells()`.
-4. Set `future = TRUE` in `supercells()`.
+4. Use `chunks = TRUE` in `supercells()` if needed.
 
 ```{r, message=FALSE}
-library(future)
 plan(multisession, workers = 2)
 sc_ortho2 = supercells(ortho, k = 100, compactness = 1, 
-                       chunks = 150, future = TRUE)
+                       chunks = 150)
 ```
 
 The code above will divide the whole area into six chunks, and use two separate R sessions (`workers = 2`) to work on some chunks in parallel.
@@ -128,7 +128,7 @@ plot(st_geometry(ortho_slic1), add = TRUE, border = "red")
 ```
 
 Increasing the `step` value allows to include more locations into the segmentation process. 
-However, it also results in many detached areas (tiny polygons not connected directly to the main superpixels):
+However, it also results in many detached areas (tiny polygons not connected directly to the main supercells):
 
 ```{r}
 ortho_slic2 = supercells(ortho, k = custom_centers, step = 20,

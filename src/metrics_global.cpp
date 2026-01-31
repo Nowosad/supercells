@@ -1,4 +1,5 @@
 #include "distances.h"
+#include "metrics_helpers.h"
 #include "cpp11.hpp"
 #include "cpp11/list.hpp"
 #include "cpp11/matrix.hpp"
@@ -11,6 +12,7 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
                                   cpp11::doubles_matrix<> centers_vals,
                                   cpp11::doubles_matrix<> vals,
                                   int step, double compactness,
+                                  bool adaptive_compactness,
                                   std::string dist_name, cpp11::function dist_fun) {
   int rows = clusters.nrow();
   int cols = clusters.ncol();
@@ -32,6 +34,12 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
 
   std::vector<double> pixel_values;
   pixel_values.reserve(bands);
+
+  std::vector<double> max_value_dist;
+  if (adaptive_compactness) {
+    max_value_dist = sc_compute_max_value_dist(centers_vals_vec, centers_xy, vals,
+                                               rows, cols, bands, step, dist_name, dist_fun);
+  }
 
   // Per-pixel pass: accumulate distances into per-cluster sums
   for (int i = 0; i < cols; i++) {
@@ -63,9 +71,14 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
       double x_dist = center_x - i;
       double spatial_dist = sqrt((y_dist * y_dist) + (x_dist * x_dist));
 
+      double denom = compactness;
+      if (adaptive_compactness) {
+        denom = max_value_dist[cid];
+      }
+
       double combined_dist = NA_REAL;
-      if (compactness != 0.0 && step != 0) {
-        double dist1 = value_dist / compactness;
+      if (denom != 0.0 && step != 0) {
+        double dist1 = value_dist / denom;
         double dist2 = spatial_dist / step;
         combined_dist = sqrt((dist1 * dist1) + (dist2 * dist2));
       }
@@ -83,7 +96,8 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
   double mean_value_sum = 0.0;
   double mean_spatial_sum = 0.0;
   double mean_combined_sum = 0.0;
-  double compact_ratio_sum = 0.0;
+  double balance_ratio_sum = 0.0;
+  double mean_value_scaled_sum = 0.0;
   int active_clusters = 0;
 
   // Aggregate per-cluster means into global summaries
@@ -98,8 +112,15 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
     mean_spatial_sum += ms;
     mean_combined_sum += mc;
 
-    if (compactness != 0.0 && step != 0 && ms > 0.0) {
-      compact_ratio_sum += (mv / compactness) / (ms / step);
+    double denom = compactness;
+    if (adaptive_compactness) {
+      denom = max_value_dist[i];
+    }
+    if (denom != 0.0) {
+      mean_value_scaled_sum += mv / denom;
+    }
+    if (denom != 0.0 && step != 0 && ms > 0.0) {
+      balance_ratio_sum += (mv / denom) / (ms / step);
     }
     active_clusters += 1;
   }
@@ -107,21 +128,24 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
   double mean_value = NA_REAL;
   double mean_spatial = NA_REAL;
   double mean_combined = NA_REAL;
-  double compact_ratio_mean = NA_REAL;
+  double balance_ratio_mean = NA_REAL;
+  double mean_value_scaled = NA_REAL;
   if (active_clusters > 0) {
     mean_value = mean_value_sum / active_clusters;
     mean_spatial = mean_spatial_sum / active_clusters;
     mean_combined = mean_combined_sum / active_clusters;
-    compact_ratio_mean = compact_ratio_sum / active_clusters;
+    balance_ratio_mean = balance_ratio_sum / active_clusters;
+    mean_value_scaled = mean_value_scaled_sum / active_clusters;
   }
 
-  cpp11::writable::list result(5);
+  cpp11::writable::list result(6);
   result.names() = {"n_supercells", "mean_value_dist", "mean_spatial_dist",
-                    "mean_combined_dist", "compactness_ratio_mean"};
+                    "mean_combined_dist", "balance", "mean_value_dist_scaled"};
   result.at(0) = cpp11::as_sexp(active_clusters);
   result.at(1) = cpp11::as_sexp(mean_value);
   result.at(2) = cpp11::as_sexp(mean_spatial);
   result.at(3) = cpp11::as_sexp(mean_combined);
-  result.at(4) = cpp11::as_sexp(compact_ratio_mean);
+  result.at(4) = cpp11::as_sexp(balance_ratio_mean);
+  result.at(5) = cpp11::as_sexp(mean_value_scaled);
   return result;
 }

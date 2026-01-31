@@ -19,9 +19,9 @@ Plot mean distance across iterations for a supercells run
 \examples{
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
-vol_sc = sc_slic(vol, step = 8, compactness = 1, iter_diagnostics = TRUE)
+vol_sc = sc_slic_points(vol, step = 8, compactness = 1, iter_diagnostics = TRUE)
 sc_plot_iter_diagnostics(vol_sc)
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_slic_raster]{sc_slic_raster()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}
 }

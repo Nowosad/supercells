@@ -2,13 +2,15 @@
 #'
 #' Runs the SLIC workflow and returns a raster of supercell IDs
 #' IDs are 1-based and are unique across chunks when chunking is used
-#' For polygon outputs, use `sc_slic`; for point centers, use `sc_slic_points`
+#' For polygon outputs, use [`sc_slic()`]; for point centers, use [`sc_slic_points()`]
 #'
 #' @inheritParams sc_slic
 #' @seealso [`sc_slic()`]
 #'
 #' @return A SpatRaster with supercell IDs
+#' 
 #' @export
+#' 
 #' @examples
 #' library(supercells)
 #' vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
@@ -16,47 +18,62 @@
 #' terra::plot(vol_ids)
 sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                          transform = NULL, k = NULL, centers = NULL,
-                          metadata = FALSE, chunks = FALSE, future = FALSE, verbose = 0,
-                          iter_diagnostics = FALSE) {
+                          step_unit = "cells", k = NULL, centers = NULL, metadata = FALSE,
+                          chunks = FALSE,
+                          iter_diagnostics = FALSE, verbose = 0) {
 
+  if (iter == 0) {
+    stop("iter = 0 returns centers only; raster output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
+  }
   # prep arguments
-  prep_args = .sc_slic_prep_args(x, step, compactness, k, centers, dist_fun, avg_fun,
-                            minarea, chunks, iter, transform, metadata, iter_diagnostics)
+  prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
+                            k, centers, metadata, chunks, iter_diagnostics, verbose)
 
-  # run the exSLIC algorithm
-  if (nrow(prep_args$chunk_ext) == 1) {
-    res_list = .sc_slic_run_single_raster(prep_args, compactness, clean, iter, transform, verbose, future)
+
+  # segment once (single) or per chunk (chunked), returning a list of chunk results
+  if (nrow(prep_args$chunk_ext) > 1) {
+    n_chunks = nrow(prep_args$chunk_ext)
+    expected_ids = .sc_chunk_expected_max_ids(prep_args$chunk_ext, prep_args$step)
+    max_expected = sum(expected_ids)
+    dtype = .sc_chunk_id_datatype(max_expected)
+    wopt = list(gdal = c("TILED=YES", "BLOCKXSIZE=256", "BLOCKYSIZE=256", "COMPRESS=NONE"), datatype = dtype)
+    chunk_files = character(n_chunks)
+    on.exit(unlink(chunk_files), add = TRUE)
+    max_id = 0
+    for (i in seq_len(n_chunks)) {
+      if (is.numeric(prep_args$verbose) && prep_args$verbose > 0) {
+        message(sprintf("Processing chunk %d/%d", i, n_chunks))
+      }
+      ext = prep_args$chunk_ext[i, ]
+      res = .sc_run_chunk_raster(ext, prep_args$x, prep_args$step, prep_args$compactness,
+                                 prep_args$funs$dist_name, prep_args$adaptive_compactness,
+                                 prep_args$funs$dist_fun,
+                                 prep_args$funs$avg_fun_fun, prep_args$funs$avg_fun_name,
+                                 prep_args$clean, prep_args$iter, prep_args$minarea,
+                                 prep_args$input_centers, prep_args$iter_diagnostics,
+                                 prep_args$metadata, prep_args$verbose_cpp)
+      r = res[["raster"]]
+      if (max_id > 0) {
+        r = r + max_id
+      }
+      n_centers = nrow(res[["centers"]])
+      if (!is.na(n_centers) && n_centers > 0) {
+        max_id = max_id + n_centers
+      }
+      chunk_files[i] = tempfile(fileext = ".tif")
+      terra::writeRaster(r, filename = chunk_files[i], overwrite = TRUE, wopt = wopt)
+    }
+    out_file = tempfile(fileext = ".tif")
+    if (is.numeric(prep_args$verbose) && prep_args$verbose > 0) {
+      message("Merging chunk rasters...")
+    }
+    result = terra::merge(terra::sprc(chunk_files), filename = out_file, overwrite = TRUE, wopt = wopt)
   } else {
-    res_list = .sc_slic_run_chunks_raster(prep_args, compactness, clean, iter, transform, verbose, future)
+    segment = .sc_slic_segment(prep_args, .sc_run_full_raster, .sc_run_chunk_raster)
+    # single chunk: offset ids and return the raster
+    chunk_rasters = .sc_chunk_offset_ids_raster_by_centers(segment$chunks)
+    result = chunk_rasters[[1]]
   }
-
-  # if (!is.list(res_list) || (is.list(res_list) && !is.list(res_list[[1]]))) {
-  #   res_list = list(res_list)
-  # }
-
-  # update the supercells IDS and merge the results ()
-  rasters = offset_supercells_ids_raster(lapply(res_list, function(x) x$raster))
-  if (length(rasters) == 1) { # merge needs at least two rasters
-    sc_rast = rasters[[1]]
-  } else {
-    sc_rast = do.call(terra::merge, rasters)
-  }
-
-  return(sc_rast)
-}
-
-.sc_slic_run_single_raster = function(prep, compactness, clean, iter, transform, verbose, future) {
-  ext = prep$chunk_ext[1, ]
-  result = list(run_slic_chunk_raster(ext, prep$x, step = prep$step, compactness = compactness,
-                                      dist_name = prep$funs$dist_name, dist_fun = prep$funs$dist_fun,
-                                      avg_fun_fun = prep$funs$avg_fun_fun, avg_fun_name = prep$funs$avg_fun_name,
-                                      clean = clean, iter = iter, minarea = prep$minarea, transform = transform,
-                                      input_centers = prep$input_centers, verbose = verbose,
-                                      iter_diagnostics = prep$iter_diagnostics))
+  names(result) = "supercells"
   return(result)
-}
-
-.sc_slic_run_chunks_raster = function(prep, compactness, clean, iter, transform, verbose, future) {
-  return(.sc_slic_apply_chunks(prep, run_slic_chunk_raster, compactness, clean, iter, transform, verbose, future))
 }

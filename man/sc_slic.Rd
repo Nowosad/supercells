@@ -13,22 +13,22 @@ sc_slic(
   clean = TRUE,
   minarea,
   iter = 10,
-  transform = NULL,
+  step_unit = "cells",
   k = NULL,
   centers = NULL,
   metadata = FALSE,
   chunks = FALSE,
-  future = FALSE,
-  verbose = 0,
-  iter_diagnostics = FALSE
+  iter_diagnostics = FALSE,
+  verbose = 0
 )
 }
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
-\item{step}{The distance (number of cells) between initial centers (alternative to \code{k}).}
+\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
 
-\item{compactness}{A compactness value.}
+\item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
+Set \code{compactness = "auto"} to enable SLIC0-style adaptive compactness.}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
@@ -44,8 +44,8 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{iter}{Number of iterations.}
 
-\item{transform}{Optional transformation applied before segmentation. Currently
-supports "to_LAB" for RGB inputs.}
+\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units
+(converted to cells using raster resolution).}
 
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
@@ -57,12 +57,10 @@ supports "to_LAB" for RGB inputs.}
 automatic chunking based on size, or a numeric value for a fixed chunk size
 (in number of cells per side).}
 
-\item{future}{Logical. Use future for parallelization?}
+\item{iter_diagnostics}{Logical. If \code{TRUE}, attaches iteration diagnostics as an
+attribute (\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
 
 \item{verbose}{Verbosity level.}
-
-\item{iter_diagnostics}{Logical. If \code{TRUE}, returns iteration diagnostics as an attribute
-(\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
 }
 \value{
 An sf object with the supercell polygons and summary statistics.
@@ -74,15 +72,16 @@ The function supports either a target number of supercells (\code{k}) or a fixed
 spacing (\code{step}), as well as optional custom centers and chunked processing.
 }
 \details{
-Use \code{sc_slic} for polygon outputs. For raster or point centers outputs, see
-\code{sc_slic_raster} and \code{sc_slic_points}.
+Use \code{\link[=sc_slic]{sc_slic()}} for polygon outputs. For raster or point centers outputs, see
+\code{\link[=sc_slic_raster]{sc_slic_raster()}} and \code{\link[=sc_slic_points]{sc_slic_points()}}.
 Evaluation and diagnostic options:
 \itemize{
 \item Iteration diagnostics: set \code{iter_diagnostics = TRUE} to attach an
-\code{iter_diagnostics} attribute (only available without chunking).
+\code{iter_diagnostics} attribute (only available without chunking). Use
+\code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}} to visualize the convergence over iterations.
 \item Pixel diagnostics: \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}} for per-pixel spatial, value,
 and combined distances.
-\item Cluster diagnostics: \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}} for per-supercell summaries.
+\item Cluster diagnostics: \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}} for per-supercell summaries.
 \item Global diagnostics: \code{\link[=sc_metrics_global]{sc_metrics_global()}} for a single-row summary.
 }
 }
@@ -102,5 +101,5 @@ Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for appli
 }
 \seealso{
 \code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}},
-\code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
+\code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
 }

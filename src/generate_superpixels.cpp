@@ -3,7 +3,8 @@
 #include <limits>
 
 void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const std::vector<double>& vals,
-                                    int step, double compactness, DistFn dist_fn_in, AvgFn avg_fn_in,
+                                    int step, double compactness, bool adaptive_compactness_in,
+                                    DistFn dist_fn_in, AvgFn avg_fn_in,
                                     const std::string& avg_fun_name_in, int iter,
                                     const std::vector<std::array<int, 2>>& input_centers,
                                     int verbose, bool iter_diagnostics) {
@@ -13,6 +14,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
   clear_data();
   this->step = step;
   this->compactness = compactness;
+  adaptive_compactness = adaptive_compactness_in;
   dist_fn = dist_fn_in;
   avg_fn = avg_fn_in;
   avg_fun_name = avg_fun_name_in;
@@ -23,9 +25,23 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
   inits(mat_dims_in, vals, input_centers);
   if (verbose > 0) std::printf("Completed\n");
 
+  if (centers.empty() || centers_vals.empty()) {
+    if (verbose > 0) std::printf("No centers available\n");
+    return;
+  }
+
   // Main SLIC loop: assign pixels -> update centers, for a fixed number of iterations.
+  std::vector<double> colour(mat_dims[2]);
+  std::vector<std::vector<int>> cluster_cells(centers.size());
+  std::vector<std::vector<double>> centers_vals_c_id_buf(mat_dims[2]);
+
   for (int itr = 0; itr < iter; itr++) {
     if (verbose > 0) std::printf("Iteration: %u/%u\r", itr + 1, iter);
+
+    if (adaptive_compactness) {
+      // SLIC0: update per-center value-distance scale before assignment.
+      compute_max_value_dist(vals, colour);
+    }
 
     // Reset per-pixel distances before assignment.
     for (int i = 0; i < mat_dims[1]; i++) {
@@ -37,17 +53,18 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
     // Assignment step: find the best center within a local window around each center.
     for (int l = 0; l < (int) centers.size(); l++) {
       /* Only compare to pixels in a 2 x step by 2 x step region. */
-      for (int m = centers[l][1] - step; m < centers[l][1] + step; m++) {
-        for (int n = centers[l][0] - step; n < centers[l][0] + step; n++) {
+      // Use rounded centers for window bounds while preserving fractional centers elsewhere
+      int center_x = (int) std::round(centers[l][1]);
+      int center_y = (int) std::round(centers[l][0]);
+      for (int m = center_x - step; m < center_x + step; m++) {
+        for (int n = center_y - step; n < center_y + step; n++) {
           if (m >= 0 && m < mat_dims[1] && n >= 0 && n < mat_dims[0]) {
             int ncell = m + (n * mat_dims[1]);
-
-            std::vector<double> colour; colour.reserve(mat_dims[2]);
 
             int count_na = 0;
             for (int nval = 0; nval < mat_dims[2]; nval++) {
               double val = vals[ncell * mat_dims[2] + nval];
-              colour.push_back(val);
+              colour[nval] = val;
               if (std::isnan(val)) {
                 count_na += 1;
               }
@@ -70,6 +87,8 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
     }
 
     // Update step: reset accumulators for center positions and values.
+    const auto prev_centers = centers;
+    const auto prev_centers_vals = centers_vals;
     for (int m = 0; m < (int) centers.size(); m++) {
       centers[m][0] = centers[m][1] = 0;
       for (int n = 0; n < (int) centers_vals[0].size(); n++) {
@@ -80,39 +99,41 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
 
     // Recompute centers using a non-mean (median/mean2/custom) aggregator.
     if (avg_fun_name != "mean") {
-      IntToIntMap c_id_centers_vals;
+      for (int c_id = 0; c_id < (int) cluster_cells.size(); c_id++) {
+        cluster_cells[c_id].clear();
+      }
       for (int l = 0; l < mat_dims[1]; l++) {
         for (int k = 0; k < mat_dims[0]; k++) {
           int c_id = clusters[l][k];
           if (c_id != -1) {
             int ncell = l + (k * mat_dims[1]);
-            c_id_centers_vals.insert(std::make_pair(c_id, ncell));
+            cluster_cells[c_id].push_back(ncell);
             centers[c_id][0] += k;
             centers[c_id][1] += l;
             center_counts[c_id] += 1;
           }
         }
       }
-      mapIter m_it, s_it;
-      for (m_it = c_id_centers_vals.begin(); m_it != c_id_centers_vals.end(); m_it = s_it) {
-        int c_id = (*m_it).first;
-        std::pair<mapIter, mapIter> keyRange = c_id_centers_vals.equal_range(c_id);
-        std::vector<std::vector<double> > centers_vals_c_id(mat_dims[2]);
-        for (s_it = keyRange.first; s_it != keyRange.second; ++s_it) {
-          int ncell = (*s_it).second;
+      for (int c_id = 0; c_id < (int) cluster_cells.size(); c_id++) {
+        if (cluster_cells[c_id].empty()) {
+          continue;
+        }
+        for (int nval = 0; nval < mat_dims[2]; nval++) {
+          centers_vals_c_id_buf[nval].clear();
+        }
+        for (int ncell : cluster_cells[c_id]) {
           for (int nval = 0; nval < mat_dims[2]; nval++) {
             double val = vals[ncell * mat_dims[2] + nval];
-            centers_vals_c_id[nval].push_back(val);
+            centers_vals_c_id_buf[nval].push_back(val);
           }
         }
         for (int nval = 0; nval < mat_dims[2]; nval++) {
-          // calculate
           if (avg_fun_name == "median") {
-            centers_vals[c_id][nval] = median(centers_vals_c_id[nval]);
+            centers_vals[c_id][nval] = median(centers_vals_c_id_buf[nval]);
           } else if (avg_fun_name == "mean2") {
-            centers_vals[c_id][nval] = mean(centers_vals_c_id[nval]);
+            centers_vals[c_id][nval] = mean(centers_vals_c_id_buf[nval]);
           } else if (avg_fun_name.empty()) {
-            centers_vals[c_id][nval] = avg_fn(centers_vals_c_id[nval]);
+            centers_vals[c_id][nval] = avg_fn(centers_vals_c_id_buf[nval]);
           }
         }
       }
@@ -122,8 +143,9 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
           centers[l][0] /= center_counts[l];
           centers[l][1] /= center_counts[l];
         } else {
-          centers[l][0] = -DBL_MAX;
-          centers[l][1] = center_counts[l];
+          // Keep previous center and values for empty clusters
+          centers[l] = prev_centers[l];
+          centers_vals[l] = prev_centers_vals[l];
         }
       }
     } else if (avg_fun_name == "mean") {
@@ -135,10 +157,9 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
           if (c_id != -1) {
             int ncell = l + (k * mat_dims[1]);
 
-            std::vector<double> colour; colour.reserve(mat_dims[2]);
             for (int nval = 0; nval < mat_dims[2]; nval++) {
-              double val = vals[ncell * mat_dims[2] + nval];
-              colour.push_back(val);
+            double val = vals[ncell * mat_dims[2] + nval];
+            colour[nval] = val;
             }
             centers[c_id][0] += k;
             centers[c_id][1] += l;
@@ -157,6 +178,10 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
           for (int nval = 0; nval < mat_dims[2]; nval++) {
             centers_vals[l][nval] /= center_counts[l];
           }
+        } else {
+          // Keep previous center and values for empty clusters
+          centers[l] = prev_centers[l];
+          centers_vals[l] = prev_centers_vals[l];
         }
       }
     }

@@ -5,41 +5,49 @@
 #include "cpp11/declarations.hpp"
 #include <R_ext/Visibility.h>
 
-// metrics_clusters.cpp
-cpp11::list sc_metrics_clusters_cpp(cpp11::integers_matrix<> clusters, cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int step, double compactness, std::string dist_name, cpp11::function dist_fun);
-extern "C" SEXP _supercells_sc_metrics_clusters_cpp(SEXP clusters, SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP step, SEXP compactness, SEXP dist_name, SEXP dist_fun) {
+// metrics_global.cpp
+cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters, cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int step, double compactness, bool adaptive_compactness, std::string dist_name, cpp11::function dist_fun);
+extern "C" SEXP _supercells_sc_metrics_global_cpp(SEXP clusters, SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP step, SEXP compactness, SEXP adaptive_compactness, SEXP dist_name, SEXP dist_fun) {
   BEGIN_CPP11
-    return cpp11::as_sexp(sc_metrics_clusters_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(clusters), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_xy), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_vals), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
+    return cpp11::as_sexp(sc_metrics_global_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(clusters), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_xy), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_vals), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<bool>>(adaptive_compactness), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
   END_CPP11
 }
-// metrics_global.cpp
-cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters, cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int step, double compactness, std::string dist_name, cpp11::function dist_fun);
-extern "C" SEXP _supercells_sc_metrics_global_cpp(SEXP clusters, SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP step, SEXP compactness, SEXP dist_name, SEXP dist_fun) {
+// metrics_local_mean.cpp
+cpp11::writable::doubles sc_metrics_local_mean_cpp(cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int rows, int cols, int step, std::string dist_name, cpp11::function dist_fun);
+extern "C" SEXP _supercells_sc_metrics_local_mean_cpp(SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP rows, SEXP cols, SEXP step, SEXP dist_name, SEXP dist_fun) {
   BEGIN_CPP11
-    return cpp11::as_sexp(sc_metrics_global_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(clusters), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_xy), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_vals), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
+    return cpp11::as_sexp(sc_metrics_local_mean_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_xy), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_vals), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(rows), cpp11::as_cpp<cpp11::decay_t<int>>(cols), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
   END_CPP11
 }
 // metrics_pixels.cpp
-cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters, cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int step, double compactness, std::string dist_name, cpp11::function dist_fun);
-extern "C" SEXP _supercells_sc_metrics_pixels_cpp(SEXP clusters, SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP step, SEXP compactness, SEXP dist_name, SEXP dist_fun) {
+cpp11::list sc_metrics_pixels_cpp(cpp11::integers_matrix<> clusters, cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int step, double compactness, bool adaptive_compactness, std::string dist_name, cpp11::function dist_fun);
+extern "C" SEXP _supercells_sc_metrics_pixels_cpp(SEXP clusters, SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP step, SEXP compactness, SEXP adaptive_compactness, SEXP dist_name, SEXP dist_fun) {
   BEGIN_CPP11
-    return cpp11::as_sexp(sc_metrics_pixels_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(clusters), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_xy), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_vals), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
+    return cpp11::as_sexp(sc_metrics_pixels_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(clusters), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_xy), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_vals), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<bool>>(adaptive_compactness), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
+  END_CPP11
+}
+// metrics_supercells.cpp
+cpp11::list sc_metrics_supercells_cpp(cpp11::integers_matrix<> clusters, cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int step, double compactness, bool adaptive_compactness, std::string dist_name, cpp11::function dist_fun);
+extern "C" SEXP _supercells_sc_metrics_supercells_cpp(SEXP clusters, SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP step, SEXP compactness, SEXP adaptive_compactness, SEXP dist_name, SEXP dist_fun) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(sc_metrics_supercells_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(clusters), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_xy), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(centers_vals), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<bool>>(adaptive_compactness), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
   END_CPP11
 }
 // run_slic.cpp
-cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double compactness, bool clean, bool centers, std::string dist_name, cpp11::function dist_fun, cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int minarea, cpp11::integers_matrix<> input_centers, int verbose, bool iter_diagnostics);
-extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP compactness, SEXP clean, SEXP centers, SEXP dist_name, SEXP dist_fun, SEXP avg_fun_fun, SEXP avg_fun_name, SEXP iter, SEXP minarea, SEXP input_centers, SEXP verbose, SEXP iter_diagnostics) {
+cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step, double compactness, bool adaptive_compactness, bool clean, bool centers, std::string dist_name, cpp11::function dist_fun, cpp11::function avg_fun_fun, std::string avg_fun_name, int iter, int minarea, cpp11::integers_matrix<> input_centers, bool iter_diagnostics, int verbose);
+extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP compactness, SEXP adaptive_compactness, SEXP clean, SEXP centers, SEXP dist_name, SEXP dist_fun, SEXP avg_fun_fun, SEXP avg_fun_name, SEXP iter, SEXP minarea, SEXP input_centers, SEXP iter_diagnostics, SEXP verbose) {
   BEGIN_CPP11
-    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<cpp11::integers>>(mat), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<bool>>(clean), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(avg_fun_fun), cpp11::as_cpp<cpp11::decay_t<std::string>>(avg_fun_name), cpp11::as_cpp<cpp11::decay_t<int>>(iter), cpp11::as_cpp<cpp11::decay_t<int>>(minarea), cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(input_centers), cpp11::as_cpp<cpp11::decay_t<int>>(verbose), cpp11::as_cpp<cpp11::decay_t<bool>>(iter_diagnostics)));
+    return cpp11::as_sexp(run_slic(cpp11::as_cpp<cpp11::decay_t<cpp11::integers>>(mat), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles_matrix<>>>(vals), cpp11::as_cpp<cpp11::decay_t<int>>(step), cpp11::as_cpp<cpp11::decay_t<double>>(compactness), cpp11::as_cpp<cpp11::decay_t<bool>>(adaptive_compactness), cpp11::as_cpp<cpp11::decay_t<bool>>(clean), cpp11::as_cpp<cpp11::decay_t<bool>>(centers), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(avg_fun_fun), cpp11::as_cpp<cpp11::decay_t<std::string>>(avg_fun_name), cpp11::as_cpp<cpp11::decay_t<int>>(iter), cpp11::as_cpp<cpp11::decay_t<int>>(minarea), cpp11::as_cpp<cpp11::decay_t<cpp11::integers_matrix<>>>(input_centers), cpp11::as_cpp<cpp11::decay_t<bool>>(iter_diagnostics), cpp11::as_cpp<cpp11::decay_t<int>>(verbose)));
   END_CPP11
 }
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
-    {"_supercells_run_slic",                (DL_FUNC) &_supercells_run_slic,                15},
-    {"_supercells_sc_metrics_clusters_cpp", (DL_FUNC) &_supercells_sc_metrics_clusters_cpp,  8},
-    {"_supercells_sc_metrics_global_cpp",   (DL_FUNC) &_supercells_sc_metrics_global_cpp,    8},
-    {"_supercells_sc_metrics_pixels_cpp",   (DL_FUNC) &_supercells_sc_metrics_pixels_cpp,    8},
+    {"_supercells_run_slic",                  (DL_FUNC) &_supercells_run_slic,                  16},
+    {"_supercells_sc_metrics_global_cpp",     (DL_FUNC) &_supercells_sc_metrics_global_cpp,      9},
+    {"_supercells_sc_metrics_local_mean_cpp", (DL_FUNC) &_supercells_sc_metrics_local_mean_cpp,  8},
+    {"_supercells_sc_metrics_pixels_cpp",     (DL_FUNC) &_supercells_sc_metrics_pixels_cpp,      9},
+    {"_supercells_sc_metrics_supercells_cpp", (DL_FUNC) &_supercells_sc_metrics_supercells_cpp,  9},
     {NULL, NULL, 0}
 };
 }

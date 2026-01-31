@@ -5,23 +5,25 @@
 #' spacing (`step`), as well as optional custom centers and chunked processing.
 #'
 #' @details
-#' Use `sc_slic` for polygon outputs. For raster or point centers outputs, see
-#' `sc_slic_raster` and `sc_slic_points`.
+#' Use [`sc_slic()`] for polygon outputs. For raster or point centers outputs, see
+#' [`sc_slic_raster()`] and [`sc_slic_points()`].
 #' Evaluation and diagnostic options:
 #' \itemize{
 #'   \item Iteration diagnostics: set `iter_diagnostics = TRUE` to attach an
-#'   `iter_diagnostics` attribute (only available without chunking).
+#'   `iter_diagnostics` attribute (only available without chunking). Use
+#'   [`sc_plot_iter_diagnostics()`] to visualize the convergence over iterations.
 #'   \item Pixel diagnostics: [sc_metrics_pixels()] for per-pixel spatial, value,
 #'   and combined distances.
-#'   \item Cluster diagnostics: [sc_metrics_clusters()] for per-supercell summaries.
+#'   \item Cluster diagnostics: [sc_metrics_supercells()] for per-supercell summaries.
 #'   \item Global diagnostics: [sc_metrics_global()] for a single-row summary.
 #' }
 #' @seealso [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_plot_iter_diagnostics()`],
-#'   [`sc_metrics_pixels()`], [`sc_metrics_clusters()`], [`sc_metrics_global()`]
+#'   [`sc_metrics_pixels()`], [`sc_metrics_supercells()`], [`sc_metrics_global()`]
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars).
-#' @param step The distance (number of cells) between initial centers (alternative to `k`).
-#' @param compactness A compactness value.
+#' @param step The distance (number of cells) between initial centers (alternative is `k`).
+#' @param compactness A compactness value. Use [`sc_tune_compactness()`] to estimate it.
+#' Set `compactness = "auto"` to enable SLIC0-style adaptive compactness.
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.
@@ -31,18 +33,17 @@
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param minarea Minimal size of a supercell (in cells).
 #' @param iter Number of iterations.
-#' @param transform Optional transformation applied before segmentation. Currently
-#' supports "to_LAB" for RGB inputs.
+#' @param step_unit Units for `step`. Use "cells" for pixel units or "map" for map units
+#' (converted to cells using raster resolution).
 #' @param k The number of supercells desired (alternative to `step`).
 #' @param centers Optional sf object of custom centers. Requires `step`.
 #' @param metadata Logical. Should metadata columns be kept?
 #' @param chunks Chunking option. Use `FALSE` for no chunking, `TRUE` for
 #' automatic chunking based on size, or a numeric value for a fixed chunk size
 #' (in number of cells per side).
-#' @param future Logical. Use future for parallelization?
 #' @param verbose Verbosity level.
-#' @param iter_diagnostics Logical. If `TRUE`, returns iteration diagnostics as an attribute
-#' (`iter_diagnostics`) on the output. Only available when chunks are not used.
+#' @param iter_diagnostics Logical. If `TRUE`, attaches iteration diagnostics as an
+#' attribute (`iter_diagnostics`) on the output. Only available when chunks are not used.
 #'
 #' @return An sf object with the supercell polygons and summary statistics.
 #' Information on `step` and `compactness` are attached to the result as attributes.
@@ -60,44 +61,20 @@
 #' terra::plot(vol)
 #' plot(sf::st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
-                   avg_fun = "mean", clean = TRUE, minarea, iter = 10, transform = NULL,
-                   k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
-                   future = FALSE, verbose = 0,
-                   iter_diagnostics = FALSE) {
+                   avg_fun = "mean", clean = TRUE, minarea, iter = 10,
+                   step_unit = "cells", k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
+                   iter_diagnostics = FALSE, verbose = 0) {
 
-  prep_args = .sc_slic_prep_args(x, step, compactness, k, centers, dist_fun, avg_fun,
-                            minarea, chunks, iter, transform, metadata, iter_diagnostics)
-
-  # if (iter == 0) {
-  #   stop("iter = 0 returns centers only; polygon output is not available", call. = FALSE)
-  # }
-
-  slic_sf = if (nrow(prep_args$chunk_ext) == 1) {
-    .sc_slic_run_single_vector(prep_args, compactness, clean, iter, transform, verbose, future, metadata)
-  } else {
-    .sc_slic_run_chunks_vector(prep_args, compactness, clean, iter, transform, verbose, future, metadata)
+  if (iter == 0) {
+    stop("iter = 0 returns centers only; polygon output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
   }
+  prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
+                                k, centers, metadata, chunks, iter_diagnostics, verbose)
 
-  iter_attr = NULL
-  if (prep_args$iter_diagnostics && is.list(slic_sf) && length(slic_sf) > 0) {
-    iter_attr = attr(slic_sf[[1]], "iter_diagnostics")
-  }
+  segment = .sc_slic_segment(prep_args, .sc_run_full_polygons, .sc_run_chunk_polygons)
 
-  result = .sc_slic_post(slic_sf, metadata, prep_args$step, compactness, iter_attr)
+  iter_attr = .sc_slic_add_iter_attr(segment$chunks, prep_args$iter_diagnostics)
+
+  result = .sc_slic_post(segment$chunks, prep_args, iter_attr)
   return(result)
-}
-
-.sc_slic_run_single_vector = function(prep, compactness, clean, iter, transform, verbose, future, metadata) {
-  ext = prep$chunk_ext[1, ]
-  return(list(run_slic_chunks(ext, prep$x, step = prep$step, compactness = compactness,
-                              dist_name = prep$funs$dist_name, dist_fun = prep$funs$dist_fun,
-                              avg_fun_fun = prep$funs$avg_fun_fun, avg_fun_name = prep$funs$avg_fun_name,
-                              clean = clean, iter = iter, minarea = prep$minarea, transform = transform,
-                              input_centers = prep$input_centers, verbose = verbose,
-                              iter_diagnostics = prep$iter_diagnostics, metadata = metadata)))
-}
-
-.sc_slic_run_chunks_vector = function(prep, compactness, clean, iter, transform, verbose, future, metadata) {
-  return(.sc_slic_apply_chunks(prep, run_slic_chunks, compactness, clean, iter, transform, verbose, future,
-                               metadata = metadata))
 }

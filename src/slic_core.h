@@ -4,7 +4,6 @@
 #include <cmath>
 #include <float.h>
 #include <functional>
-#include <map>
 #include <numeric>
 #include <string>
 #include <vector>
@@ -18,9 +17,9 @@ class SlicCore {
   ~SlicCore();
 
   void generate_superpixels(const std::vector<int>& mat_dims, const std::vector<double>& vals,
-                            int step, double compactness, DistFn dist_fn, AvgFn avg_fn,
-                            const std::string& avg_fun_name, int iter,
-                            const std::vector<std::array<int, 2>>& input_centers,
+                            int step, double compactness, bool adaptive_compactness,
+                            DistFn dist_fn, AvgFn avg_fn, const std::string& avg_fun_name,
+                            int iter, const std::vector<std::array<int, 2>>& input_centers,
                             int verbose, bool iter_diagnostics);
 
   void create_connectivity(const std::vector<double>& vals, AvgFn avg_fn,
@@ -37,8 +36,6 @@ class SlicCore {
   double compactness_value() const { return compactness; }
 
  private:
-  using IntToIntMap = std::multimap<int, int>;
-  using mapIter = IntToIntMap::iterator;
 
   std::vector<std::vector<int>> clusters;
   std::vector<std::vector<double>> distances;
@@ -47,12 +44,14 @@ class SlicCore {
   std::vector<std::vector<double>> centers_vals;
   std::vector<int> center_counts;
   std::vector<std::vector<int>> new_clusters;
+  std::vector<double> max_value_dist;
 
   bool iter_diagnostics_enabled = false;
   std::vector<double> iter_mean_distance;
 
   int step = 0;
   double compactness = 0.0;
+  bool adaptive_compactness = false;
 
   const std::vector<double>* vals_ptr = nullptr;
   int bands = 0;
@@ -69,5 +68,5 @@ class SlicCore {
 
   double compute_dist(int ci, int y, int x, const std::vector<double>& values) const;
   std::vector<double> find_local_minimum(const std::vector<double>& vals, int y, int x);
-  double value_at(int ncell, int nval) const;
+  void compute_max_value_dist(const std::vector<double>& vals, std::vector<double>& colour);
 };

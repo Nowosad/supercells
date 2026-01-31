@@ -4,14 +4,29 @@
 \alias{sc_metrics_global}
 \title{Global supercells metrics}
 \usage{
-sc_metrics_global(raster, x, dist_fun = "euclidean", compactness, step)
+sc_metrics_global(
+  raster,
+  x,
+  dist_fun = "euclidean",
+  scale = TRUE,
+  metrics = c("spatial", "value", "combined", "balance"),
+  compactness,
+  step
+)
 }
 \arguments{
 \item{raster}{The input SpatRaster used to create \code{x}}
 
 \item{x}{An sf object returned by \code{\link[=sc_slic]{sc_slic()}}}
 
-\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}}
+\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.}
+
+\item{scale}{Logical. If \code{TRUE}, scales spatial and value distances; output
+columns are named with the \verb{_scaled} suffix.}
+
+\item{metrics}{Character vector of metric ideas to return. Options:
+\code{"spatial"}, \code{"value"}, \code{"combined"}, \code{"balance"}. Default:
+\code{c("spatial", "value", "combined", "balance")}.}
 
 \item{compactness}{A compactness value used for the supercells
 If missing, uses \code{attr(x, "compactness")} when available}
@@ -21,22 +36,33 @@ If missing, uses \code{attr(x, "step")} when available}
 }
 \value{
 A data.frame with a single row of global metrics and columns:
+Interpretation:
+\describe{
+\item{mean_value_dist}{Lower values indicate more homogeneous supercells.}
+\item{mean_spatial_dist}{Lower values indicate more compact supercells.}
+\item{mean_combined_dist}{Overall distance; mainly useful for ranking.}
+\item{balance}{0 indicates balance between value and spatial terms; negative
+values indicate spatial dominance; positive values indicate value dominance.}
+}
 \describe{
 \item{step}{Step size used to generate supercells.}
 \item{compactness}{Compactness value used to generate supercells.}
 \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
-\item{mean_value_dist}{Mean per-supercell value distance from pixels to their
-supercell centers, averaged across supercells.}
-\item{mean_spatial_dist}{Mean per-supercell spatial distance from pixels to
+\item{mean_value_dist}{Mean per-supercell value distance from cells to their
+supercell centers, averaged across supercells. Returned as \code{mean_value_dist}
+(or \code{mean_value_dist_scaled} when \code{scale = TRUE}).}
+\item{mean_spatial_dist}{Mean per-supercell spatial distance from cells to
 their supercell centers, averaged across supercells; units are grid cells
-(row/column index distance), not map units.}
+(row/column index distance), not map units. Returned as \code{mean_spatial_dist}
+(or \code{mean_spatial_dist_scaled} when \code{scale = TRUE}).}
 \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 value and spatial distances using \code{compactness} and \code{step}, averaged across
-supercells.}
-\item{compactness_ratio_mean}{Mean ratio of scaled value distance to scaled
-spatial distance, averaged across supercells; \code{NA} when \code{compactness} or
-\code{step} is zero.}
+supercells. Returned as \code{mean_combined_dist}.}
+\item{balance}{Mean signed log ratio of scaled value distance to scaled
+spatial distance; 0 indicates balance.}
 }
+When \code{scale = TRUE}, \code{mean_spatial_dist} and \code{mean_value_dist} are returned as
+\code{mean_spatial_dist_scaled} and \code{mean_value_dist_scaled}.
 }
 \description{
 Computes global distance diagnostics for supercells
@@ -45,13 +71,17 @@ Computes global distance diagnostics for supercells
 Requires \code{x} with metadata columns (\code{supercells}, \code{x}, \code{y})
 If they are missing, they are derived from geometry and row order
 Set \code{metadata = TRUE} when calling \code{sc_slic()} or \code{supercells()}
+Metrics are averaged across supercells (each supercell has equal weight).
+When using SLIC0 (set \code{compactness = "auto"} in \code{\link[=sc_slic]{sc_slic()}}), combined and balance metrics use per-supercell
+adaptive compactness, and scaled value distances are computed with the
+per-supercell max value distance.
 }
 \examples{
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
-vol_sc = sc_slic(vol, step = 8, compactness = 1)
+vol_sc = sc_slic(vol, step = 8, compactness = 7)
 sc_metrics_global(vol, vol_sc)
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_clusters]{sc_metrics_clusters()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}
 }

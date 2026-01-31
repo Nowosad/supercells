@@ -13,22 +13,22 @@ sc_slic_points(
   clean = TRUE,
   minarea,
   iter = 10,
-  transform = NULL,
+  step_unit = "cells",
   k = NULL,
   centers = NULL,
   metadata = FALSE,
   chunks = FALSE,
-  future = FALSE,
-  verbose = 0,
-  iter_diagnostics = FALSE
+  iter_diagnostics = FALSE,
+  verbose = 0
 )
 }
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
-\item{step}{The distance (number of cells) between initial centers (alternative to \code{k}).}
+\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
 
-\item{compactness}{A compactness value.}
+\item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
+Set \code{compactness = "auto"} to enable SLIC0-style adaptive compactness.}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
@@ -44,8 +44,8 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{iter}{Number of iterations.}
 
-\item{transform}{Optional transformation applied before segmentation. Currently
-supports "to_LAB" for RGB inputs.}
+\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units
+(converted to cells using raster resolution).}
 
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
@@ -57,33 +57,33 @@ supports "to_LAB" for RGB inputs.}
 automatic chunking based on size, or a numeric value for a fixed chunk size
 (in number of cells per side).}
 
-\item{future}{Logical. Use future for parallelization?}
+\item{iter_diagnostics}{Logical. If \code{TRUE}, attaches iteration diagnostics as an
+attribute (\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
 
 \item{verbose}{Verbosity level.}
-
-\item{iter_diagnostics}{Logical. If \code{TRUE}, returns iteration diagnostics as an attribute
-(\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
 }
 \value{
-An sf object with supercell centroid points and summary statistics
+An sf object with supercell center points and summary statistics
 }
 \description{
-Runs the SLIC workflow and returns supercell centroids as points.
+Runs the SLIC workflow and returns supercell centers as points.
 Use \code{iter = 0} to return the initial centers before iterations.
-For polygon outputs, use \code{sc_slic}; for raster IDs, use \code{sc_slic_raster}
+For polygon outputs, use \code{\link[=sc_slic]{sc_slic()}}; for raster output, use \code{\link[=sc_slic_raster]{sc_slic_raster()}}
 }
 \examples{
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 
-init_pts = sc_slic_points(vol, step = 20, compactness = 1, iter = 1)
+# initial centers (only after local minima placement, no iterations)
+init_pts = sc_slic_points(vol, step = 12, compactness = 1, iter = 0)
 terra::plot(vol)
 plot(sf::st_geometry(init_pts), add = TRUE, pch = 3, col = "red")
 
-vol_pts = sc_slic_points(vol, step = 8, compactness = 1)
+# final supercell centers
+vol_pts = sc_slic_points(vol, step = 12, compactness = 1)
 terra::plot(vol)
-plot(sf::st_geometry(vol_pts), add = TRUE, pch = 16, cex = 0.4)
+plot(sf::st_geometry(vol_pts), add = TRUE, pch = 16, col = "red")
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_slic_raster]{sc_slic_raster()}}
 }
