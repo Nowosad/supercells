@@ -1,0 +1,46 @@
+---
+title: "Segmentation workflows"
+author: Jakub Nowosad
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Segmentation workflows}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<!--
+Goal: show practical sc_slic() workflows and the three output types.
+-->
+
+# Polygon output (sc_slic)
+
+<!--
+Demonstrate basic sc_slic() usage, step vs k, clean/iter, and chunks.
+-->
+
+# Point output (sc_slic_points)
+
+<!--
+Show center points output and how it differs from polygon output.
+-->
+
+# Raster output (sc_slic_raster)
+
+<!--
+Show ID raster output and how to use it downstream.
+-->
+
+# Example variants
+
+<!--
+Optional: short examples for continuous data, RGB (transform to LAB), categorical data.
+Keep runtime light.
+-->

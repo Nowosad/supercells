@@ -24,14 +24,3 @@ plot(superpixels0)
 #                                       minarea = 16,
 #                                       chunks = 150)})
 #
-# library(future)
-# plan(multisession, workers = 1)
-#
-# system.time({superpixels2 = supercells(x = ortho,
-#                                        k = y1,
-#                                        step = 50,
-#                                       compactness = 0.5,
-#                                       dist_fun = "jsd",
-#                                       minarea = 16,
-#                                       chunks = 150,
-#                                       future = TRUE)})

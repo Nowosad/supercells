@@ -1,0 +1,39 @@
+---
+title: "Evaluation and diagnostics"
+author: Jakub Nowosad
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Evaluation and diagnostics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<!--
+Goal: explain how to evaluate results and interpret metrics.
+-->
+
+# Pixel metrics
+
+<!--
+Use sc_metrics_pixels() for per-pixel diagnostics.
+-->
+
+# Supercell metrics
+
+<!--
+Use sc_metrics_supercells() for per-cluster summaries.
+-->
+
+# Global metrics
+
+<!--
+Use sc_metrics_global() for overall summaries and comparisons.
+-->

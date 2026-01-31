@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-> **Version note:** This vignette documents the `supercells()` interface as it existed in version 1.0 of the package. Some arguments, defaults, and behaviors may differ in newer releases. For up-to-date details, see `?supercells` and the current reference docs.
+> **Version note:** This vignette documents the `supercells()` interface as it existed in version 1.0 of the package. Some arguments, defaults, and behaviors may differ in newer releases. For up-to-date details, see `?sc_slic` and the current reference docs.
 
 Superpixels are a collection of segmentation concepts of grouping pixels with similar characteristics.
 In this package, we refer to them as supercells.

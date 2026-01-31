@@ -1,0 +1,48 @@
+---
+title: "Introduction to supercells"
+author: Jakub Nowosad
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to supercells}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<!--
+Goal: quick overview of the core API and outputs.
+Keep it short; link out to the other vignettes for details.
+-->
+
+# What this package does
+
+<!--
+Explain SLIC-based supercells, typical use cases, and the core workflow.
+-->
+
+# Core functions
+
+<!--
+Introduce sc_slic() as the main engine.
+Briefly mention sc_slic_points() and sc_slic_raster() as alternate outputs.
+-->
+
+# Minimal example
+
+<!--
+Show a tiny example (small raster, few steps).
+Keep runtime light and avoid large data.
+-->
+
+# Where to go next
+
+<!--
+Link to the workflow, tuning, and evaluation vignettes.
+-->

@@ -2,7 +2,6 @@ devtools::load_all()
 library(motif)
 library(sf)
 library(terra)
-library(Rcpp)
 
 # small test
 # to make sense of it you need to uncomment printing in slic.cpp
@@ -14,19 +13,18 @@ vol_slic1a = supercells(r, step = 2, compactness = 1, clean = FALSE,
                         avg_fun = "mean", iter = 30)
 
 plot(r)
-plot(st_geometry(vol_slic1a), add = TRUE, lwd = 0.5)
+plot(st_geometry(vol_slic1a), add = TRUE, lwd = 1.5, border = "red")
 
 # 1 -----------------------------------------------------------------------
 nlcd = rast(system.file("raster/nlcd2011.tif", package = "spDataLarge"))
 
-bench::mark(vol_slic1a = supercells(nlcd, k = 50, compactness = 1, clean = TRUE, avg_fun = "median"),
-            vol_slic2a = supercells(nlcd, k = 50, compactness = 1, clean = TRUE, avg_fun = median),
+bench::mark(vol_slic1a <- supercells(nlcd, k = 50, compactness = 1, clean = TRUE, avg_fun = "median"),
+            vol_slic2a <- supercells(nlcd, k = 50, compactness = 1, clean = TRUE, avg_fun = median),
             check = FALSE)
 
-
-vol_slic1a = supercells(nlcd, k = 50, compactness = 1, clean = TRUE, avg_fun = "median")
-vol_slic2a = supercells(nlcd, k = 50, compactness = 1, clean = TRUE, avg_fun = "mean")
+vol_slic1a_median = supercells(nlcd, k = 50, compactness = 1, clean = TRUE, avg_fun = "median")
+vol_slic1a_mean = supercells(nlcd, k = 50, compactness = 1, clean = TRUE, avg_fun = "mean")
 
 plot(nlcd)
-plot(st_geometry(vol_slic1a), add = TRUE, lwd = 0.5)
-plot(st_geometry(vol_slic2a), add = TRUE, lwd = 0.5, border = "red")
+plot(st_geometry(vol_slic1a_median), add = TRUE, lwd = 0.5)
+plot(st_geometry(vol_slic1a_mean), add = TRUE, lwd = 0.5, border = "red")
