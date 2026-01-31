@@ -57,8 +57,6 @@ See the package’s vignettes:
     raster](https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html)
 4.  [Superpixels of spatial categorical
     patterns](https://jakubnowosad.com/supercells/articles/articles/motifels.html)
-5.  [Experimental features of the supercells
-    package](https://jakubnowosad.com/supercells/articles/articles/experimental.html)
 
 Watch the presentations about this package and some related ideas:
 

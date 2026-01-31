@@ -22,14 +22,13 @@ Invisibly returns `TRUE` when a plot is created
 ## See also
 
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md),
-[`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md),
-[`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
+[`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)
 
 ## Examples
 
 ``` r
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
-vol_sc = sc_slic(vol, step = 8, compactness = 1, iter_diagnostics = TRUE)
+vol_sc = sc_slic_points(vol, step = 8, compactness = 1, iter_diagnostics = TRUE)
 sc_plot_iter_diagnostics(vol_sc)
 ```

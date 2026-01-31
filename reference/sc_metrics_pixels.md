@@ -1,11 +1,20 @@
 # Pixel-level supercells metrics
 
-Computes per-pixel spatial, value, and combined distance diagnostics
+Computes per-pixel distance diagnostics from each pixel to its supercell
+center
 
 ## Usage
 
 ``` r
-sc_metrics_pixels(raster, x, dist_fun = "euclidean", compactness, step)
+sc_metrics_pixels(
+  raster,
+  x,
+  dist_fun = "euclidean",
+  scale = TRUE,
+  metrics = c("spatial", "value", "combined"),
+  compactness,
+  step
+)
 ```
 
 ## Arguments
@@ -22,7 +31,18 @@ sc_metrics_pixels(raster, x, dist_fun = "euclidean", compactness, step)
 - dist_fun:
 
   A distance function name or function, as in
-  [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
+  [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md).
+
+- scale:
+
+  Logical. If `TRUE`, returns `spatial` and `value` as scaled distances
+  (`spatial_scaled`, `value_scaled`).
+
+- metrics:
+
+  Character vector of metrics to return. Options: `"spatial"`,
+  `"value"`, `"combined"`, `"balance"`. Default:
+  `c("spatial", "value", "combined")`.
 
 - compactness:
 
@@ -36,7 +56,27 @@ sc_metrics_pixels(raster, x, dist_fun = "euclidean", compactness, step)
 
 ## Value
 
-A SpatRaster with three layers:
+A SpatRaster with one or more layers depending on `metrics`.
+Interpretation:
+
+- spatial:
+
+  Lower values indicate more compact supercells.
+
+- value:
+
+  Lower values indicate more homogeneous supercells.
+
+- combined:
+
+  Overall distance; mainly useful for ranking.
+
+- balance:
+
+  0 indicates balance; negative values indicate spatial dominance;
+  positive values indicate value dominance.
+
+Metrics:
 
 - spatial:
 
@@ -50,18 +90,30 @@ A SpatRaster with three layers:
 
 - combined:
 
-  Combined distance using `compactness` and `step` to scale value and
-  spatial distances.
+  Combined distance using `compactness` and `step`.
+
+- balance:
+
+  Signed log ratio of scaled value distance to scaled spatial distance;
+  0 indicates balance. Always computed from scaled components.
+
+When `scale = TRUE`, `spatial` and `value` are returned as
+`spatial_scaled` and `value_scaled`.
 
 ## Details
 
 If `x` lacks `supercells`, `x`, or `y` columns, they are derived from
-geometry and row order, which may differ from the original centers
+geometry and row order, which may differ from the original centers. When
+using SLIC0 (set `compactness = "auto"` in
+[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)),
+combined and balance metrics use per-supercell adaptive compactness, and
+scaled value distances are computed with the per-supercell max value
+distance.
 
 ## See also
 
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md),
-[`sc_metrics_clusters()`](https://jakubnowosad.com/supercells/reference/sc_metrics_clusters.md),
+[`sc_metrics_supercells()`](https://jakubnowosad.com/supercells/reference/sc_metrics_supercells.md),
 [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md)
 
 ## Examples
@@ -69,7 +121,7 @@ geometry and row order, which may differ from the original centers
 ``` r
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
-vol_sc = sc_slic(vol, step = 8, compactness = 1)
-metrics = sc_metrics_pixels(vol, vol_sc)
+vol_sc = sc_slic(vol, step = 8, compactness = 7)
+metrics = sc_metrics_pixels(vol, vol_sc, scale = TRUE)
 terra::panel(metrics, nr = 1)
 ```

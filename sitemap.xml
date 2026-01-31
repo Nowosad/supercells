@@ -2,7 +2,6 @@
 <url><loc>https://jakubnowosad.com/supercells/404.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/LICENSE.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/articles/benchmarks.html</loc></url>
-<url><loc>https://jakubnowosad.com/supercells/articles/experimental.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/articles/index.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/articles/main-function.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/articles/motifels.html</loc></url>
@@ -12,13 +11,14 @@
 <url><loc>https://jakubnowosad.com/supercells/index.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/news/index.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/reference/index.html</loc></url>
-<url><loc>https://jakubnowosad.com/supercells/reference/sc_metrics_clusters.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/reference/sc_metrics_global.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/reference/sc_metrics_supercells.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/reference/sc_slic.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/reference/sc_slic_points.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/reference/sc_slic_raster.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/reference/sc_tune_compactness.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/reference/supercells-package.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/reference/supercells.html</loc></url>
 </urlset>

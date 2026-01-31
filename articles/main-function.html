@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,12 +33,13 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks of the supercells package</a></li>
-    <li><a class="dropdown-item" href="../articles/experimental.html">Experimental features of the supercells package</a></li>
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
     <li><a class="dropdown-item" href="../articles/main-function.html">The supercells() function</a></li>
-    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
+    <li><a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a></li>
     <li><a class="dropdown-item" href="../articles/one_var.html">Superpixels of a single raster layer</a></li>
     <li><a class="dropdown-item" href="../articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
+    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -64,9 +65,9 @@
                         <h4 data-toc-skip class="author">Jakub
 Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2026-01-23</h4>
+            <h4 data-toc-skip class="date">2026-01-31</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/master/vignettes/articles/main-function.Rmd" class="external-link"><code>vignettes/articles/main-function.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/main-function.Rmd" class="external-link"><code>vignettes/articles/main-function.Rmd</code></a></small>
       <div class="d-none name"><code>main-function.Rmd</code></div>
     </div>
 
@@ -79,35 +80,35 @@ of its arguments is shown in the table below.</p>
 (representing, for example, different bands, variables, or dates) in the
 form of a <strong>terra</strong>’s <code>SpatRaster</code> object or a
 <strong>stars</strong>’s <code>stars</code> object. The resulting
-superpixels are stored as <code>sf</code> polygons with four or more
-columns containing identification numbers of superpixels, y and x
-coordinates of their centroids, and one or more columns with average
-values of variables for each superpixel.</p>
-<p>The number of resulting superpixels can be specified with either
+supercells are stored as <code>sf</code> polygons with four or more
+columns containing identification numbers of supercells, y and x
+coordinates of their centers, and one or more columns with average
+values of variables for each supercell.</p>
+<p>The number of resulting supercells can be specified with either
 <code>k</code> or <code>step</code> arguments. <code>k</code> relates to
-the desired number of superpixels. When the <code>k</code> value is set,
+the desired number of supercells. When the <code>k</code> value is set,
 the algorithm automatically calculates the value of <code>step</code>.
-As, by default, cluster centroids are located regularly, the resulting
-number of superpixels may slightly differ from the number provided as
+As, by default, supercell centers are located regularly, the resulting
+number of supercells may slightly differ from the number provided as
 <code>k</code>, e.g., a square raster cannot be divided into five equal
 square areas. <code>step</code> is the expected distance, in the number
-of cells, between initial superpixels’ centroids. This parameter also
-defines a zone of influence of each cluster center
+of cells, between initial supercell centers. This parameter also defines
+a zone of influence of each cluster center
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>S</mi><mo>×</mo><mn>2</mn><mi>S</mi></mrow><annotation encoding="application/x-tex">2S \times 2S</annotation></semantics></math>
 region).</p>
 <p>In our software, it is also possible to provide a set of points (an
 <code>sf</code> object) as <code>k</code> together with the
-<code>step</code> value. This way, custom cluster centers are used, with
-each of them attracting cells in the surrounding
+<code>step</code> value. This way, custom supercell centers are used,
+with each of them attracting cells in the surrounding
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>S</mi><mo>×</mo><mn>2</mn><mi>S</mi></mrow><annotation encoding="application/x-tex">2S \times 2S</annotation></semantics></math>
 region.</p>
 <p>While <code>k</code> or <code>step</code> determines the number of
-superpixels, the <code>compactness</code> argument controls their
-spatial shape, with its large value giving more importance to spatial
-distances between cells and superpixels’ centers and its smaller value
-putting more weight (importance) to the value distance. The impact of
-the compactness value depends on the range of input cell values and the
-selected distance measure.</p>
+supercells, the <code>compactness</code> argument controls their spatial
+shape, with its large value giving more importance to spatial distances
+between cells and supercells’ centers and its smaller value putting more
+weight (importance) to the value distance. The impact of the compactness
+value depends on the range of input cell values and the selected
+distance measure.</p>
 <table class="table">
 <caption>Table: Overview of the arguments accepted by the
 <code><a href="../reference/supercells.html">supercells()</a></code> function</caption>
@@ -123,14 +124,14 @@ selected distance measure.</p>
 </tr>
 <tr class="even">
 <td align="left"><strong><code>k</code></strong></td>
-<td align="left">A number of superpixels desired by the user. It is also
+<td align="left">A number of supercells desired by the user. It is also
 possible to provide a set of points (an sf object) as k together with
-the step value to create custom cluster centers</td>
+the step value to create custom supercell centers</td>
 </tr>
 <tr class="odd">
 <td align="left"><strong><code>compactness</code></strong></td>
-<td align="left">A compactness value. Larger values cause clusters to be
-more compact/even (squarish)</td>
+<td align="left">A compactness value. Larger values cause supercells to
+be more compact/even (squarish)</td>
 </tr>
 <tr class="even">
 <td align="left"><code>dist_fun</code></td>
@@ -139,7 +140,7 @@ more compact/even (squarish)</td>
 <tr class="odd">
 <td align="left"><code>avg_fun</code></td>
 <td align="left">An averaging function specifying how the values of the
-superpixels’ centers are recalculated</td>
+supercells’ centers are recalculated</td>
 </tr>
 <tr class="even">
 <td align="left"><code>clean</code></td>
@@ -154,23 +155,18 @@ output</td>
 <tr class="even">
 <td align="left"><code>step</code></td>
 <td align="left">A distance, in the number of cells, between initial
-superpixels’ centers</td>
+supercells’ centers</td>
 </tr>
 <tr class="odd">
 <td align="left"><code>minarea</code></td>
-<td align="left">A minimal size of the output superpixels in cells</td>
+<td align="left">A minimal size of the output supercells in cells</td>
 </tr>
 <tr class="even">
 <td align="left"><code>chunks</code></td>
 <td align="left">A boolean or numeric value specifying if the input (x)
-should be split into chunks before deriving superpixels</td>
+should be split into chunks before deriving supercells</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>future</code></td>
-<td align="left">A boolean specifying if the future package should be
-used for parallelization of the calculations</td>
-</tr>
-<tr class="even">
 <td align="left"><code>verbose</code></td>
 <td align="left">An integer specifying the verboseness of text messages
 printed during calculations</td>
@@ -195,7 +191,7 @@ R package <code>philentropy</code> <span class="citation">(Dorst
 2018)</span>. Thirdly, this argument also accepts any user-defined R
 function that returns one value based on provided two vectors.</p>
 <p>The <code>avg_fun</code> function, on the other hand, specifies how
-the values of the superpixels’ centers are calculated. It has two
+the values of the supercells’ centers are calculated. It has two
 internal functions implemented in C++ - <code>"mean"</code> and
 <code>"median"</code>, but also accepts any fitting R function such as,
 <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">base::mean()</a></code> or <code>psych::geometric.mean()</code>. This
@@ -208,16 +204,16 @@ superpixel consisting of two or more distinct patches, where one patch
 is large while additional ones are distinctly smaller. The
 <code>supercells</code> function has two arguments, <code>clean</code>
 and <code>minarea</code>, allowing to enforce connectivity of the
-superpixels. The first argument, <code>clean</code>, is a boolean
+supercells. The first argument, <code>clean</code>, is a boolean
 (<code>TRUE</code> by default) specifying if the connectivity should be
 enforced by removing small disconnected patches (by merging with larger
-neighborhood ones) or promoting small patches to new superpixels. The
+neighborhood ones) or promoting small patches to new supercells. The
 role of the second one, <code>minarea</code>, is to control how large
 disconnected patches must be not be removed. By default, when
 <code>clean = TRUE</code>, an average area
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>)
 is calculated automatically based on the total number of cells divided
-by a number of superpixels, and next, the minimal size of a superpixel
+by a number of supercells, and next, the minimal size of a superpixel
 equals
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mn>2</mn><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">A/(2^2)</annotation></semantics></math>.
 Alternatively, users can also specify the minimum size of a superpixel
@@ -226,7 +222,7 @@ the <code>minarea</code> argument.</p>
 <p>The next argument is <code>iter</code> - specifying the number of
 iterations to create the output. Its default value of 10 follows the
 advice by <span class="citation">Achanta et al. (2012)</span> This
-argument defines how many times superpixels (and their centers) are
+argument defines how many times supercells (and their centers) are
 recalculated before obtaining the final results.</p>
 <p>By default, the <code>supercells</code> function, as R language, is
 single-threaded – runs only on a single thread on the CPU and reads the
@@ -234,22 +230,20 @@ input raster values into the computer memory. These features may limit
 the function’s usability for raster datasets with millions or more cells
 and many variables, for which calculations can either be too slow or
 require more memory that is available. To overcome the aforementioned
-issues, the <code>supercells</code> function has two related optional
-arguments - <code>chunks</code> and <code>future</code>.</p>
+issues, the <code>supercells</code> function has the <code>chunks</code>
+argument.</p>
 <p>The <code>chunks</code> argument is set by default to
 <code>FALSE</code>. However, when it is either <code>TRUE</code> or some
 numerical value, then the split, apply, combine procedure is used: input
 raster is divided into several chunks, each chunk is read into RAM
-independently and has a set of superpixels derived; this process is
+independently and has a set of supercells derived; this process is
 repeated for every chunk, and all the results are combined into one
 final object. When the user sets this argument to <code>TRUE</code>, the
 chunks’ sizes are calculated automatically, while when the user provides
 a numerical value to this argument, then the input raster data is split
 into chunks with user-defined side length (in the number of pixels). The
-<code>future</code> argument is also set by default to
-<code>FALSE</code>. If it is <code>TRUE</code>, the user also needs to
-specify how parallel processing should be performed and on how many CPU
-threads with <code><a href="https://future.futureverse.org/reference/plan.html" class="external-link">future::plan()</a></code>.</p>
+<code>chunks</code> argument is set by default to
+<code>FALSE</code>.</p>
 <p>The final argument is called <code>verbose</code>, which takes an
 integer value of 0 or larger, where 0 means no additional messages
 during the calculations, and 1 provides basic messages about the current

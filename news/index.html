@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,12 +18,13 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks of the supercells package</a></li>
-    <li><a class="dropdown-item" href="../articles/experimental.html">Experimental features of the supercells package</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
     <li><a class="dropdown-item" href="../articles/main-function.html">The supercells() function</a></li>
-    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
+    <li><a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a></li>
     <li><a class="dropdown-item" href="../articles/one_var.html">Superpixels of a single raster layer</a></li>
     <li><a class="dropdown-item" href="../articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
+    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -37,18 +38,50 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/Nowosad/supercells/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/Nowosad/supercells/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.8" id="supercells-18">supercells 1.8<a class="anchor" aria-label="anchor" href="#supercells-18"></a></h2>
+<ul><li>
+<code>compactness = "auto"</code> enables SLIC0-style adaptive compactness</li>
+<li>Metrics now support SLIC0 adaptive compactness (pixels/supercells/global)</li>
+<li>
+<code><a href="../reference/sc_tune_compactness.html">sc_tune_compactness()</a></code> returns only <code>step</code> + one compactness, selected by <code>metrics = "global"</code> or <code>"local"</code>
+</li>
+<li>Chunked raster IDs now use a consistent center-count offset strategy</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.7" id="supercells-17">supercells 1.7<a class="anchor" aria-label="anchor" href="#supercells-17"></a></h2>
+<ul><li>Added <code><a href="../reference/sc_tune_compactness.html">sc_tune_compactness()</a></code> to estimate compactness from a short SLIC run</li>
+<li>Metrics API cleanup: renamed <code>sc_metrics_clusters()</code> to <code><a href="../reference/sc_metrics_supercells.html">sc_metrics_supercells()</a></code>, unified metric names, <code>_scaled</code> suffix for scaled outputs</li>
+<li>Balance metrics now use absolute log ratio of scaled value/spatial distances</li>
+<li>
+<code>iter = 0</code> only works for point outputs; polygons/rasters error with guidance</li>
+<li>
+<code><a href="../reference/sc_slic.html">sc_slic()</a></code>/<code><a href="../reference/sc_slic_points.html">sc_slic_points()</a></code>/<code><a href="../reference/sc_slic_raster.html">sc_slic_raster()</a></code> dropped the <code>transform</code> argument; legacy <code><a href="../reference/supercells.html">supercells()</a></code> keeps <code>transform = "to_LAB"</code>
+</li>
+<li>New <code>step_unit</code> supports map-unit step sizes</li>
+<li>Chunking improvements: conservative memory estimates, <code>options(supercells.chunk_mem_gb)</code>, chunk sizes align to <code>step</code>, deterministic ID offsets with file-backed merge</li>
+<li>Verbose argument moved to the end in R and C++ APIs</li>
+<li>Empty-cluster handling now consistent across cleanup</li>
+<li>Removed <code>future</code>-based parallel chunking</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.6" id="supercells-16">supercells 1.6<a class="anchor" aria-label="anchor" href="#supercells-16"></a></h2>
+<ul><li>Spatial distance uses precise (fractional) center positions; neighborhood search still uses rounded centers (minor output differences are expected vs 1.5)</li>
+<li>More robust center handling (custom centers, empty centers) and safer cleanup for small regions</li>
+<li>Local-minimum search improved</li>
+<li>Tests standardized via <code>tests/testthat/setup.R</code> and updated expectations</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5" id="supercells-15">supercells 1.5<a class="anchor" aria-label="anchor" href="#supercells-15"></a></h2>
-<ul><li>Refactored core C++ SLIC implementation for clearer data flow, center updates, and diagnostics support, with related cleanup in supporting utilities</li>
-<li>Expanded internal R helper modules (<code>.sc_prep_raster()</code>, <code>.sc_metrics_prep()</code>, <code>.sc_slic_prep_args()</code>) to centralize validation, chunk handling, and function normalization across workflows</li>
-<li>Reorganized SLIC runners and chunk helpers (<code>run_slic_chunk_raster()</code>, <code>run_slic_chunk_points()</code>, <code>run_slic_chunks()</code>, <code>update_supercells_ids()</code>) to improve metadata handling, chunk ID normalization, and cross-output consistency</li>
-<li>Added and standardized SLIC functions <code><a href="../reference/sc_slic.html">sc_slic()</a></code>, <code><a href="../reference/sc_slic_points.html">sc_slic_points()</a></code>, and <code><a href="../reference/sc_slic_raster.html">sc_slic_raster()</a></code> with consistent options, metadata handling, and chunking behavior – the <code><a href="../reference/sc_slic.html">sc_slic()</a></code> is planned as the main user-facing function in the future (replacing <code><a href="../reference/supercells.html">supercells()</a></code>)</li>
-<li>Added diagnostics API: <code><a href="../reference/sc_metrics_pixels.html">sc_metrics_pixels()</a></code>, <code><a href="../reference/sc_metrics_clusters.html">sc_metrics_clusters()</a></code>, and <code><a href="../reference/sc_metrics_global.html">sc_metrics_global()</a></code>, each documented with examples and output descriptions</li>
-<li>Added iteration diagnostics output via <code>iter_diagnostics</code> and a plotting helper <code><a href="../reference/sc_plot_iter_diagnostics.html">sc_plot_iter_diagnostics()</a></code> for quick inspection of convergence behavior</li>
-<li>Expanded tests for metrics and regression cases</li>
+<ul><li>Major C++ SLIC refactor (clearer data flow, diagnostics support) with supporting utility cleanup</li>
+<li>Standardized <code><a href="../reference/sc_slic.html">sc_slic()</a></code>, <code><a href="../reference/sc_slic_points.html">sc_slic_points()</a></code>, <code><a href="../reference/sc_slic_raster.html">sc_slic_raster()</a></code> with consistent options/metadata/chunking; <code><a href="../reference/sc_slic.html">sc_slic()</a></code> is now the main entry point</li>
+<li>Added diagnostics API (<code><a href="../reference/sc_metrics_pixels.html">sc_metrics_pixels()</a></code>, <code>sc_metrics_clusters()</code>, <code><a href="../reference/sc_metrics_global.html">sc_metrics_global()</a></code>) and <code>iter_diagnostics</code> + <code><a href="../reference/sc_plot_iter_diagnostics.html">sc_plot_iter_diagnostics()</a></code>
+</li>
+<li>Centralized internal helpers for validation, chunking, and normalization</li>
+<li>Expanded regression and metrics tests</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.3" id="supercells-103">supercells 1.0.3<a class="anchor" aria-label="anchor" href="#supercells-103"></a></h2>

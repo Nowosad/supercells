@@ -1,15 +1,16 @@
-# Superpixels of a single raster layer
+# Supercells of a single raster layer
 
-Superpixels is a collection of segmentation concepts of grouping pixels
-with similar characteristics. It is often used in computer vision to
-delineate parts of RGB images that are more meaningful and easier to
-analyze. When applied to RGB images, each superpixel contains similar
-colors that also could represent real-world objects. A large number of
-methods for creating superpixels were developed in the last decades,
-with the SLIC algorithm (Achanta et al. (2012),
-<doi:10.1109/TPAMI.2012.120>) being the most prominent.
+Superpixels are a collection of segmentation concepts of grouping pixels
+with similar characteristics. In this package, we refer to them as
+supercells. It is often used in computer vision to delineate parts of
+RGB images that are more meaningful and easier to analyze. When applied
+to RGB images, each superpixel contains similar colors that also could
+represent real-world objects. A large number of methods for creating
+superpixels were developed in the last decades, with the SLIC algorithm
+(Achanta et al. (2012), <doi:10.1109/TPAMI.2012.120>) being the most
+prominent.
 
-The **supercells** package aims to utilize the concept of superpixels to
+The **supercells** package aims to utilize the concept of supercells for
 a variety of spatial data. This package works on spatial data with one
 variable (e.g., continuous raster), many variables (e.g., RGB rasters),
 and spatial patterns (e.g., areas in categorical rasters). Therefore, it
@@ -22,7 +23,7 @@ raster layer. To reproduce the following results on your own computer,
 install and attach the packages:
 
 ``` r
-library(supercells)    # superpixels for spatial data
+library(supercells)    # supercells for spatial data
 library(terra)         # spatial raster data reading and handling
 library(sf)            # spatial vector data reading and handling
 ```
@@ -50,9 +51,9 @@ which expects at least three arguments:
 
 - `x` - an input raster (an object of class SpatRaster from the
   **terra** package)
-- `k` - an expected number of superpixels
+- `k` - an expected number of supercells
 - `compactness` - a compactness value. Larger values create more
-  compact/even (square) superpixels
+  compact/even (square) supercells
 
 ``` r
 vol_slic1 = supercells(vol, k = 50, compactness = 1)
@@ -62,11 +63,11 @@ vol_slic1
 The
 [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
 output is an `sf` object, where each row represents a single superpixel.
-It stores superpixels ids (`supercells`), coordinates of the
-superpixels’ centroids (`x` and `y`), and an average of all of the input
-variables (`elevation` in this case).
+It stores supercell ids (`supercells`), coordinates of the supercell
+centers (`x` and `y`), and an average of all of the input variables
+(`elevation` in this case).
 
-It allows us to plot the superpixels’ borders on top of the input raster
+It allows us to plot the supercells’ borders on top of the input raster
 data:
 
 ``` r
@@ -89,8 +90,8 @@ function also has a set of optional arguments, including:
   superpixel’ centers. It can be used instead of `k`
 - `dist_fun` - a distance function used to calculate similarities
   between raster values
-- `clean` - should connectivity of the superpixel be enforced? If
-  `FALSE`, then some superpixels could consist of several nonadjacent
+- `clean` - should connectivity of the supercell be enforced? If
+  `FALSE`, then some supercells could consist of several nonadjacent
   regions. It is `TRUE` by default.
 - `iter` - a number of iterations performed to create the output. It is
   `10` by default.
@@ -103,9 +104,9 @@ vol_slic2 = supercells(vol, step = 11, compactness = 1, dist_fun = "euclidean",
 ```
 
 The output still has the same structure (is an `sf` object with
-superpixels ids, coordinates of their centroids, and an average of all
-of the input variables), but has a slightly different number of
-superpixels, and their borders are a bit different.
+supercell ids, coordinates of their centers, and an average of all of
+the input variables), but has a slightly different number of supercells,
+and their borders are a bit different.
 
 ``` r
 plot(vol)

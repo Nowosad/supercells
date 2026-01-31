@@ -1,15 +1,16 @@
-# Superpixels of spatial categorical patterns
+# Supercells of spatial categorical patterns
 
-Superpixels is a collection of segmentation concepts of grouping pixels
-with similar characteristics. It is often used in computer vision to
-delineate parts of RGB images that are more meaningful and easier to
-analyze. When applied to RGB images, each superpixel contains similar
-colors that also could represent real-world objects. A large number of
-methods for creating superpixels were developed in the last decades,
-with the SLIC algorithm (Achanta et al. (2012),
-<doi:10.1109/TPAMI.2012.120>) being the most prominent.
+Superpixels are a collection of segmentation concepts of grouping pixels
+with similar characteristics. In this package, we refer to them as
+supercells. It is often used in computer vision to delineate parts of
+RGB images that are more meaningful and easier to analyze. When applied
+to RGB images, each superpixel contains similar colors that also could
+represent real-world objects. A large number of methods for creating
+superpixels were developed in the last decades, with the SLIC algorithm
+(Achanta et al. (2012), <doi:10.1109/TPAMI.2012.120>) being the most
+prominent.
 
-The **supercells** package aims to utilize the concept of superpixels to
+The **supercells** package aims to utilize the concept of supercells for
 a variety of spatial data. This package works on spatial data with one
 variable (e.g., continuous raster), many variables (e.g., RGB rasters),
 and spatial patterns (e.g., areas in categorical rasters). Therefore, it
@@ -22,7 +23,7 @@ categorical raster dataset. To reproduce the following results on your
 own computer, install and attach the packages:
 
 ``` r
-library(supercells)    # superpixels for spatial data
+library(supercells)    # supercells for spatial data
 library(terra)         # spatial raster data reading and handling
 #> terra 1.8.93
 library(sf)            # spatial vector data reading and handling
@@ -79,7 +80,7 @@ plot(comp_output2)
 Finally, we are able to use the
 [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
 function to delineate areas with similar proportions of different land
-cover categories. I decided to derive about 2,000 superpixels that will
+cover categories. I decided to derive about 2,000 supercells that will
 be created based on the Jensen-Shannon distance (`dist_fun = "jsd"`).
 This distance measure is more suitable for proportions (e.g., 0-1) than
 the default Euclidean distance.
@@ -88,8 +89,8 @@ the default Euclidean distance.
 slic = supercells(comp_output2, k = 2000, compactness = 0.1, dist_fun = "jsd")
 ```
 
-The result is an `sf` object containing derived superpixels with
-attributes storing the average proportions for each superpixel:
+The result is an `sf` object containing derived supercells with
+attributes storing the average proportions for each supercell:
 
 ``` r
 plot(landcover, reset = FALSE)

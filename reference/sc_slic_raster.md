@@ -2,7 +2,10 @@
 
 Runs the SLIC workflow and returns a raster of supercell IDs IDs are
 1-based and are unique across chunks when chunking is used For polygon
-outputs, use `sc_slic`; for point centers, use `sc_slic_points`
+outputs, use
+[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md);
+for point centers, use
+[`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)
 
 ## Usage
 
@@ -16,14 +19,13 @@ sc_slic_raster(
   clean = TRUE,
   minarea,
   iter = 10,
-  transform = NULL,
+  step_unit = "cells",
   k = NULL,
   centers = NULL,
   metadata = FALSE,
   chunks = FALSE,
-  future = FALSE,
-  verbose = 0,
-  iter_diagnostics = FALSE
+  iter_diagnostics = FALSE,
+  verbose = 0
 )
 ```
 
@@ -35,12 +37,15 @@ sc_slic_raster(
 
 - step:
 
-  The distance (number of cells) between initial centers (alternative to
+  The distance (number of cells) between initial centers (alternative is
   `k`).
 
 - compactness:
 
-  A compactness value.
+  A compactness value. Use
+  [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
+  to estimate it. Set `compactness = "auto"` to enable SLIC0-style
+  adaptive compactness.
 
 - dist_fun:
 
@@ -69,10 +74,10 @@ sc_slic_raster(
 
   Number of iterations.
 
-- transform:
+- step_unit:
 
-  Optional transformation applied before segmentation. Currently
-  supports "to_LAB" for RGB inputs.
+  Units for `step`. Use "cells" for pixel units or "map" for map units
+  (converted to cells using raster resolution).
 
 - k:
 
@@ -92,19 +97,15 @@ sc_slic_raster(
   chunking based on size, or a numeric value for a fixed chunk size (in
   number of cells per side).
 
-- future:
+- iter_diagnostics:
 
-  Logical. Use future for parallelization?
+  Logical. If `TRUE`, attaches iteration diagnostics as an attribute
+  (`iter_diagnostics`) on the output. Only available when chunks are not
+  used.
 
 - verbose:
 
   Verbosity level.
-
-- iter_diagnostics:
-
-  Logical. If `TRUE`, returns iteration diagnostics as an attribute
-  (`iter_diagnostics`) on the output. Only available when chunks are not
-  used.
 
 ## Value
 

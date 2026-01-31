@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Superpixels of a single raster layer • supercells</title>
+<title>Supercells of a single raster layer • supercells</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Superpixels of a single raster layer">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Supercells of a single raster layer">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,12 +33,13 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks of the supercells package</a></li>
-    <li><a class="dropdown-item" href="../articles/experimental.html">Experimental features of the supercells package</a></li>
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
     <li><a class="dropdown-item" href="../articles/main-function.html">The supercells() function</a></li>
-    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
+    <li><a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a></li>
     <li><a class="dropdown-item" href="../articles/one_var.html">Superpixels of a single raster layer</a></li>
     <li><a class="dropdown-item" href="../articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
+    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -60,28 +61,29 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Superpixels of a single raster layer</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Supercells of a single raster layer</h1>
                         <h4 data-toc-skip class="author">Jakub
 Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2026-01-23</h4>
+            <h4 data-toc-skip class="date">2026-01-31</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/master/vignettes/articles/one_var.Rmd" class="external-link"><code>vignettes/articles/one_var.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/one_var.Rmd" class="external-link"><code>vignettes/articles/one_var.Rmd</code></a></small>
       <div class="d-none name"><code>one_var.Rmd</code></div>
     </div>
 
     
     
-<p>Superpixels is a collection of segmentation concepts of grouping
-pixels with similar characteristics. It is often used in computer vision
-to delineate parts of RGB images that are more meaningful and easier to
-analyze. When applied to RGB images, each superpixel contains similar
-colors that also could represent real-world objects. A large number of
-methods for creating superpixels were developed in the last decades,
-with the SLIC algorithm (Achanta et al. (2012), <a href="doi:10.1109/TPAMI.2012.120" class="uri">doi:10.1109/TPAMI.2012.120</a>) being the most
+<p>Superpixels are a collection of segmentation concepts of grouping
+pixels with similar characteristics. In this package, we refer to them
+as supercells. It is often used in computer vision to delineate parts of
+RGB images that are more meaningful and easier to analyze. When applied
+to RGB images, each superpixel contains similar colors that also could
+represent real-world objects. A large number of methods for creating
+superpixels were developed in the last decades, with the SLIC algorithm
+(Achanta et al. (2012), <a href="doi:10.1109/TPAMI.2012.120" class="uri">doi:10.1109/TPAMI.2012.120</a>) being the most
 prominent.</p>
 <p>The <strong>supercells</strong> package aims to utilize the concept
-of superpixels to a variety of spatial data. This package works on
+of supercells for a variety of spatial data. This package works on
 spatial data with one variable (e.g., continuous raster), many variables
 (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical
 rasters). Therefore, it enables not only to find areas that look similar
@@ -91,7 +93,7 @@ comparable values of one or more variables.</p>
 package on a single raster layer. To reproduce the following results on
 your own computer, install and attach the packages:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jakubnowosad.com/supercells/">supercells</a></span><span class="op">)</span>    <span class="co"># superpixels for spatial data</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jakubnowosad.com/supercells/">supercells</a></span><span class="op">)</span>    <span class="co"># supercells for spatial data</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span>         <span class="co"># spatial raster data reading and handling</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>            <span class="co"># spatial vector data reading and handling</span></span></code></pre></div>
 <div class="section level2">
@@ -114,20 +116,20 @@ areas with similar elevations. It has one main function,
 <code>x</code> - an input raster (an object of class SpatRaster from
 the <strong>terra</strong> package)</li>
 <li>
-<code>k</code> - an expected number of superpixels</li>
+<code>k</code> - an expected number of supercells</li>
 <li>
 <code>compactness</code> - a compactness value. Larger values create
-more compact/even (square) superpixels</li>
+more compact/even (square) supercells</li>
 </ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vol_slic1</span> <span class="op">=</span> <span class="fu"><a href="../reference/supercells.html">supercells</a></span><span class="op">(</span><span class="va">vol</span>, k <span class="op">=</span> <span class="fl">50</span>, compactness <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">vol_slic1</span></span></code></pre></div>
 <p>The <code><a href="../reference/supercells.html">supercells()</a></code> output is an <code>sf</code> object,
-where each row represents a single superpixel. It stores superpixels ids
-(<code>supercells</code>), coordinates of the superpixels’ centroids
+where each row represents a single superpixel. It stores supercell ids
+(<code>supercells</code>), coordinates of the supercell centers
 (<code>x</code> and <code>y</code>), and an average of all of the input
 variables (<code>elevation</code> in this case).</p>
-<p>It allows us to plot the superpixels’ borders on top of the input
+<p>It allows us to plot the supercells’ borders on top of the input
 raster data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span></span>
@@ -151,8 +153,8 @@ initial superpixel’ centers. It can be used instead of
 <code>dist_fun</code> - a distance function used to calculate
 similarities between raster values</li>
 <li>
-<code>clean</code> - should connectivity of the superpixel be
-enforced? If <code>FALSE</code>, then some superpixels could consist of
+<code>clean</code> - should connectivity of the supercell be
+enforced? If <code>FALSE</code>, then some supercells could consist of
 several nonadjacent regions. It is <code>TRUE</code> by default.</li>
 <li>
 <code>iter</code> - a number of iterations performed to create the
@@ -163,9 +165,9 @@ output. It is <code>10</code> by default.</li>
 <code class="sourceCode R"><span><span class="va">vol_slic2</span> <span class="op">=</span> <span class="fu"><a href="../reference/supercells.html">supercells</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">11</span>, compactness <span class="op">=</span> <span class="fl">1</span>, dist_fun <span class="op">=</span> <span class="st">"euclidean"</span>, </span>
 <span>                       clean <span class="op">=</span> <span class="cn">FALSE</span>, iter <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>The output still has the same structure (is an <code>sf</code> object
-with superpixels ids, coordinates of their centroids, and an average of
-all of the input variables), but has a slightly different number of
-superpixels, and their borders are a bit different.</p>
+with supercell ids, coordinates of their centers, and an average of all
+of the input variables), but has a slightly different number of
+supercells, and their borders are a bit different.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">vol_slic2</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>

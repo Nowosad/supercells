@@ -1,15 +1,16 @@
-# Superpixels of an RGB raster
+# Supercells of an RGB raster
 
-Superpixels is a collection of segmentation concepts of grouping pixels
-with similar characteristics. It is often used in computer vision to
-delineate parts of RGB images that are more meaningful and easier to
-analyze. When applied to RGB images, each superpixel contains similar
-colors that also could represent real-world objects. A large number of
-methods for creating superpixels were developed in the last decades,
-with the SLIC algorithm (Achanta et al. (2012),
-<doi:10.1109/TPAMI.2012.120>) being the most prominent.
+Superpixels are a collection of segmentation concepts of grouping pixels
+with similar characteristics. In this package, we refer to them as
+supercells. It is often used in computer vision to delineate parts of
+RGB images that are more meaningful and easier to analyze. When applied
+to RGB images, each superpixel contains similar colors that also could
+represent real-world objects. A large number of methods for creating
+superpixels were developed in the last decades, with the SLIC algorithm
+(Achanta et al. (2012), <doi:10.1109/TPAMI.2012.120>) being the most
+prominent.
 
-The **supercells** package aims to utilize the concept of superpixels to
+The **supercells** package aims to utilize the concept of supercells for
 a variety of spatial data. This package works on spatial data with one
 variable (e.g., continuous raster), many variables (e.g., RGB rasters),
 and spatial patterns (e.g., areas in categorical rasters). Therefore, it
@@ -22,7 +23,7 @@ raster dataset. To reproduce the following results on your own computer,
 install and attach the packages:
 
 ``` r
-library(supercells)    # superpixels for spatial data
+library(supercells)    # supercells for spatial data
 library(terra)         # spatial raster data reading and handling
 library(sf)            # spatial vector data reading and handling
 ```
@@ -54,12 +55,12 @@ ortho_slic1
 ```
 
 The `ortho_slic1` output is an `sf` object, where each row stores
-superpixels id (`supercells`), coordinates of the superpixels’ centroids
-(`x` and `y`), and an average of all of the input variables (red, green,
-and blue colors).
+supercell id (`supercells`), coordinates of the supercell centers (`x`
+and `y`), and an average of all of the input variables (red, green, and
+blue colors).
 
 This allows us to create two types of visualizations. The first one is
-just an overlay of the superpixels borders on top of the original RGB
+just an overlay of the supercells borders on top of the original RGB
 image.
 
 ``` r
@@ -83,14 +84,14 @@ Next, we can plot each superpixel with its average color, but without
 the border lines:
 
 ``` r
-plot(st_geometry(ortho_slic1), border = NA, col = avg_colors)
+plot(st_geometry(ortho_slic1), border = avg_colors, col = avg_colors)
 ```
 
 ![](rgb_vars_files/figure-html/unnamed-chunk-6-1.png)
 
 Note that the above visualization is not an image - it is a set of
-colored superpixels. Therefore, instead of representing this area by
-87,600 cells, we are using (just) 1,675 superpixels.
+colored supercells. Therefore, instead of representing this area by
+87,600 cells, we are using (just) 1,675 supercells.
 
 The `ortho_slic1` object can be next use for clustering similar objects
 or labeling them.

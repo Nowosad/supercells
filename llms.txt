@@ -57,8 +57,6 @@ See the package’s vignettes:
     raster](https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html)
 4.  [Superpixels of spatial categorical
     patterns](https://jakubnowosad.com/supercells/articles/articles/motifels.html)
-5.  [Experimental features of the supercells
-    package](https://jakubnowosad.com/supercells/articles/articles/experimental.html)
 
 Watch the presentations about this package and some related ideas:
 
@@ -90,12 +88,12 @@ issue](https://github.com/nowosad/supercells/issues).
 
 ## All functions
 
-- [`sc_metrics_clusters()`](https://jakubnowosad.com/supercells/reference/sc_metrics_clusters.md)
-  : Cluster-level supercells metrics
 - [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md)
   : Global supercells metrics
 - [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md)
   : Pixel-level supercells metrics
+- [`sc_metrics_supercells()`](https://jakubnowosad.com/supercells/reference/sc_metrics_supercells.md)
+  : Supercell-level metrics
 - [`sc_plot_iter_diagnostics()`](https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.md)
   : Plot iteration diagnostics
 - [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
@@ -104,6 +102,8 @@ issue](https://github.com/nowosad/supercells/issues).
   : Create supercells as points
 - [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
   : Create supercells as a raster
+- [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
+  : Estimate compactness from a light SLIC run
 - [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
   : Creates supercells
 
@@ -113,13 +113,11 @@ issue](https://github.com/nowosad/supercells/issues).
 
 - [Benchmarks of the supercells
   package](https://jakubnowosad.com/supercells/articles/benchmarks.md):
-- [Experimental features of the supercells
-  package](https://jakubnowosad.com/supercells/articles/experimental.md):
 - [The supercells()
   function](https://jakubnowosad.com/supercells/articles/main-function.md):
-- [Superpixels of spatial categorical
+- [Supercells of spatial categorical
   patterns](https://jakubnowosad.com/supercells/articles/motifels.md):
-- [Superpixels of a single raster
+- [Supercells of a single raster
   layer](https://jakubnowosad.com/supercells/articles/one_var.md):
-- [Superpixels of an RGB
+- [Supercells of an RGB
   raster](https://jakubnowosad.com/supercells/articles/rgb_vars.md):

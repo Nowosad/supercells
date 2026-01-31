@@ -11,7 +11,7 @@ spacing (step), as well as optional custom centers and chunked processing."><met
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,12 +22,13 @@ spacing (step), as well as optional custom centers and chunked processing."><met
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks of the supercells package</a></li>
-    <li><a class="dropdown-item" href="../articles/experimental.html">Experimental features of the supercells package</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
     <li><a class="dropdown-item" href="../articles/main-function.html">The supercells() function</a></li>
-    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
+    <li><a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a></li>
     <li><a class="dropdown-item" href="../articles/one_var.html">Superpixels of a single raster layer</a></li>
     <li><a class="dropdown-item" href="../articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
+    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -41,7 +42,7 @@ spacing (step), as well as optional custom centers and chunked processing."><met
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Create supercells</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/master/R/sc_slic.R" class="external-link"><code>R/sc_slic.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/R/sc_slic.R" class="external-link"><code>R/sc_slic.R</code></a></small>
       <div class="d-none name"><code>sc_slic.Rd</code></div>
     </div>
 
@@ -62,14 +63,13 @@ spacing (<code>step</code>), as well as optional custom centers and chunked proc
 <span>  clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">minarea</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  transform <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  step_unit <span class="op">=</span> <span class="st">"cells"</span>,</span>
 <span>  k <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  centers <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  metadata <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  chunks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  future <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  iter_diagnostics <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  iter_diagnostics <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -82,11 +82,12 @@ spacing (<code>step</code>), as well as optional custom centers and chunked proc
 
 
 <dt id="arg-step">step<a class="anchor" aria-label="anchor" href="#arg-step"></a></dt>
-<dd><p>The distance (number of cells) between initial centers (alternative to <code>k</code>).</p></dd>
+<dd><p>The distance (number of cells) between initial centers (alternative is <code>k</code>).</p></dd>
 
 
 <dt id="arg-compactness">compactness<a class="anchor" aria-label="anchor" href="#arg-compactness"></a></dt>
-<dd><p>A compactness value.</p></dd>
+<dd><p>A compactness value. Use <code><a href="sc_tune_compactness.html">sc_tune_compactness()</a></code> to estimate it.
+Set <code>compactness = "auto"</code> to enable SLIC0-style adaptive compactness.</p></dd>
 
 
 <dt id="arg-dist-fun">dist_fun<a class="anchor" aria-label="anchor" href="#arg-dist-fun"></a></dt>
@@ -113,9 +114,9 @@ function must accept a numeric vector and return a single numeric value.</p></dd
 <dd><p>Number of iterations.</p></dd>
 
 
-<dt id="arg-transform">transform<a class="anchor" aria-label="anchor" href="#arg-transform"></a></dt>
-<dd><p>Optional transformation applied before segmentation. Currently
-supports "to_LAB" for RGB inputs.</p></dd>
+<dt id="arg-step-unit">step_unit<a class="anchor" aria-label="anchor" href="#arg-step-unit"></a></dt>
+<dd><p>Units for <code>step</code>. Use "cells" for pixel units or "map" for map units
+(converted to cells using raster resolution).</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -136,17 +137,13 @@ automatic chunking based on size, or a numeric value for a fixed chunk size
 (in number of cells per side).</p></dd>
 
 
-<dt id="arg-future">future<a class="anchor" aria-label="anchor" href="#arg-future"></a></dt>
-<dd><p>Logical. Use future for parallelization?</p></dd>
+<dt id="arg-iter-diagnostics">iter_diagnostics<a class="anchor" aria-label="anchor" href="#arg-iter-diagnostics"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, attaches iteration diagnostics as an
+attribute (<code>iter_diagnostics</code>) on the output. Only available when chunks are not used.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Verbosity level.</p></dd>
-
-
-<dt id="arg-iter-diagnostics">iter_diagnostics<a class="anchor" aria-label="anchor" href="#arg-iter-diagnostics"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, returns iteration diagnostics as an attribute
-(<code>iter_diagnostics</code>) on the output. Only available when chunks are not used.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -156,13 +153,14 @@ Information on <code>step</code> and <code>compactness</code> are attached to th
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Use <code>sc_slic</code> for polygon outputs. For raster or point centers outputs, see
-<code>sc_slic_raster</code> and <code>sc_slic_points</code>.
+    <p>Use <code>sc_slic()</code> for polygon outputs. For raster or point centers outputs, see
+<code><a href="sc_slic_raster.html">sc_slic_raster()</a></code> and <code><a href="sc_slic_points.html">sc_slic_points()</a></code>.
 Evaluation and diagnostic options:</p><ul><li><p>Iteration diagnostics: set <code>iter_diagnostics = TRUE</code> to attach an
-<code>iter_diagnostics</code> attribute (only available without chunking).</p></li>
+<code>iter_diagnostics</code> attribute (only available without chunking). Use
+<code><a href="sc_plot_iter_diagnostics.html">sc_plot_iter_diagnostics()</a></code> to visualize the convergence over iterations.</p></li>
 <li><p>Pixel diagnostics: <code><a href="sc_metrics_pixels.html">sc_metrics_pixels()</a></code> for per-pixel spatial, value,
 and combined distances.</p></li>
-<li><p>Cluster diagnostics: <code><a href="sc_metrics_clusters.html">sc_metrics_clusters()</a></code> for per-supercell summaries.</p></li>
+<li><p>Cluster diagnostics: <code><a href="sc_metrics_supercells.html">sc_metrics_supercells()</a></code> for per-supercell summaries.</p></li>
 <li><p>Global diagnostics: <code><a href="sc_metrics_global.html">sc_metrics_global()</a></code> for a single-row summary.</p></li>
 </ul></div>
     <div class="section level2">
@@ -173,7 +171,7 @@ and combined distances.</p></li>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="sc_slic_raster.html">sc_slic_raster()</a></code>, <code><a href="sc_slic_points.html">sc_slic_points()</a></code>, <code><a href="sc_plot_iter_diagnostics.html">sc_plot_iter_diagnostics()</a></code>,
-<code><a href="sc_metrics_pixels.html">sc_metrics_pixels()</a></code>, <code><a href="sc_metrics_clusters.html">sc_metrics_clusters()</a></code>, <code><a href="sc_metrics_global.html">sc_metrics_global()</a></code></p></div>
+<code><a href="sc_metrics_pixels.html">sc_metrics_pixels()</a></code>, <code><a href="sc_metrics_supercells.html">sc_metrics_supercells()</a></code>, <code><a href="sc_metrics_global.html">sc_metrics_global()</a></code></p></div>
     </div>
 
     <div class="section level2">

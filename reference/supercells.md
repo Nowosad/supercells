@@ -1,7 +1,7 @@
 # Creates supercells
 
 Creates supercells based on single- or multi-band spatial raster data.
-It uses a modified version of the SLIC Superpixel algorithm by Achanta
+It uses a modified version of the SLIC superpixel algorithm by Achanta
 et al. (2012), allowing specification of a distance function.
 
 ## Usage
@@ -20,7 +20,6 @@ supercells(
   minarea,
   metadata = TRUE,
   chunks = FALSE,
-  future = FALSE,
   verbose = 0
 )
 ```
@@ -40,9 +39,10 @@ supercells(
 
 - compactness:
 
-  A compactness value. Larger values cause clusters to be more
-  compact/even (square). A compactness value depends on the range of
-  input cell values and selected distance measure.
+  A compactness value. Larger values cause supercells to be more
+  compact/even (square). Set `compactness = "auto"` to enable
+  SLIC0-style adaptive compactness. A compactness value depends on the
+  range of input cell values and selected distance measure.
 
 - dist_fun:
 
@@ -105,13 +105,8 @@ supercells(
   Should the input (`x`) be split into chunks before deriving
   supercells? Either `FALSE` (default), `TRUE` (only large input objects
   are split), or a numeric value (representing the side length of the
-  chunk in the number of cells).
-
-- future:
-
-  Should the future package be used for parallelization of the
-  calculations? Default: `FALSE`. If `TRUE`, you also need to specify
-  [`future::plan()`](https://future.futureverse.org/reference/plan.html).
+  chunk in the number of cells). When `TRUE`, the memory limit can be
+  set with `options(supercells.chunk_mem_gb = 4)`.
 
 - verbose:
 
@@ -138,7 +133,7 @@ and
 [`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md).
 For evaluation and diagnostics, see
 [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md),
-[`sc_metrics_clusters()`](https://jakubnowosad.com/supercells/reference/sc_metrics_clusters.md),
+[`sc_metrics_supercells()`](https://jakubnowosad.com/supercells/reference/sc_metrics_supercells.md),
 and
 [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md).
 

@@ -17,14 +17,13 @@ sc_slic(
   clean = TRUE,
   minarea,
   iter = 10,
-  transform = NULL,
+  step_unit = "cells",
   k = NULL,
   centers = NULL,
   metadata = FALSE,
   chunks = FALSE,
-  future = FALSE,
-  verbose = 0,
-  iter_diagnostics = FALSE
+  iter_diagnostics = FALSE,
+  verbose = 0
 )
 ```
 
@@ -36,12 +35,15 @@ sc_slic(
 
 - step:
 
-  The distance (number of cells) between initial centers (alternative to
+  The distance (number of cells) between initial centers (alternative is
   `k`).
 
 - compactness:
 
-  A compactness value.
+  A compactness value. Use
+  [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
+  to estimate it. Set `compactness = "auto"` to enable SLIC0-style
+  adaptive compactness.
 
 - dist_fun:
 
@@ -70,10 +72,10 @@ sc_slic(
 
   Number of iterations.
 
-- transform:
+- step_unit:
 
-  Optional transformation applied before segmentation. Currently
-  supports "to_LAB" for RGB inputs.
+  Units for `step`. Use "cells" for pixel units or "map" for map units
+  (converted to cells using raster resolution).
 
 - k:
 
@@ -93,19 +95,15 @@ sc_slic(
   chunking based on size, or a numeric value for a fixed chunk size (in
   number of cells per side).
 
-- future:
+- iter_diagnostics:
 
-  Logical. Use future for parallelization?
+  Logical. If `TRUE`, attaches iteration diagnostics as an attribute
+  (`iter_diagnostics`) on the output. Only available when chunks are not
+  used.
 
 - verbose:
 
   Verbosity level.
-
-- iter_diagnostics:
-
-  Logical. If `TRUE`, returns iteration diagnostics as an attribute
-  (`iter_diagnostics`) on the output. Only available when chunks are not
-  used.
 
 ## Value
 
@@ -115,19 +113,24 @@ attributes.
 
 ## Details
 
-Use `sc_slic` for polygon outputs. For raster or point centers outputs,
-see `sc_slic_raster` and `sc_slic_points`. Evaluation and diagnostic
-options:
+Use `sc_slic()` for polygon outputs. For raster or point centers
+outputs, see
+[`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
+and
+[`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md).
+Evaluation and diagnostic options:
 
 - Iteration diagnostics: set `iter_diagnostics = TRUE` to attach an
-  `iter_diagnostics` attribute (only available without chunking).
+  `iter_diagnostics` attribute (only available without chunking). Use
+  [`sc_plot_iter_diagnostics()`](https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.md)
+  to visualize the convergence over iterations.
 
 - Pixel diagnostics:
   [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md)
   for per-pixel spatial, value, and combined distances.
 
 - Cluster diagnostics:
-  [`sc_metrics_clusters()`](https://jakubnowosad.com/supercells/reference/sc_metrics_clusters.md)
+  [`sc_metrics_supercells()`](https://jakubnowosad.com/supercells/reference/sc_metrics_supercells.md)
   for per-supercell summaries.
 
 - Global diagnostics:
@@ -152,7 +155,7 @@ https://doi.org/10.1016/j.jag.2022.102935
 [`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md),
 [`sc_plot_iter_diagnostics()`](https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.md),
 [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md),
-[`sc_metrics_clusters()`](https://jakubnowosad.com/supercells/reference/sc_metrics_clusters.md),
+[`sc_metrics_supercells()`](https://jakubnowosad.com/supercells/reference/sc_metrics_supercells.md),
 [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md)
 
 ## Examples
