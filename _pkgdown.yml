@@ -4,7 +4,7 @@ template:
 articles:
   - title: Vignettes
     contents:
-      - main-function
-      - one_var
-      - rgb_vars
-      - motifels
+      - "main-function"
+      - "one_var"
+      - "rgb_vars"
+      - "motifels"
