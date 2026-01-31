@@ -1,3 +1,17 @@
 url: https://jakubnowosad.com/supercells
 template:
   bootstrap: 5
+navbar:
+ components:
+   articles:
+    text: Articles
+    menu:
+    # - text: Category A
+    # - text: Title A1
+    #   href: articles/a1.html
+    # - text: Title A2
+    #   href: articles/a2.html
+    - text: -------
+    - text: "Version 1.0"
+    - text: The supercells() function
+      href: articles/main-function.Rmd
