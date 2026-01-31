@@ -9,6 +9,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+> **Version note:** This vignette documents the `supercells()` interface as it existed in version 1.0 of the package. Some arguments, defaults, and behaviors may differ in newer releases. For up-to-date details, see `?supercells` and the current reference docs.
+
 
 
 
@@ -181,7 +183,6 @@ results_high
 ```
 
   <!-- If you are benchmarking parallel code you must set `memory = FALSE`. -->
-
 
 
 
