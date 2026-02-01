@@ -16,7 +16,7 @@ sc_slic_points(
   step_unit = "cells",
   k = NULL,
   centers = NULL,
-  metadata = FALSE,
+  outcomes = "values",
   chunks = FALSE,
   iter_diagnostics = FALSE,
   verbose = 0
@@ -51,7 +51,9 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{centers}{Optional sf object of custom centers. Requires \code{step}.}
 
-\item{metadata}{Logical. Should metadata columns be kept?}
+\item{outcomes}{Character vector controlling which fields are returned.
+Allowed values are "supercells", "coordinates", and "values". Default is
+"values". Use \code{outcomes = c("supercells", "coordinates", "values")} for full output.}
 
 \item{chunks}{Chunking option. Use \code{FALSE} for no chunking, \code{TRUE} for
 automatic chunking based on size, or a numeric value for a fixed chunk size
@@ -69,6 +71,8 @@ An sf object with supercell center points and summary statistics
 Runs the SLIC workflow and returns supercell centers as points.
 Use \code{iter = 0} to return the initial centers before iterations.
 For polygon outputs, use \code{\link[=sc_slic]{sc_slic()}}; for raster output, use \code{\link[=sc_slic_raster]{sc_slic_raster()}}
+By default, only value summaries are returned; add
+\code{outcomes = c("supercells", "coordinates", "values")} to include ids and x/y.
 }
 \examples{
 library(supercells)

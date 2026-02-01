@@ -32,7 +32,7 @@
 .sc_run_chunk_raster = function(ext, x, step, compactness, dist_name,
                                  adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                                  iter, minarea, input_centers,
-                                 iter_diagnostics = FALSE, metadata = TRUE, verbose = 0){
+                                 iter_diagnostics = FALSE, verbose = 0){
   if (iter == 0) {
     stop("iter = 0 returns centers only; raster output is not available. Use sc_slic_points with iter = 0 to get initial centers.", call. = FALSE)
   }
@@ -110,7 +110,7 @@
 .sc_run_chunk_points = function(ext, x, step, compactness, dist_name,
                                  adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                                  iter, minarea, input_centers,
-                                 iter_diagnostics = FALSE, metadata = TRUE, verbose = 0){
+                                 iter_diagnostics = FALSE, verbose = 0){
   if (iter == 0) {
     res = .sc_run_chunk_centers(ext, x, step, compactness, dist_name,
                                adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
@@ -118,9 +118,6 @@
                                iter_diagnostics = iter_diagnostics, verbose = verbose)
     points_sf = .sc_run_centers_points(res$centers, res$raster_ref, res$centers_vals, res$names_x)
     # points_sf = stats::na.omit(points_sf)
-    if (!isTRUE(metadata) && "x" %in% names(points_sf)) {
-      points_sf = points_sf[, setdiff(names(points_sf), c("x", "y")), drop = FALSE]
-    }
     if (iter_diagnostics && !is.null(res$iter_diagnostics)) {
       attr(points_sf, "iter_diagnostics") = res$iter_diagnostics
     }
@@ -136,9 +133,6 @@
   points_sf = points_sf[points_sf[["supercells"]] %in% ids, , drop = FALSE]
   points_sf = points_sf[match(ids, points_sf[["supercells"]]), , drop = FALSE]
   points_sf = stats::na.omit(points_sf)
-  if (!isTRUE(metadata) && "x" %in% names(points_sf)) {
-    points_sf = points_sf[, setdiff(names(points_sf), c("x", "y")), drop = FALSE]
-  }
   if (iter_diagnostics && !is.null(res$iter_diagnostics)) {
     attr(points_sf, "iter_diagnostics") = res$iter_diagnostics
   }
@@ -149,7 +143,7 @@
 .sc_run_chunk_polygons = function(ext, x, step, compactness, dist_name,
                            adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean,
                            iter, minarea, input_centers,
-                           iter_diagnostics = FALSE, metadata = TRUE, verbose = 0){
+                           iter_diagnostics = FALSE, verbose = 0){
   if (iter == 0) {
     stop("iter = 0 returns centers only; polygon output is not available. Use sc_slic_points with iter = 0 to get initial centers.", call. = FALSE)
   }
@@ -168,9 +162,6 @@
       centers_df[["supercells"]] = NULL
     }
     slic_sf = cbind(slic_sf, centers_df)
-    if (!isTRUE(metadata)) {
-      slic_sf = slic_sf[, setdiff(names(slic_sf), c("x", "y")), drop = FALSE]
-    }
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
     if (iter_diagnostics && !is.null(res$iter_diagnostics)) {
       attr(slic_sf, "iter_diagnostics") = res$iter_diagnostics
@@ -192,28 +183,27 @@
 .sc_run_full_points = function(x, step, compactness, dist_name, dist_fun,
                            adaptive_compactness, avg_fun_fun, avg_fun_name, clean, iter, minarea,
                            input_centers, iter_diagnostics = FALSE,
-                           metadata = TRUE, verbose = 0) {
+                           verbose = 0) {
   .sc_run_full(x, .sc_run_chunk_points, step, compactness, dist_name,
                     adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean, iter, minarea,
-                    input_centers, iter_diagnostics, metadata, verbose)
+                    input_centers, iter_diagnostics, verbose)
 }
 
 # run slic on a full raster and return raster ids
 .sc_run_full_raster = function(x, step, compactness, dist_name, dist_fun,
                            adaptive_compactness, avg_fun_fun, avg_fun_name, clean, iter, minarea,
-                           input_centers, iter_diagnostics = FALSE,
-                           metadata = TRUE, verbose = 0) {
+                           input_centers, iter_diagnostics = FALSE, verbose = 0) {
   .sc_run_full(x, .sc_run_chunk_raster, step, compactness, dist_name,
                     adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean, iter, minarea,
-                    input_centers, iter_diagnostics, metadata, verbose)
+                    input_centers, iter_diagnostics, verbose)
 }
 
 # run slic on a full raster and return polygon supercells
 .sc_run_full_polygons = function(x, step, compactness, dist_name, dist_fun,
                              adaptive_compactness, avg_fun_fun, avg_fun_name, clean, iter, minarea,
                              input_centers, iter_diagnostics = FALSE,
-                             metadata = TRUE, verbose = 0) {
+                             verbose = 0) {
   .sc_run_full(x, .sc_run_chunk_polygons, step, compactness, dist_name,
                     adaptive_compactness, dist_fun, avg_fun_fun, avg_fun_name, clean, iter, minarea,
-                    input_centers, iter_diagnostics, metadata, verbose)
+                    input_centers, iter_diagnostics, verbose)
 }
