@@ -1,13 +1,14 @@
 #' Creates supercells
 #'
-#' Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
+#' Creates supercells by bringing the idea of superpixels into spatial analysis and grouping raster cells into coherent regions.
+#' It uses a modified version of the SLIC algorithm by Achanta et al. (2012), allowing specification of a distance function.
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars)
 #' @param k The number of supercells desired by the user (the output number can be slightly different!).
 #' You can use either `k` or `step`.
 #' It is also possible to provide a set of points (an `sf` object) as `k` together with the `step` value to create custom cluster centers.
 #' @param compactness A compactness value. Larger values cause supercells to be more compact/even (square).
-#' Set `compactness = "auto"` to enable SLIC0-style adaptive compactness.
+#' Set `compactness = "auto"` to enable adaptive compactness (SLIC0).
 #' A compactness value depends on the range of input cell values and selected distance measure.
 #' @param dist_fun A distance function. Currently implemented distance functions are `"euclidean"`, `"jsd"`, `"dtw"` (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: `"euclidean"`
 #' @param avg_fun An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions `"mean"` and `"median"` (provided with quotation marks), but also accepts any fitting R function (e.g., `base::mean()` or `stats::median()`, provided as plain function name: `mean`). Default: `"mean"`. See details for more information.
@@ -20,7 +21,10 @@
 #' @param transform Transformation to be performed on the input. By default, no transformation is performed. Currently available transformation is "to_LAB": first, the conversion from RGB to the LAB color space is applied, then the supercells algorithm is run, and afterward, a reverse transformation is performed on the obtained results. (This argument is experimental and may be removed in the future).
 #' @param metadata Logical. Controls whether metadata columns
 #' ("supercells", "x", "y") are included.
-#' @param chunks Should the input (`x`) be split into chunks before deriving supercells? Either `FALSE` (default), `TRUE` (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells). When `TRUE`, the memory limit can be set with `options(supercells.chunk_mem_gb = 4)`.
+#' @param chunks Should the input (`x`) be processed with chunking before deriving supercells?
+#' Use `FALSE` (default), `TRUE` (automatic chunking based on size), or a numeric value
+#' (chunk side length in number of cells). When `TRUE`, the memory limit can be set
+#' with `options(supercells.chunk_mem_gb = 4)`.
 #' @param verbose An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).
 #'
 #' @details

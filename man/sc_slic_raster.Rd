@@ -28,7 +28,7 @@ sc_slic_raster(
 \item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
-Set \code{compactness = "auto"} to enable SLIC0-style adaptive compactness.}
+Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
@@ -52,8 +52,7 @@ function must accept a numeric vector and return a single numeric value.}
 \item{centers}{Optional sf object of custom centers. Requires \code{step}.}
 
 \item{outcomes}{Character vector controlling which fields are returned.
-Allowed values are "supercells", "coordinates", and "values". Default is
-"values". Use \code{outcomes = c("supercells", "coordinates", "values")} for full output.}
+Only \code{"supercells"} is supported in \code{sc_slic_raster()}.}
 
 \item{chunks}{Chunking option. Use \code{FALSE} for no chunking, \code{TRUE} for
 automatic chunking based on size, or a numeric value for a fixed chunk size

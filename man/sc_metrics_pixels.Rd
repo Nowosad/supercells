@@ -64,7 +64,7 @@ Computes per-pixel distance diagnostics from each pixel to its supercell center
 If \code{x} lacks \code{supercells}, \code{x}, or \code{y} columns, they are derived from geometry
 and row order, which may differ from the original centers.
 When using SLIC0 (set \code{compactness = "auto"} in \code{\link[=sc_slic]{sc_slic()}}), combined and balance metrics use per-supercell
-adaptive compactness, and scaled value distances are computed with the
+adaptive compactness (SLIC0), and scaled value distances are computed with the
 per-supercell max value distance.
 }
 \examples{

@@ -73,7 +73,7 @@ If they are missing, they are derived from geometry and row order
 Set \code{metadata = TRUE} when calling \code{sc_slic()} or \code{supercells()}
 Metrics are averaged across supercells (each supercell has equal weight).
 When using SLIC0 (set \code{compactness = "auto"} in \code{\link[=sc_slic]{sc_slic()}}), combined and balance metrics use per-supercell
-adaptive compactness, and scaled value distances are computed with the
+adaptive compactness (SLIC0), and scaled value distances are computed with the
 per-supercell max value distance.
 }
 \examples{

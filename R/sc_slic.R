@@ -2,7 +2,7 @@
 #'
 #' Creates supercells from single- or multi-band rasters using an extended SLIC algorithm.
 #' The function supports either a target number of supercells (`k`) or a fixed grid
-#' spacing (`step`), as well as optional custom centers and chunked processing.
+#' spacing (`step`), as well as optional custom centers and chunking.
 #'
 #' @details
 #' Use [`sc_slic()`] for polygon outputs. For raster or point centers outputs, see
@@ -23,7 +23,7 @@
 #' @param x An object of class SpatRaster (terra) or class stars (stars).
 #' @param step The distance (number of cells) between initial centers (alternative is `k`).
 #' @param compactness A compactness value. Use [`sc_tune_compactness()`] to estimate it.
-#' Set `compactness = "auto"` to enable SLIC0-style adaptive compactness.
+#' Set `compactness = "auto"` to enable adaptive compactness (SLIC0).
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.

@@ -28,7 +28,7 @@ You can use either \code{k} or \code{step}.
 It is also possible to provide a set of points (an \code{sf} object) as \code{k} together with the \code{step} value to create custom cluster centers.}
 
 \item{compactness}{A compactness value. Larger values cause supercells to be more compact/even (square).
-Set \code{compactness = "auto"} to enable SLIC0-style adaptive compactness.
+Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).
 A compactness value depends on the range of input cell values and selected distance measure.}
 
 \item{dist_fun}{A distance function. Currently implemented distance functions are \code{"euclidean"}, \code{"jsd"}, \code{"dtw"} (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: \code{"euclidean"}}
@@ -50,7 +50,10 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
 \item{metadata}{Logical. Controls whether metadata columns
 ("supercells", "x", "y") are included.}
 
-\item{chunks}{Should the input (\code{x}) be split into chunks before deriving supercells? Either \code{FALSE} (default), \code{TRUE} (only large input objects are split), or a numeric value (representing the side length of the chunk in the number of cells). When \code{TRUE}, the memory limit can be set with \code{options(supercells.chunk_mem_gb = 4)}.}
+\item{chunks}{Should the input (\code{x}) be processed with chunking before deriving supercells?
+Use \code{FALSE} (default), \code{TRUE} (automatic chunking based on size), or a numeric value
+(chunk side length in number of cells). When \code{TRUE}, the memory limit can be set
+with \code{options(supercells.chunk_mem_gb = 4)}.}
 
 \item{verbose}{An integer specifying the level of text messages printed during calculations. 0 means no messages (default), 1 provides basic messages (e.g., calculation stage).}
 }
@@ -58,7 +61,8 @@ Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifte
 An sf object with several columns: (1) supercells - an id of each supercell, (2) y and x coordinates, (3) one or more columns with average values of given variables in each supercell.
 }
 \description{
-Creates supercells based on single- or multi-band spatial raster data. It uses a modified version of the SLIC superpixel algorithm by Achanta et al. (2012), allowing specification of a distance function.
+Creates supercells by bringing the idea of superpixels into spatial analysis and grouping raster cells into coherent regions.
+It uses a modified version of the SLIC algorithm by Achanta et al. (2012), allowing specification of a distance function.
 }
 \details{
 If you want to use additional arguments for the averaging function (\code{avg_fun}), you can create a custom function. For example, if you want to calculate the mean by removing missing values, you can use the following code: \code{my_mean = function(x) mean(x, na.rm = TRUE)} and then provide \code{avg_fun = my_mean.}

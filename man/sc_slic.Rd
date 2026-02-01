@@ -28,7 +28,7 @@ sc_slic(
 \item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
-Set \code{compactness = "auto"} to enable SLIC0-style adaptive compactness.}
+Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
@@ -71,7 +71,7 @@ Information on \code{step} and \code{compactness} are attached to the result as 
 \description{
 Creates supercells from single- or multi-band rasters using an extended SLIC algorithm.
 The function supports either a target number of supercells (\code{k}) or a fixed grid
-spacing (\code{step}), as well as optional custom centers and chunked processing.
+spacing (\code{step}), as well as optional custom centers and chunking.
 }
 \details{
 Use \code{\link[=sc_slic]{sc_slic()}} for polygon outputs. For raster or point centers outputs, see

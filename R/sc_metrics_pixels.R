@@ -19,7 +19,7 @@
 #' If `x` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers.
 #' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
-#' adaptive compactness, and scaled value distances are computed with the
+#' adaptive compactness (SLIC0), and scaled value distances are computed with the
 #' per-supercell max value distance.
 #'
 #' @return A SpatRaster with one or more layers depending on `metrics`.

@@ -5,6 +5,8 @@
 #' For polygon outputs, use [`sc_slic()`]; for point centers, use [`sc_slic_points()`]
 #'
 #' @inheritParams sc_slic
+#' @param outcomes Character vector controlling which fields are returned.
+#' Only `"supercells"` is supported in `sc_slic_raster()`.
 #' @seealso [`sc_slic()`]
 #'
 #' @return A SpatRaster with supercell IDs.

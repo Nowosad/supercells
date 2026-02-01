@@ -8,7 +8,7 @@
 #' Set `metadata = TRUE` when calling `sc_slic()` or `supercells()`
 #' Metrics are averaged across supercells (each supercell has equal weight).
 #' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
-#' adaptive compactness, and scaled value distances are computed with the
+#' adaptive compactness (SLIC0), and scaled value distances are computed with the
 #' per-supercell max value distance.
 #'
 #' @inheritParams sc_metrics_pixels
