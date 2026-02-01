@@ -28,6 +28,10 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
          call. = FALSE)
   }
 
+  if (nrow(x) < 2) {
+    return(x)
+  }
+
   x_df = sf::st_drop_geometry(x)
 
   skip_cols = c("supercells", "x", "y")
@@ -40,16 +44,16 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
     stop("No numeric value columns found for merging", call. = FALSE)
   }
 
-  if (is.character(weight) && length(weight) == 1) {
+  w = if (is.character(weight) && length(weight) == 1) {
     if (weight == "area") {
-      w = as.numeric(sf::st_area(x))
+      as.numeric(sf::st_area(x))
     } else if (weight %in% names(x_df)) {
-      w = as.numeric(x_df[[weight]])
+      as.numeric(x_df[[weight]])
     } else {
       stop("weight must be 'area', a column name, or numeric vector", call. = FALSE)
     }
   } else if (is.numeric(weight) && length(weight) == nrow(x)) {
-    w = as.numeric(weight)
+    as.numeric(weight)
   } else {
     stop("weight must be 'area', a column name, or numeric vector", call. = FALSE)
   }
@@ -60,72 +64,57 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
 
   dist_one = .sc_merge_dist_fun(dist_fun)
 
-  get_opt = function(name, default = NULL) {
+  get_opt = function(name) {
     if (is.list(method_opts) && name %in% names(method_opts)) {
       return(method_opts[[name]])
     }
-    default
+    NULL
   }
-
-  opts = list(
-    target_k = get_opt("target_k", NULL),
-    tau = get_opt("tau", NULL),
-    kappa = get_opt("kappa", 0.5)
-  )
-
-  validate_controls = function() {
-    target_k = opts$target_k
-    tau = opts$tau
-    if (is.null(target_k) && is.null(tau)) {
-      stop("Provide target_k or tau to control merging", call. = FALSE)
-    }
-    if (!is.null(target_k) && (!is.numeric(target_k) || length(target_k) != 1 || target_k < 1)) {
-      stop("target_k must be a single positive number", call. = FALSE)
-    }
-    if (!is.null(target_k) && target_k > nrow(x)) {
-      stop("target_k cannot exceed the number of supercells", call. = FALSE)
-    }
-    invisible(TRUE)
+  target_k = get_opt("target_k")
+  tau = get_opt("tau")
+  if (is.null(target_k) && is.null(tau)) {
+    stop("Provide target_k or tau to control merging", call. = FALSE)
+  }
+  if (!is.null(target_k) && (!is.numeric(target_k) || length(target_k) != 1 || target_k < 1)) {
+    stop("target_k must be a single positive number", call. = FALSE)
+  }
+  if (!is.null(target_k) && target_k > nrow(x)) {
+    stop("target_k cannot exceed the number of supercells", call. = FALSE)
   }
 
   build_pairs = function() {
-    n = nrow(x)
     adj = sf::st_touches(x)
-    pairs = vector("list", length = n)
-    pair_count = 0
-    for (i in seq_len(n)) {
+    pairs = list()
+    pair_count = 0L
+    for (i in seq_along(adj)) {
       if (length(adj[[i]]) == 0) next
       for (j in adj[[i]]) {
         if (j > i) {
-          pair_count = pair_count + 1
+          pair_count = pair_count + 1L
           pairs[[pair_count]] = c(i, j)
         }
       }
     }
-    if (pair_count == 0) return(list(pairs = list(), dists = numeric(0)))
-    pairs = pairs[seq_len(pair_count)]
+    if (pair_count == 0L) return(list(pairs = list(), dists = numeric(0)))
     dists = vapply(pairs, function(idx) {
       dist_one(vals[idx[1], ], vals[idx[2], ])
     }, numeric(1))
     list(pairs = pairs, dists = dists)
   }
 
+  crs_x = sf::st_crs(x)
   merge_geoms = function(g1, g2) {
-    merged = sf::st_union(sf::st_sfc(g1, crs = sf::st_crs(x)), sf::st_sfc(g2, crs = sf::st_crs(x)))
+    merged = sf::st_union(sf::st_sfc(g1, crs = crs_x), sf::st_sfc(g2, crs = crs_x))
     if (any(sf::st_geometry_type(merged) %in% c("GEOMETRYCOLLECTION", "MULTIPOLYGON"))) {
       merged = suppressWarnings(sf::st_collection_extract(merged, "POLYGON"))
     }
     if (length(merged) == 0) {
-      merged = sf::st_union(sf::st_sfc(g1, crs = sf::st_crs(x)), sf::st_sfc(g2, crs = sf::st_crs(x)))
+      merged = sf::st_union(sf::st_sfc(g1, crs = crs_x), sf::st_sfc(g2, crs = crs_x))
     }
     merged[[1]]
   }
 
-  validate_controls()
-
   repeat {
-    target_k = opts$target_k
-    tau = opts$tau
     n = nrow(x)
     if (!is.null(target_k) && n <= target_k) break
 
@@ -156,20 +145,20 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
     }
 
     new_geom = merge_geoms(sf::st_geometry(x[i, ])[[1]], sf::st_geometry(x[j, ])[[1]])
-    x$geometry[i] = sf::st_sfc(new_geom, crs = sf::st_crs(x))[[1]]
+    x$geometry[i] = sf::st_sfc(new_geom, crs = crs_x)[[1]]
     x = x[-j, , drop = FALSE]
     w = w[-j]
     vals = vals[-j, , drop = FALSE]
     if (has_xy) {
       centers = centers[-j, , drop = FALSE]
     }
-
-    x[value_cols] = vals
-    if (has_xy) {
-      x$x = centers[, 1]
-      x$y = centers[, 2]
   }
-}
+
+  x[value_cols] = vals
+  if (has_xy) {
+    x$x = centers[, 1]
+    x$y = centers[, 2]
+  }
 
 # --- Archived FH/MST implementations (commented) ---
 # aggregate_components = function(groups) {
