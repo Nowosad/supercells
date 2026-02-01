@@ -5,6 +5,13 @@
 #include "cpp11/declarations.hpp"
 #include <R_ext/Visibility.h>
 
+// distances_wrapper.cpp
+double sc_dist_vec_cpp(cpp11::doubles a, cpp11::doubles b, std::string dist_name, cpp11::function dist_fun);
+extern "C" SEXP _supercells_sc_dist_vec_cpp(SEXP a, SEXP b, SEXP dist_name, SEXP dist_fun) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(sc_dist_vec_cpp(cpp11::as_cpp<cpp11::decay_t<cpp11::doubles>>(a), cpp11::as_cpp<cpp11::decay_t<cpp11::doubles>>(b), cpp11::as_cpp<cpp11::decay_t<std::string>>(dist_name), cpp11::as_cpp<cpp11::decay_t<cpp11::function>>(dist_fun)));
+  END_CPP11
+}
 // metrics_global.cpp
 cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters, cpp11::doubles_matrix<> centers_xy, cpp11::doubles_matrix<> centers_vals, cpp11::doubles_matrix<> vals, int step, double compactness, bool adaptive_compactness, std::string dist_name, cpp11::function dist_fun);
 extern "C" SEXP _supercells_sc_metrics_global_cpp(SEXP clusters, SEXP centers_xy, SEXP centers_vals, SEXP vals, SEXP step, SEXP compactness, SEXP adaptive_compactness, SEXP dist_name, SEXP dist_fun) {
@@ -44,6 +51,7 @@ extern "C" SEXP _supercells_run_slic(SEXP mat, SEXP vals, SEXP step, SEXP compac
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     {"_supercells_run_slic",                  (DL_FUNC) &_supercells_run_slic,                  16},
+    {"_supercells_sc_dist_vec_cpp",           (DL_FUNC) &_supercells_sc_dist_vec_cpp,            4},
     {"_supercells_sc_metrics_global_cpp",     (DL_FUNC) &_supercells_sc_metrics_global_cpp,      9},
     {"_supercells_sc_metrics_local_mean_cpp", (DL_FUNC) &_supercells_sc_metrics_local_mean_cpp,  8},
     {"_supercells_sc_metrics_pixels_cpp",     (DL_FUNC) &_supercells_sc_metrics_pixels_cpp,      9},
