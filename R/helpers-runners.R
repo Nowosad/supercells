@@ -58,7 +58,9 @@
                   iter_diagnostics = iter_diagnostics, verbose = verbose)
 
   # prepares the output: a raster of supercell ids plus centers and values
-  if (nrow(slic[[2]]) == 0 || all(slic[[2]] == 0, na.rm = TRUE)) stop("I cannot return supercells. This may be due to a large number of missing values in the 'x' object. Try to either trim your data to the non-NA area (e.g., with 'terra::trim()') or increase the number of expected supercells.", call. = FALSE)
+  if (nrow(slic[[2]]) == 0) {
+    stop("I cannot return supercells. This may be due to a large number of missing values in the 'x' object. Try to either trim your data to the non-NA area (e.g., with 'terra::trim()') or increase the number of expected supercells.", call. = FALSE)
+  }
   slic[[1]] = slic[[1]] + 1
   slic_rast = x[[1]]
   terra::values(slic_rast) = slic[[1]]
@@ -74,9 +76,6 @@
 # used by: .sc_run_chunk_points and .sc_run_chunk_polygons
 .sc_run_centers_points = function(centers, raster, centers_vals = NULL, names_x = NULL) {
   centers_df = as.data.frame(centers)
-  empty_centers = centers_df[, 1] != 0 | centers_df[, 2] != 0
-  centers_df = centers_df[empty_centers, , drop = FALSE]
-
   if (nrow(centers_df) == 0) {
     empty_sf = sf::st_sf(supercells = integer(), x = double(), y = double(),
                          geometry = sf::st_sfc(crs = terra::crs(raster)))
@@ -88,13 +87,13 @@
   res = terra::res(raster)
   centers_df[["x"]] = as.vector(ext)[[1]] + (centers_df[["x"]] * res[[1]]) + (res[[1]] / 2)
   centers_df[["y"]] = as.vector(ext)[[4]] - (centers_df[["y"]] * res[[2]]) - (res[[2]] / 2)
-  centers_df[["supercells"]] = which(empty_centers)
+  centers_df[["supercells"]] = seq_len(nrow(centers_df))
 
   if (!is.null(centers_vals)) {
     if (!is.null(names_x)) {
       colnames(centers_vals) = names_x
     }
-    centers_df = cbind(centers_df, centers_vals[empty_centers, , drop = FALSE])
+    centers_df = cbind(centers_df, centers_vals)
   }
   if ("supercells" %in% names(centers_df)) {
     centers_df = centers_df[, c("supercells", setdiff(names(centers_df), "supercells")), drop = FALSE]
