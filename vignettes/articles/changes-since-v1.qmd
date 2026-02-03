@@ -1,0 +1,163 @@
+---
+title: "Main supercells changes since version 1.0.0"
+author: Jakub Nowosad
+date: "`r Sys.Date()`"
+format:
+  html:
+    number-sections: true
+    number-depth: 1
+vignette: >
+  %\VignetteIndexEntry{Main supercells changes since version 1.0.0}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| include: false
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+#| message: false
+library(supercells)
+library(terra)
+vol <- terra::rast(system.file("raster/volcano.tif", package = "supercells"))
+```
+
+This vignette summarizes the main changes in **supercells** since version 1.0.0.
+It highlights user-facing updates and points to notable new functionality.
+
+## SLIC syntax and outputs
+
+The new version of the **supercells** package introduces a consistent syntax across functions, with a set of functions with the `sc_` prefix.
+The main function in the package is `sc_slic()`, which segments raster data into supercells.
+This function also has two closely related functions for alternative output formats: `sc_slic_points()` and `sc_slic_raster()`.
+`sc_slic()` returns polygon supercells,`sc_slic_points()` returns their centers as points, and `sc_slic_raster()` returns a raster of supercell IDs.
+
+```{r}
+# Polygon supercells (sf)
+vol_sc <- sc_slic(
+  vol,
+  step = 8,
+  compactness = 1,
+  outcomes = c("supercells", "coordinates", "values")
+)
+
+# Plot polygons on top of the volcano raster
+terra::plot(vol)
+plot(sf::st_geometry(vol_sc), add = TRUE, lwd = 0.3, border = "red")
+```
+```{r}
+# Supercell centers as points (sf)
+vol_pts <- sc_slic_points(
+  vol,
+  step = 8,
+  compactness = 1
+)
+
+# Plot points on top of the volcano raster
+terra::plot(vol)
+plot(sf::st_geometry(vol_pts), add = TRUE, pch = 16, col = "red", cex = 0.4)
+```
+```{r}
+# Supercell IDs as a raster (SpatRaster)
+vol_ids <- sc_slic_raster(
+  vol,
+  step = 8,
+  compactness = 1
+)
+
+# Plot raster IDs
+terra::plot(vol_ids)
+```
+
+While, `sc_slic()` is the main function, the other two functions are useful for specific tasks.
+For example, `sc_slic_points()` is helpful for visualizing initial supercell centers or iteration diagnostics, while `sc_slic_raster()` is useful for large datasets where polygon outputs may be too memory-intensive.
+
+## Compactness tuning and iteration diagnostics
+
+Use `sc_tune_compactness()` to estimate a compactness value from a short pilot run, then run `sc_slic()` with the tuned value. 
+
+```{r}
+# Estimate compactness from a short pilot run
+comp_tune <- sc_tune_compactness(vol, step = 8)
+comp_tune
+
+# Use the tuned value and plot results
+vol_sc_tuned <- sc_slic(vol, step = 8, compactness = comp_tune$compactness_global)
+terra::plot(vol)
+plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.3, border = "red")
+```
+
+`sc_slic_points(..., iter_diagnostics = TRUE)` attaches iteration
+diagnostics so you can visualize convergence in mean distance across iterations later on with `sc_plot_iter_diagnostics()`.
+
+```{r}
+# Iteration diagnostics plot (only available without chunking)
+vol_pts_diag <- sc_slic_points(
+  vol,
+  step = 8,
+  compactness = 1,
+  iter_diagnostics = TRUE
+)
+sc_plot_iter_diagnostics(vol_pts_diag)
+```
+
+## Metrics for evaluating results
+
+Three new functions, `sc_metrics_pixels()`, `sc_metrics_supercells()`, and `sc_metrics_global()`,
+provide metrics to evaluate supercell segmentation quality at different levels of detail.
+Pixel-level metrics show distances from each cell to its assigned center (lower is more compact/homogeneous). 
+Supercell-level metrics summarize those distances by region, and global metrics provide a single-row overview for comparisons.
+
+```{r}
+vol_sc <- sc_slic(
+  vol,
+  step = 8,
+  compactness = 7,
+  outcomes = c("supercells", "coordinates", "values")
+)
+
+# Per-pixel metrics (SpatRaster)
+pixel_metrics <- sc_metrics_pixels(vol, vol_sc, metrics = c("spatial", "value"))
+
+# Plot a pixel-level metric
+terra::plot(pixel_metrics)
+```
+```{r}
+# Per-supercell metrics (sf)
+supercell_metrics <- sc_metrics_supercells(vol, vol_sc)
+head(supercell_metrics)
+plot(supercell_metrics["balance"], main = "Supercell balance metric")
+```
+
+```{r}
+# Global metrics (single-row summary)
+global_metrics <- sc_metrics_global(vol, vol_sc)
+global_metrics
+```
+
+## SLIC0 adaptive compactness
+
+`compactness = "auto"` enables adaptive compactness (SLIC0). This lets the method adjust
+compactness across supercells rather than using a single fixed value.
+
+```{r}
+vol_sc_slic0 <- sc_slic(vol, step = 8, compactness = "auto")
+
+# Plot results on top of the volcano raster
+terra::plot(vol)
+plot(sf::st_geometry(vol_sc_slic0), add = TRUE, lwd = 0.3, border = "blue")
+```
+
+## Other changes
+
+- New utilities: Added `step_unit` to `sc_slic()`/`sc_slic_points()`/`sc_slic_raster()` to support map-unit step sizes.
+- Behavior: Since version 1.0, the way coordinates are summarized internally has changed, and results in versions after 1.0 may differ slightly from those prior to 1.0.
+- Performance: Improved speed and memory efficiency.
+- New utilities: Added experimental `sc_merge_supercells()` for adjacency-constrained greedy merging.
+- Chunking and memory: Chunk sizes align to `step`, deterministic ID offsets are used for file-backed merges, and `options(supercells.chunk_mem_gb)` controls memory.
+- Parallelization: Removed **future**-based parallel chunking.
