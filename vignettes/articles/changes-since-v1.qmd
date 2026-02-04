@@ -20,6 +20,9 @@ knitr::opts_chunk$set(
 )
 ```
 
+This vignette summarizes the main changes in **supercells** since version 1.0.0.
+It highlights user-facing updates and points to notable new functionality.
+
 ```{r}
 #| message: false
 library(supercells)
@@ -27,13 +30,11 @@ library(terra)
 vol <- terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 ```
 
-This vignette summarizes the main changes in **supercells** since version 1.0.0.
-It highlights user-facing updates and points to notable new functionality.
-
 ## SLIC syntax and outputs
 
 The new version of the **supercells** package introduces a consistent syntax across functions, with a set of functions with the `sc_` prefix.
 The main function in the package is `sc_slic()`, which segments raster data into supercells.
+It replaces the previous `supercells()` function (which is still available for backward compatibility).
 This function also has two closely related functions for alternative output formats: `sc_slic_points()` and `sc_slic_raster()`.
 `sc_slic()` returns polygon supercells,`sc_slic_points()` returns their centers as points, and `sc_slic_raster()` returns a raster of supercell IDs.
 
@@ -48,7 +49,7 @@ vol_sc <- sc_slic(
 
 # Plot polygons on top of the volcano raster
 terra::plot(vol)
-plot(sf::st_geometry(vol_sc), add = TRUE, lwd = 0.3, border = "red")
+plot(sf::st_geometry(vol_sc), add = TRUE, lwd = 0.6, border = "red")
 ```
 ```{r}
 # Supercell centers as points (sf)
@@ -60,7 +61,7 @@ vol_pts <- sc_slic_points(
 
 # Plot points on top of the volcano raster
 terra::plot(vol)
-plot(sf::st_geometry(vol_pts), add = TRUE, pch = 16, col = "red", cex = 0.4)
+plot(sf::st_geometry(vol_pts), add = TRUE, col = "red")
 ```
 ```{r}
 # Supercell IDs as a raster (SpatRaster)
@@ -89,11 +90,12 @@ comp_tune
 # Use the tuned value and plot results
 vol_sc_tuned <- sc_slic(vol, step = 8, compactness = comp_tune$compactness_global)
 terra::plot(vol)
-plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.3, border = "red")
+plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.6, border = "red")
 ```
 
-`sc_slic_points(..., iter_diagnostics = TRUE)` attaches iteration
-diagnostics so you can visualize convergence in mean distance across iterations later on with `sc_plot_iter_diagnostics()`.
+This function also allow to calculate the compactness using second method called `"local"`.
+
+`sc_slic_points(..., iter_diagnostics = TRUE)` attaches iteration diagnostics so you can visualize convergence in mean distance across iterations later on with `sc_plot_iter_diagnostics()`.
 
 ```{r}
 # Iteration diagnostics plot (only available without chunking)
@@ -108,8 +110,7 @@ sc_plot_iter_diagnostics(vol_pts_diag)
 
 ## Metrics for evaluating results
 
-Three new functions, `sc_metrics_pixels()`, `sc_metrics_supercells()`, and `sc_metrics_global()`,
-provide metrics to evaluate supercell segmentation quality at different levels of detail.
+Three new functions, `sc_metrics_pixels()`, `sc_metrics_supercells()`, and `sc_metrics_global()`, provide metrics to evaluate supercell segmentation quality at different levels of detail.
 Pixel-level metrics show distances from each cell to its assigned center (lower is more compact/homogeneous). 
 Supercell-level metrics summarize those distances by region, and global metrics provide a single-row overview for comparisons.
 
@@ -142,15 +143,14 @@ global_metrics
 
 ## SLIC0 adaptive compactness
 
-`compactness = "auto"` enables adaptive compactness (SLIC0). This lets the method adjust
-compactness across supercells rather than using a single fixed value.
+`compactness = "auto"` enables adaptive compactness (SLIC0). This lets the method adjust compactness across supercells rather than using a single fixed value.
 
 ```{r}
 vol_sc_slic0 <- sc_slic(vol, step = 8, compactness = "auto")
 
 # Plot results on top of the volcano raster
 terra::plot(vol)
-plot(sf::st_geometry(vol_sc_slic0), add = TRUE, lwd = 0.3, border = "blue")
+plot(sf::st_geometry(vol_sc_slic0), add = TRUE, lwd = 0.6, border = "violet")
 ```
 
 ## Other changes
