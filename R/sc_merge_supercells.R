@@ -22,10 +22,15 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
   if (!inherits(x, "sf")) {
     stop("x must be an sf object (output of sc_slic)", call. = FALSE)
   }
+  if (isTRUE(sf::st_is_longlat(x))) {
+    stop("sc_merge_supercells requires projected coordinates; reproject x before merging", call. = FALSE)
+  }
+  old_s2 = sf::sf_use_s2()
+  on.exit(sf::sf_use_s2(old_s2), add = TRUE)
+  sf::sf_use_s2(FALSE)
   method = match.arg(method)
   if (method != "greedy") {
-    stop("Only method = 'greedy' is enabled for now.",
-         call. = FALSE)
+    stop("Only method = 'greedy' is enabled for now.", call. = FALSE)
   }
 
   if (nrow(x) < 2) {
@@ -43,24 +48,35 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
   if (length(value_cols) == 0) {
     stop("No numeric value columns found for merging", call. = FALSE)
   }
+  value_mat = x_df[, value_cols, drop = FALSE]
+  na_cols = colSums(is.na(value_mat)) > 0
+  if (any(na_cols)) {
+    value_cols = value_cols[!na_cols]
+    if (length(value_cols) == 0) {
+      stop("All numeric value columns contain NA; cannot compute distances", call. = FALSE)
+    }
+    if (verbose) {
+      message("Dropping value columns with NA: ", paste(names(value_mat)[na_cols], collapse = ", "))
+    }
+  }
 
-  w = if (is.character(weight) && length(weight) == 1) {
+  weight_is_col = is.character(weight) && length(weight) == 1 && weight %in% names(x_df)
+  if (is.character(weight) && length(weight) == 1) {
     if (weight == "area") {
-      as.numeric(sf::st_area(x))
-    } else if (weight %in% names(x_df)) {
-      as.numeric(x_df[[weight]])
+      w = as.numeric(sf::st_area(x))
+    } else if (weight_is_col) {
+      w = as.numeric(x_df[[weight]])
     } else {
       stop("weight must be 'area', a column name, or numeric vector", call. = FALSE)
     }
   } else if (is.numeric(weight) && length(weight) == nrow(x)) {
-    as.numeric(weight)
+    w = as.numeric(weight)
   } else {
     stop("weight must be 'area', a column name, or numeric vector", call. = FALSE)
   }
 
   vals = as.matrix(x_df[, value_cols, drop = FALSE])
   has_xy = all(c("x", "y") %in% names(x_df))
-  centers = if (has_xy) as.matrix(x_df[, c("x", "y"), drop = FALSE]) else NULL
 
   dist_one = .sc_merge_dist_fun(dist_fun)
 
@@ -82,53 +98,117 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
     stop("target_k cannot exceed the number of supercells", call. = FALSE)
   }
 
-  build_pairs = function() {
-    adj = sf::st_touches(x)
-    pairs = list()
-    pair_count = 0L
-    for (i in seq_along(adj)) {
-      if (length(adj[[i]]) == 0) next
-      for (j in adj[[i]]) {
-        if (j > i) {
-          pair_count = pair_count + 1L
-          pairs[[pair_count]] = c(i, j)
-        }
-      }
-    }
-    if (pair_count == 0L) return(list(pairs = list(), dists = numeric(0)))
-    dists = vapply(pairs, function(idx) {
-      dist_one(vals[idx[1], ], vals[idx[2], ])
-    }, numeric(1))
-    list(pairs = pairs, dists = dists)
-  }
-
   crs_x = sf::st_crs(x)
   merge_geoms = function(g1, g2) {
-    merged = sf::st_union(sf::st_sfc(g1, crs = crs_x), sf::st_sfc(g2, crs = crs_x))
-    if (any(sf::st_geometry_type(merged) %in% c("GEOMETRYCOLLECTION", "MULTIPOLYGON"))) {
-      merged = suppressWarnings(sf::st_collection_extract(merged, "POLYGON"))
-    }
-    if (length(merged) == 0) {
-      merged = sf::st_union(sf::st_sfc(g1, crs = crs_x), sf::st_sfc(g2, crs = crs_x))
-    }
+    merged = sf::st_combine(sf::st_sfc(g1, g2, crs = crs_x))
     merged[[1]]
   }
 
+  dissolve_geoms = function(geoms) {
+    out = vector("list", length(geoms))
+    for (k in seq_along(geoms)) {
+      g = sf::st_sfc(geoms[[k]], crs = crs_x)
+      g_type = sf::st_geometry_type(g)
+      if (any(g_type %in% c("MULTIPOLYGON", "GEOMETRYCOLLECTION"))) {
+        g = suppressWarnings(sf::st_cast(g, "POLYGON"))
+        g = sf::st_union(g)
+      }
+      if (length(g) == 0) g = sf::st_sfc(geoms[[k]], crs = crs_x)
+      out[[k]] = g[[1]]
+    }
+    sf::st_sfc(out, crs = crs_x)
+  }
+
+  n0 = nrow(x)
+  alive = rep(TRUE, n0)
+  n_alive = n0
+  geoms = sf::st_geometry(x)
+  neighbors = sf::st_touches(geoms)
+  version = integer(n0)
+  heap_d = numeric(0)
+  heap_i = integer(0)
+  heap_j = integer(0)
+  heap_vi = integer(0)
+  heap_vj = integer(0)
+  heap_n = 0L
+  heap_push = function(d, i, j, vi, vj) {
+    if (!is.finite(d)) return(invisible(NULL))
+    heap_n <<- heap_n + 1L
+    heap_d[heap_n] <<- d
+    heap_i[heap_n] <<- i
+    heap_j[heap_n] <<- j
+    heap_vi[heap_n] <<- vi
+    heap_vj[heap_n] <<- vj
+    k = heap_n
+    while (k > 1L) {
+      p = k %/% 2L
+      if (heap_d[p] <= heap_d[k]) break
+      tmp = heap_d[p]; heap_d[p] <<- heap_d[k]; heap_d[k] <<- tmp
+      tmp = heap_i[p]; heap_i[p] <<- heap_i[k]; heap_i[k] <<- tmp
+      tmp = heap_j[p]; heap_j[p] <<- heap_j[k]; heap_j[k] <<- tmp
+      tmp = heap_vi[p]; heap_vi[p] <<- heap_vi[k]; heap_vi[k] <<- tmp
+      tmp = heap_vj[p]; heap_vj[p] <<- heap_vj[k]; heap_vj[k] <<- tmp
+      k = p
+    }
+    invisible(NULL)
+  }
+  heap_pop_min = function() {
+    if (heap_n == 0L) return(NULL)
+    out = list(d = heap_d[1L], i = heap_i[1L], j = heap_j[1L],
+               vi = heap_vi[1L], vj = heap_vj[1L])
+    if (heap_n == 1L) {
+      heap_n <<- 0L
+      return(out)
+    }
+    heap_d[1L] <<- heap_d[heap_n]
+    heap_i[1L] <<- heap_i[heap_n]
+    heap_j[1L] <<- heap_j[heap_n]
+    heap_vi[1L] <<- heap_vi[heap_n]
+    heap_vj[1L] <<- heap_vj[heap_n]
+    heap_n <<- heap_n - 1L
+    k = 1L
+    repeat {
+      l = k * 2L
+      r = l + 1L
+      if (l > heap_n) break
+      m = l
+      if (r <= heap_n && heap_d[r] < heap_d[l]) m = r
+      if (heap_d[k] <= heap_d[m]) break
+      tmp = heap_d[k]; heap_d[k] <<- heap_d[m]; heap_d[m] <<- tmp
+      tmp = heap_i[k]; heap_i[k] <<- heap_i[m]; heap_i[m] <<- tmp
+      tmp = heap_j[k]; heap_j[k] <<- heap_j[m]; heap_j[m] <<- tmp
+      tmp = heap_vi[k]; heap_vi[k] <<- heap_vi[m]; heap_vi[m] <<- tmp
+      tmp = heap_vj[k]; heap_vj[k] <<- heap_vj[m]; heap_vj[m] <<- tmp
+      k = m
+    }
+    out
+  }
+  for (i in seq_len(n0)) {
+    nb = neighbors[[i]]
+    nb = nb[nb > i]
+    if (length(nb) == 0) next
+    d = vapply(nb, function(j) dist_one(vals[i, ], vals[j, ]), numeric(1))
+    for (k in seq_along(nb)) {
+      heap_push(d[k], i, nb[k], version[i], version[nb[k]])
+    }
+  }
+
   repeat {
-    n = nrow(x)
-    if (!is.null(target_k) && n <= target_k) break
-
-    pair_data = build_pairs()
-    pairs = pair_data$pairs
-    dists = pair_data$dists
-    if (length(pairs) == 0) break
-
-    min_idx = which.min(dists)
-    min_dist = dists[min_idx]
+    if (!is.null(target_k) && n_alive <= target_k) break
+    item = NULL
+    repeat {
+      item = heap_pop_min()
+      if (is.null(item)) break
+      i = item$i
+      j = item$j
+      if (!alive[i] || !alive[j]) next
+      if (item$vi != version[i] || item$vj != version[j]) next
+      if (!(j %in% neighbors[[i]])) next
+      break
+    }
+    if (is.null(item)) break
+    min_dist = item$d
     if (!is.null(tau) && min_dist > tau) break
-
-    i = pairs[[min_idx]][1]
-    j = pairs[[min_idx]][2]
 
     if (verbose) {
       message(sprintf("Merging %d and %d (dist=%.4f)", i, j, min_dist))
@@ -140,25 +220,55 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
     vals[i, ] = (w_i * vals[i, ] + w_j * vals[j, ]) / w_new
     w[i] = w_new
 
-    if (has_xy) {
-      centers[i, ] = (w_i * centers[i, ] + w_j * centers[j, ]) / w_new
-    }
+    geoms[[i]] = merge_geoms(geoms[[i]], geoms[[j]])
 
-    new_geom = merge_geoms(sf::st_geometry(x[i, ])[[1]], sf::st_geometry(x[j, ])[[1]])
-    x$geometry[i] = sf::st_sfc(new_geom, crs = crs_x)[[1]]
-    x = x[-j, , drop = FALSE]
-    w = w[-j]
-    vals = vals[-j, , drop = FALSE]
-    if (has_xy) {
-      centers = centers[-j, , drop = FALSE]
+    old_i = neighbors[[i]]
+    old_j = neighbors[[j]]
+    new_neighbors = union(old_i, old_j)
+    new_neighbors = setdiff(new_neighbors, c(i, j))
+    new_neighbors = new_neighbors[alive[new_neighbors]]
+
+    for (k in old_j) {
+      if (!alive[k] || k == i) next
+      nk = neighbors[[k]]
+      nk = nk[nk != j]
+      if (!(i %in% nk)) nk = c(nk, i)
+      neighbors[[k]] = nk
+    }
+    for (k in old_i) {
+      if (!alive[k] || k == j) next
+      nk = neighbors[[k]]
+      nk = nk[nk != j]
+      neighbors[[k]] = nk
+    }
+    neighbors[[i]] = new_neighbors
+    neighbors[[j]] = integer(0)
+
+    alive[j] = FALSE
+    n_alive = n_alive - 1L
+    version[i] = version[i] + 1L
+
+    for (k in new_neighbors) {
+      a = min(i, k)
+      b = max(i, k)
+      d = dist_one(vals[a, ], vals[b, ])
+      heap_push(d, a, b, version[a], version[b])
     }
   }
 
-  x[value_cols] = vals
+  keep = which(alive)
+  out = x[keep, , drop = FALSE]
+  out$geometry = dissolve_geoms(geoms[keep])
+  out[value_cols] = vals[keep, , drop = FALSE]
   if (has_xy) {
-    x$x = centers[, 1]
-    x$y = centers[, 2]
+    coords = sf::st_coordinates(sf::st_centroid(out$geometry))
+    out$x = coords[, 1]
+    out$y = coords[, 2]
   }
+  if (weight_is_col) {
+    out[[weight]] = w[keep]
+  }
+  out
 
 # --- Archived FH/MST implementations (commented) ---
 # aggregate_components = function(groups) {
@@ -322,6 +432,4 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
 #   groups = vapply(seq_len(n), uf$find_root, integer(1))
 #   return(aggregate_components(groups))
 # }
-
-  x
 }
