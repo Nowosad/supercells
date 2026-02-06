@@ -40,8 +40,8 @@
   }
   if (!all(c("x", "y") %in% names(x_df))) {
     old_s2 = sf::sf_use_s2()
-    on.exit(sf::sf_use_s2(old_s2), add = TRUE)
-    sf::sf_use_s2(FALSE)
+    on.exit(suppressMessages(sf::sf_use_s2(old_s2)), add = TRUE)
+    suppressMessages(sf::sf_use_s2(FALSE))
     centers = sf::st_centroid(sf::st_geometry(x_work))
     coords = sf::st_coordinates(centers)
     x_df[["x"]] = coords[, 1]
