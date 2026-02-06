@@ -18,12 +18,12 @@ knitr::opts_chunk$set(
 ```
 
 The **supercells** package creates compact, homogeneous regions from raster data.
-It replaces thousends or millions of pixels with a smaller number of meaningful spatial units.
+It replaces thousands or millions of pixels with a smaller number of meaningful spatial units.
 This helps with interpretation, visualization, and downstream modeling.
 It also reduces noise while preserving important spatial structure.
 
 The package is designed to work with rasters that have many layers or time steps.
-It supports multiple distance measures and user-defined distance functions, so similarity can be adapted to the data.
+It supports multiple distance measures such as Jensen–Shannon divergence or dynamic time warping, as well as user-defined distance functions, so similarity can be adapted to the data.
 It can therefore handle diverse data types and high-dimensional inputs without changing the main workflow.
 The package core ideas are described in @Nowosad2022.
 
@@ -65,8 +65,8 @@ Moreover, it has only one layer -- but the same functions can handle multi-layer
 
 Below, we create supercells in three different formats: polygons, points, and raster IDs.
 The polygon supercells are the most common output.
-Here, we specified `step = 8` which would result in supercells of appoximately 8x8 cells in size if they were perfectly regular, but the actual shapes and sizes will depend on the data and the `compactness` setting.
-The compactness is set to `1` -- the behavior of this parameter depends on many factors, including the range of values in the raster, their properies, and selected distance measure.
+Here, we specified `step = 8` which would result in supercells of approximately 8x8 cells in size if they were perfectly regular, but the actual shapes and sizes will depend on the data and the `compactness` setting.
+The compactness is set to `1` -- the behavior of this parameter depends on many factors, including the range of values in the raster, their properties, and the selected distance measure.
 
 ```{r}
 # Polygon supercells (sf)
@@ -82,7 +82,7 @@ plot(sf::st_geometry(vol_sc), add = TRUE, lwd = 0.6, border = "red")
 
 The resulting `sf` object contains one row per supercell.
 Each row stores summary values of each layer in the original raster, as well as the geometry of the supercell.
-It is also possible to return other information, including supercell IDs and coordinates of centers, by setting `outcomes` argument to `c("supercells", "coordinates", "values")`.
+By default only summary values are returned, so use `outcomes = c("supercells", "coordinates", "values")` when you also want IDs and center coordinates.
 
 Two related functions provide alternative output formats.
 Use `sc_slic_points()` to return only supercell centers as points.
@@ -113,7 +113,7 @@ terra::plot(vol)
 plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.6, border = "red")
 ```
 
-Such derive compactness value may serve as a good starting point for further experimentation.
+Such a derived compactness value may serve as a good starting point for further experimentation.
 
 Afterwards, we can evaluate the quality of the resulting supercells using metrics on different levels.
 
@@ -125,6 +125,7 @@ global_metrics <- sc_metrics_global(vol, vol_sc_tuned)
 
 The pixel-level metrics show how well the supercells represent the original raster values at the pixel level.
 By default they include `spatial`, `value`, and `combined` distances, with `balance` available as an optional fourth metric.
+When `scale = TRUE` (the default), the spatial and value layers are returned as `spatial_scaled` and `value_scaled`.
 
 ```{r}
 plot(pixel_metrics, nr = 1)
