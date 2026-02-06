@@ -6,15 +6,16 @@ library(stars)
 library(ggspatial)
 library(ggplot2)
 library(gganimate)
+library(gifski)
 library(colorspace)
 library(purrr)
 # library(supercells)
 
 # test 1 ------------------------------------------------------------------
 srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
-srtm_slic = supercells(srtm, 100, 1, "jensen_shannon")
+srtm_slic = supercells(srtm, 100, 1, "jsd")
 ggplot() +
-  geom_stars(data = stars::st_as_stars(raster::raster(srtm))) +
+  geom_stars(data = stars::st_as_stars(srtm)) +
   scale_fill_continuous_sequential("Terrain 2") +
   geom_sf(data = srtm_slic, fill = NA, color = "red", size = 0.1) +
   stars:::theme_stars() +
@@ -22,7 +23,6 @@ ggplot() +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
   labs(x = NULL, y = NULL)
-
 
 # euclidean ---------------------------------------------------------------
 supercell2 = function(step, x, nc, dist_fun = "euclidean", clean = TRUE){
@@ -44,7 +44,7 @@ srtm_slic3b = map2(srtm_slic3, nc, add_cols)
 srtm_slic3c = do.call(rbind, srtm_slic3b)
 
 g3a = ggplot() +
-  geom_stars(data = stars::st_as_stars(raster::raster(srtm))) +
+  geom_stars(data = stars::st_as_stars(srtm)) +
   scale_fill_continuous_sequential("Terrain 2") +
   geom_sf(data = srtm_slic3c, fill = NA, color = "#DA3DBE", size = 0.1, aes(group = sizes)) +
   stars:::theme_stars() +
@@ -58,7 +58,9 @@ g3a = ggplot() +
   labs(x = NULL, y = NULL, title = "Compactness: {closest_state}")
 
 # animate(g1a, renderer = ffmpeg_renderer())
-anim_save("g3a2.gif", g3a, height = 537/100, width = 420/100, units = "in", res = 150)
+g3a_anim = animate(g3a, height = 537/100 * 150, width = 420/100 * 150, res = 150,
+                   renderer = gifski_renderer())
+anim_save("animation-compactness-srtm.gif", g3a_anim)
 
 
 # rgb ---------------------------------------------------------------------
@@ -70,7 +72,7 @@ system.time({v3_slic3 = map(nc, supercell3, v3, 200, "euclidean", TRUE, "to_LAB"
 v3_slic3b = map2(v3_slic3, nc, add_cols)
 v3_slic3c = do.call(rbind, v3_slic3b)
 
-v3_rgb = st_rgb(stars::st_as_stars(raster::raster(v3))[,,,1:3],
+v3_rgb = st_rgb(stars::st_as_stars(v3)[,,,1:3],
                 probs = c(0.02, 0.98), stretch = TRUE)
 
 v3_p = ggplot() +
@@ -89,11 +91,13 @@ v3_p = ggplot() +
   labs(x = NULL, y = NULL, title = "Compactness: {closest_state}")
 
 # animate(g1a, renderer = ffmpeg_renderer())
-anim_save("v3_p.gif", v3_p, height = 280/50, width = 550/50, units = "in", res = 150)
+v3_p_anim = animate(v3_p, height = 280/50 * 150, width = 550/50 * 150, res = 150,
+                    renderer = gifski_renderer())
+anim_save("animation-compactness-ortho.gif", v3_p_anim)
 
 
 # tests iterations --------------------------------------------------------
-supercell_i = function(iter, x, step, nc, dist_fun = "euclidean", clean = TRUE, transform){
+supercell_i = function(iter, x, step, nc, dist_fun = "euclidean", clean = TRUE, transform = NULL){
   supercells(x = x, k = step, compactness = nc, dist_fun = dist_fun, clean = clean, iter = iter, transform = transform)
 }
 add_cols = function(x, col_value){
@@ -109,7 +113,7 @@ i_slic2 = map2(i_slic, i, add_cols)
 i_slic3 = do.call(rbind, i_slic2)
 
 g_i = ggplot() +
-  geom_stars(data = stars::st_as_stars(raster::raster(srtm))) +
+  geom_stars(data = stars::st_as_stars(srtm)) +
   scale_fill_continuous_sequential("Terrain 2") +
   geom_sf(data = i_slic3, fill = NA, color = "#DA3DBE", size = 0.1, aes(group = sizes)) +
   stars:::theme_stars() +
@@ -123,7 +127,9 @@ g_i = ggplot() +
   labs(x = NULL, y = NULL, title = "Numer of interations: {closest_state}")
 
 # animate(g1a, renderer = ffmpeg_renderer())
-anim_save("g_i.gif", g_i, height = 537/100, width = 420/100, units = "in", res = 150, renderer = gifski_renderer())
+g_i_anim = animate(g_i, height = 537/100 * 150, width = 420/100 * 150, res = 150,
+                   renderer = gifski_renderer())
+anim_save("animation-iterations-srtm.gif", g_i_anim)
 
 # tests iterations2 --------------------------------------------------------
 v3 = rast(system.file("raster/ortho.tif", package = "supercells"))
@@ -133,7 +139,7 @@ system.time({i_slic2 = map(i, supercell_i, v3, 200, 50, clean = FALSE, transform
 i_slic2 = map2(i_slic2, i, add_cols)
 i_slic2 = do.call(rbind, i_slic2)
 
-v3_rgb = st_rgb(stars::st_as_stars(raster::raster(v3))[,,,1:3],
+v3_rgb = st_rgb(stars::st_as_stars(v3)[,,,1:3],
                 probs = c(0.02, 0.98), stretch = TRUE)
 
 g_i2 = ggplot() +
@@ -152,4 +158,6 @@ g_i2 = ggplot() +
   labs(x = NULL, y = NULL, title = "Number of iterations: {closest_state}")
 
 # animate(g1a, renderer = ffmpeg_renderer())
-anim_save("g_i2.gif", g_i2, height = 280/50, width = 550/50, units = "in", res = 150, renderer = gifski_renderer())
+g_i2_anim = animate(g_i2, height = 280/50 * 150, width = 550/50 * 150, res = 150,
+                    renderer = gifski_renderer())
+anim_save("animation-iterations-ortho.gif", g_i2_anim)

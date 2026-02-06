@@ -16,7 +16,7 @@ sc_slic_raster(
   step_unit = "cells",
   k = NULL,
   centers = NULL,
-  metadata = FALSE,
+  outcomes = "supercells",
   chunks = FALSE,
   iter_diagnostics = FALSE,
   verbose = 0
@@ -28,7 +28,7 @@ sc_slic_raster(
 \item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
-Set \code{compactness = "auto"} to enable SLIC0-style adaptive compactness.}
+Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
@@ -51,7 +51,8 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{centers}{Optional sf object of custom centers. Requires \code{step}.}
 
-\item{metadata}{Logical. Should metadata columns be kept?}
+\item{outcomes}{Character vector controlling which fields are returned.
+Only \code{"supercells"} is supported in \code{sc_slic_raster()}.}
 
 \item{chunks}{Chunking option. Use \code{FALSE} for no chunking, \code{TRUE} for
 automatic chunking based on size, or a numeric value for a fixed chunk size
@@ -63,7 +64,7 @@ attribute (\code{iter_diagnostics}) on the output. Only available when chunks ar
 \item{verbose}{Verbosity level.}
 }
 \value{
-A SpatRaster with supercell IDs
+A SpatRaster with supercell IDs.
 }
 \description{
 Runs the SLIC workflow and returns a raster of supercell IDs

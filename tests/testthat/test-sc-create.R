@@ -11,7 +11,8 @@ test_that("sc_slic returns sf with attributes", {
 test_that("sc_slic handles step and centers", {
   set.seed(2021-11-21)
   centers = sf::st_sf(geom = sf::st_sample(sf::st_as_sfc(sf::st_bbox(v1)), 50, type = "random"))
-  sc = sc_slic(v1, centers = centers, step = 8, compactness = 1, metadata = TRUE)
+  sc = sc_slic(v1, centers = centers, step = 8, compactness = 1,
+               outcomes = c("supercells", "coordinates", "values"))
   expect_s3_class(sc, "sf")
 })
 
@@ -21,7 +22,7 @@ test_that("sc_slic_raster returns raster with attributes", {
 })
 
 test_that("sc_slic_raster matches rasterized sc_slic", {
-  sc = sc_slic(v1, step = 8, compactness = 1, metadata = TRUE)
+  sc = sc_slic(v1, step = 8, compactness = 1, outcomes = "supercells")
   sc_r = sc_slic_raster(v1, step = 8, compactness = 1)
   ref_r = terra::rasterize(terra::vect(sc), v1, field = "supercells")
   ref_vals = terra::values(ref_r, mat = FALSE)

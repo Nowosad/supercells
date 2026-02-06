@@ -2,7 +2,7 @@
 #'
 #' Creates supercells from single- or multi-band rasters using an extended SLIC algorithm.
 #' The function supports either a target number of supercells (`k`) or a fixed grid
-#' spacing (`step`), as well as optional custom centers and chunked processing.
+#' spacing (`step`), as well as optional custom centers and chunking.
 #'
 #' @details
 #' Use [`sc_slic()`] for polygon outputs. For raster or point centers outputs, see
@@ -23,7 +23,7 @@
 #' @param x An object of class SpatRaster (terra) or class stars (stars).
 #' @param step The distance (number of cells) between initial centers (alternative is `k`).
 #' @param compactness A compactness value. Use [`sc_tune_compactness()`] to estimate it.
-#' Set `compactness = "auto"` to enable SLIC0-style adaptive compactness.
+#' Set `compactness = "auto"` to enable adaptive compactness (SLIC0).
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.
@@ -37,7 +37,9 @@
 #' (converted to cells using raster resolution).
 #' @param k The number of supercells desired (alternative to `step`).
 #' @param centers Optional sf object of custom centers. Requires `step`.
-#' @param metadata Logical. Should metadata columns be kept?
+#' @param outcomes Character vector controlling which fields are returned.
+#' Allowed values are "supercells", "coordinates", and "values". Default is
+#' "values". Use `outcomes = c("supercells", "coordinates", "values")` for full output.
 #' @param chunks Chunking option. Use `FALSE` for no chunking, `TRUE` for
 #' automatic chunking based on size, or a numeric value for a fixed chunk size
 #' (in number of cells per side).
@@ -62,14 +64,15 @@
 #' plot(sf::st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
                    avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                   step_unit = "cells", k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
+                   step_unit = "cells", k = NULL, centers = NULL,
+                   outcomes = "values", chunks = FALSE,
                    iter_diagnostics = FALSE, verbose = 0) {
 
   if (iter == 0) {
     stop("iter = 0 returns centers only; polygon output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
   }
   prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                                k, centers, metadata, chunks, iter_diagnostics, verbose)
+                                k, centers, outcomes, chunks, iter_diagnostics, verbose)
 
   segment = .sc_slic_segment(prep_args, .sc_run_full_polygons, .sc_run_chunk_polygons)
 

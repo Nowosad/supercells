@@ -5,34 +5,35 @@
 \title{Pixel-level supercells metrics}
 \usage{
 sc_metrics_pixels(
-  raster,
   x,
-  dist_fun = "euclidean",
+  sc,
+  metrics = c("spatial", "value", "combined", "balance"),
   scale = TRUE,
-  metrics = c("spatial", "value", "combined"),
+  step,
   compactness,
-  step
+  dist_fun = NULL
 )
 }
 \arguments{
-\item{raster}{The input SpatRaster used to create \code{x}}
+\item{x}{The input SpatRaster used to create \code{sc}.}
 
-\item{x}{An sf object returned by \code{\link[=sc_slic]{sc_slic()}}}
+\item{sc}{An sf object returned by \code{\link[=sc_slic]{sc_slic()}}.}
 
-\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.}
+\item{metrics}{Character vector of metrics to return. Options:
+\code{"spatial"}, \code{"value"}, \code{"combined"}, \code{"balance"}.
+Default: \code{c("spatial", "value", "combined", "balance")}.}
 
 \item{scale}{Logical. If \code{TRUE}, returns \code{spatial} and \code{value} as scaled
 distances (\code{spatial_scaled}, \code{value_scaled}).}
 
-\item{metrics}{Character vector of metrics to return. Options:
-\code{"spatial"}, \code{"value"}, \code{"combined"}, \code{"balance"}.
-Default: \code{c("spatial", "value", "combined")}.}
+\item{step}{A step value used for the supercells
+If missing, uses \code{attr(sc, "step")} when available}
 
 \item{compactness}{A compactness value used for the supercells
-If missing, uses \code{attr(x, "compactness")} when available}
+If missing, uses \code{attr(sc, "compactness")} when available}
 
-\item{step}{A step value used for the supercells
-If missing, uses \code{attr(x, "step")} when available}
+\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.
+If missing or \code{NULL}, uses \code{attr(sc, "dist_fun")} when available.}
 }
 \value{
 A SpatRaster with one or more layers depending on \code{metrics}.
@@ -47,7 +48,8 @@ positive values indicate value dominance.}
 Metrics:
 \describe{
 \item{spatial}{Spatial distance from each pixel to its supercell center
-in grid-cell units (row/column index distance).}
+in grid-cell units (row/column index distance). If the input supercells were
+created with \code{step_unit = "map"}, distances are reported in map units.}
 \item{value}{Value distance from each pixel to its supercell center in
 the raster value space.}
 \item{combined}{Combined distance using \code{compactness} and \code{step}.}
@@ -61,10 +63,10 @@ When \code{scale = TRUE}, \code{spatial} and \code{value} are returned as
 Computes per-pixel distance diagnostics from each pixel to its supercell center
 }
 \details{
-If \code{x} lacks \code{supercells}, \code{x}, or \code{y} columns, they are derived from geometry
+If \code{sc} lacks \code{supercells}, \code{x}, or \code{y} columns, they are derived from geometry
 and row order, which may differ from the original centers.
 When using SLIC0 (set \code{compactness = "auto"} in \code{\link[=sc_slic]{sc_slic()}}), combined and balance metrics use per-supercell
-adaptive compactness, and scaled value distances are computed with the
+adaptive compactness (SLIC0), and scaled value distances are computed with the
 per-supercell max value distance.
 }
 \examples{

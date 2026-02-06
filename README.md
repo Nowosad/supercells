@@ -14,11 +14,12 @@ coverage](https://codecov.io/gh/Nowosad/supercells/branch/master/graph/badge.svg
 downloads](http://cranlogs.r-pkg.org/badges/supercells)](https://cran.r-project.org/package=supercells)
 <!-- badges: end -->
 
-The goal of **supercells** is to utilize the concept of superpixels to a
-variety of spatial data. This package works on spatial data with one
-variable (e.g., continuous raster), many variables (e.g., RGB rasters),
-and spatial patterns (e.g., areas in categorical rasters). It is based
-on the SLIC algorithm (Achanta et al. (2012)), and readapts it to work
+The goal of **supercells** is to bring the idea of superpixels into
+spatial analysis - grouping raster cells (not just image pixels) into
+meaningful, coherent regions. This package works on spatial data with
+one variable (e.g., continuous raster), many variables (e.g., RGB
+rasters), and spatial patterns (e.g., areas in categorical rasters). It
+is based on the SLIC algorithm (Achanta et al. (2012)), adapted to work
 with arbitrary dissimilarity measures.
 
 ## Installation

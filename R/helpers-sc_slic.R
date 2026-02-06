@@ -2,9 +2,10 @@
 
 # prepare and validate slic arguments
 .sc_slic_prep_args = function(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                              k, centers, metadata, chunks, iter_diagnostics, verbose) {
+                              k, centers, outcomes, chunks, iter_diagnostics, verbose) {
   # Validate core arguments and types
-  .sc_slic_validate_args(step, step_unit, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea)
+  .sc_slic_validate_args(step, step_unit, compactness, k, centers, chunks, dist_fun, avg_fun, iter, minarea)
+  outcomes = .sc_slic_prep_outcomes(outcomes)
   # Normalize input to SpatRaster
   x = .sc_util_prep_raster(x)
   if (terra::is.lonlat(x)) {
@@ -43,21 +44,18 @@
     compactness = 0
   }
   # Package prep results for downstream functions
-  return(list(x = x, step = step, input_centers = input_centers, funs = funs,
+  return(list(x = x, step = step, step_unit = step_unit,
+              dist_fun_input = dist_fun,
+              input_centers = input_centers, funs = funs,
               minarea = minarea, chunk_ext = chunk_ext,
-              iter_diagnostics = iter_diagnostics, metadata = metadata,
+              iter_diagnostics = iter_diagnostics, outcomes = outcomes,
               compactness = compactness, adaptive_compactness = adaptive_compactness,
               clean = clean, iter = iter,
               verbose = verbose, verbose_cpp = verbose_cpp))
 }
 
 # validate slic arguments and types
-.sc_slic_validate_args = function(step, step_unit, compactness, k, centers, chunks, dist_fun, avg_fun, iter, metadata, minarea) {
-  if (!missing(metadata)) {
-    if (!is.logical(metadata) || length(metadata) != 1 || is.na(metadata)) {
-      stop("The 'metadata' argument must be TRUE or FALSE", call. = FALSE)
-    }
-  }
+.sc_slic_validate_args = function(step, step_unit, compactness, k, centers, chunks, dist_fun, avg_fun, iter, minarea) {
   if (!missing(step_unit)) {
     if (!is.character(step_unit) || length(step_unit) != 1 || is.na(step_unit) ||
         !(step_unit %in% c("cells", "map"))) {
@@ -161,6 +159,43 @@
   return(minarea)
 }
 
+# resolve outcomes for returned fields
+.sc_slic_prep_outcomes = function(outcomes) {
+  allowed = c("supercells", "coordinates", "values")
+  if (is.null(outcomes) || !is.character(outcomes) || anyNA(outcomes)) {
+    stop("The 'outcomes' argument must be a character vector", call. = FALSE)
+  }
+  if (length(outcomes) == 0) {
+    return(character(0))
+  }
+  outcomes = unique(outcomes)
+  bad = setdiff(outcomes, allowed)
+  if (length(bad) > 0) {
+    stop("The 'outcomes' argument must be one or more of: ",
+         paste(allowed, collapse = ", "), call. = FALSE)
+  }
+  outcomes
+}
+
+# select requested outcomes columns from sf output
+.sc_slic_select_outcomes = function(x, outcomes) {
+  geom_col = attr(x, "sf_column")
+  value_cols = setdiff(names(x), c("supercells", "x", "y", geom_col))
+  keep = character(0)
+  if ("supercells" %in% outcomes && "supercells" %in% names(x)) {
+    keep = c(keep, "supercells")
+  }
+  if ("coordinates" %in% outcomes) {
+    if ("x" %in% names(x)) keep = c(keep, "x")
+    if ("y" %in% names(x)) keep = c(keep, "y")
+  }
+  if ("values" %in% outcomes) {
+    keep = c(keep, value_cols)
+  }
+  keep = unique(c(keep, geom_col))
+  x[, keep, drop = FALSE]
+}
+
 # apply slic over chunks
 .sc_slic_apply_chunks = function(chunk_ext, fun, args) {
   return(do.call(apply, c(list(chunk_ext, MARGIN = 1, FUN = fun), args)))
@@ -179,15 +214,12 @@
 
   slic_sf = .sc_chunk_update_ids(chunks)
 
-  if (!isTRUE(prep$metadata)) {
-    remove_cols = intersect(names(slic_sf), c("supercells", "x", "y"))
-    if (length(remove_cols) > 0) {
-      slic_sf = slic_sf[, -which(names(slic_sf) %in% remove_cols)]
-    }
-  }
+  slic_sf = .sc_slic_select_outcomes(slic_sf, prep$outcomes)
 
   attr(slic_sf, "step") = prep$step
+  attr(slic_sf, "step_unit") = prep$step_unit
   attr(slic_sf, "compactness") = prep$compactness
+  attr(slic_sf, "dist_fun") = prep$dist_fun_input
   attr(slic_sf, "method") = if (isTRUE(prep$adaptive_compactness)) "slic0" else "slic"
   class(slic_sf) = c(class(slic_sf), "supercells")
   if (!is.null(iter_attr)) {
@@ -212,8 +244,7 @@
     minarea = prep$minarea,
     input_centers = prep$input_centers,
     verbose = prep$verbose_cpp,
-    iter_diagnostics = prep$iter_diagnostics,
-    metadata = prep$metadata
+    iter_diagnostics = prep$iter_diagnostics
   )
   if (nrow(prep$chunk_ext) == 1) {
     list(chunks = list(do.call(single_runner, args)))

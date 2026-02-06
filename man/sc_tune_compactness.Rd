@@ -7,6 +7,7 @@
 sc_tune_compactness(
   raster,
   step = NULL,
+  step_unit = "cells",
   compactness = 1,
   metrics = "global",
   dist_fun = "euclidean",
@@ -24,6 +25,8 @@ sc_tune_compactness(
 \item{raster}{A \code{SpatRaster}.}
 
 \item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
+
+\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units.}
 
 \item{compactness}{Starting compactness used for the initial short run.}
 
@@ -56,20 +59,20 @@ before computing compactness. Use \code{"auto"} to divide by \code{sqrt(nlyr(ras
 (useful for high-dimensional embeddings). Default: \code{"auto"}.}
 }
 \value{
-A one-row data frame with columns \code{step} and either
-\code{compactness_global} or \code{compactness_local}.
+A one-row data frame with columns \code{step}, \code{metric}, and \code{compactness}.
 }
 \description{
 Runs a short SLIC segmentation (default \code{iter = 1}) and uses cell-level
 distances to estimate a compactness value where value and spatial distances
 are balanced for the chosen \code{step}.
-Summaries are cell-weighted medians over the (sampled) cells.
+The global estimate uses a pixel-weighted median over the sampled cells,
+while the local estimate uses a median of per-center mean distances.
 }
 \examples{
 library(terra)
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 tune = sc_tune_compactness(vol, step = 8)
-tune$compactness_global
+tune$compactness
 
 }
 \seealso{

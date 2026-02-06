@@ -3,6 +3,8 @@
 #' Runs the SLIC workflow and returns supercell centers as points.
 #' Use \code{iter = 0} to return the initial centers before iterations.
 #' For polygon outputs, use [`sc_slic()`]; for raster output, use [`sc_slic_raster()`]
+#' By default, only value summaries are returned; add
+#' `outcomes = c("supercells", "coordinates", "values")` to include ids and x/y.
 #'
 #' @inheritParams sc_slic
 #' @seealso [`sc_slic()`], [`sc_slic_raster()`]
@@ -25,13 +27,14 @@
 #' plot(sf::st_geometry(vol_pts), add = TRUE, pch = 16, col = "red")
 sc_slic_points = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                          step_unit = "cells", k = NULL, centers = NULL, metadata = FALSE, chunks = FALSE,
+                          step_unit = "cells", k = NULL, centers = NULL,
+                          outcomes = "values", chunks = FALSE,
                           iter_diagnostics = FALSE, verbose = 0) {
   if (iter == 0) {
     clean = FALSE
   }
   prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                                k, centers, metadata, chunks, iter_diagnostics, verbose)
+                                k, centers, outcomes, chunks, iter_diagnostics, verbose)
 
   segment = .sc_slic_segment(prep_args, .sc_run_full_points, .sc_run_chunk_points)
 
