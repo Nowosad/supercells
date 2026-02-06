@@ -9,7 +9,9 @@ navbar:
     menu:
     - text: "Version 2.0"
     - text: Main supercells changes since version 1.0.0
-      href: articles/changes-since-v1.html
+      href: articles/v2-changes-since-v1.html
+    - text: Introduction to supercells
+      href: articles/v2-intro.html
     # - text: Title A1
     #   href: articles/a1.html
     # - text: Title A2
@@ -17,12 +19,12 @@ navbar:
     - text: -------
     - text: "Version 1.0"
     - text: The supercells() function
-      href: articles/main-function.html
+      href: articles/v1-main-function.html
     - text: Benchmarks
-      href: articles/benchmarks_v1.html
+      href: articles/v1-benchmarks.html
     - text: Superpixels of a single raster layer
-      href: articles/one_var.html
+      href: articles/v1-one_var.html
     - text: Superpixels of an RGB raster
-      href: articles/rgb_vars.html
+      href: articles/v1-rgb_vars.html
     - text: Superpixels of spatial categorical patterns
-      href: articles/motifels.html
+      href: articles/v1-motifels.html
