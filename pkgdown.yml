@@ -2,12 +2,17 @@ pandoc: 3.1.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  articles/benchmarks_v1: benchmarks_v1.html
-  articles/main-function: main-function.html
-  articles/motifels: motifels.html
-  articles/one_var: one_var.html
-  articles/rgb_vars: rgb_vars.html
-last_built: 2026-01-31T09:54Z
+  articles/v1-benchmarks: v1-benchmarks.html
+  articles/v1-main-function: v1-main-function.html
+  articles/v1-motifels: v1-motifels.html
+  articles/v1-one_var: v1-one_var.html
+  articles/v1-rgb_vars: v1-rgb_vars.html
+  articles/v2-benchmarks: v2-benchmarks.html
+  articles/v2-changes-since-v1: v2-changes-since-v1.html
+  articles/v2-evaluation: v2-evaluation.html
+  articles/v2-intro: v2-intro.html
+  articles/v2-parameters: v2-parameters.html
+last_built: 2026-02-06T18:46Z
 urls:
   reference: https://jakubnowosad.com/supercells/reference
   article: https://jakubnowosad.com/supercells/articles

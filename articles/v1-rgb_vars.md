@@ -5,7 +5,7 @@
 > interface as it existed in version 1.0 of the package. Some arguments,
 > defaults, and behaviors may differ in newer releases. For up-to-date
 > details, see
-> [`?supercells`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> [`?sc_slic`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
 > and the current reference docs.
 
 Superpixels are a collection of segmentation concepts of grouping pixels
@@ -45,7 +45,7 @@ ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
 plot(ortho)
 ```
 
-![](rgb_vars_files/figure-html/setup-1.png)
+![](v1-rgb_vars_files/figure-html/setup-1.png)
 
 The
 [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
@@ -76,7 +76,7 @@ plot(ortho)
 plot(st_geometry(ortho_slic1), add = TRUE)
 ```
 
-![](rgb_vars_files/figure-html/unnamed-chunk-4-1.png)
+![](v1-rgb_vars_files/figure-html/unnamed-chunk-4-1.png)
 
 The second visualization type requires converting the average RGB values
 into their *hex*adecimal representation first.
@@ -95,7 +95,7 @@ the border lines:
 plot(st_geometry(ortho_slic1), border = avg_colors, col = avg_colors)
 ```
 
-![](rgb_vars_files/figure-html/unnamed-chunk-6-1.png)
+![](v1-rgb_vars_files/figure-html/unnamed-chunk-6-1.png)
 
 Note that the above visualization is not an image - it is a set of
 colored supercells. Therefore, instead of representing this area by

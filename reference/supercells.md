@@ -1,8 +1,9 @@
 # Creates supercells
 
-Creates supercells based on single- or multi-band spatial raster data.
-It uses a modified version of the SLIC superpixel algorithm by Achanta
-et al. (2012), allowing specification of a distance function.
+Creates supercells by bringing the idea of superpixels into spatial
+analysis and grouping raster cells into coherent regions. It uses a
+modified version of the SLIC algorithm by Achanta et al. (2012),
+allowing specification of a distance function.
 
 ## Usage
 
@@ -40,9 +41,9 @@ supercells(
 - compactness:
 
   A compactness value. Larger values cause supercells to be more
-  compact/even (square). Set `compactness = "auto"` to enable
-  SLIC0-style adaptive compactness. A compactness value depends on the
-  range of input cell values and selected distance measure.
+  compact/even (square). Set `compactness = "auto"` to enable adaptive
+  compactness (SLIC0). A compactness value depends on the range of input
+  cell values and selected distance measure.
 
 - dist_fun:
 
@@ -96,17 +97,16 @@ supercells(
 
 - metadata:
 
-  Logical. If `TRUE`, the output object will have metadata columns
-  ("supercells", "x", "y"). If `FALSE`, the output object will not have
-  metadata columns.
+  Logical. Controls whether metadata columns ("supercells", "x", "y")
+  are included.
 
 - chunks:
 
-  Should the input (`x`) be split into chunks before deriving
-  supercells? Either `FALSE` (default), `TRUE` (only large input objects
-  are split), or a numeric value (representing the side length of the
-  chunk in the number of cells). When `TRUE`, the memory limit can be
-  set with `options(supercells.chunk_mem_gb = 4)`.
+  Should the input (`x`) be processed with chunking before deriving
+  supercells? Use `FALSE` (default), `TRUE` (automatic chunking based on
+  size), or a numeric value (chunk side length in number of cells). When
+  `TRUE`, the memory limit can be set with
+  `options(supercells.chunk_mem_gb = 4)`.
 
 - verbose:
 

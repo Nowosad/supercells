@@ -3,7 +3,7 @@
 Creates supercells from single- or multi-band rasters using an extended
 SLIC algorithm. The function supports either a target number of
 supercells (`k`) or a fixed grid spacing (`step`), as well as optional
-custom centers and chunked processing.
+custom centers and chunking.
 
 ## Usage
 
@@ -20,7 +20,7 @@ sc_slic(
   step_unit = "cells",
   k = NULL,
   centers = NULL,
-  metadata = FALSE,
+  outcomes = "values",
   chunks = FALSE,
   iter_diagnostics = FALSE,
   verbose = 0
@@ -42,8 +42,8 @@ sc_slic(
 
   A compactness value. Use
   [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
-  to estimate it. Set `compactness = "auto"` to enable SLIC0-style
-  adaptive compactness.
+  to estimate it. Set `compactness = "auto"` to enable adaptive
+  compactness (SLIC0).
 
 - dist_fun:
 
@@ -85,9 +85,12 @@ sc_slic(
 
   Optional sf object of custom centers. Requires `step`.
 
-- metadata:
+- outcomes:
 
-  Logical. Should metadata columns be kept?
+  Character vector controlling which fields are returned. Allowed values
+  are "supercells", "coordinates", and "values". Default is "values".
+  Use `outcomes = c("supercells", "coordinates", "values")` for full
+  output.
 
 - chunks:
 

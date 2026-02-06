@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,13 +18,18 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Version 2.0</h6></li>
+    <li><a class="dropdown-item" href="../articles/v2-changes-since-v1.html">Main supercells changes since version 1.0.0</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-intro.html">Introduction to supercells</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-tuning.html">Choosing Parameters for Supercells</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
-    <li><a class="dropdown-item" href="../articles/main-function.html">The supercells() function</a></li>
-    <li><a class="dropdown-item" href="../articles/benchmarks_v1.html">Benchmarks</a></li>
-    <li><a class="dropdown-item" href="../articles/one_var.html">Superpixels of a single raster layer</a></li>
-    <li><a class="dropdown-item" href="../articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
-    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-main-function.html">The supercells() function</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-benchmarks.html">Benchmarks</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-one_var.html">Superpixels of a single raster layer</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-rgb_vars.html">Superpixels of an RGB raster</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-motifels.html">Superpixels of spatial categorical patterns</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -49,13 +54,13 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sc_metrics_pixels</span><span class="op">(</span></span>
-<span>  <span class="va">raster</span>,</span>
 <span>  <span class="va">x</span>,</span>
-<span>  dist_fun <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
+<span>  <span class="va">sc</span>,</span>
+<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spatial"</span>, <span class="st">"value"</span>, <span class="st">"combined"</span>, <span class="st">"balance"</span><span class="op">)</span>,</span>
 <span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spatial"</span>, <span class="st">"value"</span>, <span class="st">"combined"</span><span class="op">)</span>,</span>
+<span>  <span class="va">step</span>,</span>
 <span>  <span class="va">compactness</span>,</span>
-<span>  <span class="va">step</span></span>
+<span>  dist_fun <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -63,16 +68,18 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-raster">raster<a class="anchor" aria-label="anchor" href="#arg-raster"></a></dt>
-<dd><p>The input SpatRaster used to create <code>x</code></p></dd>
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>The input SpatRaster used to create <code>sc</code>.</p></dd>
 
 
-<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>An sf object returned by <code><a href="sc_slic.html">sc_slic()</a></code></p></dd>
+<dt id="arg-sc">sc<a class="anchor" aria-label="anchor" href="#arg-sc"></a></dt>
+<dd><p>An sf object returned by <code><a href="sc_slic.html">sc_slic()</a></code>.</p></dd>
 
 
-<dt id="arg-dist-fun">dist_fun<a class="anchor" aria-label="anchor" href="#arg-dist-fun"></a></dt>
-<dd><p>A distance function name or function, as in <code><a href="sc_slic.html">sc_slic()</a></code>.</p></dd>
+<dt id="arg-metrics">metrics<a class="anchor" aria-label="anchor" href="#arg-metrics"></a></dt>
+<dd><p>Character vector of metrics to return. Options:
+<code>"spatial"</code>, <code>"value"</code>, <code>"combined"</code>, <code>"balance"</code>.
+Default: <code>c("spatial", "value", "combined", "balance")</code>.</p></dd>
 
 
 <dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
@@ -80,20 +87,19 @@
 distances (<code>spatial_scaled</code>, <code>value_scaled</code>).</p></dd>
 
 
-<dt id="arg-metrics">metrics<a class="anchor" aria-label="anchor" href="#arg-metrics"></a></dt>
-<dd><p>Character vector of metrics to return. Options:
-<code>"spatial"</code>, <code>"value"</code>, <code>"combined"</code>, <code>"balance"</code>.
-Default: <code>c("spatial", "value", "combined")</code>.</p></dd>
+<dt id="arg-step">step<a class="anchor" aria-label="anchor" href="#arg-step"></a></dt>
+<dd><p>A step value used for the supercells
+If missing, uses <code>attr(sc, "step")</code> when available</p></dd>
 
 
 <dt id="arg-compactness">compactness<a class="anchor" aria-label="anchor" href="#arg-compactness"></a></dt>
 <dd><p>A compactness value used for the supercells
-If missing, uses <code>attr(x, "compactness")</code> when available</p></dd>
+If missing, uses <code>attr(sc, "compactness")</code> when available</p></dd>
 
 
-<dt id="arg-step">step<a class="anchor" aria-label="anchor" href="#arg-step"></a></dt>
-<dd><p>A step value used for the supercells
-If missing, uses <code>attr(x, "step")</code> when available</p></dd>
+<dt id="arg-dist-fun">dist_fun<a class="anchor" aria-label="anchor" href="#arg-dist-fun"></a></dt>
+<dd><p>A distance function name or function, as in <code><a href="sc_slic.html">sc_slic()</a></code>.
+If missing or <code>NULL</code>, uses <code>attr(sc, "dist_fun")</code> when available.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -115,7 +121,8 @@ positive values indicate value dominance.</p></dd>
 
 </dl><p>Metrics:</p><dl><dt>spatial</dt>
 <dd><p>Spatial distance from each pixel to its supercell center
-in grid-cell units (row/column index distance).</p></dd>
+in grid-cell units (row/column index distance). If the input supercells were
+created with <code>step_unit = "map"</code>, distances are reported in map units.</p></dd>
 
 <dt>value</dt>
 <dd><p>Value distance from each pixel to its supercell center in
@@ -134,10 +141,10 @@ spatial distance; 0 indicates balance. Always computed from scaled components.</
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>If <code>x</code> lacks <code>supercells</code>, <code>x</code>, or <code>y</code> columns, they are derived from geometry
+    <p>If <code>sc</code> lacks <code>supercells</code>, <code>x</code>, or <code>y</code> columns, they are derived from geometry
 and row order, which may differ from the original centers.
 When using SLIC0 (set <code>compactness = "auto"</code> in <code><a href="sc_slic.html">sc_slic()</a></code>), combined and balance metrics use per-supercell
-adaptive compactness, and scaled value distances are computed with the
+adaptive compactness (SLIC0), and scaled value distances are computed with the
 per-supercell max value distance.</p>
     </div>
     <div class="section level2">
@@ -151,8 +158,6 @@ per-supercell max value distance.</p>
 <span class="r-in"><span><span class="va">vol</span> <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"raster/volcano.tif"</span>, package <span class="op">=</span> <span class="st">"supercells"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">vol_sc</span> <span class="op">=</span> <span class="fu"><a href="sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">metrics</span> <span class="op">=</span> <span class="fu">sc_metrics_pixels</span><span class="op">(</span><span class="va">vol</span>, <span class="va">vol_sc</span>, scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched off</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spherical geometry (s2) switched on</span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/panel.html" class="external-link">panel</a></span><span class="op">(</span><span class="va">metrics</span>, nr <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sc_metrics_pixels-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>

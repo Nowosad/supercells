@@ -5,7 +5,7 @@
 > interface as it existed in version 1.0 of the package. Some arguments,
 > defaults, and behaviors may differ in newer releases. For up-to-date
 > details, see
-> [`?supercells`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> [`?sc_slic`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
 > and the current reference docs.
 
 ``` r

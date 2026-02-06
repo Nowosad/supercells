@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,13 +33,18 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><hr class="dropdown-divider"></li>
+<li><h6 class="dropdown-header" data-toc-skip>Version 2.0</h6></li>
+    <li><a class="dropdown-item" href="../articles/v2-changes-since-v1.html">Main supercells changes since version 1.0.0</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-intro.html">Introduction to supercells</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-tuning.html">Choosing Parameters for Supercells</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
-    <li><a class="dropdown-item" href="../articles/main-function.html">The supercells() function</a></li>
-    <li><a class="dropdown-item" href="../articles/benchmarks_v1.html">Benchmarks</a></li>
-    <li><a class="dropdown-item" href="../articles/one_var.html">Superpixels of a single raster layer</a></li>
-    <li><a class="dropdown-item" href="../articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
-    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-main-function.html">The supercells() function</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-benchmarks.html">Benchmarks</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-one_var.html">Superpixels of a single raster layer</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-rgb_vars.html">Superpixels of an RGB raster</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-motifels.html">Superpixels of spatial categorical patterns</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -65,10 +70,10 @@
                         <h4 data-toc-skip class="author">Jakub
 Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2026-01-31</h4>
+            <h4 data-toc-skip class="date">2026-02-06</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/motifels.Rmd" class="external-link"><code>vignettes/articles/motifels.Rmd</code></a></small>
-      <div class="d-none name"><code>motifels.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/v1-motifels.Rmd" class="external-link"><code>vignettes/articles/v1-motifels.Rmd</code></a></small>
+      <div class="d-none name"><code>v1-motifels.Rmd</code></div>
     </div>
 
     
@@ -77,7 +82,7 @@ Nowosad</h4>
 <p><strong>Version note:</strong> This vignette documents the
 <code><a href="../reference/supercells.html">supercells()</a></code> interface as it existed in version 1.0 of the
 package. Some arguments, defaults, and behaviors may differ in newer
-releases. For up-to-date details, see <code><a href="../reference/supercells.html">?supercells</a></code> and the
+releases. For up-to-date details, see <code><a href="../reference/sc_slic.html">?sc_slic</a></code> and the
 current reference docs.</p>
 </blockquote>
 <p>Superpixels are a collection of segmentation concepts of grouping
@@ -112,7 +117,7 @@ package, that contains land cover data for New Guinea.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">landcover</span> <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"raster/landcover2015.tif"</span>, package <span class="op">=</span> <span class="st">"motif"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">landcover</span><span class="op">)</span></span></code></pre></div>
-<p><img src="motifels_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="768"></p>
+<p><img src="v1-motifels_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="768"></p>
 <p>Next, we need to derive some key information about the categorical
 spatial patterns of the New Guinea land cover. This can be done with
 <strong>motif</strong> – below, we calculate compositions of land cover
@@ -142,7 +147,7 @@ following calculations.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">comp_output2</span> <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">comp_output</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">comp_output2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="motifels_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="768"></p>
+<p><img src="v1-motifels_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="768"></p>
 <p>Finally, we are able to use the <code><a href="../reference/supercells.html">supercells()</a></code> function to
 delineate areas with similar proportions of different land cover
 categories. I decided to derive about 2,000 supercells that will be
@@ -156,7 +161,7 @@ with attributes storing the average proportions for each supercell:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">landcover</span>, reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">slic</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, border <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="motifels_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="768"></p>
+<p><img src="v1-motifels_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="768"></p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>

@@ -1,5 +1,20 @@
 # Changelog
 
+## supercells 1.9
+
+- Added `outcomes` argument to
+  [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md),
+  [`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md),
+  and
+  [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md);
+  replaces `metadata` for controlling returned fields
+- Added experimental `sc_merge_supercells()` for adjacency-constrained
+  greedy merging
+- Added `sc_dist_vec_cpp()` (C++ distance wrapper) to support merge
+  utilities
+- Documentation and vignettes updated (pkgdown refresh, new articles,
+  and revised examples)
+
 ## supercells 1.8
 
 - `compactness = "auto"` enables SLIC0-style adaptive compactness

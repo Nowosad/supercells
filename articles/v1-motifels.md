@@ -5,7 +5,7 @@
 > interface as it existed in version 1.0 of the package. Some arguments,
 > defaults, and behaviors may differ in newer releases. For up-to-date
 > details, see
-> [`?supercells`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> [`?sc_slic`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
 > and the current reference docs.
 
 Superpixels are a collection of segmentation concepts of grouping pixels
@@ -48,7 +48,7 @@ landcover = rast(system.file("raster/landcover2015.tif", package = "motif"))
 plot(landcover)
 ```
 
-![](motifels_files/figure-html/unnamed-chunk-3-1.png)
+![](v1-motifels_files/figure-html/unnamed-chunk-3-1.png)
 
 Next, we need to derive some key information about the categorical
 spatial patterns of the New Guinea land cover. This can be done with
@@ -83,7 +83,7 @@ comp_output2 = subset(comp_output, 3:9)
 plot(comp_output2)
 ```
 
-![](motifels_files/figure-html/unnamed-chunk-5-1.png)
+![](v1-motifels_files/figure-html/unnamed-chunk-5-1.png)
 
 Finally, we are able to use the
 [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
@@ -105,7 +105,7 @@ plot(landcover, reset = FALSE)
 plot(st_geometry(slic), add = TRUE, border = "red")
 ```
 
-![](motifels_files/figure-html/unnamed-chunk-7-1.png)
+![](v1-motifels_files/figure-html/unnamed-chunk-7-1.png)
 
 ## References
 

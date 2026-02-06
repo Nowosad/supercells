@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,13 +36,18 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><hr class="dropdown-divider"></li>
+<li><h6 class="dropdown-header" data-toc-skip>Version 2.0</h6></li>
+    <li><a class="dropdown-item" href="articles/v2-changes-since-v1.html">Main supercells changes since version 1.0.0</a></li>
+    <li><a class="dropdown-item" href="articles/v2-intro.html">Introduction to supercells</a></li>
+    <li><a class="dropdown-item" href="articles/v2-tuning.html">Choosing Parameters for Supercells</a></li>
+    <li><a class="dropdown-item" href="articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
-    <li><a class="dropdown-item" href="articles/main-function.html">The supercells() function</a></li>
-    <li><a class="dropdown-item" href="articles/benchmarks_v1.html">Benchmarks</a></li>
-    <li><a class="dropdown-item" href="articles/one_var.html">Superpixels of a single raster layer</a></li>
-    <li><a class="dropdown-item" href="articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
-    <li><a class="dropdown-item" href="articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
+    <li><a class="dropdown-item" href="articles/v1-main-function.html">The supercells() function</a></li>
+    <li><a class="dropdown-item" href="articles/v1-benchmarks.html">Benchmarks</a></li>
+    <li><a class="dropdown-item" href="articles/v1-one_var.html">Superpixels of a single raster layer</a></li>
+    <li><a class="dropdown-item" href="articles/v1-rgb_vars.html">Superpixels of an RGB raster</a></li>
+    <li><a class="dropdown-item" href="articles/v1-motifels.html">Superpixels of spatial categorical patterns</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -66,7 +71,7 @@
 </div>
 <!-- badges: start -->
 
-<p>The goal of <strong>supercells</strong> is to utilize the concept of superpixels to a variety of spatial data. This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters). It is based on the SLIC algorithm (Achanta et al. (2012)), and readapts it to work with arbitrary dissimilarity measures.</p>
+<p>The goal of <strong>supercells</strong> is to bring the idea of superpixels into spatial analysis - grouping raster cells (not just image pixels) into meaningful, coherent regions. This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters). It is based on the SLIC algorithm (Achanta et al. (2012)), adapted to work with arbitrary dissimilarity measures.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>

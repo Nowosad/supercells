@@ -11,7 +11,7 @@ For polygon outputs, use sc_slic(); for point centers, use sc_slic_points()"><me
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,13 +22,18 @@ For polygon outputs, use sc_slic(); for point centers, use sc_slic_points()"><me
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Version 2.0</h6></li>
+    <li><a class="dropdown-item" href="../articles/v2-changes-since-v1.html">Main supercells changes since version 1.0.0</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-intro.html">Introduction to supercells</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-tuning.html">Choosing Parameters for Supercells</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
-    <li><a class="dropdown-item" href="../articles/main-function.html">The supercells() function</a></li>
-    <li><a class="dropdown-item" href="../articles/benchmarks_v1.html">Benchmarks</a></li>
-    <li><a class="dropdown-item" href="../articles/one_var.html">Superpixels of a single raster layer</a></li>
-    <li><a class="dropdown-item" href="../articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
-    <li><a class="dropdown-item" href="../articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-main-function.html">The supercells() function</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-benchmarks.html">Benchmarks</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-one_var.html">Superpixels of a single raster layer</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-rgb_vars.html">Superpixels of an RGB raster</a></li>
+    <li><a class="dropdown-item" href="../articles/v1-motifels.html">Superpixels of spatial categorical patterns</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -66,7 +71,7 @@ For polygon outputs, use <code><a href="sc_slic.html">sc_slic()</a></code>; for 
 <span>  step_unit <span class="op">=</span> <span class="st">"cells"</span>,</span>
 <span>  k <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  centers <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  metadata <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  outcomes <span class="op">=</span> <span class="st">"supercells"</span>,</span>
 <span>  chunks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  iter_diagnostics <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fl">0</span></span>
@@ -87,7 +92,7 @@ For polygon outputs, use <code><a href="sc_slic.html">sc_slic()</a></code>; for 
 
 <dt id="arg-compactness">compactness<a class="anchor" aria-label="anchor" href="#arg-compactness"></a></dt>
 <dd><p>A compactness value. Use <code><a href="sc_tune_compactness.html">sc_tune_compactness()</a></code> to estimate it.
-Set <code>compactness = "auto"</code> to enable SLIC0-style adaptive compactness.</p></dd>
+Set <code>compactness = "auto"</code> to enable adaptive compactness (SLIC0).</p></dd>
 
 
 <dt id="arg-dist-fun">dist_fun<a class="anchor" aria-label="anchor" href="#arg-dist-fun"></a></dt>
@@ -127,8 +132,9 @@ function must accept a numeric vector and return a single numeric value.</p></dd
 <dd><p>Optional sf object of custom centers. Requires <code>step</code>.</p></dd>
 
 
-<dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
-<dd><p>Logical. Should metadata columns be kept?</p></dd>
+<dt id="arg-outcomes">outcomes<a class="anchor" aria-label="anchor" href="#arg-outcomes"></a></dt>
+<dd><p>Character vector controlling which fields are returned.
+Only <code>"supercells"</code> is supported in <code>sc_slic_raster()</code>.</p></dd>
 
 
 <dt id="arg-chunks">chunks<a class="anchor" aria-label="anchor" href="#arg-chunks"></a></dt>
@@ -148,7 +154,7 @@ attribute (<code>iter_diagnostics</code>) on the output. Only available when chu
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A SpatRaster with supercell IDs</p>
+    <p>A SpatRaster with supercell IDs.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

@@ -2,8 +2,9 @@
 
 Runs a short SLIC segmentation (default `iter = 1`) and uses cell-level
 distances to estimate a compactness value where value and spatial
-distances are balanced for the chosen `step`. Summaries are
-cell-weighted medians over the (sampled) cells.
+distances are balanced for the chosen `step`. The global estimate uses a
+pixel-weighted median over the sampled cells, while the local estimate
+uses a median of per-center mean distances.
 
 ## Usage
 
@@ -11,6 +12,7 @@ cell-weighted medians over the (sampled) cells.
 sc_tune_compactness(
   raster,
   step = NULL,
+  step_unit = "cells",
   compactness = 1,
   metrics = "global",
   dist_fun = "euclidean",
@@ -35,6 +37,10 @@ sc_tune_compactness(
 
   The distance (number of cells) between initial centers (alternative is
   `k`).
+
+- step_unit:
+
+  Units for `step`. Use "cells" for pixel units or "map" for map units.
 
 - compactness:
 
@@ -94,8 +100,7 @@ sc_tune_compactness(
 
 ## Value
 
-A one-row data frame with columns `step` and either `compactness_global`
-or `compactness_local`.
+A one-row data frame with columns `step`, `metric`, and `compactness`.
 
 ## See also
 
@@ -108,6 +113,6 @@ library(terra)
 #> terra 1.8.93
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 tune = sc_tune_compactness(vol, step = 8)
-tune$compactness_global
+tune$compactness
 #> [1] 6.864497
 ```

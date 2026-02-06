@@ -6,6 +6,9 @@ outputs, use
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md);
 for raster output, use
 [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
+By default, only value summaries are returned; add
+`outcomes = c("supercells", "coordinates", "values")` to include ids and
+x/y.
 
 ## Usage
 
@@ -22,7 +25,7 @@ sc_slic_points(
   step_unit = "cells",
   k = NULL,
   centers = NULL,
-  metadata = FALSE,
+  outcomes = "values",
   chunks = FALSE,
   iter_diagnostics = FALSE,
   verbose = 0
@@ -44,8 +47,8 @@ sc_slic_points(
 
   A compactness value. Use
   [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
-  to estimate it. Set `compactness = "auto"` to enable SLIC0-style
-  adaptive compactness.
+  to estimate it. Set `compactness = "auto"` to enable adaptive
+  compactness (SLIC0).
 
 - dist_fun:
 
@@ -87,9 +90,12 @@ sc_slic_points(
 
   Optional sf object of custom centers. Requires `step`.
 
-- metadata:
+- outcomes:
 
-  Logical. Should metadata columns be kept?
+  Character vector controlling which fields are returned. Allowed values
+  are "supercells", "coordinates", and "values". Default is "values".
+  Use `outcomes = c("supercells", "coordinates", "values")` for full
+  output.
 
 - chunks:
 

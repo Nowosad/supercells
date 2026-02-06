@@ -6,36 +6,26 @@ Computes per-supercell distance diagnostics
 
 ``` r
 sc_metrics_supercells(
-  raster,
   x,
-  dist_fun = "euclidean",
-  scale = TRUE,
+  sc,
   metrics = c("spatial", "value", "combined", "balance"),
+  scale = TRUE,
+  step,
   compactness,
-  step
+  dist_fun = NULL
 )
 ```
 
 ## Arguments
 
-- raster:
-
-  The input SpatRaster used to create `x`
-
 - x:
 
+  The input SpatRaster used to create `sc`.
+
+- sc:
+
   An sf object returned by
-  [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
-
-- dist_fun:
-
-  A distance function name or function, as in
   [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md).
-
-- scale:
-
-  Logical. If `TRUE`, scales spatial and value distances; output columns
-  are named with the `_scaled` suffix.
 
 - metrics:
 
@@ -43,15 +33,26 @@ sc_metrics_supercells(
   `"value"`, `"combined"`, `"balance"`. Default:
   `c("spatial", "value", "combined", "balance")`.
 
-- compactness:
+- scale:
 
-  A compactness value used for the supercells If missing, uses
-  `attr(x, "compactness")` when available
+  Logical. If `TRUE`, scales spatial and value distances; output columns
+  are named with the `_scaled` suffix.
 
 - step:
 
   A step value used for the supercells If missing, uses
-  `attr(x, "step")` when available
+  `attr(sc, "step")` when available
+
+- compactness:
+
+  A compactness value used for the supercells If missing, uses
+  `attr(sc, "compactness")` when available
+
+- dist_fun:
+
+  A distance function name or function, as in
+  [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md).
+  If missing or `NULL`, uses `attr(sc, "dist_fun")` when available.
 
 ## Value
 
@@ -83,8 +84,10 @@ Metrics:
 - spatial:
 
   Mean spatial distance from cells to the supercell center in grid-cell
-  units (row/column index distance). Returned as `mean_spatial_dist` (or
-  `mean_spatial_dist_scaled` when `scale = TRUE`).
+  units (row/column index distance). If the input supercells were
+  created with `step_unit = "map"`, distances are reported in map units.
+  Returned as `mean_spatial_dist` (or `mean_spatial_dist_scaled` when
+  `scale = TRUE`).
 
 - value:
 
@@ -104,13 +107,13 @@ Metrics:
 
 ## Details
 
-If `x` lacks `supercells`, `x`, or `y` columns, they are derived from
+If `sc` lacks `supercells`, `x`, or `y` columns, they are derived from
 geometry and row order, which may differ from the original centers When
 using SLIC0 (set `compactness = "auto"` in
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)),
-combined and balance metrics use per-supercell adaptive compactness, and
-scaled value distances are computed with the per-supercell max value
-distance.
+combined and balance metrics use per-supercell adaptive compactness
+(SLIC0), and scaled value distances are computed with the per-supercell
+max value distance.
 
 ## See also
 
@@ -125,8 +128,6 @@ library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 vol_sc = sc_slic(vol, step = 8, compactness = 7)
 cl = sc_metrics_supercells(vol, vol_sc)
-#> Spherical geometry (s2) switched off
-#> Spherical geometry (s2) switched on
 head(cl)
 #> Simple feature collection with 6 features and 5 fields
 #> Geometry type: POLYGON

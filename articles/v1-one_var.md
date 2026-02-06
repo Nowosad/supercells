@@ -5,7 +5,7 @@
 > interface as it existed in version 1.0 of the package. Some arguments,
 > defaults, and behaviors may differ in newer releases. For up-to-date
 > details, see
-> [`?supercells`](https://jakubnowosad.com/supercells/reference/supercells.md)
+> [`?sc_slic`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
 > and the current reference docs.
 
 Superpixels are a collection of segmentation concepts of grouping pixels
@@ -47,7 +47,7 @@ vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 plot(vol)
 ```
 
-![](one_var_files/figure-html/unnamed-chunk-3-1.png)
+![](v1-one_var_files/figure-html/unnamed-chunk-3-1.png)
 
 It contains a digital elevation model for the Maunga Whau volcano, where
 each value represents an elevation above sea level.
@@ -83,7 +83,7 @@ plot(vol)
 plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 ```
 
-![](one_var_files/figure-html/unnamed-chunk-5-1.png)
+![](v1-one_var_files/figure-html/unnamed-chunk-5-1.png)
 
 The `vol_slic1` object can be a final result of the analysis or used for
 further grouping or clustering.
@@ -121,7 +121,7 @@ plot(vol)
 plot(st_geometry(vol_slic2), add = TRUE, lwd = 0.2)
 ```
 
-![](one_var_files/figure-html/unnamed-chunk-7-1.png)
+![](v1-one_var_files/figure-html/unnamed-chunk-7-1.png)
 
 ## References
 

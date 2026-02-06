@@ -1,12 +1,17 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://jakubnowosad.com/supercells/404.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/LICENSE.html</loc></url>
-<url><loc>https://jakubnowosad.com/supercells/articles/benchmarks_v1.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/articles/index.html</loc></url>
-<url><loc>https://jakubnowosad.com/supercells/articles/main-function.html</loc></url>
-<url><loc>https://jakubnowosad.com/supercells/articles/motifels.html</loc></url>
-<url><loc>https://jakubnowosad.com/supercells/articles/one_var.html</loc></url>
-<url><loc>https://jakubnowosad.com/supercells/articles/rgb_vars.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v1-benchmarks.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v1-main-function.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v1-motifels.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v1-one_var.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v1-rgb_vars.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v2-benchmarks.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v2-evaluation.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v2-intro.html</loc></url>
+<url><loc>https://jakubnowosad.com/supercells/articles/v2-parameters.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/authors.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/index.html</loc></url>
 <url><loc>https://jakubnowosad.com/supercells/news/index.html</loc></url>
