@@ -9,7 +9,7 @@
 status](https://www.r-pkg.org/badges/version/supercells)](https://CRAN.R-project.org/package=supercells)
 [![R-CMD-check](https://github.com/Nowosad/supercells/workflows/pkgdown/badge.svg)](https://github.com/Nowosad/supercells/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/Nowosad/supercells/branch/master/graph/badge.svg)](https://app.codecov.io/gh/Nowosad/supercells?branch=master)
+coverage](https://codecov.io/gh/Nowosad/supercells/branch/main/graph/badge.svg)](https://app.codecov.io/gh/Nowosad/supercells?branch=main)
 [![CRAN RStudio mirror
 downloads](http://cranlogs.r-pkg.org/badges/supercells)](https://cran.r-project.org/package=supercells)
 <!-- badges: end -->
@@ -20,7 +20,7 @@ meaningful, coherent regions. This package works on spatial data with
 one variable (e.g., continuous raster), many variables (e.g., RGB
 rasters), and spatial patterns (e.g., areas in categorical rasters). It
 is based on the SLIC algorithm (Achanta et al. (2012)), adapted to work
-with arbitrary dissimilarity measures.
+with arbitrary dissimilarity measures and multidimensional data.
 
 ## Installation
 
@@ -31,16 +31,18 @@ You can install the released version of supercells from
 install.packages("supercells")
 ```
 
-You can install the development version from
-[GitHub](https://github.com/) with:
+You can install the development version with:
 
 ``` r
 install.packages("supercells", repos = "https://nowosad.r-universe.dev")
 ```
 
 <!-- ``` r -->
+
 <!-- # install.packages("remotes") -->
+
 <!-- remotes::install_github("Nowosad/supercells") -->
+
 <!-- ``` -->
 
 ## Example
@@ -48,37 +50,43 @@ install.packages("supercells", repos = "https://nowosad.r-universe.dev")
 ``` r
 library(supercells)
 library(terra)
-#> terra 1.6.49
 library(sf)
-#> Linking to GEOS 3.11.0, GDAL 3.5.2, PROJ 9.0.1; sf_use_s2() is TRUE
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 plot(vol)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" alt="" width="100%" />
+
+Here, `step` controls the approximate spacing between supercell centers,
+and `compactness` allows to balance spatial proximity versus value
+similarity.
 
 ``` r
-vol_slic1 = sc_slic(vol, step = 8, compactness = 1)
+vol_slic1 = sc_slic(vol, step = 8, compactness = 7)
 plot(vol)
 plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.5, border = "red")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="100%" />
 
 ## Documentation
 
-The upcoming version 2 (development) introduces a refreshed API with
-`sc_`-prefixed functions (for example, `sc_slic()`), plus new tooling for
-parameter tuning and evaluation. Start with these v2 vignettes:
+Version 2 (in development) focuses on a clearer workflow, tools for
+diagnostics, and more guidance on choosing parameters and interpreting
+results. Start with these vignettes:
+
+1.  [Introduction to
+    supercells](https://jakubnowosad.com/supercells/articles/v2-intro.html)
+2.  [Choosing parameters for
+    supercells](https://jakubnowosad.com/supercells/articles/v2-parameters.html)
+3.  [Evaluation and
+    diagnostics](https://jakubnowosad.com/supercells/articles/v2-evaluation.html)
+
+If you are already familiar with version 1.0.0, you can jump to the
+summary of changes:
 
 1.  [Main changes since version
     1.0.0](https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html)
-2.  [Introduction to
-    supercells](https://jakubnowosad.com/supercells/articles/v2-intro.html)
-3.  [Choosing parameters for
-    supercells](https://jakubnowosad.com/supercells/articles/v2-parameters.html)
-4.  [Evaluation and
-    diagnostics](https://jakubnowosad.com/supercells/articles/v2-evaluation.html)
 
 Watch the presentations about this package and some related ideas:
 
@@ -100,7 +108,7 @@ Read the related article:
 
 ## Contribution
 
-Contributions to this package are welcome - let us know if you need
+Contributions to this package are welcome – let us know if you need
 other distance measures or transformations, have any suggestions, or
 spotted a bug. The preferred method of contribution is through a GitHub
 pull request. Feel also free to contact us by creating [an
