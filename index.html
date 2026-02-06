@@ -71,14 +71,14 @@
 </div>
 <!-- badges: start -->
 
-<p>The goal of <strong>supercells</strong> is to bring the idea of superpixels into spatial analysis - grouping raster cells (not just image pixels) into meaningful, coherent regions. This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters). It is based on the SLIC algorithm (Achanta et al. (2012)), adapted to work with arbitrary dissimilarity measures.</p>
+<p>The goal of <strong>supercells</strong> is to bring the idea of superpixels into spatial analysis - grouping raster cells (not just image pixels) into meaningful, coherent regions. This package works on spatial data with one variable (e.g., continuous raster), many variables (e.g., RGB rasters), and spatial patterns (e.g., areas in categorical rasters). It is based on the SLIC algorithm (Achanta et al. (2012)), adapted to work with arbitrary dissimilarity measures and multidimensional data.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the released version of supercells from <a href="https://CRAN.R-project.org" class="external-link">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"supercells"</span><span class="op">)</span></span></code></pre></div>
-<p>You can install the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>You can install the development version with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"supercells"</span>, repos <span class="op">=</span> <span class="st">"https://nowosad.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
 <!-- ``` r -->
@@ -92,27 +92,29 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jakubnowosad.com/supercells/">supercells</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; terra 1.6.49</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Linking to GEOS 3.11.0, GDAL 3.5.2, PROJ 9.0.1; sf_use_s2() is TRUE</span></span>
 <span><span class="va">vol</span> <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"raster/volcano.tif"</span>, package <span class="op">=</span> <span class="st">"supercells"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-2-1.png" alt="" width="100%"></p>
+<p>Here, <code>step</code> controls the approximate spacing between supercell centers, and <code>compactness</code> allows to balance spatial proximity versus value similarity.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">vol_slic1</span> <span class="op">=</span> <span class="fu"><a href="reference/sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">vol_slic1</span> <span class="op">=</span> <span class="fu"><a href="reference/sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">vol_slic1</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">0.5</span>, border <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-3-1.png" alt="" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
-<p>The upcoming version 2 (development) introduces a refreshed API with <code>sc_</code>-prefixed functions (for example, <code><a href="reference/sc_slic.html">sc_slic()</a></code>), plus new tooling for parameter tuning and evaluation. Start with these v2 vignettes:</p>
+<p>Version 2 (in development) focuses on a clearer workflow, tools for diagnostics, and more guidance on choosing parameters and interpreting results. Start with these vignettes:</p>
 <ol style="list-style-type: decimal">
-<li><a href="https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html">Main changes since version 1.0.0</a></li>
 <li><a href="https://jakubnowosad.com/supercells/articles/v2-intro.html">Introduction to supercells</a></li>
 <li><a href="https://jakubnowosad.com/supercells/articles/v2-parameters.html">Choosing parameters for supercells</a></li>
 <li><a href="https://jakubnowosad.com/supercells/articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+</ol>
+<p>If you are already familiar with version 1.0.0, you can jump to the summary of changes:</p>
+<ol style="list-style-type: decimal">
+<li><a href="https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html">Main changes since version 1.0.0</a></li>
 </ol>
 <p>Watch the presentations about this package and some related ideas:</p>
 <ol style="list-style-type: decimal">
@@ -132,7 +134,7 @@
 <div class="section level2">
 <h2 id="contribution">Contribution<a class="anchor" aria-label="anchor" href="#contribution"></a>
 </h2>
-<p>Contributions to this package are welcome - let us know if you need other distance measures or transformations, have any suggestions, or spotted a bug. The preferred method of contribution is through a GitHub pull request. Feel also free to contact us by creating <a href="https://github.com/nowosad/supercells/issues" class="external-link">an issue</a>.</p>
+<p>Contributions to this package are welcome – let us know if you need other distance measures or transformations, have any suggestions, or spotted a bug. The preferred method of contribution is through a GitHub pull request. Feel also free to contact us by creating <a href="https://github.com/nowosad/supercells/issues" class="external-link">an issue</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -173,7 +175,7 @@
 <ul class="list-unstyled">
 <li><a href="https://CRAN.R-project.org/package=supercells" class="external-link"><img src="https://www.r-pkg.org/badges/version/supercells" alt="CRAN status"></a></li>
 <li><a href="https://github.com/Nowosad/supercells/actions" class="external-link"><img src="https://github.com/Nowosad/supercells/workflows/pkgdown/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://app.codecov.io/gh/Nowosad/supercells?branch=master" class="external-link"><img src="https://codecov.io/gh/Nowosad/supercells/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://app.codecov.io/gh/Nowosad/supercells?branch=main" class="external-link"><img src="https://codecov.io/gh/Nowosad/supercells/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://cran.r-project.org/package=supercells" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/supercells" alt="CRAN RStudio mirror downloads"></a></li>
 </ul>
 </div>
