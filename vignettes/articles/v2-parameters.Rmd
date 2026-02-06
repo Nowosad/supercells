@@ -1,10 +1,10 @@
 ---
-title: "Choosing Parameters for Supercells"
+title: "Choosing parameters for supercells"
 author: Jakub Nowosad
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Choosing Parameters for Supercells}
+  %\VignetteIndexEntry{Choosing parameters for supercells}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
