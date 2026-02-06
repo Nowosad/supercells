@@ -67,13 +67,16 @@ plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.5, border = "red")
 
 ## Documentation
 
-Version 2 (in development) focuses on a clearer workflow, better diagnostics, and more guidance on choosing parameters and interpreting results.
+Version 2 (in development) focuses on a clearer workflow, tools for diagnostics, and more guidance on choosing parameters and interpreting results.
 Start with these vignettes:
 
+1. [Introduction to supercells](https://jakubnowosad.com/supercells/articles/v2-intro.html)
+2. [Choosing parameters for supercells](https://jakubnowosad.com/supercells/articles/v2-parameters.html)
+3. [Evaluation and diagnostics](https://jakubnowosad.com/supercells/articles/v2-evaluation.html)
+
+If you are already familiar with version 1.0.0, you can jump to the summary of changes:
+
 1. [Main changes since version 1.0.0](https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html)
-2. [Introduction to supercells](https://jakubnowosad.com/supercells/articles/v2-intro.html)
-3. [Choosing parameters for supercells](https://jakubnowosad.com/supercells/articles/v2-parameters.html)
-4. [Evaluation and diagnostics](https://jakubnowosad.com/supercells/articles/v2-evaluation.html)
 
 Watch the presentations about this package and some related ideas:
 
