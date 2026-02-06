@@ -1,4 +1,4 @@
-# Choosing Parameters for Supercells
+# Choosing parameters for supercells
 
 This vignette focuses on how parameters affect the supercell output,
 with the main choices being `step` or `k`, the `compactness` value, and

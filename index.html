@@ -37,9 +37,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><h6 class="dropdown-header" data-toc-skip>Version 2.0</h6></li>
-    <li><a class="dropdown-item" href="articles/v2-changes-since-v1.html">Main supercells changes since version 1.0.0</a></li>
+    <li><a class="dropdown-item" href="articles/v2-changes-since-v1.html">Main changes since version 1.0.0</a></li>
     <li><a class="dropdown-item" href="articles/v2-intro.html">Introduction to supercells</a></li>
-    <li><a class="dropdown-item" href="articles/v2-tuning.html">Choosing Parameters for Supercells</a></li>
+    <li><a class="dropdown-item" href="articles/v2-parameters.html">Choosing parameters for supercells</a></li>
     <li><a class="dropdown-item" href="articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
@@ -99,20 +99,20 @@
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">vol_slic1</span> <span class="op">=</span> <span class="fu"><a href="reference/supercells.html">supercells</a></span><span class="op">(</span><span class="va">vol</span>, k <span class="op">=</span> <span class="fl">50</span>, compactness <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">vol_slic1</span> <span class="op">=</span> <span class="fu"><a href="reference/sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">vol_slic1</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">vol_slic1</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">0.5</span>, border <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
-<p>See the package’s vignettes:</p>
+<p>The upcoming version 2 (development) introduces a refreshed API with <code>sc_</code>-prefixed functions (for example, <code><a href="reference/sc_slic.html">sc_slic()</a></code>), plus new tooling for parameter tuning and evaluation. Start with these v2 vignettes:</p>
 <ol style="list-style-type: decimal">
-<li><a href="https://jakubnowosad.com/supercells/articles/main-function.html">The <code>supercells()</code> function</a></li>
-<li><a href="https://jakubnowosad.com/supercells/articles/articles/one_var.html">Superpixels of a single raster layer</a></li>
-<li><a href="https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html">Superpixels of an RGB raster</a></li>
-<li><a href="https://jakubnowosad.com/supercells/articles/articles/motifels.html">Superpixels of spatial categorical patterns</a></li>
+<li><a href="https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html">Main changes since version 1.0.0</a></li>
+<li><a href="https://jakubnowosad.com/supercells/articles/v2-intro.html">Introduction to supercells</a></li>
+<li><a href="https://jakubnowosad.com/supercells/articles/v2-parameters.html">Choosing parameters for supercells</a></li>
+<li><a href="https://jakubnowosad.com/supercells/articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
 </ol>
 <p>Watch the presentations about this package and some related ideas:</p>
 <ol style="list-style-type: decimal">

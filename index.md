@@ -39,25 +39,29 @@ plot(vol)
 ![](reference/figures/README-unnamed-chunk-2-1.png)
 
 ``` r
-vol_slic1 = supercells(vol, k = 50, compactness = 1)
+vol_slic1 = sc_slic(vol, step = 8, compactness = 1)
 plot(vol)
-plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
+plot(st_geometry(vol_slic1), add = TRUE, lwd = 0.5, border = "red")
 ```
 
 ![](reference/figures/README-unnamed-chunk-3-1.png)
 
 ## Documentation
 
-See the package’s vignettes:
+The upcoming version 2 (development) introduces a refreshed API with
+`sc_`-prefixed functions (for example,
+[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)),
+plus new tooling for parameter tuning and evaluation. Start with these
+v2 vignettes:
 
-1.  [The `supercells()`
-    function](https://jakubnowosad.com/supercells/articles/main-function.html)
-2.  [Superpixels of a single raster
-    layer](https://jakubnowosad.com/supercells/articles/articles/one_var.html)
-3.  [Superpixels of an RGB
-    raster](https://jakubnowosad.com/supercells/articles/articles/rgb_vars.html)
-4.  [Superpixels of spatial categorical
-    patterns](https://jakubnowosad.com/supercells/articles/articles/motifels.html)
+1.  [Main changes since version
+    1.0.0](https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html)
+2.  [Introduction to
+    supercells](https://jakubnowosad.com/supercells/articles/v2-intro.html)
+3.  [Choosing parameters for
+    supercells](https://jakubnowosad.com/supercells/articles/v2-parameters.html)
+4.  [Evaluation and
+    diagnostics](https://jakubnowosad.com/supercells/articles/v2-evaluation.html)
 
 Watch the presentations about this package and some related ideas:
 

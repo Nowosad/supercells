@@ -1,4 +1,4 @@
-# Main supercells changes since version 1.0.0
+# Main changes since version 1.0.0
 
 This vignette summarizes the main changes in **supercells** since
 version 1.0.0. It highlights user-facing updates and points to notable
