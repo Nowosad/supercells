@@ -1,10 +1,10 @@
 ---
-title: "Main supercells changes since version 1.0.0"
+title: "Main changes since version 1.0.0"
 author: Jakub Nowosad
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Main supercells changes since version 1.0.0}
+  %\VignetteIndexEntry{Main changes since version 1.0.0}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

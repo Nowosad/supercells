@@ -8,12 +8,12 @@ navbar:
     text: Articles
     menu:
     - text: "Version 2.0"
-    - text: Main supercells changes since version 1.0.0
+    - text: Main changes since version 1.0.0
       href: articles/v2-changes-since-v1.html
     - text: Introduction to supercells
       href: articles/v2-intro.html
-    - text: Choosing Parameters for Supercells
-      href: articles/v2-tuning.html
+    - text: Choosing parameters for supercells
+      href: articles/v2-parameters.html
     - text: Evaluation and diagnostics
       href: articles/v2-evaluation.html
     # - text: Title A1
