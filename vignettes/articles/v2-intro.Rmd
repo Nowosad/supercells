@@ -44,7 +44,7 @@ Lower values prioritize value similarity and may lead to irregular shapes, while
 For compactness selection, you may use `sc_tune_compactness()` to estimate a good value from a short pilot run.
 Alternatively, the `"auto"` option for `compactness` enables SLIC0-style adaptive compactness when you want the algorithm to adjust locally -- this does not require setting a specific value, but also takes away direct control.
 
-To assess quality of the resulting supercells, use `sc_metrics_pixels()` for pixel-level distances, `sc_metrics_supercells()` for per-region summaries, and `sc_metrics_global()` for a general overview.
+To assess quality of the resulting supercells, use `sc_metrics_pixels()` for pixel-level distances, `sc_metrics_supercells()` for per-supercell summaries, and `sc_metrics_global()` for a general overview.
 These metrics help compare different parameter settings or input preprocessing choices.
 
 # Minimal example
@@ -106,7 +106,7 @@ Next, we may try to create supercells with the suggested `compactness` value.
 vol_sc_tuned <- sc_slic(
   vol,
   step = 8,
-  compactness = tune$compactness_local
+  compactness = tune$compactness
 )
 
 terra::plot(vol)
@@ -124,7 +124,7 @@ global_metrics <- sc_metrics_global(vol, vol_sc_tuned)
 ```
 
 The pixel-level metrics show how well the supercells represent the original raster values at the pixel level.
-By default they include `spatial`, `value`, and `combined` distances, with `balance` available as an optional fourth metric.
+By default they include `spatial`, `value`, `combined`, and `balance`.
 When `scale = TRUE` (the default), the spatial and value layers are returned as `spatial_scaled` and `value_scaled`.
 
 ```{r}
@@ -135,7 +135,7 @@ These maps help diagnose where spatial or value coherence is weak.
 For example, large patches of high values can indicate areas where the chosen parameters may be too coarse for local variation.
 
 The supercell-level metrics summarize each polygon as a single value.
-These are helpful when you want to compare regions or join metrics to attributes.
+These are helpful when you want to compare supercells or join metrics to attributes.
 
 ```{r}
 plot(supercell_metrics)
