@@ -3,10 +3,12 @@
 #' Runs a short SLIC segmentation (default `iter = 1`) and uses cell-level
 #' distances to estimate a compactness value where value and spatial distances
 #' are balanced for the chosen `step`.
-#' Summaries are cell-weighted medians over the (sampled) cells.
+#' The global estimate uses a pixel-weighted median over the sampled cells,
+#' while the local estimate uses a median of per-center mean distances.
 #'
 #' @param raster A `SpatRaster`.
 #' @param step The distance (number of cells) between initial centers (alternative is `k`).
+#' @param step_unit Units for `step`. Use "cells" for pixel units or "map" for map units.
 #' @param compactness Starting compactness used for the initial short run.
 #' @param metrics Which compactness metric to return: `"global"` or `"local"`.
 #' Default: `"global"`.
@@ -27,8 +29,7 @@
 #' @param sample_size Optional limit on the number of pixels used for the summary
 #' (passed to `terra::global()` as `maxcell`).
 #'
-#' @return A one-row data frame with columns `step` and either
-#' `compactness_global` or `compactness_local`.
+#' @return A one-row data frame with columns `step`, `metric`, and `compactness`.
 #'
 #' @seealso [`sc_slic()`]
 #'
@@ -36,10 +37,10 @@
 #' library(terra)
 #' vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 #' tune = sc_tune_compactness(vol, step = 8)
-#' tune$compactness_global
+#' tune$compactness
 #'
 #' @export
-sc_tune_compactness = function(raster, step = NULL, compactness = 1,
+sc_tune_compactness = function(raster, step = NULL, step_unit = "cells", compactness = 1,
                                         metrics = "global",
                                         dist_fun = "euclidean", avg_fun = "mean",
                                         clean = TRUE, minarea, iter = 1,
@@ -48,11 +49,14 @@ sc_tune_compactness = function(raster, step = NULL, compactness = 1,
   pts = sc_slic_points(raster, step = step, compactness = compactness,
                        dist_fun = dist_fun, avg_fun = avg_fun,
                        clean = clean, minarea = minarea, iter = iter,
-                       k = k, centers = centers,
+                       step_unit = step_unit, k = k, centers = centers,
                        outcomes = c("supercells", "coordinates", "values"),
                        chunks = FALSE)
 
-  step_used = if (is.null(step)) attr(pts, "step") else step
+  step_used = attr(pts, "step")
+  if (is.null(step_used)) {
+    step_used = step
+  }
 
   if (!is.character(metrics) || length(metrics) != 1 || is.na(metrics) ||
       !(metrics %in% c("global", "local"))) {
@@ -71,16 +75,13 @@ sc_tune_compactness = function(raster, step = NULL, compactness = 1,
                                     compactness = compactness, step = step_used,
                                     scale = FALSE, metrics = c("spatial", "value"))
 
-    if (missing(sample_size)) {
-      sample_size = Inf
-    }
     med = terra::global(pix_metrics, stats::median, na.rm = TRUE, maxcell = sample_size)
     spatial_dist_median = med[1, 1]
     value_dist_median = med[2, 1]
     value_dist_median = value_dist_median / value_scale
-    compactness_global = value_dist_median * step_used / spatial_dist_median
+    compactness_value = value_dist_median * step_used / spatial_dist_median
 
-    result = data.frame(step = step_used, compactness_global = compactness_global)
+    result = data.frame(step = step_used, metric = "global", compactness = compactness_value)
   }
 
   if (identical(metrics, "local")) {
@@ -94,9 +95,9 @@ sc_tune_compactness = function(raster, step = NULL, compactness = 1,
       dist_fun = prep$dist_fun
     )
     mean_value_dist = mean_value_dist / value_scale
-    compactness_local_median = stats::median(mean_value_dist, na.rm = TRUE)
+    compactness_value = stats::median(mean_value_dist, na.rm = TRUE)
 
-    result = data.frame(step = step_used, compactness_local = compactness_local_median)
+    result = data.frame(step = step_used, metric = "local", compactness = compactness_value)
   }
 
   return(result)

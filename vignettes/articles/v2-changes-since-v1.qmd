@@ -88,7 +88,7 @@ comp_tune <- sc_tune_compactness(vol, step = 8)
 comp_tune
 
 # Use the tuned value and plot results
-vol_sc_tuned <- sc_slic(vol, step = 8, compactness = comp_tune$compactness_global)
+vol_sc_tuned <- sc_slic(vol, step = 8, compactness = comp_tune$compactness)
 terra::plot(vol)
 plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.6, border = "red")
 ```
@@ -112,7 +112,7 @@ sc_plot_iter_diagnostics(vol_pts_diag)
 
 Three new functions, `sc_metrics_pixels()`, `sc_metrics_supercells()`, and `sc_metrics_global()`, provide metrics to evaluate supercell segmentation quality at different levels of detail.
 Pixel-level metrics show distances from each cell to its assigned center (lower is more compact/homogeneous). 
-Supercell-level metrics summarize those distances by region, and global metrics provide a single-row overview for comparisons.
+Supercell-level metrics summarize those distances by supercell, and global metrics provide a single-row overview for comparisons.
 
 ```{r}
 vol_sc <- sc_slic(
