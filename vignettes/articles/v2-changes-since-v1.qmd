@@ -2,10 +2,7 @@
 title: "Main supercells changes since version 1.0.0"
 author: Jakub Nowosad
 date: "`r Sys.Date()`"
-format:
-  html:
-    number-sections: true
-    number-depth: 1
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Main supercells changes since version 1.0.0}
   %\VignetteEngine{knitr::rmarkdown}
