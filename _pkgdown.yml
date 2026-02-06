@@ -12,6 +12,10 @@ navbar:
       href: articles/v2-changes-since-v1.html
     - text: Introduction to supercells
       href: articles/v2-intro.html
+    - text: Choosing Parameters for Supercells
+      href: articles/v2-tuning.html
+    - text: Evaluation and diagnostics
+      href: articles/v2-evaluation.html
     # - text: Title A1
     #   href: articles/a1.html
     # - text: Title A2
