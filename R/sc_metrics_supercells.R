@@ -9,7 +9,7 @@
 #' `"spatial"`, `"value"`, `"combined"`, `"balance"`. Default:
 #' `c("spatial", "value", "combined", "balance")`.
 #' @details
-#' If `x` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
+#' If `sc` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers
 #' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
 #' adaptive compactness (SLIC0), and scaled value distances are computed with the
@@ -27,8 +27,9 @@
 #' \describe{
 #'   \item{supercells}{Supercell ID.}
 #'   \item{spatial}{Mean spatial distance from cells to the supercell center
-#'   in grid-cell units (row/column index distance). Returned as
-#'   `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
+#'   in grid-cell units (row/column index distance). If the input supercells were
+#'   created with `step_unit = "map"`, distances are reported in map units.
+#'   Returned as `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
 #'   \item{value}{Mean value distance from cells to the supercell center in
 #'   value space. Returned as `mean_value_dist` (or `mean_value_dist_scaled`
 #'   when `scale = TRUE`).}
@@ -45,15 +46,22 @@
 #' vol_sc = sc_slic(vol, step = 8, compactness = 7)
 #' cl = sc_metrics_supercells(vol, vol_sc)
 #' head(cl)
-sc_metrics_supercells = function(raster, x, dist_fun = "euclidean", scale = TRUE,
+sc_metrics_supercells = function(x, sc,
                                metrics = c("spatial", "value", "combined", "balance"),
-                               compactness, step) {
+                               scale = TRUE,
+                               step, compactness, dist_fun = NULL) {
+  if (missing(dist_fun) || is.null(dist_fun)) {
+    dist_fun = attr(sc, "dist_fun")
+    if (is.null(dist_fun)) {
+      stop("The 'dist_fun' argument is required when it is not stored in 'sc'", call. = FALSE)
+    }
+  }
   if (any(!metrics %in% c("spatial", "value", "combined", "balance"))) {
     stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
   }
 
-  prep = .sc_metrics_prep(raster, x, dist_fun, compactness, step)
-  x_df = sf::st_drop_geometry(prep$x)
+  prep = .sc_metrics_prep(x, sc, dist_fun, compactness, step)
+  x_df = sf::st_drop_geometry(prep$sc)
   order_idx = order(x_df[["supercells"]])
 
   out = sc_metrics_supercells_cpp(prep$clusters, prep$centers_xy, prep$centers_vals, prep$vals,
@@ -62,7 +70,7 @@ sc_metrics_supercells = function(raster, x, dist_fun = "euclidean", scale = TRUE
                                 dist_name = prep$dist_name, dist_fun = prep$dist_fun)
 
   mean_value_dist = out[["mean_value_dist"]]
-  mean_spatial_dist = out[["mean_spatial_dist"]]
+  mean_spatial_dist = out[["mean_spatial_dist"]] * prep$spatial_scale
   mean_combined_dist = out[["mean_combined_dist"]]
   balance = log(out[["balance"]])
 
@@ -72,10 +80,10 @@ sc_metrics_supercells = function(raster, x, dist_fun = "euclidean", scale = TRUE
     } else {
       mean_value_dist = mean_value_dist / prep$compactness
     }
-    mean_spatial_dist = mean_spatial_dist / prep$step
+    mean_spatial_dist = mean_spatial_dist / prep$step_scale
   }
 
-  x_ordered = prep$x[order_idx, , drop = FALSE]
+  x_ordered = prep$sc[order_idx, , drop = FALSE]
   x_keep = x_ordered[, "supercells", drop = FALSE]
 
   metric_values = list(

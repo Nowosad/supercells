@@ -2,21 +2,22 @@
 #'
 #' Computes per-pixel distance diagnostics from each pixel to its supercell center
 #'
-#' @param raster The input SpatRaster used to create `x`
-#' @param x An sf object returned by [sc_slic()]
-#' @param dist_fun A distance function name or function, as in [sc_slic()].
-#' @param scale Logical. If `TRUE`, returns `spatial` and `value` as scaled
-#' distances (`spatial_scaled`, `value_scaled`).
+#' @param x The input SpatRaster used to create `sc`.
+#' @param sc An sf object returned by [sc_slic()].
 #' @param metrics Character vector of metrics to return. Options:
 #' `"spatial"`, `"value"`, `"combined"`, `"balance"`.
-#' Default: `c("spatial", "value", "combined")`.
-#' @param compactness A compactness value used for the supercells
-#' If missing, uses `attr(x, "compactness")` when available
+#' Default: `c("spatial", "value", "combined", "balance")`.
+#' @param scale Logical. If `TRUE`, returns `spatial` and `value` as scaled
+#' distances (`spatial_scaled`, `value_scaled`).
 #' @param step A step value used for the supercells
-#' If missing, uses `attr(x, "step")` when available
+#' If missing, uses `attr(sc, "step")` when available
+#' @param compactness A compactness value used for the supercells
+#' If missing, uses `attr(sc, "compactness")` when available
+#' @param dist_fun A distance function name or function, as in [sc_slic()].
+#' If missing or `NULL`, uses `attr(sc, "dist_fun")` when available.
 #'
 #' @details
-#' If `x` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
+#' If `sc` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers.
 #' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
 #' adaptive compactness (SLIC0), and scaled value distances are computed with the
@@ -34,7 +35,8 @@
 #' Metrics:
 #' \describe{
 #'   \item{spatial}{Spatial distance from each pixel to its supercell center
-#'   in grid-cell units (row/column index distance).}
+#'   in grid-cell units (row/column index distance). If the input supercells were
+#'   created with `step_unit = "map"`, distances are reported in map units.}
 #'   \item{value}{Value distance from each pixel to its supercell center in
 #'   the raster value space.}
 #'   \item{combined}{Combined distance using `compactness` and `step`.}
@@ -51,27 +53,34 @@
 #' vol_sc = sc_slic(vol, step = 8, compactness = 7)
 #' metrics = sc_metrics_pixels(vol, vol_sc, scale = TRUE)
 #' terra::panel(metrics, nr = 1)
-sc_metrics_pixels = function(raster, x, dist_fun = "euclidean", scale = TRUE,
-                             metrics = c("spatial", "value", "combined"),
-                             compactness, step) {
+sc_metrics_pixels = function(x, sc,
+                             metrics = c("spatial", "value", "combined", "balance"),
+                             scale = TRUE,
+                             step, compactness, dist_fun = NULL) {
+  if (missing(dist_fun) || is.null(dist_fun)) {
+    dist_fun = attr(sc, "dist_fun")
+    if (is.null(dist_fun)) {
+      stop("The 'dist_fun' argument is required when it is not stored in 'sc'", call. = FALSE)
+    }
+  }
   
   if (any(!metrics %in% c("spatial", "value", "combined", "balance"))) {
     stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
   }
   
-  prep = .sc_metrics_prep(raster, x, dist_fun, compactness, step)
+  prep = .sc_metrics_prep(x, sc, dist_fun, compactness, step)
 
   out = sc_metrics_pixels_cpp(prep$clusters, prep$centers_xy, prep$centers_vals, prep$vals,
                               step = prep$step, compactness = prep$compactness,
                               adaptive_compactness = prep$adaptive_compactness,
                               dist_name = prep$dist_name, dist_fun = prep$dist_fun)
 
-  spatial = terra::rast(out[["spatial"]])
+  spatial = terra::rast(out[["spatial"]]) * prep$spatial_scale
   value = terra::rast(out[["value"]])
   combined = terra::rast(out[["combined"]])
 
   if (isTRUE(scale) || "balance" %in% metrics) {
-    spatial_scaled = spatial / prep$step
+    spatial_scaled = spatial / prep$step_scale
     value_scaled = terra::rast(out[["value_scaled"]])
     if (isTRUE(scale)) {
       spatial = spatial_scaled

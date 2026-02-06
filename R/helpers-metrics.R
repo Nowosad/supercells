@@ -1,7 +1,7 @@
 # .sc_metrics_prep: normalize inputs and parameters for metrics functions
 # Inputs: raster and supercells; outputs include prepared matrices and metadata
 # Handles missing metadata by deriving centers and ids from geometry
-.sc_metrics_prep = function(raster, x, dist_fun, compactness, step,
+.sc_metrics_prep = function(x, sc, dist_fun, compactness, step,
                             include = c("clusters", "centers", "vals", "dist", "raster")) {
 
   valid = c("clusters", "centers", "vals", "dist", "raster")
@@ -10,55 +10,73 @@
   }
 
   # prepare arguments
-  raster = .sc_util_prep_raster(raster)
+  raster = .sc_util_prep_raster(x)
 
-  if (!inherits(x, "sf")) {
-    stop("The 'x' argument must be an sf object returned by sc_slic()", call. = FALSE)
+  if (!inherits(sc, "sf")) {
+    stop("The 'sc' argument must be an sf object returned by sc_slic()", call. = FALSE)
   }
   adaptive_compactness = FALSE
   if (missing(compactness)) {
-    method = attr(x, "method")
+    method = attr(sc, "method")
     adaptive_compactness = isTRUE(identical(method, "slic0"))
-    compactness = attr(x, "compactness")
+    compactness = attr(sc, "compactness")
   } else if (is.character(compactness) && length(compactness) == 1 && !is.na(compactness) && compactness == "auto") {
     adaptive_compactness = TRUE
     compactness = 0
   }
   if (missing(step)) {
-    step = attr(x, "step")
+    step = attr(sc, "step")
   }
   if (is.null(compactness) || is.null(step)) {
     stop("Both 'compactness' and 'step' are required", call. = FALSE)
   }
+  step_unit = attr(sc, "step_unit")
+  if (!identical(step_unit, "map")) {
+    step_unit = "cells"
+  }
 
   # prepare data, including handling missing metadata
-  x_work = x
-  x_df = sf::st_drop_geometry(x_work)
+  sc_work = sc
+  x_df = sf::st_drop_geometry(sc_work)
   if (!("supercells" %in% names(x_df))) {
-    x_work[["supercells"]] = seq_len(nrow(x_work))
-    x_df = sf::st_drop_geometry(x_work)
+    sc_work[["supercells"]] = seq_len(nrow(sc_work))
+    x_df = sf::st_drop_geometry(sc_work)
   }
   if (!all(c("x", "y") %in% names(x_df))) {
     old_s2 = sf::sf_use_s2()
     on.exit(suppressMessages(sf::sf_use_s2(old_s2)), add = TRUE)
     suppressMessages(sf::sf_use_s2(FALSE))
-    centers = sf::st_centroid(sf::st_geometry(x_work))
+    centers = sf::st_centroid(sf::st_geometry(sc_work))
     coords = sf::st_coordinates(centers)
     x_df[["x"]] = coords[, 1]
     x_df[["y"]] = coords[, 2]
   }
   val_cols = setdiff(names(x_df), c("supercells", "x", "y"))
   if (length(val_cols) == 0) {
-    stop("No value columns found in 'x'", call. = FALSE)
+    stop("No value columns found in 'sc'", call. = FALSE)
   }
   x_df = x_df[order(x_df[["supercells"]]), , drop = FALSE]
 
   # prepare matrices for C++ function
+  spatial_scale = 1
+  step_scale = step
+  if (identical(step_unit, "map")) {
+    res = terra::res(raster)
+    if (!isTRUE(all.equal(res[[1]], res[[2]]))) {
+      warning("Map-unit spatial metrics require square cells; using x resolution for scaling.", call. = FALSE)
+    }
+    spatial_scale = res[[1]]
+    step_scale = step * spatial_scale
+  }
+
   result = list(
-    x = x_work,
+    sc = sc_work,
     step = step,
     compactness = compactness,
-    adaptive_compactness = adaptive_compactness
+    adaptive_compactness = adaptive_compactness,
+    step_unit = step_unit,
+    spatial_scale = spatial_scale,
+    step_scale = step_scale
   )
 
   if ("centers" %in% include) {
@@ -76,7 +94,7 @@
   }
 
   if ("clusters" %in% include) {
-    cluster_rast = terra::rasterize(terra::vect(x_work), raster, field = "supercells")
+    cluster_rast = terra::rasterize(terra::vect(sc_work), raster, field = "supercells")
     clusters = terra::as.matrix(cluster_rast, wide = TRUE)
     clusters = ifelse(is.na(clusters), -1L, clusters - 1L)
     storage.mode(clusters) = "integer"

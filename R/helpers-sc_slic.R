@@ -44,7 +44,9 @@
     compactness = 0
   }
   # Package prep results for downstream functions
-  return(list(x = x, step = step, input_centers = input_centers, funs = funs,
+  return(list(x = x, step = step, step_unit = step_unit,
+              dist_fun_input = dist_fun,
+              input_centers = input_centers, funs = funs,
               minarea = minarea, chunk_ext = chunk_ext,
               iter_diagnostics = iter_diagnostics, outcomes = outcomes,
               compactness = compactness, adaptive_compactness = adaptive_compactness,
@@ -215,7 +217,9 @@
   slic_sf = .sc_slic_select_outcomes(slic_sf, prep$outcomes)
 
   attr(slic_sf, "step") = prep$step
+  attr(slic_sf, "step_unit") = prep$step_unit
   attr(slic_sf, "compactness") = prep$compactness
+  attr(slic_sf, "dist_fun") = prep$dist_fun_input
   attr(slic_sf, "method") = if (isTRUE(prep$adaptive_compactness)) "slic0" else "slic"
   class(slic_sf) = c(class(slic_sf), "supercells")
   if (!is.null(iter_attr)) {

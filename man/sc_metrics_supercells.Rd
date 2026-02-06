@@ -5,34 +5,35 @@
 \title{Supercell-level metrics}
 \usage{
 sc_metrics_supercells(
-  raster,
   x,
-  dist_fun = "euclidean",
-  scale = TRUE,
+  sc,
   metrics = c("spatial", "value", "combined", "balance"),
+  scale = TRUE,
+  step,
   compactness,
-  step
+  dist_fun = NULL
 )
 }
 \arguments{
-\item{raster}{The input SpatRaster used to create \code{x}}
+\item{x}{The input SpatRaster used to create \code{sc}.}
 
-\item{x}{An sf object returned by \code{\link[=sc_slic]{sc_slic()}}}
-
-\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.}
-
-\item{scale}{Logical. If \code{TRUE}, scales spatial and value distances; output
-columns are named with the \verb{_scaled} suffix.}
+\item{sc}{An sf object returned by \code{\link[=sc_slic]{sc_slic()}}.}
 
 \item{metrics}{Character vector of metric ideas to return. Options:
 \code{"spatial"}, \code{"value"}, \code{"combined"}, \code{"balance"}. Default:
 \code{c("spatial", "value", "combined", "balance")}.}
 
-\item{compactness}{A compactness value used for the supercells
-If missing, uses \code{attr(x, "compactness")} when available}
+\item{scale}{Logical. If \code{TRUE}, scales spatial and value distances; output
+columns are named with the \verb{_scaled} suffix.}
 
 \item{step}{A step value used for the supercells
-If missing, uses \code{attr(x, "step")} when available}
+If missing, uses \code{attr(sc, "step")} when available}
+
+\item{compactness}{A compactness value used for the supercells
+If missing, uses \code{attr(sc, "compactness")} when available}
+
+\item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.
+If missing or \code{NULL}, uses \code{attr(sc, "dist_fun")} when available.}
 }
 \value{
 An sf object with one row per supercell and columns:
@@ -48,8 +49,9 @@ Metrics:
 \describe{
 \item{supercells}{Supercell ID.}
 \item{spatial}{Mean spatial distance from cells to the supercell center
-in grid-cell units (row/column index distance). Returned as
-\code{mean_spatial_dist} (or \code{mean_spatial_dist_scaled} when \code{scale = TRUE}).}
+in grid-cell units (row/column index distance). If the input supercells were
+created with \code{step_unit = "map"}, distances are reported in map units.
+Returned as \code{mean_spatial_dist} (or \code{mean_spatial_dist_scaled} when \code{scale = TRUE}).}
 \item{value}{Mean value distance from cells to the supercell center in
 value space. Returned as \code{mean_value_dist} (or \code{mean_value_dist_scaled}
 when \code{scale = TRUE}).}
@@ -63,7 +65,7 @@ spatial distance; 0 indicates balance.}
 Computes per-supercell distance diagnostics
 }
 \details{
-If \code{x} lacks \code{supercells}, \code{x}, or \code{y} columns, they are derived from geometry
+If \code{sc} lacks \code{supercells}, \code{x}, or \code{y} columns, they are derived from geometry
 and row order, which may differ from the original centers
 When using SLIC0 (set \code{compactness = "auto"} in \code{\link[=sc_slic]{sc_slic()}}), combined and balance metrics use per-supercell
 adaptive compactness (SLIC0), and scaled value distances are computed with the

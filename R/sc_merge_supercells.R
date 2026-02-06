@@ -47,7 +47,7 @@
 # output: list(group = reindexed groups, vals, w)
 .sc_merge_aggregate_components = function(groups, vals, w) {
   keep_ids = sort(unique(groups))
-  id_map = setNames(seq_len(length(keep_ids)), keep_ids)
+  id_map = stats::setNames(seq_len(length(keep_ids)), keep_ids)
   group_ids = unname(id_map[as.character(groups)])
   new_vals = matrix(0, nrow = length(keep_ids), ncol = ncol(vals))
   new_w = numeric(length(keep_ids))
@@ -67,7 +67,7 @@
 #        dissolve_geoms (function)
 # output: sf with merged geometry and updated attributes
 .sc_merge_finalize_groups = function(x, geoms, group, vals_out, w_out,
-                                     value_cols, weight_is_col, has_xy,
+                                     value_cols, weight_is_col, has_xy, weight,
                                      crs_x, dissolve_geoms) {
   group_levels = seq_len(max(group))
   geom_idx = split(seq_len(nrow(x)), factor(group, levels = group_levels))
@@ -395,7 +395,7 @@ sc_merge_supercells = function(x, dist_fun = "euclidean",
   geoms = sf::st_geometry(x)
   finalize_groups = function(res) {
     .sc_merge_finalize_groups(x, geoms, res$group, res$vals, res$w,
-                              value_cols, weight_is_col, has_xy,
+                              value_cols, weight_is_col, has_xy, weight,
                               crs_x, dissolve_geoms)
   }
 
