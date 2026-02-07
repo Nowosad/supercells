@@ -19,6 +19,15 @@ knitr::opts_chunk$set(
 This vignette shows how to evaluate supercells and interpret the diagnostics.
 The metrics quantify spatial compactness, value homogeneity, and their balance.
 
+The metrics are derived from the same combined distance used during segmentation:
+
+$$
+D = \sqrt{\left(\frac{d_s}{\text{step}}\right)^2 + \left(\frac{d_v}{c}\right)^2}
+$$
+
+where $d_s$ is the spatial distance in grid-cell units, $d_v$ is the value-space distance defined by `dist_fun`, and $c$ is `compactness`.
+<!-- When `compactness = "auto"`, $c$ becomes a per-center value scale computed as the maximum value distance within a local $2 \times \text{step}$ window. -->
+
 All examples use the `volcano` raster for simplicity, but the same workflow applies to multi-layer rasters.
 
 ```{r}
@@ -36,14 +45,14 @@ Pixel metrics provide a map of distances from each pixel to its supercell center
 They are useful for diagnosing local failures, such as areas where the supercells are too large or too irregular.
 Pixel metrics are provided with the `sc_metrics_pixels()` function, which accepts the original raster and the supercell polygons^[This function reads supercells parameters internally from the `supercell` object, so it does not require the `step`, `compactness`, or `dist_fun` arguments], and returns a multi-layer raster with the requested metrics.
 
-The pixel metrics include four layers^[Use the `metrics` argument to request a subset of metrics], each with a specific interpretation:
+The pixel metrics include four layers^[Use the `metrics` argument to request a subset of metrics], each with a specific interpretation and a simple definition:
 
-1. `spatial` is the distance from each pixel to its supercell center in grid-cell units (unless the input supercells were created with `step_unit = "map"`, in which case distances are reported in map units).
+1. `spatial`: $d_s$, the distance from each pixel to its supercell center in grid-cell units (unless the input supercells were created with `step_unit = "map"`, in which case distances are reported in map units).
 Lower spatial values indicate cells that are closer to the center and more compact supercells, while higher values indicate cells that are farther from the center and may indicate irregular shapes or outliers.
-2. `value` is the distance from each pixel to its supercell center in the value space defined by your `dist_fun`.
+2. `value`: $d_v$, the distance from each pixel to its supercell center in the value space defined by your `dist_fun`.
 Lower value distances indicate more homogeneous supercells, while higher values indicate more heterogeneous supercells or outliers.
-3. `combined` blends spatial and value terms using `step` and `compactness`, and is mainly useful for ranking pixels or supercells within a single run -- it is not directly comparable across runs with different parameters or distance functions.
-4. `balance` is the signed log ratio of scaled value to spatial distance, so negative values indicate spatial dominance and positive values indicate value dominance.
+3. `combined`: $D = \sqrt{\left(d_s/\text{step}\right)^2 + \left(d_v/c\right)^2}$, the combined distance used to assign pixels to centers. This is mainly useful for ranking pixels or supercells within a single run -- it is not directly comparable across runs with different parameters or distance functions.
+4. `balance`: $\log\left(\frac{d_v/c}{d_s/\text{step}}\right)$, the signed log ratio of scaled value to scaled spatial distance. Negative values indicate spatial dominance and positive values indicate value dominance.
 
 By default, `sc_metrics_pixels()` returns `spatial`, `value`, `combined`, and `balance`, and uses `scale = TRUE`.
 With scaling on, the spatial and value layers are returned as `spatial_scaled` and `value_scaled`.
@@ -62,13 +71,13 @@ Metrics on the supercell level summarize each polygon with a single value for ea
 They are useful for quality screening, outlier detection, or joining metrics to attributes.
 They are calculated with the `sc_metrics_supercells()` function, which accepts the original raster and the supercell polygons, and returns an `sf` object with one row per supercell and the requested metrics as columns.
 
-The supercell metrics include four variables, each with a specific interpretation:
+The supercell metrics include four variables, each with a specific interpretation and definition as per-supercell means:
 
-1. `mean_spatial_dist` is the average spatial distance from pixels to the supercell center. Lower values indicate more compact shapes.
-2. `mean_value_dist` is the average value distance from pixels to the supercell center in the value space defined by `dist_fun`.
+1. `mean_spatial_dist`: $\overline{d_s}$, the average spatial distance from pixels to the supercell center. Lower values indicate more compact shapes.
+2. `mean_value_dist`: $\overline{d_v}$, the average value distance from pixels to the supercell center in the value space defined by `dist_fun`.
 Lower values indicate more homogeneous supercells.
-3. `mean_combined_dist` blends spatial and value terms using `step` and `compactness`, and is mainly useful for ranking supercells within a single run.
-4. `balance` is the signed log ratio of scaled value to scaled spatial distance, so negative values indicate spatial dominance and positive values indicate value dominance.
+3. `mean_combined_dist`: $\overline{D}$, the average combined distance within each supercell.
+4. `balance`: $\log\left(\frac{\overline{d_v}/c}{\overline{d_s}/\text{step}}\right)$, the signed log ratio of scaled distances.
 
 ```{r}
 supercell_metrics <- sc_metrics_supercells(vol, vol_sc)
@@ -88,14 +97,14 @@ Global metrics provide a single-row summary and are best for comparing different
 They are calculated with `sc_metrics_global()`, which accepts the original raster and the supercell polygons and returns a `data.frame`.
 In these metrics, each supercell contributes equally to the global averages.^[If you want to weight by area or number of pixels, you can use the supercell-level metrics and calculate your own weighted averages. Also, let us know if you want a built-in option for weighted global metrics.]
 
-The global metrics include the same four distance summaries as the supercell metrics:
+The global metrics include the same four distance summaries as the supercell metrics, averaged across supercells (each supercell has equal weight):
 
-1. `mean_spatial_dist` is the average spatial distance from pixels to their supercell centers.
+1. `mean_spatial_dist`: the mean of per-supercell $\overline{d_s}$.
 Lower values indicate more compact shapes.
-2. `mean_value_dist` is the average value distance from pixels to their supercell centers in the value space defined by `dist_fun`.
+2. `mean_value_dist`: the mean of per-supercell $\overline{d_v}$ in the value space defined by `dist_fun`.
 Lower values indicate more homogeneous supercells.
-3. `mean_combined_dist` blends spatial and value terms using `step` and `compactness`, and is mainly useful for ranking or comparing runs.
-4. `balance` is the mean signed log ratio of scaled value to scaled spatial distance, so negative values indicate spatial dominance and positive values indicate value dominance.
+3. `mean_combined_dist`: the mean of per-supercell $\overline{D}$, useful for ranking or comparing runs.
+4. `balance`: $\overline{\log\left(\frac{\overline{d_v}/c}{\overline{d_s}/\text{step}}\right)}$, the mean of per-supercell balance values.
 
 By default, `sc_metrics_global()` returns the scaled distances.
 When `scale = TRUE`, the spatial and value summaries are returned as `mean_spatial_dist_scaled` and `mean_value_dist_scaled`.
