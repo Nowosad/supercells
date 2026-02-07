@@ -221,7 +221,7 @@
   attr(slic_sf, "compactness") = prep$compactness
   attr(slic_sf, "dist_fun") = prep$dist_fun_input
   attr(slic_sf, "method") = if (isTRUE(prep$adaptive_compactness)) "slic0" else "slic"
-  class(slic_sf) = c(class(slic_sf), "supercells")
+  class(slic_sf) = unique(c("supercells", class(slic_sf)))
   if (!is.null(iter_attr)) {
     attr(slic_sf, "iter_diagnostics") = iter_attr
   }
