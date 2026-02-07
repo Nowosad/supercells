@@ -96,7 +96,8 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
   double mean_value_sum = 0.0;
   double mean_spatial_sum = 0.0;
   double mean_combined_sum = 0.0;
-  double balance_ratio_sum = 0.0;
+  double balance_log_sum = 0.0;
+  int balance_count = 0;
   double mean_value_scaled_sum = 0.0;
   int active_clusters = 0;
 
@@ -120,7 +121,11 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
       mean_value_scaled_sum += mv / denom;
     }
     if (denom != 0.0 && step != 0 && ms > 0.0) {
-      balance_ratio_sum += (mv / denom) / (ms / step);
+      double ratio = (mv / denom) / (ms / step);
+      if (ratio > 0.0) {
+        balance_log_sum += std::log(ratio);
+        balance_count += 1;
+      }
     }
     active_clusters += 1;
   }
@@ -128,14 +133,16 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
   double mean_value = NA_REAL;
   double mean_spatial = NA_REAL;
   double mean_combined = NA_REAL;
-  double balance_ratio_mean = NA_REAL;
+  double balance_log_mean = NA_REAL;
   double mean_value_scaled = NA_REAL;
   if (active_clusters > 0) {
     mean_value = mean_value_sum / active_clusters;
     mean_spatial = mean_spatial_sum / active_clusters;
     mean_combined = mean_combined_sum / active_clusters;
-    balance_ratio_mean = balance_ratio_sum / active_clusters;
     mean_value_scaled = mean_value_scaled_sum / active_clusters;
+  }
+  if (balance_count > 0) {
+    balance_log_mean = balance_log_sum / balance_count;
   }
 
   cpp11::writable::list result(6);
@@ -145,7 +152,7 @@ cpp11::list sc_metrics_global_cpp(cpp11::integers_matrix<> clusters,
   result.at(1) = cpp11::as_sexp(mean_value);
   result.at(2) = cpp11::as_sexp(mean_spatial);
   result.at(3) = cpp11::as_sexp(mean_combined);
-  result.at(4) = cpp11::as_sexp(balance_ratio_mean);
+  result.at(4) = cpp11::as_sexp(balance_log_mean);
   result.at(5) = cpp11::as_sexp(mean_value_scaled);
   return result;
 }

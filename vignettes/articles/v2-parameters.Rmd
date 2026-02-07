@@ -29,6 +29,22 @@ library(terra)
 vol <- terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 ```
 
+# Supercells algorithm
+
+The supercells algorithm is an iterative process that starts with initial centers and assigns pixels to the nearest center based on a combined distance that incorporates both value similarity and spatial proximity.
+After the initial assignment, the algorithm updates the centers by averaging the values of the assigned pixels and recalculating the combined distance for the next iteration.
+This process continues until the specified number of iterations is reached.
+
+In this package, the combined distance follows the standard SLIC form:
+
+$$
+D = \sqrt{\left(\frac{d_s}{\text{step}}\right)^2 + \left(\frac{d_v}{c}\right)^2}
+$$
+
+where $d_s$ is the spatial distance in grid-cell units, $d_v$ is the value-space distance (from `dist_fun`), and $c$ is the `compactness` value.
+When `step_unit = "map"`, the `step` value is converted to cells before segmentation; distances are still computed in grid-cell units.
+Larger `compactness` down-weights the value term, making shapes more regular, while smaller values emphasize value similarity.
+
 # Choosing step or k
 
 You can control the number and size of supercells using either `step` or `k`.
@@ -72,8 +88,6 @@ plot(sf::st_geometry(centers_preview), add = TRUE, pch = 3, col = "red")
 2. also custom centers
 -->
 
-A quick visual comparison of two step values can also be helpful.
-
 ```{r}
 #| fig-show: "hold"
 sc_step_small <- sc_slic(vol, step = 6, compactness = 5)
@@ -108,8 +122,14 @@ plot(sc_compact_high[0], add = TRUE, border = "red", lwd = 0.5)
 The `sc_tune_compactness()` function estimates a reasonable starting value from a short run of the algorithm.
 
 It supports two summaries with `metrics = "global"` and `metrics = "local"`.
-The global version looks at overall balance, while the local version uses a neighborhood-based estimate.
-<!-- The global estimate is pixel-weighted, while the local estimate is a median of per-center mean distances. -->
+The global version looks at overall balance between value and spatial distances, while the local version uses a neighborhood-based value scale.
+More precisely:
+
+- **Global**: runs a short pilot segmentation (`iter = 1` by default), computes pixel-level `spatial` and `value` distances, then takes their medians over pixels. The compactness is estimated as `compactness = (median(value) / value_scale) * step / median(spatial)`.  
+  This aligns the median value and spatial terms in the combined distance.
+- **Local**: computes, for each center, the mean value distance within a local $2 \times \text{step}$ window, then returns the median of those per-center means (after `value_scale`).  
+  This yields a compactness tied to local value variability, without explicitly using spatial distances.
+
 The local estimate is often more stable for heterogeneous rasters.
 
 ```{r}

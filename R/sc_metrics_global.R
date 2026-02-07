@@ -43,7 +43,7 @@
 #'   value and spatial distances using `compactness` and `step`, averaged across
 #'   supercells. Returned as `mean_combined_dist`.}
 #'   \item{balance}{Mean signed log ratio of scaled value distance to scaled
-#'   spatial distance; 0 indicates balance.}
+#'   spatial distance (averaged across supercells); 0 indicates balance.}
 #' }
 #' When `scale = TRUE`, `mean_spatial_dist` and `mean_value_dist` are returned as
 #' `mean_spatial_dist_scaled` and `mean_value_dist_scaled`.
@@ -77,7 +77,7 @@ sc_metrics_global = function(x, sc,
   mean_value_dist = out[["mean_value_dist"]]
   mean_spatial_dist = out[["mean_spatial_dist"]] * prep$spatial_scale
   mean_combined_dist = out[["mean_combined_dist"]]
-  balance = log(out[["balance"]])
+  balance = out[["balance"]]
 
   if (isTRUE(scale)) {
     if (isTRUE(prep$adaptive_compactness)) {
