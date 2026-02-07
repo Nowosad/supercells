@@ -61,7 +61,7 @@ their supercell centers, averaged across supercells; units are grid cells
 value and spatial distances using \code{compactness} and \code{step}, averaged across
 supercells. Returned as \code{mean_combined_dist}.}
 \item{balance}{Mean signed log ratio of scaled value distance to scaled
-spatial distance; 0 indicates balance.}
+spatial distance (averaged across supercells); 0 indicates balance.}
 }
 When \code{scale = TRUE}, \code{mean_spatial_dist} and \code{mean_value_dist} are returned as
 \code{mean_spatial_dist_scaled} and \code{mean_value_dist_scaled}.
