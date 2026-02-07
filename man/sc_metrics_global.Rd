@@ -46,7 +46,9 @@ Interpretation:
 values indicate spatial dominance; positive values indicate value dominance.}
 }
 \describe{
-\item{step}{Step size used to generate supercells.}
+\item{step}{Step size used to generate supercells. Returned in map units when
+\code{step_unit = "map"}, otherwise in cells.}
+\item{step_unit}{Units for \code{step} ("cells" or "map").}
 \item{compactness}{Compactness value used to generate supercells.}
 \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 \item{mean_value_dist}{Mean per-supercell value distance from cells to their

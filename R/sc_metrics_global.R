@@ -28,7 +28,9 @@
 #'   values indicate spatial dominance; positive values indicate value dominance.}
 #' }
 #' \describe{
-#'   \item{step}{Step size used to generate supercells.}
+#'   \item{step}{Step size used to generate supercells. Returned in map units when
+#'   `step_unit = "map"`, otherwise in cells.}
+#'   \item{step_unit}{Units for `step` ("cells" or "map").}
 #'   \item{compactness}{Compactness value used to generate supercells.}
 #'   \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 #'   \item{mean_value_dist}{Mean per-supercell value distance from cells to their
@@ -102,8 +104,13 @@ sc_metrics_global = function(x, sc,
     balance = "balance"
   )
   names(out_metrics) = unname(name_map[metrics])
+  step_out = prep$step
+  if (identical(prep$step_unit, "map")) {
+    step_out = prep$step * prep$spatial_scale
+  }
   results = cbind(
-    data.frame(step = prep$step, compactness = prep$compactness, n_supercells = out[["n_supercells"]]),
+    data.frame(step = step_out, step_unit = prep$step_unit,
+               compactness = prep$compactness, n_supercells = out[["n_supercells"]]),
     out_metrics
   )
   return(results)
