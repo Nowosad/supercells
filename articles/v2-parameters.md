@@ -16,6 +16,27 @@ library(terra)
 vol <- terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 ```
 
+## Supercells algorithm
+
+The supercells algorithm is an iterative process that starts with
+initial centers and assigns pixels to the nearest center based on a
+combined distance that incorporates both value similarity and spatial
+proximity. After the initial assignment, the algorithm updates the
+centers by averaging the values of the assigned pixels and recalculating
+the combined distance for the next iteration. This process continues
+until the specified number of iterations is reached.
+
+In this package, the combined distance follows the standard SLIC form:
+
+$$D = \sqrt{\left( \frac{d_{s}}{\text{step}} \right)^{2} + \left( \frac{d_{v}}{c} \right)^{2}}$$
+
+where $d_{s}$ is the spatial distance in grid-cell units, $d_{v}$ is the
+value-space distance (from `dist_fun`), and $c$ is the `compactness`
+value. When `step_unit = "map"`, the `step` value is converted to cells
+before segmentation; distances are still computed in grid-cell units.
+Larger `compactness` down-weights the value term, making shapes more
+regular, while smaller values emphasize value similarity.
+
 ## Choosing step or k
 
 You can control the number and size of supercells using either `step` or
@@ -52,8 +73,6 @@ sc_k <- sc_slic(vol, k = 100, compactness = 5)
 In practice, use `step` when spatial scale matters, and use `k` when you
 want a fixed count across datasets. Importantly, both approaches still
 require a sensible `compactness` value.
-
-A quick visual comparison of two step values can also be helpful.
 
 ``` r
 sc_step_small <- sc_slic(vol, step = 6, compactness = 5)
@@ -100,9 +119,23 @@ function estimates a reasonable starting value from a short run of the
 algorithm.
 
 It supports two summaries with `metrics = "global"` and
-`metrics = "local"`. The global version looks at overall balance, while
-the local version uses a neighborhood-based estimate. The local estimate
-is often more stable for heterogeneous rasters.
+`metrics = "local"`. The global version looks at overall balance between
+value and spatial distances, while the local version uses a
+neighborhood-based value scale. More precisely:
+
+- **Global**: runs a short pilot segmentation (`iter = 1` by default),
+  computes pixel-level `spatial` and `value` distances, then takes their
+  medians over pixels. The compactness is estimated as
+  `compactness = (median(value) / value_scale) * step / median(spatial)`.  
+  This aligns the median value and spatial terms in the combined
+  distance.
+- **Local**: computes, for each center, the mean value distance within a
+  local $2 \times \text{step}$ window, then returns the median of those
+  per-center means (after `value_scale`).  
+  This yields a compactness tied to local value variability, without
+  explicitly using spatial distances.
+
+The local estimate is often more stable for heterogeneous rasters.
 
 ``` r
 tune_global <- sc_tune_compactness(vol, step = 8, metrics = "global")
@@ -175,11 +208,11 @@ cmp_metrics
 #> 2    8           3           88                0.5246759              0.7473867
 #> 3    8           5           89                0.4982282              0.4746065
 #> 4    8           8           88                0.4610799              0.3358298
-#>   mean_combined_dist     balance
-#> 1          2.3003626  1.35812905
-#> 2          0.9994451  0.34170249
-#> 3          0.7533578 -0.05555311
-#> 4          0.6175536 -0.32491391
+#>   mean_combined_dist    balance
+#> 1          2.3003626  1.1923986
+#> 2          0.9994451  0.2193843
+#> 3          0.7533578 -0.1505373
+#> 4          0.6175536 -0.4145741
 ```
 
 ## Distance and averaging functions

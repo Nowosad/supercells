@@ -4,6 +4,14 @@ This vignette shows how to evaluate supercells and interpret the
 diagnostics. The metrics quantify spatial compactness, value
 homogeneity, and their balance.
 
+The metrics are derived from the same combined distance used during
+segmentation:
+
+$$D = \sqrt{\left( \frac{d_{s}}{\text{step}} \right)^{2} + \left( \frac{d_{v}}{c} \right)^{2}}$$
+
+where $d_{s}$ is the spatial distance in grid-cell units, $d_{v}$ is the
+value-space distance defined by `dist_fun`, and $c$ is `compactness`.
+
 All examples use the `volcano` raster for simplicity, but the same
 workflow applies to multi-layer rasters.
 
@@ -27,26 +35,29 @@ polygons[¹](#fn1), and returns a multi-layer raster with the requested
 metrics.
 
 The pixel metrics include four layers[²](#fn2), each with a specific
-interpretation:
+interpretation and a simple definition:
 
-1.  `spatial` is the distance from each pixel to its supercell center in
-    grid-cell units (unless the input supercells were created with
-    `step_unit = "map"`, in which case distances are reported in map
-    units). Lower spatial values indicate cells that are closer to the
-    center and more compact supercells, while higher values indicate
+1.  `spatial`: $d_{s}$, the distance from each pixel to its supercell
+    center in grid-cell units (unless the input supercells were created
+    with `step_unit = "map"`, in which case distances are reported in
+    map units). Lower spatial values indicate cells that are closer to
+    the center and more compact supercells, while higher values indicate
     cells that are farther from the center and may indicate irregular
     shapes or outliers.
-2.  `value` is the distance from each pixel to its supercell center in
-    the value space defined by your `dist_fun`. Lower value distances
-    indicate more homogeneous supercells, while higher values indicate
-    more heterogeneous supercells or outliers.
-3.  `combined` blends spatial and value terms using `step` and
-    `compactness`, and is mainly useful for ranking pixels or supercells
-    within a single run – it is not directly comparable across runs with
-    different parameters or distance functions.
-4.  `balance` is the signed log ratio of scaled value to spatial
-    distance, so negative values indicate spatial dominance and positive
-    values indicate value dominance.
+2.  `value`: $d_{v}$, the distance from each pixel to its supercell
+    center in the value space defined by your `dist_fun`. Lower value
+    distances indicate more homogeneous supercells, while higher values
+    indicate more heterogeneous supercells or outliers.
+3.  `combined`:
+    $D = \sqrt{\left( d_{s}/\text{step} \right)^{2} + \left( d_{v}/c \right)^{2}}$,
+    the combined distance used to assign pixels to centers. This is
+    mainly useful for ranking pixels or supercells within a single run –
+    it is not directly comparable across runs with different parameters
+    or distance functions.
+4.  `balance`: $\log\left( \frac{d_{v}/c}{d_{s}/\text{step}} \right)$,
+    the signed log ratio of scaled value to scaled spatial distance.
+    Negative values indicate spatial dominance and positive values
+    indicate value dominance.
 
 By default,
 [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md)
@@ -77,19 +88,19 @@ and returns an `sf` object with one row per supercell and the requested
 metrics as columns.
 
 The supercell metrics include four variables, each with a specific
-interpretation:
+interpretation and definition as per-supercell means:
 
-1.  `mean_spatial_dist` is the average spatial distance from pixels to
-    the supercell center. Lower values indicate more compact shapes.
-2.  `mean_value_dist` is the average value distance from pixels to the
-    supercell center in the value space defined by `dist_fun`. Lower
-    values indicate more homogeneous supercells.
-3.  `mean_combined_dist` blends spatial and value terms using `step` and
-    `compactness`, and is mainly useful for ranking supercells within a
-    single run.
-4.  `balance` is the signed log ratio of scaled value to scaled spatial
-    distance, so negative values indicate spatial dominance and positive
-    values indicate value dominance.
+1.  `mean_spatial_dist`: $\overline{d_{s}}$, the average spatial
+    distance from pixels to the supercell center. Lower values indicate
+    more compact shapes.
+2.  `mean_value_dist`: $\overline{d_{v}}$, the average value distance
+    from pixels to the supercell center in the value space defined by
+    `dist_fun`. Lower values indicate more homogeneous supercells.
+3.  `mean_combined_dist`: $\overline{D}$, the average combined distance
+    within each supercell.
+4.  `balance`:
+    $\log\left( \frac{\overline{d_{v}}/c}{\overline{d_{s}}/\text{step}} \right)$,
+    the signed log ratio of scaled distances.
 
 ``` r
 supercell_metrics <- sc_metrics_supercells(vol, vol_sc)
@@ -134,18 +145,19 @@ a `data.frame`. In these metrics, each supercell contributes equally to
 the global averages.[³](#fn3)
 
 The global metrics include the same four distance summaries as the
-supercell metrics:
+supercell metrics, averaged across supercells (each supercell has equal
+weight):
 
-1.  `mean_spatial_dist` is the average spatial distance from pixels to
-    their supercell centers. Lower values indicate more compact shapes.
-2.  `mean_value_dist` is the average value distance from pixels to their
-    supercell centers in the value space defined by `dist_fun`. Lower
-    values indicate more homogeneous supercells.
-3.  `mean_combined_dist` blends spatial and value terms using `step` and
-    `compactness`, and is mainly useful for ranking or comparing runs.
-4.  `balance` is the mean signed log ratio of scaled value to scaled
-    spatial distance, so negative values indicate spatial dominance and
-    positive values indicate value dominance.
+1.  `mean_spatial_dist`: the mean of per-supercell $\overline{d_{s}}$.
+    Lower values indicate more compact shapes.
+2.  `mean_value_dist`: the mean of per-supercell $\overline{d_{v}}$ in
+    the value space defined by `dist_fun`. Lower values indicate more
+    homogeneous supercells.
+3.  `mean_combined_dist`: the mean of per-supercell $\overline{D}$,
+    useful for ranking or comparing runs.
+4.  `balance`:
+    $\overline{\log\left( \frac{\overline{d_{v}}/c}{\overline{d_{s}}/\text{step}} \right)}$,
+    the mean of per-supercell balance values.
 
 By default,
 [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md)
@@ -159,7 +171,7 @@ global_metrics
 #>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled
 #> 1    8           7           88                0.4718607              0.3701397
 #>   mean_combined_dist    balance
-#> 1          0.6517259 -0.2529564
+#> 1          0.6517259 -0.3367309
 ```
 
 You may use the global metrics to compare parameter settings, for
@@ -178,8 +190,8 @@ rbind(higher_compactness = metrics_higher, lower_compactness = metrics_lower)
 #> higher_compactness    8           7           88                0.4718607
 #> lower_compactness     8           1           90                0.5500066
 #>                    mean_value_dist_scaled mean_combined_dist    balance
-#> higher_compactness              0.3701397          0.6517259 -0.2529564
-#> lower_compactness               2.1412253          2.3003626  1.3581291
+#> higher_compactness              0.3701397          0.6517259 -0.3367309
+#> lower_compactness               2.1412253          2.3003626  1.1923986
 ```
 
 When using `compactness = "auto"`, the value scaling is per-supercell.

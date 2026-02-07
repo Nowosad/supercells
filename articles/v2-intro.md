@@ -54,6 +54,25 @@ for per-supercell summaries, and
 for a general overview. These metrics help compare different parameter
 settings or input preprocessing choices.
 
+## Workflow summary
+
+Basic workflows follow the same pattern: choose scale (`step` or `k`),
+tune or set `compactness`, create supercells, and evaluate.
+
+``` r
+# read data
+vol <- terra::rast(system.file("raster/volcano.tif", package = "supercells"))
+
+# choose scale and tune compactness
+tune <- supercells::sc_tune_compactness(vol, step = 8, metrics = "local")
+
+# create supercells
+vol_sc <- supercells::sc_slic(vol, step = 8, compactness = tune$compactness)
+
+# evaluate
+metrics_global <- supercells::sc_metrics_global(vol, vol_sc)
+```
+
 ## Minimal example
 
 The goal of this example is to derive supercells from a raster and
@@ -93,7 +112,7 @@ terra::plot(vol)
 plot(sf::st_geometry(vol_sc), add = TRUE, lwd = 0.6, border = "red")
 ```
 
-![](v2-intro_files/figure-html/unnamed-chunk-3-1.png)
+![](v2-intro_files/figure-html/unnamed-chunk-4-1.png)
 
 The resulting `sf` object contains one row per supercell. Each row
 stores summary values of each layer in the original raster, as well as
@@ -136,7 +155,7 @@ terra::plot(vol)
 plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.6, border = "red")
 ```
 
-![](v2-intro_files/figure-html/unnamed-chunk-5-1.png)
+![](v2-intro_files/figure-html/unnamed-chunk-6-1.png)
 
 Such a derived compactness value may serve as a good starting point for
 further experimentation.
@@ -160,7 +179,7 @@ and `value_scaled`.
 plot(pixel_metrics, nr = 1)
 ```
 
-![](v2-intro_files/figure-html/unnamed-chunk-7-1.png)
+![](v2-intro_files/figure-html/unnamed-chunk-8-1.png)
 
 These maps help diagnose where spatial or value coherence is weak. For
 example, large patches of high values can indicate areas where the
@@ -174,7 +193,7 @@ attributes.
 plot(supercell_metrics)
 ```
 
-![](v2-intro_files/figure-html/unnamed-chunk-8-1.png)
+![](v2-intro_files/figure-html/unnamed-chunk-9-1.png)
 
 The global metrics provide a single-row summary of overall quality. They
 are useful for comparing parameter settings across multiple runs, such
@@ -185,8 +204,25 @@ global_metrics
 #>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled
 #> 1    8    9.084872           88                0.4546412              0.3061439
 #>   mean_combined_dist    balance
-#> 1          0.5915118 -0.4036551
+#> 1          0.5915118 -0.4939904
 ```
+
+## Where to go next
+
+To learn more about the package and its capabilities, check out the
+following articles:
+
+- [**Choosing parameters**: a practical guide to `step`, `k`, and
+  `compactness`.](https://jakubnowosad.com/supercells/articles/v2-parameters.html)
+- [**Evaluation and diagnostics**: how to read and compare pixel,
+  supercell, and global
+  metrics.](https://jakubnowosad.com/supercells/articles/v2-evaluation.html)
+- [**Benchmarks**: performance
+  notes.](https://jakubnowosad.com/supercells/articles/v2-benchmarks.html)
+- [**Changes since v1**: a concise summary of what’s new in
+  v2.](https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html)
+
+## References
 
 Achanta, Radhakrishna, Appu Shaji, Kevin Smith, Aurelien Lucchi, Pascal
 Fua, and Sabine Süsstrunk. 2012. “SLIC Superpixels Compared to

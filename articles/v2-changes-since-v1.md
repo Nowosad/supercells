@@ -196,7 +196,7 @@ global_metrics
 #>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled
 #> 1    8           7           88                0.4718607              0.3701397
 #>   mean_combined_dist    balance
-#> 1          0.6517259 -0.2529564
+#> 1          0.6517259 -0.3367309
 ```
 
 ## SLIC0 adaptive compactness
