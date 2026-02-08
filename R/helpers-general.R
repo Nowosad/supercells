@@ -1,8 +1,3 @@
-# check if raster is in memory
-.sc_util_in_memory = function(x){
-  terra::sources(x) == ""
-}
-
 # normalize input to SpatRaster
 .sc_util_prep_raster = function(x) {
   if (inherits(x, "SpatRaster")) {
@@ -94,4 +89,16 @@
 
   list(step = step_cells, step_meta = step_meta,
        spatial_scale = spatial_scale, step_scale = step_cells * spatial_scale)
+}
+
+# normalize compactness input for slic/metrics workflows
+.sc_util_prep_compactness = function(compactness) {
+  if (is.numeric(compactness) && length(compactness) == 1 && !is.na(compactness) && compactness > 0) {
+    return(list(value = compactness, adaptive = FALSE, adaptive_method = NULL))
+  }
+
+  if (inherits(compactness, "sc_adaptive")) {
+    return(list(value = 0, adaptive = TRUE, adaptive_method = compactness$method))
+  }
+  stop("The 'compactness' argument must be a single positive number or use_adaptive()", call. = FALSE)
 }

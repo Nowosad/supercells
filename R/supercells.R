@@ -8,7 +8,7 @@
 #' You can use either `k` or `step`.
 #' It is also possible to provide a set of points (an `sf` object) as `k` together with the `step` value to create custom cluster centers.
 #' @param compactness A compactness value. Larger values cause supercells to be more compact/even (square).
-#' Set `compactness = "auto"` to enable adaptive compactness (SLIC0).
+#' Use [use_adaptive()] to enable adaptive compactness (SLIC0).
 #' A compactness value depends on the range of input cell values and selected distance measure.
 #' @param dist_fun A distance function. Currently implemented distance functions are `"euclidean"`, `"jsd"`, `"dtw"` (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: `"euclidean"`
 #' @param avg_fun An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions `"mean"` and `"median"` (provided with quotation marks), but also accepts any fitting R function (e.g., `base::mean()` or `stats::median()`, provided as plain function name: `mean`). Default: `"mean"`. See details for more information.
@@ -18,7 +18,7 @@
 #' By default, when `clean = TRUE`, average area (A) is calculated based on the total number of cells divided by a number of supercells
 #' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
 #' @param step Initial center spacing. You can use either `k` or `step`.
-#' Provide a plain numeric value for cell units, or use [in_meters()] for
+#' Provide a plain numeric value for cell units, or use [use_meters()] for
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
 #' @param transform Transformation to be performed on the input. By default, no transformation is performed. Currently available transformation is "to_LAB": first, the conversion from RGB to the LAB color space is applied, then the supercells algorithm is run, and afterward, a reverse transformation is performed on the obtained results. (This argument is experimental and may be removed in the future).
 #' @param metadata Logical. Controls whether metadata columns

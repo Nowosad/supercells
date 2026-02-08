@@ -28,7 +28,7 @@ You can use either \code{k} or \code{step}.
 It is also possible to provide a set of points (an \code{sf} object) as \code{k} together with the \code{step} value to create custom cluster centers.}
 
 \item{compactness}{A compactness value. Larger values cause supercells to be more compact/even (square).
-Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).
+Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness (SLIC0).
 A compactness value depends on the range of input cell values and selected distance measure.}
 
 \item{dist_fun}{A distance function. Currently implemented distance functions are \code{"euclidean"}, \code{"jsd"}, \code{"dtw"} (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: \code{"euclidean"}}
@@ -42,7 +42,7 @@ A compactness value depends on the range of input cell values and selected dista
 \item{transform}{Transformation to be performed on the input. By default, no transformation is performed. Currently available transformation is "to_LAB": first, the conversion from RGB to the LAB color space is applied, then the supercells algorithm is run, and afterward, a reverse transformation is performed on the obtained results. (This argument is experimental and may be removed in the future).}
 
 \item{step}{Initial center spacing. You can use either \code{k} or \code{step}.
-Provide a plain numeric value for cell units, or use \code{\link[=in_meters]{in_meters()}} for
+Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
 map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{minarea}{Specifies the minimal size of a supercell (in cells). Only works when \code{clean = TRUE}.

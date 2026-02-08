@@ -1,7 +1,7 @@
 sc_full = sc_slic(v1, step = 8, compactness = 1,
                   outcomes = c("supercells", "coordinates", "values"))
 sc_values = sc_slic(v1, step = 8, compactness = 1, outcomes = "values")
-sc_auto = sc_slic(v1, step = 8, compactness = "auto",
+sc_auto = sc_slic(v1, step = 8, compactness = use_adaptive(),
                   outcomes = c("supercells", "coordinates", "values"))
 manhattan = function(a, b) sum(abs(a - b))
 sc_custom = sc_slic(v1, step = 8, compactness = 1, dist_fun = manhattan,
@@ -21,7 +21,7 @@ test_that("metrics outputs have expected structure", {
   gl = sc_metrics_global(v1, sc_full)
   expect_s3_class(gl, "data.frame")
   expect_equal(nrow(gl), 1)
-  expect_true(all(c("step", "compactness", "n_supercells",
+  expect_true(all(c("step", "compactness", "adaptive_method", "n_supercells",
                     "mean_value_dist_scaled", "mean_spatial_dist_scaled",
                     "mean_combined_dist", "balance") %in% names(gl)))
 })
@@ -36,9 +36,11 @@ test_that("metrics use stored attributes and dist_fun defaults", {
   gl = sc_metrics_global(v1, sc_full)
   expect_equal(gl$step, attr(sc_full, "step"))
   expect_equal(gl$compactness, attr(sc_full, "compactness"))
+  expect_true(is.na(gl$adaptive_method))
 
   gl_auto = sc_metrics_global(v1, sc_auto)
-  expect_equal(gl_auto$compactness, "auto")
+  expect_equal(gl_auto$compactness, 0)
+  expect_equal(gl_auto$adaptive_method, "local_max")
 
   g_attr = sc_metrics_global(v1, sc_custom)
   g_explicit = sc_metrics_global(v1, sc_custom, dist_fun = manhattan)
@@ -51,7 +53,7 @@ test_that("metrics follow step encoding in cells vs meters", {
   v1_map = terra::aggregate(v1, fact = 2, fun = mean, na.rm = TRUE)
   res_map = terra::res(v1_map)[1]
   step_cells = 8
-  step_map = in_meters(step_cells * res_map)
+  step_map = use_meters(step_cells * res_map)
 
   sc_cells = sc_slic(v1_map, step = step_cells, compactness = 1,
                      outcomes = c("supercells", "coordinates", "values"))

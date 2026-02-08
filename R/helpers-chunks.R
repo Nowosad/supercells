@@ -143,14 +143,6 @@
   as.integer(ceiling(nrows / step) * ceiling(ncols / step))
 }
 
-# deterministic per-chunk id offsets based on expected supercell counts
-.sc_chunk_offsets = function(chunk_ext, step) {
-  expected = .sc_chunk_expected_max_ids(chunk_ext, step)
-  offsets = cumsum(c(0L, expected[-length(expected)]))
-  storage.mode(offsets) = "double"
-  offsets
-}
-
 # choose a compact integer datatype based on expected max id
 .sc_chunk_id_datatype = function(max_id) {
   if (max_id <= 255) {

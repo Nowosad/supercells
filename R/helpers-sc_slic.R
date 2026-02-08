@@ -35,20 +35,16 @@
   # Compute chunk extents based on size/limits
   chunk_ext = .sc_chunk_extents(dim(x), limit = chunks, step = step)
   verbose_cpp = if (is.numeric(verbose) && length(verbose) == 1 && !is.na(verbose) && verbose >= 2) verbose else 0
-  compactness_input = compactness
-  adaptive_compactness = is.character(compactness) &&
-    length(compactness) == 1 && !is.na(compactness) && compactness == "auto"
-  if (adaptive_compactness) {
-    compactness = 0
-  }
+  compactness_prep = .sc_util_prep_compactness(compactness)
   # Package prep results for downstream functions
   return(list(x = x, step = step, step_meta = step_meta,
               dist_fun_input = dist_fun,
               input_centers = input_centers, funs = funs,
               minarea = minarea, chunk_ext = chunk_ext,
               outcomes = outcomes,
-              compactness = compactness, compactness_input = compactness_input,
-              adaptive_compactness = adaptive_compactness,
+              compactness = compactness_prep$value,
+              adaptive_compactness = compactness_prep$adaptive,
+              adaptive_method = compactness_prep$adaptive_method,
               clean = clean, iter = iter,
               verbose = verbose, verbose_cpp = verbose_cpp))
 }
@@ -105,9 +101,6 @@
   }
   if (missing(compactness)) {
     stop("The 'compactness' argument is required", call. = FALSE)
-  }
-  if (!is.numeric(compactness) && !(is.character(compactness) && length(compactness) == 1 && !is.na(compactness) && compactness == "auto")) {
-    stop("The 'compactness' argument must be numeric or 'auto'", call. = FALSE)
   }
   if (!missing(minarea) && (!is.numeric(minarea) || length(minarea) != 1 || is.na(minarea) || minarea < 0)) {
     stop("The 'minarea' argument must be a non-negative numeric value", call. = FALSE)
@@ -204,7 +197,8 @@
   slic_sf = .sc_slic_select_outcomes(slic_sf, prep$outcomes)
 
   attr(slic_sf, "step") = prep$step_meta
-  attr(slic_sf, "compactness") = prep$compactness_input
+  attr(slic_sf, "compactness") = prep$compactness
+  attr(slic_sf, "adaptive_method") = prep$adaptive_method
   attr(slic_sf, "dist_fun") = prep$dist_fun_input
   cls = class(slic_sf)
   cls = c(setdiff(cls, "data.frame"), "supercells", "data.frame")

@@ -11,7 +11,7 @@
 #' @details
 #' If `sc` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers
-#' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
+#' When using SLIC0 (set `compactness = use_adaptive()` in [sc_slic()]), combined and balance metrics use per-supercell
 #' adaptive compactness (SLIC0), and scaled value distances are computed with the
 #' per-supercell max value distance.
 #' @return An sf object with one row per supercell and columns:
@@ -28,7 +28,7 @@
 #'   \item{supercells}{Supercell ID.}
 #'   \item{spatial}{Mean spatial distance from cells to the supercell center
 #'   in grid-cell units (row/column index distance). If the input supercells were
-#'   created with `step = in_meters(...)`, distances are reported in meters.
+#'   created with `step = use_meters(...)`, distances are reported in meters.
 #'   Returned as `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
 #'   \item{value}{Mean value distance from cells to the supercell center in
 #'   value space. Returned as `mean_value_dist` (or `mean_value_dist_scaled`

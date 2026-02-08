@@ -15,15 +15,15 @@
 #'   \item Cluster diagnostics: [sc_metrics_supercells()] for per-supercell summaries.
 #'   \item Global diagnostics: [sc_metrics_global()] for a single-row summary.
 #' }
-#' @seealso [in_meters()], [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_slic_convergence()`],
+#' @seealso [use_meters()], [use_adaptive()], [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_slic_convergence()`],
 #'   [`sc_metrics_pixels()`], [`sc_metrics_supercells()`], [`sc_metrics_global()`]
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars).
 #' @param step Initial center spacing (alternative is `k`).
-#' Provide a plain numeric value for cell units, or use [in_meters()] for
+#' Provide a plain numeric value for cell units, or use [use_meters()] for
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
 #' @param compactness A compactness value. Use [`sc_tune_compactness()`] to estimate it.
-#' Set `compactness = "auto"` to enable adaptive compactness (SLIC0).
+#' Use [use_adaptive()] to enable adaptive compactness (SLIC0).
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.
@@ -45,7 +45,8 @@
 #' @param verbose Verbosity level.
 #'
 #' @return An sf object with the supercell polygons and summary statistics.
-#' Information on `step` and `compactness` are attached to the result as attributes.
+#' Information on `step`, `compactness`, and `adaptive_method` are attached to
+#' the result as attributes (`adaptive_method` is `NULL` for fixed compactness).
 #'
 #' @references Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120
 #' @references Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935

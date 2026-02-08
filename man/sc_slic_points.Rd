@@ -24,11 +24,11 @@ sc_slic_points(
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
 \item{step}{Initial center spacing (alternative is \code{k}).
-Provide a plain numeric value for cell units, or use \code{\link[=in_meters]{in_meters()}} for
+Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
 map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
-Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).}
+Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness (SLIC0).}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.

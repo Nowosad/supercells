@@ -44,6 +44,10 @@
   if (missing(compactness)) {
     compactness = attr(sc, "compactness")
   }
+  adaptive_method = attr(sc, "adaptive_method")
+  if (!is.null(adaptive_method) && is.null(compactness)) {
+    compactness = 0
+  }
   if (missing(step)) {
     step = attr(sc, "step")
   }
@@ -51,14 +55,14 @@
     stop("Both 'compactness' and 'step' are required", call. = FALSE)
   }
 
-  compactness_input = compactness
-  adaptive_compactness = FALSE
-  if (is.character(compactness)) {
-    if (length(compactness) != 1 || is.na(compactness) || compactness != "auto") {
-      stop("The 'compactness' argument must be numeric or 'auto'", call. = FALSE)
+  if (!is.null(adaptive_method)) {
+    if (!is.character(adaptive_method) || length(adaptive_method) != 1 || is.na(adaptive_method) ||
+        adaptive_method != "local_max") {
+      stop("The 'adaptive_method' attribute must be 'local_max' or NULL", call. = FALSE)
     }
-    adaptive_compactness = TRUE
-    compactness = 0
+    compactness_prep = list(value = 0, adaptive = TRUE, adaptive_method = adaptive_method)
+  } else {
+    compactness_prep = .sc_util_prep_compactness(compactness)
   }
   step_prep = .sc_util_step_to_cells(raster, step)
   step = step_prep$step
@@ -93,9 +97,9 @@
     sc = sc_work,
     step = step,
     step_meta = step_prep$step_meta,
-    compactness = compactness,
-    compactness_input = compactness_input,
-    adaptive_compactness = adaptive_compactness,
+    compactness = compactness_prep$value,
+    adaptive_compactness = compactness_prep$adaptive,
+    adaptive_method = compactness_prep$adaptive_method,
     spatial_scale = spatial_scale,
     step_scale = step_scale
   )

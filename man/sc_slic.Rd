@@ -24,11 +24,11 @@ sc_slic(
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
 \item{step}{Initial center spacing (alternative is \code{k}).
-Provide a plain numeric value for cell units, or use \code{\link[=in_meters]{in_meters()}} for
+Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
 map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
-Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).}
+Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness (SLIC0).}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
@@ -61,7 +61,8 @@ automatic chunking based on size, or a numeric value for a fixed chunk size
 }
 \value{
 An sf object with the supercell polygons and summary statistics.
-Information on \code{step} and \code{compactness} are attached to the result as attributes.
+Information on \code{step}, \code{compactness}, and \code{adaptive_method} are attached to
+the result as attributes (\code{adaptive_method} is \code{NULL} for fixed compactness).
 }
 \description{
 Creates supercells from single- or multi-band rasters using an extended SLIC algorithm.
@@ -95,6 +96,6 @@ Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012).
 Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935
 }
 \seealso{
-\code{\link[=in_meters]{in_meters()}}, \code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_slic_convergence]{sc_slic_convergence()}},
+\code{\link[=use_meters]{use_meters()}}, \code{\link[=use_adaptive]{use_adaptive()}}, \code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_slic_convergence]{sc_slic_convergence()}},
 \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
 }

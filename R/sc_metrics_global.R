@@ -8,7 +8,7 @@
 #' Use `outcomes = c("supercells", "coordinates", "values")` when calling
 #' `sc_slic()` or `supercells()` to preserve original centers and IDs.
 #' Metrics are averaged across supercells (each supercell has equal weight).
-#' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
+#' When using SLIC0 (set `compactness = use_adaptive()` in [sc_slic()]), combined and balance metrics use per-supercell
 #' adaptive compactness (SLIC0), and scaled value distances are computed with the
 #' per-supercell max value distance.
 #'
@@ -29,8 +29,9 @@
 #' }
 #' \describe{
 #'   \item{step}{Step size used to generate supercells. Returned in meters when
-#'   the input used `step = in_meters(...)`, otherwise in cells.}
+#'   the input used `step = use_meters(...)`, otherwise in cells.}
 #'   \item{compactness}{Compactness value used to generate supercells.}
+#'   \item{adaptive_method}{Adaptive compactness method; `NA` for fixed compactness.}
 #'   \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 #'   \item{mean_value_dist}{Mean per-supercell value distance from cells to their
 #'   supercell centers, averaged across supercells. Returned as `mean_value_dist`
@@ -38,7 +39,7 @@
 #'   \item{mean_spatial_dist}{Mean per-supercell spatial distance from cells to
 #'   their supercell centers, averaged across supercells; units are grid cells
 #'   (row/column index distance). If the input supercells were created with
-#'   `step = in_meters(...)`, distances are reported in meters. Returned as
+#'   `step = use_meters(...)`, distances are reported in meters. Returned as
 #'   `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
 #'   \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 #'   value and spatial distances using `compactness` and `step`, averaged across
@@ -94,8 +95,14 @@ sc_metrics_global = function(x, sc,
   )
   names(out_metrics) = unname(name_map[metrics])
   step_out = prep$step_meta
+  adaptive_method_out = prep$adaptive_method
+  if (is.null(adaptive_method_out)) {
+    adaptive_method_out = NA_character_
+  }
   results = cbind(
-    data.frame(step = step_out, compactness = prep$compactness_input, n_supercells = out[["n_supercells"]]),
+    data.frame(step = step_out, compactness = prep$compactness,
+               adaptive_method = adaptive_method_out,
+               n_supercells = out[["n_supercells"]]),
     out_metrics
   )
   return(results)

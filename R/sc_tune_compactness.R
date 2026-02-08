@@ -8,7 +8,7 @@
 #'
 #' @param raster A `SpatRaster`.
 #' @param step Initial center spacing (alternative is `k`).
-#' Provide a plain numeric value for cell units, or use [in_meters()] for
+#' Provide a plain numeric value for cell units, or use [use_meters()] for
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
 #' @param compactness Starting compactness used for the initial short run.
 #' @param metric Which compactness metric to return: `"global"` or `"local"`.
@@ -35,7 +35,7 @@
 #'
 #' @return A one-row data frame with columns `step`, `metric`, `dist_fun`, and `compactness`.
 #'
-#' @seealso [`sc_slic()`], [in_meters()]
+#' @seealso [`sc_slic()`], [use_meters()], [use_adaptive()]
 #'
 #' @examples
 #' library(terra)

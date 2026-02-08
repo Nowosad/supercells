@@ -5,9 +5,11 @@ test_that("sc_slic returns core output and attributes", {
   expect_true(all(c("supercells", "x", "y") %in% names(sc)))
   expect_false(is.null(attr(sc, "step")))
   expect_equal(attr(sc, "compactness"), 1)
+  expect_null(attr(sc, "adaptive_method"))
 
-  sc_auto = sc_slic(v1, step = 8, compactness = "auto")
-  expect_equal(attr(sc_auto, "compactness"), "auto")
+  sc_auto = sc_slic(v1, step = 8, compactness = use_adaptive())
+  expect_equal(attr(sc_auto, "compactness"), 0)
+  expect_equal(attr(sc_auto, "adaptive_method"), "local_max")
 })
 
 test_that("sc_slic supports custom centers", {
@@ -86,7 +88,7 @@ test_that("sc_slic validates key argument errors", {
 })
 
 test_that("sc_slic handles step units and unit-related errors", {
-  step_map = in_meters(8 * terra::res(v1)[1])
+  step_map = use_meters(8 * terra::res(v1)[1])
   sc = sc_slic(v1, step = step_map, compactness = 1)
   expect_s3_class(attr(sc, "step"), "units")
   expect_equal(as.numeric(units::drop_units(attr(sc, "step"))), as.numeric(units::drop_units(step_map)))
@@ -94,7 +96,7 @@ test_that("sc_slic handles step units and unit-related errors", {
   x_lonlat = terra::rast(nrows = 50, ncols = 50, xmin = 0, xmax = 1, ymin = 0, ymax = 1, crs = "EPSG:4326")
   terra::values(x_lonlat) = seq_len(terra::ncell(x_lonlat))
   expect_error(
-    suppressWarnings(sc_slic(x_lonlat, step = in_meters(1000), compactness = 1)),
+    suppressWarnings(sc_slic(x_lonlat, step = use_meters(1000), compactness = 1)),
     "projected CRS",
     fixed = TRUE
   )
@@ -108,16 +110,22 @@ test_that("sc_slic handles step units and unit-related errors", {
   x_non_meter = terra::rast(nrows = 50, ncols = 50, xmin = 0, xmax = 5000, ymin = 0, ymax = 5000, crs = "EPSG:2277")
   terra::values(x_non_meter) = seq_len(terra::ncell(x_non_meter))
   expect_error(
-    suppressWarnings(sc_slic(x_non_meter, step = in_meters(100), compactness = 1)),
+    suppressWarnings(sc_slic(x_non_meter, step = use_meters(100), compactness = 1)),
     "meter units",
     fixed = TRUE
   )
 })
 
-test_that("in_meters validates inputs", {
-  x = in_meters(100)
+test_that("use_meters validates inputs", {
+  x = use_meters(100)
   expect_s3_class(x, "units")
   expect_equal(as.character(units::deparse_unit(x)), "m")
-  expect_error(in_meters(-1), "single positive number", fixed = TRUE)
-  expect_error(in_meters(c(1, 2)), "single positive number", fixed = TRUE)
+  expect_error(use_meters(-1), "single positive number", fixed = TRUE)
+  expect_error(use_meters(c(1, 2)), "single positive number", fixed = TRUE)
+})
+
+test_that("use_adaptive validates input", {
+  x = use_adaptive()
+  expect_s3_class(x, "sc_adaptive")
+  expect_error(use_adaptive("other"), "must be 'local_max'", fixed = TRUE)
 })
