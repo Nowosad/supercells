@@ -57,7 +57,7 @@ Basic workflows follow the same pattern: choose scale (`step` or `k`), tune or s
 vol <- terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 
 # choose scale and tune compactness
-tune <- supercells::sc_tune_compactness(vol, step = 8, metrics = "local")
+tune <- supercells::sc_tune_compactness(vol, step = 8, metric = "local")
 
 # create supercells
 vol_sc <- supercells::sc_slic(vol, step = 8, compactness = tune$compactness)
@@ -114,7 +114,7 @@ Now, let's try to tune the `compactness` parameter using a pilot run.
 tune <- sc_tune_compactness(
   vol,
   step = 8,
-  metrics = "local"
+  metric = "local"
 )
 tune
 ```

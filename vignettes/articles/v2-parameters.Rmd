@@ -121,7 +121,7 @@ plot(sc_compact_high[0], add = TRUE, border = "red", lwd = 0.5)
 
 The `sc_tune_compactness()` function estimates a reasonable starting value from a short run of the algorithm.
 
-It supports two summaries with `metrics = "global"` and `metrics = "local"`.
+It supports two summaries with `metric = "global"` and `metric = "local"`.
 The global version looks at overall balance between value and spatial distances, while the local version uses a neighborhood-based value scale.
 More precisely:
 
@@ -133,13 +133,13 @@ More precisely:
 The local estimate is often more stable for heterogeneous rasters.
 
 ```{r}
-tune_global <- sc_tune_compactness(vol, step = 8, metrics = "global")
-tune_local <- sc_tune_compactness(vol, step = 8, metrics = "local")
+tune_global <- sc_tune_compactness(vol, step = 8, metric = "global")
+tune_local <- sc_tune_compactness(vol, step = 8, metric = "local")
 tune_global
 tune_local
 ```
 
-Both results return a one-row data frame with `step`, `metric`, and `compactness`.
+Both results return a one-row data frame with `step`, `metric`, `dist_fun`, and `compactness`.
 You can plug the suggested value into `sc_slic()` by setting `compactness` to the estimated value.
 
 ```{r}

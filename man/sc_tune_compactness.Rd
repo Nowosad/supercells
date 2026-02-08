@@ -8,7 +8,7 @@ sc_tune_compactness(
   raster,
   step = NULL,
   compactness = 1,
-  metrics = "global",
+  metric = "global",
   dist_fun = "euclidean",
   avg_fun = "mean",
   clean = TRUE,
@@ -29,7 +29,7 @@ map-distance steps in meters (automatically converted to cells using raster reso
 
 \item{compactness}{Starting compactness used for the initial short run.}
 
-\item{metrics}{Which compactness metric to return: \code{"global"} or \code{"local"}.
+\item{metric}{Which compactness metric to return: \code{"global"} or \code{"local"}.
 Default: \code{"global"}.}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
@@ -58,7 +58,7 @@ before computing compactness. Use \code{"auto"} to divide by \code{sqrt(nlyr(ras
 (useful for high-dimensional embeddings). Default: \code{"auto"}.}
 }
 \value{
-A one-row data frame with columns \code{step}, \code{metric}, and \code{compactness}.
+A one-row data frame with columns \code{step}, \code{metric}, \code{dist_fun}, and \code{compactness}.
 }
 \description{
 Runs a short SLIC segmentation (default \code{iter = 1}) and uses cell-level
