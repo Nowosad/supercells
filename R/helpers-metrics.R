@@ -13,13 +13,6 @@
   dist_fun
 }
 
-.sc_metrics_validate_names = function(metrics) {
-  allowed = c("spatial", "value", "combined", "balance")
-  if (any(!metrics %in% allowed)) {
-    stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
-  }
-}
-
 .sc_metrics_scale_summary = function(value_dist, spatial_dist, out, prep, scale) {
   if (!isTRUE(scale)) {
     return(list(value_dist = value_dist, spatial_dist = spatial_dist))

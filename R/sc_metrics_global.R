@@ -60,7 +60,10 @@ sc_metrics_global = function(x, sc,
                              scale = TRUE,
                              step, compactness, dist_fun = NULL) {
   dist_fun = .sc_metrics_resolve_dist_fun(sc, dist_fun)
-  .sc_metrics_validate_names(metrics)
+  allowed_metrics = c("spatial", "value", "combined", "balance")
+  if (any(!metrics %in% allowed_metrics)) {
+    stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
+  }
 
   prep = .sc_metrics_prep(x, sc, dist_fun, compactness, step)
   out = sc_metrics_global_cpp(prep$clusters, prep$centers_xy, prep$centers_vals, prep$vals,

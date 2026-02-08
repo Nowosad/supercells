@@ -51,7 +51,10 @@ sc_metrics_supercells = function(x, sc,
                                scale = TRUE,
                                step, compactness, dist_fun = NULL) {
   dist_fun = .sc_metrics_resolve_dist_fun(sc, dist_fun)
-  .sc_metrics_validate_names(metrics)
+  allowed_metrics = c("spatial", "value", "combined", "balance")
+  if (any(!metrics %in% allowed_metrics)) {
+    stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
+  }
 
   prep = .sc_metrics_prep(x, sc, dist_fun, compactness, step)
   x_df = sf::st_drop_geometry(prep$sc)
