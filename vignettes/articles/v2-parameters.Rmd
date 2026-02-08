@@ -148,8 +148,9 @@ sc_tuned <- sc_slic(vol, step = 8, compactness = tune_global$compactness)
 
 If your raster has many layers, the value distances can be large.
 The `value_scale` argument controls the scaling of value distances before the compactness estimate.
-The default `"auto"` divides by `sqrt(nlyr(x))`, which is often a good baseline for high-dimensional inputs.
-If your values are already standardized or on a common scale, you can set `value_scale = 1`.
+Global: `compactness = (median(value) / value_scale) * step / median(spatial)`.
+Local: `compactness = median(local_mean_value / value_scale)`.
+Use `"auto"` (`sqrt(nlyr(x))`) for Euclidean-like distances; for bounded/angular distances (e.g., cosine), `value_scale = 1` is often better.
 
 ## Automatic compactness
 

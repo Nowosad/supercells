@@ -13,9 +13,12 @@
 #' @param compactness Starting compactness used for the initial short run.
 #' @param metric Which compactness metric to return: `"global"` or `"local"`.
 #' Default: `"global"`.
-#' @param value_scale Optional scale factor applied to the median value distance
-#' before computing compactness. Use `"auto"` to divide by `sqrt(nlyr(raster))`
-#' (useful for high-dimensional embeddings). Default: `"auto"`.
+#' @param value_scale Scale factor for value distances during tuning.
+#' Global metric: `compactness = (median(d_value) / value_scale) * step / median(d_spatial)`.
+#' Local metric: `compactness = median(local_mean(d_value) / value_scale)`.
+#' `"auto"` uses `sqrt(nlyr(raster))` (good for Euclidean-like distances);
+#' for bounded/angular distances (e.g., cosine), `value_scale = 1` is often better.
+#' Default: `"auto"`.
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.
