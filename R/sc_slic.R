@@ -39,7 +39,8 @@
 #' @param centers Optional sf object of custom centers. Requires `step`.
 #' @param outcomes Character vector controlling which fields are returned.
 #' Allowed values are "supercells", "coordinates", and "values". Default is
-#' "values". Use `outcomes = c("supercells", "coordinates", "values")` for full output.
+#' full output (`c("supercells", "coordinates", "values")`).
+#' Use `outcomes = "values"` for value summaries only.
 #' @param chunks Chunking option. Use `FALSE` for no chunking, `TRUE` for
 #' automatic chunking based on size, or a numeric value for a fixed chunk size
 #' (in number of cells per side).
@@ -65,7 +66,7 @@
 sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
                    avg_fun = "mean", clean = TRUE, minarea, iter = 10,
                    k = NULL, centers = NULL,
-                   outcomes = "values", chunks = FALSE,
+                   outcomes = c("supercells", "coordinates", "values"), chunks = FALSE,
                    iter_diagnostics = FALSE, verbose = 0) {
 
   if (iter == 0) {

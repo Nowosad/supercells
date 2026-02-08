@@ -101,7 +101,8 @@ plot(sf::st_geometry(vol_sc), add = TRUE, lwd = 0.6, border = "red")
 
 The resulting `sf` object contains one row per supercell.
 Each row stores summary values of each layer in the original raster, as well as the geometry of the supercell.
-By default only summary values are returned, so use `outcomes = c("supercells", "coordinates", "values")` when you also want IDs and center coordinates.
+By default, IDs, center coordinates, and summary values are returned (`outcomes = c("supercells", "coordinates", "values")`).
+Use `outcomes = "values"` when you want value summaries only.
 
 Two related functions provide alternative output formats.
 Use `sc_slic_points()` to return only supercell centers as points.

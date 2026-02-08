@@ -1,7 +1,7 @@
 test_that("sc_slic returns sf with attributes", {
   sc = sc_slic(v1, step = 8, compactness = 1)
   expect_s3_class(sc, "sf")
-  expect_false(any(c("supercells", "x", "y") %in% names(sc)))
+  expect_true(all(c("supercells", "x", "y") %in% names(sc)))
   expect_equal(attr(sc, "step"), attr(sc, "step"))
   expect_equal(attr(sc, "compactness"), 1)
   expect_true("supercells" %in% class(sc))

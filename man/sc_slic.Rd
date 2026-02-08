@@ -15,7 +15,7 @@ sc_slic(
   iter = 10,
   k = NULL,
   centers = NULL,
-  outcomes = "values",
+  outcomes = c("supercells", "coordinates", "values"),
   chunks = FALSE,
   iter_diagnostics = FALSE,
   verbose = 0
@@ -51,7 +51,8 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{outcomes}{Character vector controlling which fields are returned.
 Allowed values are "supercells", "coordinates", and "values". Default is
-"values". Use \code{outcomes = c("supercells", "coordinates", "values")} for full output.}
+full output (\code{c("supercells", "coordinates", "values")}).
+Use \code{outcomes = "values"} for value summaries only.}
 
 \item{chunks}{Chunking option. Use \code{FALSE} for no chunking, \code{TRUE} for
 automatic chunking based on size, or a numeric value for a fixed chunk size

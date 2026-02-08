@@ -8,7 +8,7 @@ test_that("sc_metrics_pixels returns raster with layers", {
 })
 
 test_that("sc_metrics functions work without metadata columns", {
-  sc = sc_slic(v1, step = 8, compactness = 1)
+  sc = sc_slic(v1, step = 8, compactness = 1, outcomes = "values")
   pix = sc_metrics_pixels(v1, sc)
   expect_s4_class(pix, "SpatRaster")
 
