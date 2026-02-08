@@ -55,15 +55,15 @@ test_that("sc_metrics invalid dist_fun errors", {
   expect_error(sc_metrics_pixels(v1, sc, dist_fun = "not_a_dist"), "does not exist", fixed = TRUE)
 })
 
-test_that("sc_metrics spatial units follow step_unit", {
+test_that("sc_metrics spatial units follow step encoding", {
   v1_map = terra::aggregate(v1, fact = 2, fun = mean, na.rm = TRUE)
   res_map = terra::res(v1_map)[1]
   step_cells = 8
-  step_map = step_cells * res_map
+  step_map = in_meters(step_cells * res_map)
 
-  sc_cells = sc_slic(v1_map, step = step_cells, compactness = 1, step_unit = "cells",
+  sc_cells = sc_slic(v1_map, step = step_cells, compactness = 1,
                      outcomes = c("supercells", "coordinates", "values"))
-  sc_map = sc_slic(v1_map, step = step_map, compactness = 1, step_unit = "map",
+  sc_map = sc_slic(v1_map, step = step_map, compactness = 1,
                    outcomes = c("supercells", "coordinates", "values"))
 
   g_cells = sc_metrics_global(v1_map, sc_cells, scale = FALSE)

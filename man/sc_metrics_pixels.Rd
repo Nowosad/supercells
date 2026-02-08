@@ -49,7 +49,7 @@ Metrics:
 \describe{
 \item{spatial}{Spatial distance from each pixel to its supercell center
 in grid-cell units (row/column index distance). If the input supercells were
-created with \code{step_unit = "map"}, distances are reported in map units.}
+created with \code{step = in_meters(...)}, distances are reported in meters.}
 \item{value}{Value distance from each pixel to its supercell center in
 the raster value space.}
 \item{combined}{Combined distance using \code{compactness} and \code{step}.}

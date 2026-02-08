@@ -13,7 +13,6 @@ sc_slic_points(
   clean = TRUE,
   minarea,
   iter = 10,
-  step_unit = "cells",
   k = NULL,
   centers = NULL,
   outcomes = "values",
@@ -25,7 +24,9 @@ sc_slic_points(
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
-\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
+\item{step}{Initial center spacing (alternative is \code{k}).
+Provide a plain numeric value for cell units, or use \code{\link[=in_meters]{in_meters()}} for
+map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
 Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).}
@@ -43,9 +44,6 @@ function must accept a numeric vector and return a single numeric value.}
 \item{minarea}{Minimal size of a supercell (in cells).}
 
 \item{iter}{Number of iterations.}
-
-\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units
-(converted to cells using raster resolution).}
 
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 

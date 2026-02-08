@@ -46,9 +46,8 @@ Interpretation:
 values indicate spatial dominance; positive values indicate value dominance.}
 }
 \describe{
-\item{step}{Step size used to generate supercells. Returned in map units when
-\code{step_unit = "map"}, otherwise in cells.}
-\item{step_unit}{Units for \code{step} ("cells" or "map").}
+\item{step}{Step size used to generate supercells. Returned in meters when
+the input used \code{step = in_meters(...)}, otherwise in cells.}
 \item{compactness}{Compactness value used to generate supercells.}
 \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 \item{mean_value_dist}{Mean per-supercell value distance from cells to their
@@ -57,7 +56,7 @@ supercell centers, averaged across supercells. Returned as \code{mean_value_dist
 \item{mean_spatial_dist}{Mean per-supercell spatial distance from cells to
 their supercell centers, averaged across supercells; units are grid cells
 (row/column index distance). If the input supercells were created with
-\code{step_unit = "map"}, distances are reported in map units. Returned as
+\code{step = in_meters(...)}, distances are reported in meters. Returned as
 \code{mean_spatial_dist} (or \code{mean_spatial_dist_scaled} when \code{scale = TRUE}).}
 \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 value and spatial distances using \code{compactness} and \code{step}, averaged across

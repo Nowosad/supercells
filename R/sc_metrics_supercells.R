@@ -28,7 +28,7 @@
 #'   \item{supercells}{Supercell ID.}
 #'   \item{spatial}{Mean spatial distance from cells to the supercell center
 #'   in grid-cell units (row/column index distance). If the input supercells were
-#'   created with `step_unit = "map"`, distances are reported in map units.
+#'   created with `step = in_meters(...)`, distances are reported in meters.
 #'   Returned as `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
 #'   \item{value}{Mean value distance from cells to the supercell center in
 #'   value space. Returned as `mean_value_dist` (or `mean_value_dist_scaled`
@@ -50,15 +50,8 @@ sc_metrics_supercells = function(x, sc,
                                metrics = c("spatial", "value", "combined", "balance"),
                                scale = TRUE,
                                step, compactness, dist_fun = NULL) {
-  if (missing(dist_fun) || is.null(dist_fun)) {
-    dist_fun = attr(sc, "dist_fun")
-    if (is.null(dist_fun)) {
-      stop("The 'dist_fun' argument is required when it is not stored in 'sc'", call. = FALSE)
-    }
-  }
-  if (any(!metrics %in% c("spatial", "value", "combined", "balance"))) {
-    stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
-  }
+  dist_fun = .sc_metrics_resolve_dist_fun(sc, dist_fun)
+  .sc_metrics_validate_names(metrics)
 
   prep = .sc_metrics_prep(x, sc, dist_fun, compactness, step)
   x_df = sf::st_drop_geometry(prep$sc)
@@ -73,15 +66,9 @@ sc_metrics_supercells = function(x, sc,
   mean_spatial_dist = out[["mean_spatial_dist"]] * prep$spatial_scale
   mean_combined_dist = out[["mean_combined_dist"]]
   balance = log(out[["balance"]])
-
-  if (isTRUE(scale)) {
-    if (isTRUE(prep$adaptive_compactness)) {
-      mean_value_dist = out[["mean_value_dist_scaled"]]
-    } else {
-      mean_value_dist = mean_value_dist / prep$compactness
-    }
-    mean_spatial_dist = mean_spatial_dist / prep$step_scale
-  }
+  scaled = .sc_metrics_scale_summary(mean_value_dist, mean_spatial_dist, out, prep, scale)
+  mean_value_dist = scaled$value_dist
+  mean_spatial_dist = scaled$spatial_dist
 
   x_ordered = prep$sc[order_idx, , drop = FALSE]
   x_keep = x_ordered[, "supercells", drop = FALSE]

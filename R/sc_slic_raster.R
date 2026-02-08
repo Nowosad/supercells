@@ -20,7 +20,7 @@
 #' terra::plot(vol_ids)
 sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                          step_unit = "cells", k = NULL, centers = NULL,
+                          k = NULL, centers = NULL,
                           outcomes = "supercells", chunks = FALSE,
                           iter_diagnostics = FALSE, verbose = 0) {
 
@@ -31,7 +31,7 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
     stop("sc_slic_raster() supports only outcomes = 'supercells'", call. = FALSE)
   }
   # prep arguments
-  prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
+  prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
                             k, centers, outcomes, chunks, iter_diagnostics, verbose)
 
   # segment once (single) or per chunk (chunked), returning a list of chunk results
@@ -61,7 +61,7 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
         r = r + max_id
       }
       n_centers = nrow(res[["centers"]])
-      if (!is.na(n_centers) && n_centers > 0) {
+      if (n_centers > 0) {
         max_id = max_id + n_centers
       }
       chunk_files[i] = tempfile(fileext = ".tif")

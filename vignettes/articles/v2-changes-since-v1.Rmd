@@ -152,7 +152,7 @@ plot(sf::st_geometry(vol_sc_slic0), add = TRUE, lwd = 0.6, border = "violet")
 
 ## Other changes
 
-- New utilities: Added `step_unit` to `sc_slic()`/`sc_slic_points()`/`sc_slic_raster()` to support map-unit step sizes.
+- New utilities: Added `in_meters()` helper for `step` in `sc_slic()`/`sc_slic_points()`/`sc_slic_raster()` to support map-distance step sizes.
 - Behavior: Since version 1.0, the way coordinates are summarized internally has changed, and results in versions after 1.0 may differ slightly from those prior to 1.0.
 - Performance: Improved speed and memory efficiency.
 - New utilities: Added experimental `sc_merge_supercells()` for adjacency-constrained greedy merging.

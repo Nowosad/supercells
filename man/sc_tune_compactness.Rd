@@ -7,7 +7,6 @@
 sc_tune_compactness(
   raster,
   step = NULL,
-  step_unit = "cells",
   compactness = 1,
   metrics = "global",
   dist_fun = "euclidean",
@@ -24,9 +23,9 @@ sc_tune_compactness(
 \arguments{
 \item{raster}{A \code{SpatRaster}.}
 
-\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
-
-\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units.}
+\item{step}{Initial center spacing (alternative is \code{k}).
+Provide a plain numeric value for cell units, or use \code{\link[=in_meters]{in_meters()}} for
+map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{compactness}{Starting compactness used for the initial short run.}
 
@@ -76,5 +75,5 @@ tune$compactness
 
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=in_meters]{in_meters()}}
 }

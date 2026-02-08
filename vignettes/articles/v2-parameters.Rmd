@@ -42,13 +42,13 @@ D = \sqrt{\left(\frac{d_s}{\text{step}}\right)^2 + \left(\frac{d_v}{c}\right)^2}
 $$
 
 where $d_s$ is the spatial distance in grid-cell units, $d_v$ is the value-space distance (from `dist_fun`), and $c$ is the `compactness` value.
-When `step_unit = "map"`, the `step` value is converted to cells before segmentation; distances are still computed in grid-cell units.
+When `step` is provided as `in_meters(...)`, it is converted to cells before segmentation; distances are still computed in grid-cell units.
 Larger `compactness` down-weights the value term, making shapes more regular, while smaller values emphasize value similarity.
 
 # Choosing step or k
 
 You can control the number and size of supercells using either `step` or `k`.
-`step` defines the spacing of initial centers in pixel units (or map units when `step_unit = "map"`).
+`step` defines the spacing of initial centers in pixel units (or map units when given as `in_meters(...)`).
 Smaller `step` values produce more and smaller supercells, while larger values produce fewer and larger supercells.
 For example, `step = 8` creates centers approximately every 8 pixels, which leads to supercells that are roughly 8 by 8 pixels in size, depending on the compactness.
 
@@ -56,12 +56,12 @@ For example, `step = 8` creates centers approximately every 8 pixels, which lead
 sc_step <- sc_slic(vol, step = 8, compactness = 5)
 ```
 
-By default, `step` is in pixel units, but instead we can also specify it in map units with `step_unit = "map"`.
+By default, `step` is in pixel units, but instead we can also specify it in map units with `in_meters()`.
 This allows us to think about the spatial scales of expected supercells in terms of the actual map units.
-For example, if your raster has a resolution of 10 meters, then `step = 200` with `step_unit = "map"` would create centers approximately every 200 meters, which corresponds to every 20 pixels.
+For example, if your raster has a resolution of 10 meters, then `step = in_meters(200)` would create centers approximately every 200 meters, which corresponds to every 20 pixels.
 
 ```{r}
-sc_step_map <- sc_slic(vol, step = 200, step_unit = "map", compactness = 5)
+sc_step_map <- sc_slic(vol, step = in_meters(200), compactness = 5)
 ```
 
 `k` specifies the desired number of supercells and the algorithm chooses an approximate step size.

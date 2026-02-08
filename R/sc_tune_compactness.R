@@ -7,8 +7,9 @@
 #' while the local estimate uses a median of per-center mean distances.
 #'
 #' @param raster A `SpatRaster`.
-#' @param step The distance (number of cells) between initial centers (alternative is `k`).
-#' @param step_unit Units for `step`. Use "cells" for pixel units or "map" for map units.
+#' @param step Initial center spacing (alternative is `k`).
+#' Provide a plain numeric value for cell units, or use [in_meters()] for
+#' map-distance steps in meters (automatically converted to cells using raster resolution).
 #' @param compactness Starting compactness used for the initial short run.
 #' @param metrics Which compactness metric to return: `"global"` or `"local"`.
 #' Default: `"global"`.
@@ -31,7 +32,7 @@
 #'
 #' @return A one-row data frame with columns `step`, `metric`, and `compactness`.
 #'
-#' @seealso [`sc_slic()`]
+#' @seealso [`sc_slic()`], [in_meters()]
 #'
 #' @examples
 #' library(terra)
@@ -40,7 +41,7 @@
 #' tune$compactness
 #'
 #' @export
-sc_tune_compactness = function(raster, step = NULL, step_unit = "cells", compactness = 1,
+sc_tune_compactness = function(raster, step = NULL, compactness = 1,
                                         metrics = "global",
                                         dist_fun = "euclidean", avg_fun = "mean",
                                         clean = TRUE, minarea, iter = 1,
@@ -49,13 +50,17 @@ sc_tune_compactness = function(raster, step = NULL, step_unit = "cells", compact
   pts = sc_slic_points(raster, step = step, compactness = compactness,
                        dist_fun = dist_fun, avg_fun = avg_fun,
                        clean = clean, minarea = minarea, iter = iter,
-                       step_unit = step_unit, k = k, centers = centers,
+                       k = k, centers = centers,
                        outcomes = c("supercells", "coordinates", "values"),
                        chunks = FALSE)
 
   step_used = attr(pts, "step")
   if (is.null(step_used)) {
     step_used = step
+  }
+  step_used_num = step_used
+  if (inherits(step_used_num, "units")) {
+    step_used_num = as.numeric(units::drop_units(step_used_num))
   }
 
   if (!is.character(metrics) || length(metrics) != 1 || is.na(metrics) ||
@@ -79,26 +84,22 @@ sc_tune_compactness = function(raster, step = NULL, step_unit = "cells", compact
     spatial_dist_median = med[1, 1]
     value_dist_median = med[2, 1]
     value_dist_median = value_dist_median / value_scale
-    compactness_value = value_dist_median * step_used / spatial_dist_median
+    compactness_value = value_dist_median * step_used_num / spatial_dist_median
 
-    result = data.frame(step = step_used, metric = "global", compactness = compactness_value)
+    return(data.frame(step = step_used, metric = "global", compactness = compactness_value))
   }
 
-  if (identical(metrics, "local")) {
-    prep = .sc_metrics_prep(raster, pts, dist_fun, compactness, step_used,
-                            include = c("centers", "vals", "dist", "raster"))
-    mean_value_dist = sc_metrics_local_mean_cpp(
-      prep$centers_xy, prep$centers_vals, prep$vals,
-      rows = dim(prep$raster)[1], cols = dim(prep$raster)[2],
-      step = step_used,
-      dist_name = prep$dist_name,
-      dist_fun = prep$dist_fun
-    )
-    mean_value_dist = mean_value_dist / value_scale
-    compactness_value = stats::median(mean_value_dist, na.rm = TRUE)
+  prep = .sc_metrics_prep(raster, pts, dist_fun, compactness, step_used,
+                          include = c("centers", "vals", "dist", "raster"))
+  mean_value_dist = sc_metrics_local_mean_cpp(
+    prep$centers_xy, prep$centers_vals, prep$vals,
+    rows = dim(prep$raster)[1], cols = dim(prep$raster)[2],
+    step = prep$step,
+    dist_name = prep$dist_name,
+    dist_fun = prep$dist_fun
+  )
+  mean_value_dist = mean_value_dist / value_scale
+  compactness_value = stats::median(mean_value_dist, na.rm = TRUE)
 
-    result = data.frame(step = step_used, metric = "local", compactness = compactness_value)
-  }
-
-  return(result)
+  return(data.frame(step = step_used, metric = "local", compactness = compactness_value))
 }

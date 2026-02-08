@@ -28,9 +28,8 @@
 #'   values indicate spatial dominance; positive values indicate value dominance.}
 #' }
 #' \describe{
-#'   \item{step}{Step size used to generate supercells. Returned in map units when
-#'   `step_unit = "map"`, otherwise in cells.}
-#'   \item{step_unit}{Units for `step` ("cells" or "map").}
+#'   \item{step}{Step size used to generate supercells. Returned in meters when
+#'   the input used `step = in_meters(...)`, otherwise in cells.}
 #'   \item{compactness}{Compactness value used to generate supercells.}
 #'   \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 #'   \item{mean_value_dist}{Mean per-supercell value distance from cells to their
@@ -39,7 +38,7 @@
 #'   \item{mean_spatial_dist}{Mean per-supercell spatial distance from cells to
 #'   their supercell centers, averaged across supercells; units are grid cells
 #'   (row/column index distance). If the input supercells were created with
-#'   `step_unit = "map"`, distances are reported in map units. Returned as
+#'   `step = in_meters(...)`, distances are reported in meters. Returned as
 #'   `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
 #'   \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 #'   value and spatial distances using `compactness` and `step`, averaged across
@@ -60,15 +59,8 @@ sc_metrics_global = function(x, sc,
                              metrics = c("spatial", "value", "combined", "balance"),
                              scale = TRUE,
                              step, compactness, dist_fun = NULL) {
-  if (missing(dist_fun) || is.null(dist_fun)) {
-    dist_fun = attr(sc, "dist_fun")
-    if (is.null(dist_fun)) {
-      stop("The 'dist_fun' argument is required when it is not stored in 'sc'", call. = FALSE)
-    }
-  }
-  if (any(!metrics %in% c("spatial", "value", "combined", "balance"))) {
-    stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
-  }
+  dist_fun = .sc_metrics_resolve_dist_fun(sc, dist_fun)
+  .sc_metrics_validate_names(metrics)
 
   prep = .sc_metrics_prep(x, sc, dist_fun, compactness, step)
   out = sc_metrics_global_cpp(prep$clusters, prep$centers_xy, prep$centers_vals, prep$vals,
@@ -80,15 +72,9 @@ sc_metrics_global = function(x, sc,
   mean_spatial_dist = out[["mean_spatial_dist"]] * prep$spatial_scale
   mean_combined_dist = out[["mean_combined_dist"]]
   balance = out[["balance"]]
-
-  if (isTRUE(scale)) {
-    if (isTRUE(prep$adaptive_compactness)) {
-      mean_value_dist = out[["mean_value_dist_scaled"]]
-    } else {
-      mean_value_dist = mean_value_dist / prep$compactness
-    }
-    mean_spatial_dist = mean_spatial_dist / prep$step_scale
-  }
+  scaled = .sc_metrics_scale_summary(mean_value_dist, mean_spatial_dist, out, prep, scale)
+  mean_value_dist = scaled$value_dist
+  mean_spatial_dist = scaled$spatial_dist
 
   metric_values = list(
     spatial = mean_spatial_dist,
@@ -104,13 +90,9 @@ sc_metrics_global = function(x, sc,
     balance = "balance"
   )
   names(out_metrics) = unname(name_map[metrics])
-  step_out = prep$step
-  if (identical(prep$step_unit, "map")) {
-    step_out = prep$step * prep$spatial_scale
-  }
+  step_out = prep$step_meta
   results = cbind(
-    data.frame(step = step_out, step_unit = prep$step_unit,
-               compactness = prep$compactness, n_supercells = out[["n_supercells"]]),
+    data.frame(step = step_out, compactness = prep$compactness, n_supercells = out[["n_supercells"]]),
     out_metrics
   )
   return(results)

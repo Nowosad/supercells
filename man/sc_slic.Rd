@@ -13,7 +13,6 @@ sc_slic(
   clean = TRUE,
   minarea,
   iter = 10,
-  step_unit = "cells",
   k = NULL,
   centers = NULL,
   outcomes = "values",
@@ -25,7 +24,9 @@ sc_slic(
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
-\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
+\item{step}{Initial center spacing (alternative is \code{k}).
+Provide a plain numeric value for cell units, or use \code{\link[=in_meters]{in_meters()}} for
+map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
 Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).}
@@ -43,9 +44,6 @@ function must accept a numeric vector and return a single numeric value.}
 \item{minarea}{Minimal size of a supercell (in cells).}
 
 \item{iter}{Number of iterations.}
-
-\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units
-(converted to cells using raster resolution).}
 
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
@@ -102,6 +100,6 @@ Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012).
 Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935
 }
 \seealso{
-\code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}},
+\code{\link[=in_meters]{in_meters()}}, \code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}},
 \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
 }

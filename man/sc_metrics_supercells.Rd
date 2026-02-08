@@ -50,7 +50,7 @@ Metrics:
 \item{supercells}{Supercell ID.}
 \item{spatial}{Mean spatial distance from cells to the supercell center
 in grid-cell units (row/column index distance). If the input supercells were
-created with \code{step_unit = "map"}, distances are reported in map units.
+created with \code{step = in_meters(...)}, distances are reported in meters.
 Returned as \code{mean_spatial_dist} (or \code{mean_spatial_dist_scaled} when \code{scale = TRUE}).}
 \item{value}{Mean value distance from cells to the supercell center in
 value space. Returned as \code{mean_value_dist} (or \code{mean_value_dist_scaled}

@@ -1,6 +1,38 @@
 # .sc_metrics_prep: normalize inputs and parameters for metrics functions
 # Inputs: raster and supercells; outputs include prepared matrices and metadata
 # Handles missing metadata by deriving centers and ids from geometry
+
+.sc_metrics_resolve_dist_fun = function(sc, dist_fun) {
+  if (!is.null(dist_fun)) {
+    return(dist_fun)
+  }
+  dist_fun = attr(sc, "dist_fun")
+  if (is.null(dist_fun)) {
+    stop("The 'dist_fun' argument is required when it is not stored in 'sc'", call. = FALSE)
+  }
+  dist_fun
+}
+
+.sc_metrics_validate_names = function(metrics) {
+  allowed = c("spatial", "value", "combined", "balance")
+  if (any(!metrics %in% allowed)) {
+    stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
+  }
+}
+
+.sc_metrics_scale_summary = function(value_dist, spatial_dist, out, prep, scale) {
+  if (!isTRUE(scale)) {
+    return(list(value_dist = value_dist, spatial_dist = spatial_dist))
+  }
+  if (isTRUE(prep$adaptive_compactness)) {
+    value_dist = out[["mean_value_dist_scaled"]]
+  } else {
+    value_dist = value_dist / prep$compactness
+  }
+  spatial_dist = spatial_dist / prep$step_scale
+  list(value_dist = value_dist, spatial_dist = spatial_dist)
+}
+
 .sc_metrics_prep = function(x, sc, dist_fun, compactness, step,
                             include = c("clusters", "centers", "vals", "dist", "raster")) {
 
@@ -30,10 +62,8 @@
   if (is.null(compactness) || is.null(step)) {
     stop("Both 'compactness' and 'step' are required", call. = FALSE)
   }
-  step_unit = attr(sc, "step_unit")
-  if (!identical(step_unit, "map")) {
-    step_unit = "cells"
-  }
+  step_prep = .sc_util_step_to_cells(raster, step)
+  step = step_prep$step
 
   # prepare data, including handling missing metadata
   sc_work = sc
@@ -58,23 +88,15 @@
   x_df = x_df[order(x_df[["supercells"]]), , drop = FALSE]
 
   # prepare matrices for C++ function
-  spatial_scale = 1
-  step_scale = step
-  if (identical(step_unit, "map")) {
-    res = terra::res(raster)
-    if (!isTRUE(all.equal(res[[1]], res[[2]]))) {
-      warning("Map-unit spatial metrics require square cells; using x resolution for scaling.", call. = FALSE)
-    }
-    spatial_scale = res[[1]]
-    step_scale = step * spatial_scale
-  }
+  spatial_scale = step_prep$spatial_scale
+  step_scale = step_prep$step_scale
 
   result = list(
     sc = sc_work,
     step = step,
+    step_meta = step_prep$step_meta,
     compactness = compactness,
     adaptive_compactness = adaptive_compactness,
-    step_unit = step_unit,
     spatial_scale = spatial_scale,
     step_scale = step_scale
   )

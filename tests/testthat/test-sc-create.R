@@ -73,3 +73,46 @@ test_that("sc_slic validates arguments", {
   expect_error(sc_slic(v1, centers = sf::st_sf(geom = sf::st_sfc()), compactness = 1), "step", fixed = TRUE)
   expect_error(sc_slic(v1, step = 8, compactness = 1, dist_fun = "not_a_dist"), "does not exist", fixed = TRUE)
 })
+
+test_that("sc_slic accepts units-based map step", {
+  step_map = in_meters(8 * terra::res(v1)[1])
+  sc = sc_slic(v1, step = step_map, compactness = 1)
+  expect_s3_class(attr(sc, "step"), "units")
+  expect_equal(as.numeric(units::drop_units(attr(sc, "step"))), as.numeric(units::drop_units(step_map)))
+})
+
+test_that("sc_slic rejects units-based step for lonlat rasters", {
+  x = terra::rast(nrows = 50, ncols = 50, xmin = 0, xmax = 1, ymin = 0, ymax = 1, crs = "EPSG:4326")
+  terra::values(x) = seq_len(terra::ncell(x))
+  expect_error(
+    suppressWarnings(sc_slic(x, step = in_meters(1000), compactness = 1)),
+    "projected CRS",
+    fixed = TRUE
+  )
+})
+
+test_that("sc_slic rejects non-meter units for step", {
+  expect_error(
+    sc_slic(v1, step = units::set_units(1, "km"), compactness = 1),
+    "must use meters",
+    fixed = TRUE
+  )
+})
+
+test_that("sc_slic rejects units-based step for projected non-meter CRS", {
+  x = terra::rast(nrows = 50, ncols = 50, xmin = 0, xmax = 5000, ymin = 0, ymax = 5000, crs = "EPSG:2277")
+  terra::values(x) = seq_len(terra::ncell(x))
+  expect_error(
+    suppressWarnings(sc_slic(x, step = in_meters(100), compactness = 1)),
+    "meter units",
+    fixed = TRUE
+  )
+})
+
+test_that("in_meters validates inputs", {
+  x = in_meters(100)
+  expect_s3_class(x, "units")
+  expect_equal(as.character(units::deparse_unit(x)), "m")
+  expect_error(in_meters(-1), "single positive number", fixed = TRUE)
+  expect_error(in_meters(c(1, 2)), "single positive number", fixed = TRUE)
+})

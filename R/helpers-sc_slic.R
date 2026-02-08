@@ -1,10 +1,10 @@
 # shared helpers for sc_slic workflows
 
 # prepare and validate slic arguments
-.sc_slic_prep_args = function(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
+.sc_slic_prep_args = function(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
                               k, centers, outcomes, chunks, iter_diagnostics, verbose) {
   # Validate core arguments and types
-  .sc_slic_validate_args(step, step_unit, compactness, k, centers, chunks, dist_fun, avg_fun, iter, minarea)
+  .sc_slic_validate_args(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, minarea)
   outcomes = .sc_slic_prep_outcomes(outcomes)
   # Normalize input to SpatRaster
   x = .sc_util_prep_raster(x)
@@ -12,7 +12,9 @@
     warning("The input raster uses a geographic (lon/lat) CRS; consider projecting it before using SLIC", call. = FALSE)
   }
   # Resolve step from k when needed
-  step = .sc_slic_prep_step(x, step, k, step_unit)
+  step_prep = .sc_slic_prep_step(x, step, k)
+  step = step_prep$step
+  step_meta = step_prep$step_meta
   # Adjust numeric chunks to match step size
   if (is.numeric(chunks)) {
     if (chunks < step) {
@@ -44,7 +46,7 @@
     compactness = 0
   }
   # Package prep results for downstream functions
-  return(list(x = x, step = step, step_unit = step_unit,
+  return(list(x = x, step = step, step_meta = step_meta,
               dist_fun_input = dist_fun,
               input_centers = input_centers, funs = funs,
               minarea = minarea, chunk_ext = chunk_ext,
@@ -55,12 +57,16 @@
 }
 
 # validate slic arguments and types
-.sc_slic_validate_args = function(step, step_unit, compactness, k, centers, chunks, dist_fun, avg_fun, iter, minarea) {
-  if (!missing(step_unit)) {
-    if (!is.character(step_unit) || length(step_unit) != 1 || is.na(step_unit) ||
-        !(step_unit %in% c("cells", "map"))) {
-      stop("The 'step_unit' argument must be 'cells' or 'map'", call. = FALSE)
+.sc_slic_validate_args = function(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, minarea) {
+  if (!is.null(step) && !is.numeric(step)) {
+    stop("The 'step' argument must be numeric or a units object", call. = FALSE)
+  }
+  if (inherits(step, "units")) {
+    if (length(step) != 1 || any(is.na(step))) {
+      stop("The 'step' argument as units must be a single non-missing value", call. = FALSE)
     }
+  } else if (!is.null(step) && (length(step) != 1 || is.na(step) || step <= 0)) {
+    stop("The 'step' argument must be a positive numeric value", call. = FALSE)
   }
   if (!is.numeric(iter) || length(iter) != 1 || is.na(iter) || iter < 0) {
     stop("The 'iter' argument must be a non-negative numeric value", call. = FALSE)
@@ -113,23 +119,15 @@
 }
 
 # derive step from k when needed
-.sc_slic_prep_step = function(x, step, k, step_unit = "cells") {
+.sc_slic_prep_step = function(x, step, k) {
   if (!is.null(step)) {
-    if (step_unit == "map") {
-      res = terra::res(x)
-      if (!isTRUE(all.equal(res[[1]], res[[2]]))) {
-        stop("Map-unit step requires square cells; res(x) has different x/y resolution", call. = FALSE)
-      }
-      step = round(step / res[[1]])
-      if (step < 1) {
-        step = 1
-      }
-    }
-    return(step)
+    step_prep = .sc_util_step_to_cells(x, step)
+    return(list(step = step_prep$step, step_meta = step_prep$step_meta))
   }
   mat = dim(x)[1:2]
   superpixelsize = round((mat[1] * mat[2]) / k + 0.5)
-  return(round(sqrt(superpixelsize) + 0.5))
+  step = round(sqrt(superpixelsize) + 0.5)
+  return(list(step = step, step_meta = step))
 }
 
 # normalize custom centers or create placeholder
@@ -216,12 +214,13 @@
 
   slic_sf = .sc_slic_select_outcomes(slic_sf, prep$outcomes)
 
-  attr(slic_sf, "step") = prep$step
-  attr(slic_sf, "step_unit") = prep$step_unit
+  attr(slic_sf, "step") = prep$step_meta
   attr(slic_sf, "compactness") = prep$compactness
   attr(slic_sf, "dist_fun") = prep$dist_fun_input
   attr(slic_sf, "method") = if (isTRUE(prep$adaptive_compactness)) "slic0" else "slic"
-  class(slic_sf) = unique(c("supercells", class(slic_sf)))
+  cls = class(slic_sf)
+  cls = c(setdiff(cls, "data.frame"), "supercells", "data.frame")
+  class(slic_sf) = unique(cls)
   if (!is.null(iter_attr)) {
     attr(slic_sf, "iter_diagnostics") = iter_attr
   }

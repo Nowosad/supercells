@@ -28,7 +28,7 @@
       r = r + max_id
     }
     n_centers = nrow(chunks[[i]][["centers"]])
-    if (!is.na(n_centers) && n_centers > 0) {
+    if (n_centers > 0) {
       max_id = max_id + n_centers
     }
     rasters[[i]] = r

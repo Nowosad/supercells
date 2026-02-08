@@ -41,7 +41,9 @@ A compactness value depends on the range of input cell values and selected dista
 
 \item{transform}{Transformation to be performed on the input. By default, no transformation is performed. Currently available transformation is "to_LAB": first, the conversion from RGB to the LAB color space is applied, then the supercells algorithm is run, and afterward, a reverse transformation is performed on the obtained results. (This argument is experimental and may be removed in the future).}
 
-\item{step}{The distance (number of cells) between initial supercells' centers. You can use either \code{k} or \code{step}.}
+\item{step}{Initial center spacing. You can use either \code{k} or \code{step}.
+Provide a plain numeric value for cell units, or use \code{\link[=in_meters]{in_meters()}} for
+map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{minarea}{Specifies the minimal size of a supercell (in cells). Only works when \code{clean = TRUE}.
 By default, when \code{clean = TRUE}, average area (A) is calculated based on the total number of cells divided by a number of supercells

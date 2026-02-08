@@ -17,7 +17,9 @@
 #' @param minarea Specifies the minimal size of a supercell (in cells). Only works when `clean = TRUE`.
 #' By default, when `clean = TRUE`, average area (A) is calculated based on the total number of cells divided by a number of supercells
 #' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
-#' @param step The distance (number of cells) between initial supercells' centers. You can use either `k` or `step`.
+#' @param step Initial center spacing. You can use either `k` or `step`.
+#' Provide a plain numeric value for cell units, or use [in_meters()] for
+#' map-distance steps in meters (automatically converted to cells using raster resolution).
 #' @param transform Transformation to be performed on the input. By default, no transformation is performed. Currently available transformation is "to_LAB": first, the conversion from RGB to the LAB color space is applied, then the supercells algorithm is run, and afterward, a reverse transformation is performed on the obtained results. (This argument is experimental and may be removed in the future).
 #' @param metadata Logical. Controls whether metadata columns
 #' ("supercells", "x", "y") are included.
@@ -75,9 +77,6 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
   } else {
     "values"
   }
-  if (iter == 0) {
-    clean = FALSE
-  }
 
   centers_arg = NULL
   if (!missing(k) && inherits(k, "sf")) {
@@ -85,13 +84,7 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     k = NULL
   }
 
-  if (!inherits(x, "SpatRaster")) {
-    if (inherits(x, "stars")) {
-      x = terra::rast(x)
-    } else{
-      stop("The SpatRaster class is expected as an input", call. = FALSE)
-    }
-  }
+  x = .sc_util_prep_raster(x)
 
   trans = .supercells_transform_to_lab(x, transform)
   x = trans$x
@@ -121,11 +114,8 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     args$centers = centers_arg
   }
 
-  if (iter == 0) {
-    slic_sf = do.call(sc_slic_points, args)
-  } else {
-    slic_sf = do.call(sc_slic, args)
-  }
+  slic_runner = if (iter == 0) sc_slic_points else sc_slic
+  slic_sf = do.call(slic_runner, args)
   if (isTRUE(trans$did_transform)) {
     names_x = names(x)
     slic_sf = .supercells_transform_from_lab(slic_sf, names_x)
