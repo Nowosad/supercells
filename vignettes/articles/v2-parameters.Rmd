@@ -236,12 +236,12 @@ If you need unpostprocessed supercells for speed or debugging, you can set `clea
 
 # Iterations
 
-You can inspect how the algorithm converges over iterations by enabling `iter_diagnostics = TRUE`.
-This attaches diagnostics to the output and allows plotting with `sc_plot_iter_diagnostics()`.^[It only works when chunking is disabled.]
+You can inspect how the algorithm converges over iterations with `sc_slic_convergence()`.
+It returns a data frame with per-iteration mean distance and has a dedicated `plot()` method.
 
 ```{r}
-sc_diag <- sc_slic(vol, step = 8, compactness = 5, iter_diagnostics = TRUE)
-sc_plot_iter_diagnostics(sc_diag)
+sc_conv <- sc_slic_convergence(vol, step = 8, compactness = 5, iter = 10)
+plot(sc_conv)
 ```
 
 Use the diagnostics to decide whether fewer iterations are sufficient.

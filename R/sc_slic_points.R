@@ -29,17 +29,15 @@ sc_slic_points = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
                           k = NULL, centers = NULL,
                           outcomes = "values", chunks = FALSE,
-                          iter_diagnostics = FALSE, verbose = 0) {
+                          verbose = 0) {
   if (iter == 0) {
     clean = FALSE
   }
   prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                                k, centers, outcomes, chunks, iter_diagnostics, verbose)
+                                k, centers, outcomes, chunks, verbose)
 
   segment = .sc_slic_segment(prep_args, .sc_run_full_points, .sc_run_chunk_points)
 
-  iter_attr = .sc_slic_add_iter_attr(segment$chunks, prep_args$iter_diagnostics)
-
-  results = .sc_slic_post(segment$chunks, prep_args, iter_attr)
+  results = .sc_slic_post(segment$chunks, prep_args)
   return(results)
 }

@@ -17,7 +17,6 @@ sc_slic_points(
   centers = NULL,
   outcomes = "values",
   chunks = FALSE,
-  iter_diagnostics = FALSE,
   verbose = 0
 )
 }
@@ -56,9 +55,6 @@ Allowed values are "supercells", "coordinates", and "values". Default is
 \item{chunks}{Chunking option. Use \code{FALSE} for no chunking, \code{TRUE} for
 automatic chunking based on size, or a numeric value for a fixed chunk size
 (in number of cells per side).}
-
-\item{iter_diagnostics}{Logical. If \code{TRUE}, attaches iteration diagnostics as an
-attribute (\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
 
 \item{verbose}{Verbosity level.}
 }

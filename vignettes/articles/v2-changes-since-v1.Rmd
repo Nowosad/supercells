@@ -73,7 +73,7 @@ terra::plot(vol_ids)
 ```
 
 While, `sc_slic()` is the main function, the other two functions are useful for specific tasks.
-For example, `sc_slic_points()` is helpful for visualizing initial supercell centers or iteration diagnostics, while `sc_slic_raster()` is useful for large datasets where polygon outputs may be too memory-intensive.
+For example, `sc_slic_points()` is helpful for visualizing initial supercell centers, while `sc_slic_raster()` is useful for large datasets where polygon outputs may be too memory-intensive.
 
 ## Compactness tuning and iteration diagnostics
 
@@ -92,17 +92,17 @@ plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.6, border = "red")
 
 This function also allow to calculate the compactness using second method called `"local"`.
 
-`sc_slic_points(..., iter_diagnostics = TRUE)` attaches iteration diagnostics so you can visualize convergence in mean distance across iterations later on with `sc_plot_iter_diagnostics()`.
+`sc_slic_convergence()` provides iteration diagnostics so you can visualize convergence in mean distance across iterations.
 
 ```{r}
-# Iteration diagnostics plot (only available without chunking)
-vol_pts_diag <- sc_slic_points(
+# Iteration diagnostics plot
+vol_conv <- sc_slic_convergence(
   vol,
   step = 8,
   compactness = 1,
-  iter_diagnostics = TRUE
+  iter = 10
 )
-sc_plot_iter_diagnostics(vol_pts_diag)
+plot(vol_conv)
 ```
 
 ## Metrics for evaluating results

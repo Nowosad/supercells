@@ -2,7 +2,7 @@
 
 # prepare and validate slic arguments
 .sc_slic_prep_args = function(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                              k, centers, outcomes, chunks, iter_diagnostics, verbose) {
+                              k, centers, outcomes, chunks, verbose) {
   # Validate core arguments and types
   .sc_slic_validate_args(step, compactness, k, centers, chunks, dist_fun, avg_fun, iter, minarea)
   outcomes = .sc_slic_prep_outcomes(outcomes)
@@ -34,11 +34,6 @@
   minarea = .sc_slic_prep_minarea(minarea, step)
   # Compute chunk extents based on size/limits
   chunk_ext = .sc_chunk_extents(dim(x), limit = chunks, step = step)
-  # Disable iter diagnostics when chunking is active
-  if (iter_diagnostics && nrow(chunk_ext) > 1) {
-    warning("Iteration diagnostics are only available when chunks = FALSE (single chunk). Iteration diagnostics were disabled.", call. = FALSE)
-    iter_diagnostics = FALSE
-  }
   verbose_cpp = if (is.numeric(verbose) && length(verbose) == 1 && !is.na(verbose) && verbose >= 2) verbose else 0
   compactness_input = compactness
   adaptive_compactness = is.character(compactness) &&
@@ -51,7 +46,7 @@
               dist_fun_input = dist_fun,
               input_centers = input_centers, funs = funs,
               minarea = minarea, chunk_ext = chunk_ext,
-              iter_diagnostics = iter_diagnostics, outcomes = outcomes,
+              outcomes = outcomes,
               compactness = compactness, compactness_input = compactness_input,
               adaptive_compactness = adaptive_compactness,
               clean = clean, iter = iter,
@@ -201,16 +196,8 @@
   return(do.call(apply, c(list(chunk_ext, MARGIN = 1, FUN = fun), args)))
 }
 
-# add iter diagnostics attribute when enabled
-.sc_slic_add_iter_attr = function(chunks, iter_diagnostics) {
-  if (isTRUE(iter_diagnostics) && length(chunks) > 0) {
-    return(attr(chunks[[1]], "iter_diagnostics"))
-  }
-  NULL
-}
-
 # finalize slic output with ids, metadata, and attributes
-.sc_slic_post = function(chunks, prep, iter_attr) {
+.sc_slic_post = function(chunks, prep) {
 
   slic_sf = .sc_chunk_update_ids(chunks)
 
@@ -222,9 +209,6 @@
   cls = class(slic_sf)
   cls = c(setdiff(cls, "data.frame"), "supercells", "data.frame")
   class(slic_sf) = unique(cls)
-  if (!is.null(iter_attr)) {
-    attr(slic_sf, "iter_diagnostics") = iter_attr
-  }
   return(slic_sf)
 }
 
@@ -243,8 +227,7 @@
     iter = prep$iter,
     minarea = prep$minarea,
     input_centers = prep$input_centers,
-    verbose = prep$verbose_cpp,
-    iter_diagnostics = prep$iter_diagnostics
+    verbose = prep$verbose_cpp
   )
   if (nrow(prep$chunk_ext) == 1) {
     list(chunks = list(do.call(single_runner, args)))

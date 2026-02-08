@@ -9,15 +9,13 @@
 #' [`sc_slic_raster()`] and [`sc_slic_points()`].
 #' Evaluation and diagnostic options:
 #' \itemize{
-#'   \item Iteration diagnostics: set `iter_diagnostics = TRUE` to attach an
-#'   `iter_diagnostics` attribute (only available without chunking). Use
-#'   [`sc_plot_iter_diagnostics()`] to visualize the convergence over iterations.
+#'   \item Iteration convergence: use [`sc_slic_convergence()`] and plot its output.
 #'   \item Pixel diagnostics: [sc_metrics_pixels()] for per-pixel spatial, value,
 #'   and combined distances.
 #'   \item Cluster diagnostics: [sc_metrics_supercells()] for per-supercell summaries.
 #'   \item Global diagnostics: [sc_metrics_global()] for a single-row summary.
 #' }
-#' @seealso [in_meters()], [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_plot_iter_diagnostics()`],
+#' @seealso [in_meters()], [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_slic_convergence()`],
 #'   [`sc_metrics_pixels()`], [`sc_metrics_supercells()`], [`sc_metrics_global()`]
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars).
@@ -45,8 +43,6 @@
 #' automatic chunking based on size, or a numeric value for a fixed chunk size
 #' (in number of cells per side).
 #' @param verbose Verbosity level.
-#' @param iter_diagnostics Logical. If `TRUE`, attaches iteration diagnostics as an
-#' attribute (`iter_diagnostics`) on the output. Only available when chunks are not used.
 #'
 #' @return An sf object with the supercell polygons and summary statistics.
 #' Information on `step` and `compactness` are attached to the result as attributes.
@@ -67,18 +63,16 @@ sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
                    avg_fun = "mean", clean = TRUE, minarea, iter = 10,
                    k = NULL, centers = NULL,
                    outcomes = c("supercells", "coordinates", "values"), chunks = FALSE,
-                   iter_diagnostics = FALSE, verbose = 0) {
+                   verbose = 0) {
 
   if (iter == 0) {
     stop("iter = 0 returns centers only; polygon output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
   }
   prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                                k, centers, outcomes, chunks, iter_diagnostics, verbose)
+                                k, centers, outcomes, chunks, verbose)
 
   segment = .sc_slic_segment(prep_args, .sc_run_full_polygons, .sc_run_chunk_polygons)
 
-  iter_attr = .sc_slic_add_iter_attr(segment$chunks, prep_args$iter_diagnostics)
-
-  result = .sc_slic_post(segment$chunks, prep_args, iter_attr)
+  result = .sc_slic_post(segment$chunks, prep_args)
   return(result)
 }

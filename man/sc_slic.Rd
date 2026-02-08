@@ -17,7 +17,6 @@ sc_slic(
   centers = NULL,
   outcomes = c("supercells", "coordinates", "values"),
   chunks = FALSE,
-  iter_diagnostics = FALSE,
   verbose = 0
 )
 }
@@ -58,9 +57,6 @@ Use \code{outcomes = "values"} for value summaries only.}
 automatic chunking based on size, or a numeric value for a fixed chunk size
 (in number of cells per side).}
 
-\item{iter_diagnostics}{Logical. If \code{TRUE}, attaches iteration diagnostics as an
-attribute (\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
-
 \item{verbose}{Verbosity level.}
 }
 \value{
@@ -77,9 +73,7 @@ Use \code{\link[=sc_slic]{sc_slic()}} for polygon outputs. For raster or point c
 \code{\link[=sc_slic_raster]{sc_slic_raster()}} and \code{\link[=sc_slic_points]{sc_slic_points()}}.
 Evaluation and diagnostic options:
 \itemize{
-\item Iteration diagnostics: set \code{iter_diagnostics = TRUE} to attach an
-\code{iter_diagnostics} attribute (only available without chunking). Use
-\code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}} to visualize the convergence over iterations.
+\item Iteration convergence: use \code{\link[=sc_slic_convergence]{sc_slic_convergence()}} and plot its output.
 \item Pixel diagnostics: \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}} for per-pixel spatial, value,
 and combined distances.
 \item Cluster diagnostics: \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}} for per-supercell summaries.
@@ -101,6 +95,6 @@ Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012).
 Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935
 }
 \seealso{
-\code{\link[=in_meters]{in_meters()}}, \code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}},
+\code{\link[=in_meters]{in_meters()}}, \code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_slic_convergence]{sc_slic_convergence()}},
 \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
 }

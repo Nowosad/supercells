@@ -98,7 +98,6 @@ supercells = function(x, k, compactness, dist_fun = "euclidean", avg_fun = "mean
     iter = iter,
     outcomes = outcomes,
     chunks = chunks,
-    iter_diagnostics = FALSE,
     verbose = verbose
   )
   if (!missing(step)) {
