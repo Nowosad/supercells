@@ -95,7 +95,7 @@ sc_metrics_global = function(x, sc,
   names(out_metrics) = unname(name_map[metrics])
   step_out = prep$step_meta
   results = cbind(
-    data.frame(step = step_out, compactness = prep$compactness, n_supercells = out[["n_supercells"]]),
+    data.frame(step = step_out, compactness = prep$compactness_input, n_supercells = out[["n_supercells"]]),
     out_metrics
   )
   return(results)

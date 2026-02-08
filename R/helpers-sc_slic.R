@@ -40,6 +40,7 @@
     iter_diagnostics = FALSE
   }
   verbose_cpp = if (is.numeric(verbose) && length(verbose) == 1 && !is.na(verbose) && verbose >= 2) verbose else 0
+  compactness_input = compactness
   adaptive_compactness = is.character(compactness) &&
     length(compactness) == 1 && !is.na(compactness) && compactness == "auto"
   if (adaptive_compactness) {
@@ -51,7 +52,8 @@
               input_centers = input_centers, funs = funs,
               minarea = minarea, chunk_ext = chunk_ext,
               iter_diagnostics = iter_diagnostics, outcomes = outcomes,
-              compactness = compactness, adaptive_compactness = adaptive_compactness,
+              compactness = compactness, compactness_input = compactness_input,
+              adaptive_compactness = adaptive_compactness,
               clean = clean, iter = iter,
               verbose = verbose, verbose_cpp = verbose_cpp))
 }
@@ -215,9 +217,8 @@
   slic_sf = .sc_slic_select_outcomes(slic_sf, prep$outcomes)
 
   attr(slic_sf, "step") = prep$step_meta
-  attr(slic_sf, "compactness") = prep$compactness
+  attr(slic_sf, "compactness") = prep$compactness_input
   attr(slic_sf, "dist_fun") = prep$dist_fun_input
-  attr(slic_sf, "method") = if (isTRUE(prep$adaptive_compactness)) "slic0" else "slic"
   cls = class(slic_sf)
   cls = c(setdiff(cls, "data.frame"), "supercells", "data.frame")
   class(slic_sf) = unique(cls)

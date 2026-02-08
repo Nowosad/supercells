@@ -40,20 +40,25 @@
   if (!inherits(sc, "sf")) {
     stop("The 'sc' argument must be an sf object returned by sc_slic()", call. = FALSE)
   }
-  adaptive_compactness = FALSE
+
   if (missing(compactness)) {
-    method = attr(sc, "method")
-    adaptive_compactness = isTRUE(identical(method, "slic0"))
     compactness = attr(sc, "compactness")
-  } else if (is.character(compactness) && length(compactness) == 1 && !is.na(compactness) && compactness == "auto") {
-    adaptive_compactness = TRUE
-    compactness = 0
   }
   if (missing(step)) {
     step = attr(sc, "step")
   }
   if (is.null(compactness) || is.null(step)) {
     stop("Both 'compactness' and 'step' are required", call. = FALSE)
+  }
+
+  compactness_input = compactness
+  adaptive_compactness = FALSE
+  if (is.character(compactness)) {
+    if (length(compactness) != 1 || is.na(compactness) || compactness != "auto") {
+      stop("The 'compactness' argument must be numeric or 'auto'", call. = FALSE)
+    }
+    adaptive_compactness = TRUE
+    compactness = 0
   }
   step_prep = .sc_util_step_to_cells(raster, step)
   step = step_prep$step
@@ -89,6 +94,7 @@
     step = step,
     step_meta = step_prep$step_meta,
     compactness = compactness,
+    compactness_input = compactness_input,
     adaptive_compactness = adaptive_compactness,
     spatial_scale = spatial_scale,
     step_scale = step_scale

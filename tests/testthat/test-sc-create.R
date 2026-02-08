@@ -4,8 +4,12 @@ test_that("sc_slic returns sf with attributes", {
   expect_false(any(c("supercells", "x", "y") %in% names(sc)))
   expect_equal(attr(sc, "step"), attr(sc, "step"))
   expect_equal(attr(sc, "compactness"), 1)
-  expect_equal(attr(sc, "method"), "slic")
   expect_true("supercells" %in% class(sc))
+})
+
+test_that("sc_slic stores adaptive compactness as 'auto'", {
+  sc = sc_slic(v1, step = 8, compactness = "auto")
+  expect_equal(attr(sc, "compactness"), "auto")
 })
 
 test_that("sc_slic handles step and centers", {

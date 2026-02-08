@@ -27,6 +27,13 @@ test_that("sc_metrics uses step and compactness from attributes", {
   expect_equal(gl$compactness, attr(sc, "compactness"))
 })
 
+test_that("sc_metrics uses adaptive compactness from compactness attribute", {
+  sc = sc_slic(v1, step = 8, compactness = "auto",
+               outcomes = c("supercells", "coordinates", "values"))
+  gl = sc_metrics_global(v1, sc)
+  expect_equal(gl$compactness, "auto")
+})
+
 test_that("sc_metrics_supercells returns sf with metrics", {
   sc = sc_slic(v1, step = 8, compactness = 1,
                outcomes = c("supercells", "coordinates", "values"))
