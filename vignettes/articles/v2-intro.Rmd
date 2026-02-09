@@ -88,7 +88,6 @@ Here, we specified `step = 8` which would result in supercells of approximately 
 The compactness is set to `1` -- the behavior of this parameter depends on many factors, including the range of values in the raster, their properties, and the selected distance measure.
 
 ```{r}
-# Polygon supercells (sf)
 vol_sc <- sc_slic(
   vol,
   step = 8,
