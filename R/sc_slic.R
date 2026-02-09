@@ -15,7 +15,7 @@
 #'   \item Cluster diagnostics: [sc_metrics_supercells()] for per-supercell summaries.
 #'   \item Global diagnostics: [sc_metrics_global()] for a single-row summary.
 #' }
-#' @seealso [use_meters()], [use_adaptive()], [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_slic_convergence()`],
+#' @seealso [`sc_tune_compactness()`], [use_meters()], [use_adaptive()], [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_slic_convergence()`],
 #'   [`sc_metrics_pixels()`], [`sc_metrics_supercells()`], [`sc_metrics_global()`]
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars).

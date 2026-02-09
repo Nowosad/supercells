@@ -15,7 +15,7 @@ sc_slic_points(
   iter = 10,
   k = NULL,
   centers = NULL,
-  outcomes = "values",
+  outcomes = c("supercells", "coordinates", "values"),
   chunks = FALSE,
   verbose = 0
 )
@@ -66,8 +66,9 @@ An sf object with supercell center points and summary statistics
 Runs the SLIC workflow and returns supercell centers as points.
 Use \code{iter = 0} to return the initial centers before iterations.
 For polygon outputs, use \code{\link[=sc_slic]{sc_slic()}}; for raster output, use \code{\link[=sc_slic_raster]{sc_slic_raster()}}
-By default, only value summaries are returned; add
-\code{outcomes = c("supercells", "coordinates", "values")} to include ids and x/y.
+By default, returns the same fields as \code{\link[=sc_slic]{sc_slic()}}:
+\code{outcomes = c("supercells", "coordinates", "values")}.
+Use \code{outcomes = "values"} for value summaries only.
 }
 \examples{
 library(supercells)

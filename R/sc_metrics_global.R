@@ -18,15 +18,7 @@
 #' @param metrics Character vector of metric ideas to return. Options:
 #' `"spatial"`, `"value"`, `"combined"`, `"balance"`. Default:
 #' `c("spatial", "value", "combined", "balance")`.
-#' @return A data.frame with a single row of global metrics and columns:
-#' Interpretation:
-#' \describe{
-#'   \item{mean_value_dist}{Lower values indicate more homogeneous supercells.}
-#'   \item{mean_spatial_dist}{Lower values indicate more compact supercells.}
-#'   \item{mean_combined_dist}{Overall distance; mainly useful for ranking.}
-#'   \item{balance}{0 indicates balance between value and spatial terms; negative
-#'   values indicate spatial dominance; positive values indicate value dominance.}
-#' }
+#' @return A data.frame with a single row and columns:
 #' \describe{
 #'   \item{step}{Step size used to generate supercells. Returned in meters when
 #'   the input used `step = use_meters(...)`, otherwise in cells.}
@@ -35,22 +27,25 @@
 #'   \item{compactness_method}{Compactness method: `"constant"` for fixed
 #'   compactness, `"local_max"` for adaptive compactness.}
 #'   \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
-#'   \item{mean_value_dist}{Mean per-supercell value distance from cells to their
+#'   \item{mean_value_dist / mean_value_dist_scaled}{Mean per-supercell value distance from cells to their
 #'   supercell centers, averaged across supercells. Returned as `mean_value_dist`
-#'   (or `mean_value_dist_scaled` when `scale = TRUE`).}
-#'   \item{mean_spatial_dist}{Mean per-supercell spatial distance from cells to
+#'   (or `mean_value_dist_scaled` when `scale = TRUE`). Lower values indicate
+#'   more homogeneous supercells.}
+#'   \item{mean_spatial_dist / mean_spatial_dist_scaled}{Mean per-supercell spatial distance from cells to
 #'   their supercell centers, averaged across supercells; units are grid cells
 #'   (row/column index distance). If the input supercells were created with
 #'   `step = use_meters(...)`, distances are reported in meters. Returned as
-#'   `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
+#'   `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).
+#'   Lower values indicate more compact supercells.}
 #'   \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 #'   value and spatial distances using `compactness` and `step`, averaged across
-#'   supercells. Returned as `mean_combined_dist`.}
+#'   supercells. Returned as `mean_combined_dist`. Lower values indicate lower
+#'   overall distance and are mainly useful for ranking.}
 #'   \item{balance}{Mean signed log ratio of scaled value distance to scaled
-#'   spatial distance (averaged across supercells); 0 indicates balance.}
+#'   spatial distance (averaged across supercells); 0 indicates balance between
+#'   value and spatial terms, negative values indicate spatial dominance, and
+#'   positive values indicate value dominance.}
 #' }
-#' When `scale = TRUE`, `mean_spatial_dist` and `mean_value_dist` are returned as
-#' `mean_spatial_dist_scaled` and `mean_value_dist_scaled`.
 #' @seealso [`sc_slic()`], [`sc_metrics_pixels()`], [`sc_metrics_supercells()`]
 #' @export
 #' @examples
