@@ -44,25 +44,28 @@
   if (missing(compactness)) {
     compactness = attr(sc, "compactness")
   }
-  adaptive_method = attr(sc, "adaptive_method")
-  if (!is.null(adaptive_method) && is.null(compactness)) {
-    compactness = 0
-  }
+  compactness_method = attr(sc, "compactness_method")
   if (missing(step)) {
     step = attr(sc, "step")
   }
-  if (is.null(compactness) || is.null(step)) {
+  if (is.null(step)) {
     stop("Both 'compactness' and 'step' are required", call. = FALSE)
   }
 
-  if (!is.null(adaptive_method)) {
-    if (!is.character(adaptive_method) || length(adaptive_method) != 1 || is.na(adaptive_method) ||
-        adaptive_method != "local_max") {
-      stop("The 'adaptive_method' attribute must be 'local_max' or NULL", call. = FALSE)
+  if (!is.null(compactness_method)) {
+    if (!is.character(compactness_method) || length(compactness_method) != 1 || is.na(compactness_method) ||
+        !(compactness_method %in% c("constant", "local_max"))) {
+      stop("The 'compactness_method' attribute must be 'constant' or 'local_max'", call. = FALSE)
     }
-    compactness_prep = list(value = 0, adaptive = TRUE, adaptive_method = adaptive_method)
+  }
+
+  if (identical(compactness_method, "local_max")) {
+    compactness_prep = list(value = 0, adaptive = TRUE, compactness_method = "local_max")
   } else {
     compactness_prep = .sc_util_prep_compactness(compactness)
+    if (!is.null(compactness_method) && compactness_prep$compactness_method != compactness_method) {
+      stop("The provided compactness method conflicts with 'compactness_method' attribute", call. = FALSE)
+    }
   }
   step_prep = .sc_util_step_to_cells(raster, step)
   step = step_prep$step
@@ -99,7 +102,7 @@
     step_meta = step_prep$step_meta,
     compactness = compactness_prep$value,
     adaptive_compactness = compactness_prep$adaptive,
-    adaptive_method = compactness_prep$adaptive_method,
+    compactness_method = compactness_prep$compactness_method,
     spatial_scale = spatial_scale,
     step_scale = step_scale
   )

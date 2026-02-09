@@ -61,8 +61,8 @@ automatic chunking based on size, or a numeric value for a fixed chunk size
 }
 \value{
 An sf object with the supercell polygons and summary statistics.
-Information on \code{step}, \code{compactness}, and \code{adaptive_method} are attached to
-the result as attributes (\code{adaptive_method} is \code{NULL} for fixed compactness).
+Information on \code{step}, \code{compactness}, and \code{compactness_method} are attached to
+the result as attributes (\code{compactness} is \code{NA} for adaptive compactness).
 }
 \description{
 Creates supercells from single- or multi-band rasters using an extended SLIC algorithm.

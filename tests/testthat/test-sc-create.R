@@ -5,11 +5,11 @@ test_that("sc_slic returns core output and attributes", {
   expect_true(all(c("supercells", "x", "y") %in% names(sc)))
   expect_false(is.null(attr(sc, "step")))
   expect_equal(attr(sc, "compactness"), 1)
-  expect_null(attr(sc, "adaptive_method"))
+  expect_equal(attr(sc, "compactness_method"), "constant")
 
   sc_auto = sc_slic(v1, step = 8, compactness = use_adaptive())
-  expect_equal(attr(sc_auto, "compactness"), 0)
-  expect_equal(attr(sc_auto, "adaptive_method"), "local_max")
+  expect_true(is.na(attr(sc_auto, "compactness")))
+  expect_equal(attr(sc_auto, "compactness_method"), "local_max")
 })
 
 test_that("sc_slic supports custom centers", {

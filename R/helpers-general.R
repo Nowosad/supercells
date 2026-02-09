@@ -94,11 +94,11 @@
 # normalize compactness input for slic/metrics workflows
 .sc_util_prep_compactness = function(compactness) {
   if (is.numeric(compactness) && length(compactness) == 1 && !is.na(compactness) && compactness > 0) {
-    return(list(value = compactness, adaptive = FALSE, adaptive_method = NULL))
+    return(list(value = compactness, adaptive = FALSE, compactness_method = "constant"))
   }
 
   if (inherits(compactness, "sc_adaptive")) {
-    return(list(value = 0, adaptive = TRUE, adaptive_method = compactness$method))
+    return(list(value = 0, adaptive = TRUE, compactness_method = compactness$method))
   }
   stop("The 'compactness' argument must be a single positive number or use_adaptive()", call. = FALSE)
 }

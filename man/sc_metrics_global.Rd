@@ -31,7 +31,7 @@ If missing, uses \code{attr(sc, "step")} when available}
 
 \item{compactness}{A compactness value used for the supercells
 If missing, uses \code{attr(sc, "compactness")} when available.
-Adaptive mode is read from \code{attr(sc, "adaptive_method")} when available.}
+Compactness mode is read from \code{attr(sc, "compactness_method")} when available.}
 
 \item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.
 If missing or \code{NULL}, uses \code{attr(sc, "dist_fun")} when available.}

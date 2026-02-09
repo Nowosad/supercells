@@ -98,10 +98,9 @@ sc_metrics_global = function(x, sc,
   names(out_metrics) = unname(name_map[metrics])
   step_out = prep$step_meta
   compactness_out = prep$compactness
-  compactness_method_out = "constant"
+  compactness_method_out = prep$compactness_method
   if (isTRUE(prep$adaptive_compactness)) {
     compactness_out = NA_real_
-    compactness_method_out = prep$adaptive_method
   }
   results = cbind(
     data.frame(step = step_out, compactness = compactness_out,
