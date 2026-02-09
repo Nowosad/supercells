@@ -30,8 +30,10 @@
 #' \describe{
 #'   \item{step}{Step size used to generate supercells. Returned in meters when
 #'   the input used `step = use_meters(...)`, otherwise in cells.}
-#'   \item{compactness}{Compactness value used to generate supercells.}
-#'   \item{adaptive_method}{Adaptive compactness method; `NA` for fixed compactness.}
+#'   \item{compactness}{Compactness value used to generate supercells; `NA` for
+#'   adaptive compactness.}
+#'   \item{compactness_method}{Compactness method: `"constant"` for fixed
+#'   compactness, `"local_max"` for adaptive compactness.}
 #'   \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 #'   \item{mean_value_dist}{Mean per-supercell value distance from cells to their
 #'   supercell centers, averaged across supercells. Returned as `mean_value_dist`
@@ -95,13 +97,15 @@ sc_metrics_global = function(x, sc,
   )
   names(out_metrics) = unname(name_map[metrics])
   step_out = prep$step_meta
-  adaptive_method_out = prep$adaptive_method
-  if (is.null(adaptive_method_out)) {
-    adaptive_method_out = NA_character_
+  compactness_out = prep$compactness
+  compactness_method_out = "constant"
+  if (isTRUE(prep$adaptive_compactness)) {
+    compactness_out = NA_real_
+    compactness_method_out = prep$adaptive_method
   }
   results = cbind(
-    data.frame(step = step_out, compactness = prep$compactness,
-               adaptive_method = adaptive_method_out,
+    data.frame(step = step_out, compactness = compactness_out,
+               compactness_method = compactness_method_out,
                n_supercells = out[["n_supercells"]]),
     out_metrics
   )

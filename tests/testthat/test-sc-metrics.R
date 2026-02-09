@@ -21,7 +21,7 @@ test_that("metrics outputs have expected structure", {
   gl = sc_metrics_global(v1, sc_full)
   expect_s3_class(gl, "data.frame")
   expect_equal(nrow(gl), 1)
-  expect_true(all(c("step", "compactness", "adaptive_method", "n_supercells",
+  expect_true(all(c("step", "compactness", "compactness_method", "n_supercells",
                     "mean_value_dist_scaled", "mean_spatial_dist_scaled",
                     "mean_combined_dist", "balance") %in% names(gl)))
 })
@@ -36,11 +36,11 @@ test_that("metrics use stored attributes and dist_fun defaults", {
   gl = sc_metrics_global(v1, sc_full)
   expect_equal(gl$step, attr(sc_full, "step"))
   expect_equal(gl$compactness, attr(sc_full, "compactness"))
-  expect_true(is.na(gl$adaptive_method))
+  expect_equal(gl$compactness_method, "constant")
 
   gl_auto = sc_metrics_global(v1, sc_auto)
-  expect_equal(gl_auto$compactness, 0)
-  expect_equal(gl_auto$adaptive_method, "local_max")
+  expect_true(is.na(gl_auto$compactness))
+  expect_equal(gl_auto$compactness_method, "local_max")
 
   g_attr = sc_metrics_global(v1, sc_custom)
   g_explicit = sc_metrics_global(v1, sc_custom, dist_fun = manhattan)

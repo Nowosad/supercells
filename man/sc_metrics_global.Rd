@@ -49,8 +49,10 @@ values indicate spatial dominance; positive values indicate value dominance.}
 \describe{
 \item{step}{Step size used to generate supercells. Returned in meters when
 the input used \code{step = use_meters(...)}, otherwise in cells.}
-\item{compactness}{Compactness value used to generate supercells.}
-\item{adaptive_method}{Adaptive compactness method; \code{NA} for fixed compactness.}
+\item{compactness}{Compactness value used to generate supercells; \code{NA} for
+adaptive compactness.}
+\item{compactness_method}{Compactness method: \code{"constant"} for fixed
+compactness, \code{"local_max"} for adaptive compactness.}
 \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 \item{mean_value_dist}{Mean per-supercell value distance from cells to their
 supercell centers, averaged across supercells. Returned as \code{mean_value_dist}
