@@ -39,11 +39,11 @@ interpretation and a simple definition:
 
 1.  `spatial`: $d_{s}$, the distance from each pixel to its supercell
     center in grid-cell units (unless the input supercells were created
-    with `step_unit = "map"`, in which case distances are reported in
-    map units). Lower spatial values indicate cells that are closer to
-    the center and more compact supercells, while higher values indicate
-    cells that are farther from the center and may indicate irregular
-    shapes or outliers.
+    with `step = use_meters(...)`, in which case distances are reported
+    in map units). Lower spatial values indicate cells that are closer
+    to the center and more compact supercells, while higher values
+    indicate cells that are farther from the center and may indicate
+    irregular shapes or outliers.
 2.  `value`: $d_{v}$, the distance from each pixel to its supercell
     center in the value space defined by your `dist_fun`. Lower value
     distances indicate more homogeneous supercells, while higher values
@@ -168,10 +168,10 @@ summaries are returned as `mean_spatial_dist_scaled` and
 ``` r
 global_metrics <- sc_metrics_global(vol, vol_sc)
 global_metrics
-#>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled
-#> 1    8           7           88                0.4718607              0.3701397
-#>   mean_combined_dist    balance
-#> 1          0.6517259 -0.3367309
+#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
+#> 1    8           7            <NA>           88                0.4718607
+#>   mean_value_dist_scaled mean_combined_dist    balance
+#> 1              0.3701397          0.6517259 -0.3367309
 ```
 
 You may use the global metrics to compare parameter settings, for
@@ -186,19 +186,22 @@ vol_sc_low <- sc_slic(vol, step = 8, compactness = 1)
 metrics_higher <- sc_metrics_global(vol, vol_sc)
 metrics_lower <- sc_metrics_global(vol, vol_sc_low)
 rbind(higher_compactness = metrics_higher, lower_compactness = metrics_lower)
-#>                    step compactness n_supercells mean_spatial_dist_scaled
-#> higher_compactness    8           7           88                0.4718607
-#> lower_compactness     8           1           90                0.5500066
-#>                    mean_value_dist_scaled mean_combined_dist    balance
-#> higher_compactness              0.3701397          0.6517259 -0.3367309
-#> lower_compactness               2.1412253          2.3003626  1.1923986
+#>                    step compactness adaptive_method n_supercells
+#> higher_compactness    8           7            <NA>           88
+#> lower_compactness     8           1            <NA>           90
+#>                    mean_spatial_dist_scaled mean_value_dist_scaled
+#> higher_compactness                0.4718607              0.3701397
+#> lower_compactness                 0.5500066              2.1412253
+#>                    mean_combined_dist    balance
+#> higher_compactness          0.6517259 -0.3367309
+#> lower_compactness           2.3003626  1.1923986
 ```
 
-When using `compactness = "auto"`, the value scaling is per-supercell.
-This improves local adaptation, but it also means metrics are not
-directly comparable to fixed-compactness outputs. In this case, you can
-still compare the spatial metrics, but the value metrics will reflect
-the local scaling rather than the original value distances.
+When using `compactness = use_adaptive()`, the value scaling is
+per-supercell. This improves local adaptation, but it also means metrics
+are not directly comparable to fixed-compactness outputs. In this case,
+you can still compare the spatial metrics, but the value metrics will
+reflect the local scaling rather than the original value distances.
 
 ## Feedback and related tools
 

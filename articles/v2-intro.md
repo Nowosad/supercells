@@ -39,11 +39,10 @@ like squares – but may be less homogeneous in terms of values.
 
 For compactness selection, you may use
 [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
-to estimate a good value from a short pilot run. Alternatively, the
-`"auto"` option for `compactness` enables SLIC0-style adaptive
-compactness when you want the algorithm to adjust locally – this does
-not require setting a specific value, but also takes away direct
-control.
+to estimate a good value from a short pilot run. Alternatively,
+`compactness = use_adaptive()` enables SLIC0-style adaptive compactness
+when you want the algorithm to adjust locally – this does not require
+setting a specific value, but also takes away direct control.
 
 To assess quality of the resulting supercells, use
 [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md)
@@ -64,7 +63,7 @@ tune or set `compactness`, create supercells, and evaluate.
 vol <- terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 
 # choose scale and tune compactness
-tune <- supercells::sc_tune_compactness(vol, step = 8, metrics = "local")
+tune <- supercells::sc_tune_compactness(vol, step = 8, metric = "local")
 
 # create supercells
 vol_sc <- supercells::sc_slic(vol, step = 8, compactness = tune$compactness)
@@ -116,9 +115,10 @@ plot(sf::st_geometry(vol_sc), add = TRUE, lwd = 0.6, border = "red")
 
 The resulting `sf` object contains one row per supercell. Each row
 stores summary values of each layer in the original raster, as well as
-the geometry of the supercell. By default only summary values are
-returned, so use `outcomes = c("supercells", "coordinates", "values")`
-when you also want IDs and center coordinates.
+the geometry of the supercell. By default, IDs, center coordinates, and
+summary values are returned
+(`outcomes = c("supercells", "coordinates", "values")`). Use
+`outcomes = "values"` when you want value summaries only.
 
 Two related functions provide alternative output formats. Use
 [`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)
@@ -134,11 +134,11 @@ Now, let’s try to tune the `compactness` parameter using a pilot run.
 tune <- sc_tune_compactness(
   vol,
   step = 8,
-  metrics = "local"
+  metric = "local"
 )
 tune
-#>   step metric compactness
-#> 1    8  local    9.084872
+#>   step metric  dist_fun compactness
+#> 1    8  local euclidean    9.084872
 ```
 
 Next, we may try to create supercells with the suggested `compactness`
@@ -201,10 +201,10 @@ as a small grid of `step` and `compactness` values.
 
 ``` r
 global_metrics
-#>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled
-#> 1    8    9.084872           88                0.4546412              0.3061439
-#>   mean_combined_dist    balance
-#> 1          0.5915118 -0.4939904
+#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
+#> 1    8    9.084872            <NA>           88                0.4546412
+#>   mean_value_dist_scaled mean_combined_dist    balance
+#> 1              0.3061439          0.5915118 -0.4939904
 ```
 
 ## Where to go next

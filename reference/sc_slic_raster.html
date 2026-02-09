@@ -68,12 +68,10 @@ For polygon outputs, use <code><a href="sc_slic.html">sc_slic()</a></code>; for 
 <span>  clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">minarea</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  step_unit <span class="op">=</span> <span class="st">"cells"</span>,</span>
 <span>  k <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  centers <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  outcomes <span class="op">=</span> <span class="st">"supercells"</span>,</span>
 <span>  chunks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  iter_diagnostics <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -87,12 +85,14 @@ For polygon outputs, use <code><a href="sc_slic.html">sc_slic()</a></code>; for 
 
 
 <dt id="arg-step">step<a class="anchor" aria-label="anchor" href="#arg-step"></a></dt>
-<dd><p>The distance (number of cells) between initial centers (alternative is <code>k</code>).</p></dd>
+<dd><p>Initial center spacing (alternative is <code>k</code>).
+Provide a plain numeric value for cell units, or use <code><a href="use_meters.html">use_meters()</a></code> for
+map-distance steps in meters (automatically converted to cells using raster resolution).</p></dd>
 
 
 <dt id="arg-compactness">compactness<a class="anchor" aria-label="anchor" href="#arg-compactness"></a></dt>
 <dd><p>A compactness value. Use <code><a href="sc_tune_compactness.html">sc_tune_compactness()</a></code> to estimate it.
-Set <code>compactness = "auto"</code> to enable adaptive compactness (SLIC0).</p></dd>
+Use <code><a href="use_adaptive.html">use_adaptive()</a></code> to enable adaptive compactness (SLIC0).</p></dd>
 
 
 <dt id="arg-dist-fun">dist_fun<a class="anchor" aria-label="anchor" href="#arg-dist-fun"></a></dt>
@@ -119,11 +119,6 @@ function must accept a numeric vector and return a single numeric value.</p></dd
 <dd><p>Number of iterations.</p></dd>
 
 
-<dt id="arg-step-unit">step_unit<a class="anchor" aria-label="anchor" href="#arg-step-unit"></a></dt>
-<dd><p>Units for <code>step</code>. Use "cells" for pixel units or "map" for map units
-(converted to cells using raster resolution).</p></dd>
-
-
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
 <dd><p>The number of supercells desired (alternative to <code>step</code>).</p></dd>
 
@@ -141,11 +136,6 @@ Only <code>"supercells"</code> is supported in <code>sc_slic_raster()</code>.</p
 <dd><p>Chunking option. Use <code>FALSE</code> for no chunking, <code>TRUE</code> for
 automatic chunking based on size, or a numeric value for a fixed chunk size
 (in number of cells per side).</p></dd>
-
-
-<dt id="arg-iter-diagnostics">iter_diagnostics<a class="anchor" aria-label="anchor" href="#arg-iter-diagnostics"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, attaches iteration diagnostics as an
-attribute (<code>iter_diagnostics</code>) on the output. Only available when chunks are not used.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

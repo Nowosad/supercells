@@ -102,10 +102,11 @@ issue](https://github.com/nowosad/supercells/issues).
   : Pixel-level supercells metrics
 - [`sc_metrics_supercells()`](https://jakubnowosad.com/supercells/reference/sc_metrics_supercells.md)
   : Supercell-level metrics
-- [`sc_plot_iter_diagnostics()`](https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.md)
-  : Plot iteration diagnostics
 - [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
   : Create supercells
+- [`sc_slic_convergence()`](https://jakubnowosad.com/supercells/reference/sc_slic_convergence.md)
+  [`plot(`*`<sc_slic_convergence>`*`)`](https://jakubnowosad.com/supercells/reference/sc_slic_convergence.md)
+  : SLIC convergence diagnostics
 - [`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)
   : Create supercells as points
 - [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
@@ -114,6 +115,10 @@ issue](https://github.com/nowosad/supercells/issues).
   : Estimate compactness from a light SLIC run
 - [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
   : Creates supercells
+- [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
+  : Use adaptive compactness mode
+- [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md)
+  : Mark step values as meters
 
 # Articles
 

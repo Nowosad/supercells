@@ -22,12 +22,10 @@ sc_slic_points(
   clean = TRUE,
   minarea,
   iter = 10,
-  step_unit = "cells",
   k = NULL,
   centers = NULL,
   outcomes = "values",
   chunks = FALSE,
-  iter_diagnostics = FALSE,
   verbose = 0
 )
 ```
@@ -40,15 +38,19 @@ sc_slic_points(
 
 - step:
 
-  The distance (number of cells) between initial centers (alternative is
-  `k`).
+  Initial center spacing (alternative is `k`). Provide a plain numeric
+  value for cell units, or use
+  [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md)
+  for map-distance steps in meters (automatically converted to cells
+  using raster resolution).
 
 - compactness:
 
   A compactness value. Use
   [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
-  to estimate it. Set `compactness = "auto"` to enable adaptive
-  compactness (SLIC0).
+  to estimate it. Use
+  [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
+  to enable adaptive compactness (SLIC0).
 
 - dist_fun:
 
@@ -77,11 +79,6 @@ sc_slic_points(
 
   Number of iterations.
 
-- step_unit:
-
-  Units for `step`. Use "cells" for pixel units or "map" for map units
-  (converted to cells using raster resolution).
-
 - k:
 
   The number of supercells desired (alternative to `step`).
@@ -102,12 +99,6 @@ sc_slic_points(
   Chunking option. Use `FALSE` for no chunking, `TRUE` for automatic
   chunking based on size, or a numeric value for a fixed chunk size (in
   number of cells per side).
-
-- iter_diagnostics:
-
-  Logical. If `TRUE`, attaches iteration diagnostics as an attribute
-  (`iter_diagnostics`) on the output. Only available when chunks are not
-  used.
 
 - verbose:
 

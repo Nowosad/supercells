@@ -49,6 +49,9 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9" id="supercells-19">supercells 1.9<a class="anchor" aria-label="anchor" href="#supercells-19"></a></h2>
 <ul><li>Added <code>outcomes</code> argument to <code><a href="../reference/sc_slic.html">sc_slic()</a></code>, <code><a href="../reference/sc_slic_points.html">sc_slic_points()</a></code>, and <code><a href="../reference/sc_slic_raster.html">sc_slic_raster()</a></code>; replaces <code>metadata</code> for controlling returned fields</li>
+<li>Iteration diagnostics API redesigned: <code>iter_diagnostics</code> and <code>sc_plot_iter_diagnostics()</code> replaced by <code><a href="../reference/sc_slic_convergence.html">sc_slic_convergence()</a></code> with a <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot()</a></code> method</li>
+<li>Added <code><a href="../reference/use_meters.html">use_meters()</a></code> for map-distance step values (replacing <code>in_meters()</code>)</li>
+<li>Added <code><a href="../reference/use_adaptive.html">use_adaptive()</a></code> for adaptive compactness mode (replacing <code>compactness = "auto"</code>)</li>
 <li>Added experimental <code>sc_merge_supercells()</code> for adjacency-constrained greedy merging</li>
 <li>Added <code>sc_dist_vec_cpp()</code> (C++ distance wrapper) to support merge utilities</li>
 <li>Documentation and vignettes updated (pkgdown refresh, new articles, and revised examples)</li>
@@ -90,7 +93,7 @@
 <h2 class="pkg-version" data-toc-text="1.5" id="supercells-15">supercells 1.5<a class="anchor" aria-label="anchor" href="#supercells-15"></a></h2>
 <ul><li>Major C++ SLIC refactor (clearer data flow, diagnostics support) with supporting utility cleanup</li>
 <li>Standardized <code><a href="../reference/sc_slic.html">sc_slic()</a></code>, <code><a href="../reference/sc_slic_points.html">sc_slic_points()</a></code>, <code><a href="../reference/sc_slic_raster.html">sc_slic_raster()</a></code> with consistent options/metadata/chunking; <code><a href="../reference/sc_slic.html">sc_slic()</a></code> is now the main entry point</li>
-<li>Added diagnostics API (<code><a href="../reference/sc_metrics_pixels.html">sc_metrics_pixels()</a></code>, <code>sc_metrics_clusters()</code>, <code><a href="../reference/sc_metrics_global.html">sc_metrics_global()</a></code>) and <code>iter_diagnostics</code> + <code><a href="../reference/sc_plot_iter_diagnostics.html">sc_plot_iter_diagnostics()</a></code>
+<li>Added diagnostics API (<code><a href="../reference/sc_metrics_pixels.html">sc_metrics_pixels()</a></code>, <code>sc_metrics_clusters()</code>, <code><a href="../reference/sc_metrics_global.html">sc_metrics_global()</a></code>) and <code>iter_diagnostics</code> + <code>sc_plot_iter_diagnostics()</code>
 </li>
 <li>Centralized internal helpers for validation, chunking, and normalization</li>
 <li>Expanded regression and metrics tests</li>

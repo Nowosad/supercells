@@ -17,12 +17,10 @@ sc_slic(
   clean = TRUE,
   minarea,
   iter = 10,
-  step_unit = "cells",
   k = NULL,
   centers = NULL,
-  outcomes = "values",
+  outcomes = c("supercells", "coordinates", "values"),
   chunks = FALSE,
-  iter_diagnostics = FALSE,
   verbose = 0
 )
 ```
@@ -35,15 +33,19 @@ sc_slic(
 
 - step:
 
-  The distance (number of cells) between initial centers (alternative is
-  `k`).
+  Initial center spacing (alternative is `k`). Provide a plain numeric
+  value for cell units, or use
+  [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md)
+  for map-distance steps in meters (automatically converted to cells
+  using raster resolution).
 
 - compactness:
 
   A compactness value. Use
   [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
-  to estimate it. Set `compactness = "auto"` to enable adaptive
-  compactness (SLIC0).
+  to estimate it. Use
+  [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
+  to enable adaptive compactness (SLIC0).
 
 - dist_fun:
 
@@ -72,11 +74,6 @@ sc_slic(
 
   Number of iterations.
 
-- step_unit:
-
-  Units for `step`. Use "cells" for pixel units or "map" for map units
-  (converted to cells using raster resolution).
-
 - k:
 
   The number of supercells desired (alternative to `step`).
@@ -88,21 +85,15 @@ sc_slic(
 - outcomes:
 
   Character vector controlling which fields are returned. Allowed values
-  are "supercells", "coordinates", and "values". Default is "values".
-  Use `outcomes = c("supercells", "coordinates", "values")` for full
-  output.
+  are "supercells", "coordinates", and "values". Default is full output
+  (`c("supercells", "coordinates", "values")`). Use
+  `outcomes = "values"` for value summaries only.
 
 - chunks:
 
   Chunking option. Use `FALSE` for no chunking, `TRUE` for automatic
   chunking based on size, or a numeric value for a fixed chunk size (in
   number of cells per side).
-
-- iter_diagnostics:
-
-  Logical. If `TRUE`, attaches iteration diagnostics as an attribute
-  (`iter_diagnostics`) on the output. Only available when chunks are not
-  used.
 
 - verbose:
 
@@ -111,8 +102,9 @@ sc_slic(
 ## Value
 
 An sf object with the supercell polygons and summary statistics.
-Information on `step` and `compactness` are attached to the result as
-attributes.
+Information on `step`, `compactness`, and `adaptive_method` are attached
+to the result as attributes (`adaptive_method` is `NULL` for fixed
+compactness).
 
 ## Details
 
@@ -123,10 +115,9 @@ and
 [`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md).
 Evaluation and diagnostic options:
 
-- Iteration diagnostics: set `iter_diagnostics = TRUE` to attach an
-  `iter_diagnostics` attribute (only available without chunking). Use
-  [`sc_plot_iter_diagnostics()`](https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.md)
-  to visualize the convergence over iterations.
+- Iteration convergence: use
+  [`sc_slic_convergence()`](https://jakubnowosad.com/supercells/reference/sc_slic_convergence.md)
+  and plot its output.
 
 - Pixel diagnostics:
   [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md)
@@ -154,9 +145,11 @@ https://doi.org/10.1016/j.jag.2022.102935
 
 ## See also
 
+[`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md),
+[`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md),
 [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md),
 [`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md),
-[`sc_plot_iter_diagnostics()`](https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.md),
+[`sc_slic_convergence()`](https://jakubnowosad.com/supercells/reference/sc_slic_convergence.md),
 [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md),
 [`sc_metrics_supercells()`](https://jakubnowosad.com/supercells/reference/sc_metrics_supercells.md),
 [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md)

@@ -8,6 +8,18 @@
   and
   [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md);
   replaces `metadata` for controlling returned fields
+- Iteration diagnostics API redesigned: `iter_diagnostics` and
+  `sc_plot_iter_diagnostics()` replaced by
+  [`sc_slic_convergence()`](https://jakubnowosad.com/supercells/reference/sc_slic_convergence.md)
+  with a
+  [`plot()`](https://rspatial.github.io/terra/reference/plot.html)
+  method
+- Added
+  [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md)
+  for map-distance step values (replacing `in_meters()`)
+- Added
+  [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
+  for adaptive compactness mode (replacing `compactness = "auto"`)
 - Added experimental `sc_merge_supercells()` for adjacency-constrained
   greedy merging
 - Added `sc_dist_vec_cpp()` (C++ distance wrapper) to support merge
@@ -75,8 +87,7 @@
   ([`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md),
   `sc_metrics_clusters()`,
   [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md))
-  and `iter_diagnostics` +
-  [`sc_plot_iter_diagnostics()`](https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.md)
+  and `iter_diagnostics` + `sc_plot_iter_diagnostics()`
 - Centralized internal helpers for validation, chunking, and
   normalization
 - Expanded regression and metrics tests

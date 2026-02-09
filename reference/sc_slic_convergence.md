@@ -1,16 +1,13 @@
-# Create supercells as a raster
+# SLIC convergence diagnostics
 
-Runs the SLIC workflow and returns a raster of supercell IDs IDs are
-1-based and are unique across chunks when chunking is used For polygon
-outputs, use
-[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md);
-for point centers, use
-[`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)
+Runs SLIC and returns per-iteration mean combined distance. The output
+can be plotted directly with
+[`plot()`](https://rspatial.github.io/terra/reference/plot.html).
 
 ## Usage
 
 ``` r
-sc_slic_raster(
+sc_slic_convergence(
   x,
   step = NULL,
   compactness,
@@ -21,10 +18,11 @@ sc_slic_raster(
   iter = 10,
   k = NULL,
   centers = NULL,
-  outcomes = "supercells",
-  chunks = FALSE,
   verbose = 0
 )
+
+# S3 method for class 'sc_slic_convergence'
+plot(x, ...)
 ```
 
 ## Arguments
@@ -84,34 +82,37 @@ sc_slic_raster(
 
   Optional sf object of custom centers. Requires `step`.
 
-- outcomes:
-
-  Character vector controlling which fields are returned. Only
-  `"supercells"` is supported in `sc_slic_raster()`.
-
-- chunks:
-
-  Chunking option. Use `FALSE` for no chunking, `TRUE` for automatic
-  chunking based on size, or a numeric value for a fixed chunk size (in
-  number of cells per side).
-
 - verbose:
 
   Verbosity level.
 
+- ...:
+
+  Additional arguments passed to
+  [`graphics::plot()`](https://rdrr.io/r/graphics/plot.default.html).
+
 ## Value
 
-A SpatRaster with supercell IDs.
+A data frame with class `sc_slic_convergence` and columns:
+
+- iter:
+
+  Iteration number.
+
+- mean_distance:
+
+  Mean combined distance across assigned cells at each iteration.
 
 ## See also
 
-[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
+[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md),
+[`plot()`](https://rspatial.github.io/terra/reference/plot.html)
 
 ## Examples
 
 ``` r
 library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
-vol_ids = sc_slic_raster(vol, step = 8, compactness = 1)
-terra::plot(vol_ids)
+conv = sc_slic_convergence(vol, step = 8, compactness = 5, iter = 10)
+plot(conv)
 ```

@@ -46,7 +46,8 @@ sc_metrics_supercells(
 - compactness:
 
   A compactness value used for the supercells If missing, uses
-  `attr(sc, "compactness")` when available
+  `attr(sc, "compactness")` when available. Adaptive mode is read from
+  `attr(sc, "adaptive_method")` when available.
 
 - dist_fun:
 
@@ -85,9 +86,9 @@ Metrics:
 
   Mean spatial distance from cells to the supercell center in grid-cell
   units (row/column index distance). If the input supercells were
-  created with `step_unit = "map"`, distances are reported in map units.
-  Returned as `mean_spatial_dist` (or `mean_spatial_dist_scaled` when
-  `scale = TRUE`).
+  created with `step = use_meters(...)`, distances are reported in
+  meters. Returned as `mean_spatial_dist` (or `mean_spatial_dist_scaled`
+  when `scale = TRUE`).
 
 - value:
 
@@ -109,7 +110,7 @@ Metrics:
 
 If `sc` lacks `supercells`, `x`, or `y` columns, they are derived from
 geometry and row order, which may differ from the original centers When
-using SLIC0 (set `compactness = "auto"` in
+using SLIC0 (set `compactness = use_adaptive()` in
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)),
 combined and balance metrics use per-supercell adaptive compactness
 (SLIC0), and scaled value distances are computed with the per-supercell

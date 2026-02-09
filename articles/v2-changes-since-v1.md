@@ -81,8 +81,7 @@ While,
 is the main function, the other two functions are useful for specific
 tasks. For example,
 [`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)
-is helpful for visualizing initial supercell centers or iteration
-diagnostics, while
+is helpful for visualizing initial supercell centers, while
 [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
 is useful for large datasets where polygon outputs may be too
 memory-intensive.
@@ -99,8 +98,8 @@ with the tuned value.
 # Estimate compactness from a short pilot run
 comp_tune <- sc_tune_compactness(vol, step = 8)
 comp_tune
-#>   step metric compactness
-#> 1    8 global    6.864497
+#>   step metric  dist_fun compactness
+#> 1    8 global euclidean    6.864497
 
 # Use the tuned value and plot results
 vol_sc_tuned <- sc_slic(vol, step = 8, compactness = comp_tune$compactness)
@@ -113,20 +112,19 @@ plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.6, border = "red")
 This function also allow to calculate the compactness using second
 method called `"local"`.
 
-`sc_slic_points(..., iter_diagnostics = TRUE)` attaches iteration
-diagnostics so you can visualize convergence in mean distance across
-iterations later on with
-[`sc_plot_iter_diagnostics()`](https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.md).
+[`sc_slic_convergence()`](https://jakubnowosad.com/supercells/reference/sc_slic_convergence.md)
+provides iteration diagnostics so you can visualize convergence in mean
+distance across iterations.
 
 ``` r
-# Iteration diagnostics plot (only available without chunking)
-vol_pts_diag <- sc_slic_points(
+# Iteration diagnostics plot
+vol_conv <- sc_slic_convergence(
   vol,
   step = 8,
   compactness = 1,
-  iter_diagnostics = TRUE
+  iter = 10
 )
-sc_plot_iter_diagnostics(vol_pts_diag)
+plot(vol_conv)
 ```
 
 ![](v2-changes-since-v1_files/figure-html/unnamed-chunk-7-1.png)
@@ -193,20 +191,20 @@ plot(supercell_metrics["balance"], main = "Supercell balance metric")
 # Global metrics (single-row summary)
 global_metrics <- sc_metrics_global(vol, vol_sc)
 global_metrics
-#>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled
-#> 1    8           7           88                0.4718607              0.3701397
-#>   mean_combined_dist    balance
-#> 1          0.6517259 -0.3367309
+#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
+#> 1    8           7            <NA>           88                0.4718607
+#>   mean_value_dist_scaled mean_combined_dist    balance
+#> 1              0.3701397          0.6517259 -0.3367309
 ```
 
 ## SLIC0 adaptive compactness
 
-`compactness = "auto"` enables adaptive compactness (SLIC0). This lets
-the method adjust compactness across supercells rather than using a
-single fixed value.
+`compactness = use_adaptive()` enables adaptive compactness (SLIC0).
+This lets the method adjust compactness across supercells rather than
+using a single fixed value.
 
 ``` r
-vol_sc_slic0 <- sc_slic(vol, step = 8, compactness = "auto")
+vol_sc_slic0 <- sc_slic(vol, step = 8, compactness = use_adaptive())
 
 # Plot results on top of the volcano raster
 terra::plot(vol)
@@ -217,9 +215,12 @@ plot(sf::st_geometry(vol_sc_slic0), add = TRUE, lwd = 0.6, border = "violet")
 
 ## Other changes
 
-- New utilities: Added `step_unit` to
-  [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)/[`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)/[`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
-  to support map-unit step sizes.
+- New utilities: Added
+  [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md)
+  helper for `step` and
+  [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
+  for adaptive compactness in
+  [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)/[`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)/[`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md).
 - Behavior: Since version 1.0, the way coordinates are summarized
   internally has changed, and results in versions after 1.0 may differ
   slightly from those prior to 1.0.

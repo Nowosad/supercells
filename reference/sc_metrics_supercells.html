@@ -94,7 +94,8 @@ If missing, uses <code>attr(sc, "step")</code> when available</p></dd>
 
 <dt id="arg-compactness">compactness<a class="anchor" aria-label="anchor" href="#arg-compactness"></a></dt>
 <dd><p>A compactness value used for the supercells
-If missing, uses <code>attr(sc, "compactness")</code> when available</p></dd>
+If missing, uses <code>attr(sc, "compactness")</code> when available.
+Adaptive mode is read from <code>attr(sc, "adaptive_method")</code> when available.</p></dd>
 
 
 <dt id="arg-dist-fun">dist_fun<a class="anchor" aria-label="anchor" href="#arg-dist-fun"></a></dt>
@@ -125,7 +126,7 @@ values indicate spatial dominance; positive values indicate value dominance.</p>
 <dt>spatial</dt>
 <dd><p>Mean spatial distance from cells to the supercell center
 in grid-cell units (row/column index distance). If the input supercells were
-created with <code>step_unit = "map"</code>, distances are reported in map units.
+created with <code>step = use_meters(...)</code>, distances are reported in meters.
 Returned as <code>mean_spatial_dist</code> (or <code>mean_spatial_dist_scaled</code> when <code>scale = TRUE</code>).</p></dd>
 
 <dt>value</dt>
@@ -147,7 +148,7 @@ spatial distance; 0 indicates balance.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>If <code>sc</code> lacks <code>supercells</code>, <code>x</code>, or <code>y</code> columns, they are derived from geometry
 and row order, which may differ from the original centers
-When using SLIC0 (set <code>compactness = "auto"</code> in <code><a href="sc_slic.html">sc_slic()</a></code>), combined and balance metrics use per-supercell
+When using SLIC0 (set <code>compactness = use_adaptive()</code> in <code><a href="sc_slic.html">sc_slic()</a></code>), combined and balance metrics use per-supercell
 adaptive compactness (SLIC0), and scaled value distances are computed with the
 per-supercell max value distance.</p>
     </div>

@@ -70,7 +70,7 @@
                         <h4 data-toc-skip class="author">Jakub
 Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2026-02-07</h4>
+            <h4 data-toc-skip class="date">2026-02-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/v2-evaluation.Rmd" class="external-link"><code>vignettes/articles/v2-evaluation.Rmd</code></a></small>
       <div class="d-none name"><code>v2-evaluation.Rmd</code></div>
@@ -93,7 +93,7 @@ is the spatial distance in grid-cell units,
 is the value-space distance defined by <code>dist_fun</code>, and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>
 is <code>compactness</code>.
-<!-- When `compactness = "auto"`, $c$ becomes a per-center value scale computed as the maximum value distance within a local $2 \times \text{step}$ window. --></p>
+<!-- When `compactness = use_adaptive()`, $c$ becomes a per-center value scale computed as the maximum value distance within a local $2 \times \text{step}$ window. --></p>
 <p>All examples use the <code>volcano</code> raster for simplicity, but
 the same workflow applies to multi-layer rasters.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -123,11 +123,11 @@ interpretation and a simple definition:</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mi>s</mi></msub><annotation encoding="application/x-tex">d_s</annotation></semantics></math>,
 the distance from each pixel to its supercell center in grid-cell units
 (unless the input supercells were created with
-<code>step_unit = "map"</code>, in which case distances are reported in
-map units). Lower spatial values indicate cells that are closer to the
-center and more compact supercells, while higher values indicate cells
-that are farther from the center and may indicate irregular shapes or
-outliers.</li>
+<code>step = use_meters(...)</code>, in which case distances are
+reported in map units). Lower spatial values indicate cells that are
+closer to the center and more compact supercells, while higher values
+indicate cells that are farther from the center and may indicate
+irregular shapes or outliers.</li>
 <li>
 <code>value</code>:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mi>v</mi></msub><annotation encoding="application/x-tex">d_v</annotation></semantics></math>,
@@ -268,10 +268,10 @@ summaries are returned as <code>mean_spatial_dist_scaled</code> and
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">global_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_metrics_global.html">sc_metrics_global</a></span><span class="op">(</span><span class="va">vol</span>, <span class="va">vol_sc</span><span class="op">)</span></span>
 <span><span class="va">global_metrics</span></span>
-<span><span class="co">#&gt;   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled</span></span>
-<span><span class="co">#&gt; 1    8           7           88                0.4718607              0.3701397</span></span>
-<span><span class="co">#&gt;   mean_combined_dist    balance</span></span>
-<span><span class="co">#&gt; 1          0.6517259 -0.3367309</span></span></code></pre></div>
+<span><span class="co">#&gt;   step compactness adaptive_method n_supercells mean_spatial_dist_scaled</span></span>
+<span><span class="co">#&gt; 1    8           7            &lt;NA&gt;           88                0.4718607</span></span>
+<span><span class="co">#&gt;   mean_value_dist_scaled mean_combined_dist    balance</span></span>
+<span><span class="co">#&gt; 1              0.3701397          0.6517259 -0.3367309</span></span></code></pre></div>
 <p>You may use the global metrics to compare parameter settings, for
 example by varying <code>step</code> or <code>compactness</code>.
 However, remember to keep the same <code>dist_fun</code> that you used
@@ -284,17 +284,21 @@ minimum.</p>
 <span><span class="va">metrics_higher</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_metrics_global.html">sc_metrics_global</a></span><span class="op">(</span><span class="va">vol</span>, <span class="va">vol_sc</span><span class="op">)</span></span>
 <span><span class="va">metrics_lower</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_metrics_global.html">sc_metrics_global</a></span><span class="op">(</span><span class="va">vol</span>, <span class="va">vol_sc_low</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span>higher_compactness <span class="op">=</span> <span class="va">metrics_higher</span>, lower_compactness <span class="op">=</span> <span class="va">metrics_lower</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                    step compactness n_supercells mean_spatial_dist_scaled</span></span>
-<span><span class="co">#&gt; higher_compactness    8           7           88                0.4718607</span></span>
-<span><span class="co">#&gt; lower_compactness     8           1           90                0.5500066</span></span>
-<span><span class="co">#&gt;                    mean_value_dist_scaled mean_combined_dist    balance</span></span>
-<span><span class="co">#&gt; higher_compactness              0.3701397          0.6517259 -0.3367309</span></span>
-<span><span class="co">#&gt; lower_compactness               2.1412253          2.3003626  1.1923986</span></span></code></pre></div>
-<p>When using <code>compactness = "auto"</code>, the value scaling is
-per-supercell. This improves local adaptation, but it also means metrics
-are not directly comparable to fixed-compactness outputs. In this case,
-you can still compare the spatial metrics, but the value metrics will
-reflect the local scaling rather than the original value distances.</p>
+<span><span class="co">#&gt;                    step compactness adaptive_method n_supercells</span></span>
+<span><span class="co">#&gt; higher_compactness    8           7            &lt;NA&gt;           88</span></span>
+<span><span class="co">#&gt; lower_compactness     8           1            &lt;NA&gt;           90</span></span>
+<span><span class="co">#&gt;                    mean_spatial_dist_scaled mean_value_dist_scaled</span></span>
+<span><span class="co">#&gt; higher_compactness                0.4718607              0.3701397</span></span>
+<span><span class="co">#&gt; lower_compactness                 0.5500066              2.1412253</span></span>
+<span><span class="co">#&gt;                    mean_combined_dist    balance</span></span>
+<span><span class="co">#&gt; higher_compactness          0.6517259 -0.3367309</span></span>
+<span><span class="co">#&gt; lower_compactness           2.3003626  1.1923986</span></span></code></pre></div>
+<p>When using <code>compactness = use_adaptive()</code>, the value
+scaling is per-supercell. This improves local adaptation, but it also
+means metrics are not directly comparable to fixed-compactness outputs.
+In this case, you can still compare the spatial metrics, but the value
+metrics will reflect the local scaling rather than the original value
+distances.</p>
 </div>
 <div class="section level2">
 <h2 id="feedback-and-related-tools">Feedback and related tools<a class="anchor" aria-label="anchor" href="#feedback-and-related-tools"></a>

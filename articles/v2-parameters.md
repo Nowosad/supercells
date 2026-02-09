@@ -32,34 +32,36 @@ $$D = \sqrt{\left( \frac{d_{s}}{\text{step}} \right)^{2} + \left( \frac{d_{v}}{c
 
 where $d_{s}$ is the spatial distance in grid-cell units, $d_{v}$ is the
 value-space distance (from `dist_fun`), and $c$ is the `compactness`
-value. When `step_unit = "map"`, the `step` value is converted to cells
-before segmentation; distances are still computed in grid-cell units.
-Larger `compactness` down-weights the value term, making shapes more
-regular, while smaller values emphasize value similarity.
+value. When `step` is provided as `use_meters(...)`, it is converted to
+cells before segmentation; distances are still computed in grid-cell
+units. Larger `compactness` down-weights the value term, making shapes
+more regular, while smaller values emphasize value similarity.
 
 ## Choosing step or k
 
 You can control the number and size of supercells using either `step` or
 `k`. `step` defines the spacing of initial centers in pixel units (or
-map units when `step_unit = "map"`). Smaller `step` values produce more
-and smaller supercells, while larger values produce fewer and larger
-supercells. For example, `step = 8` creates centers approximately every
-8 pixels, which leads to supercells that are roughly 8 by 8 pixels in
-size, depending on the compactness.
+map units when given as `use_meters(...)`). Smaller `step` values
+produce more and smaller supercells, while larger values produce fewer
+and larger supercells. For example, `step = 8` creates centers
+approximately every 8 pixels, which leads to supercells that are roughly
+8 by 8 pixels in size, depending on the compactness.
 
 ``` r
 sc_step <- sc_slic(vol, step = 8, compactness = 5)
 ```
 
 By default, `step` is in pixel units, but instead we can also specify it
-in map units with `step_unit = "map"`. This allows us to think about the
-spatial scales of expected supercells in terms of the actual map units.
-For example, if your raster has a resolution of 10 meters, then
-`step = 200` with `step_unit = "map"` would create centers approximately
-every 200 meters, which corresponds to every 20 pixels.
+in map units with
+[`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md).
+This allows us to think about the spatial scales of expected supercells
+in terms of the actual map units. For example, if your raster has a
+resolution of 10 meters, then `step = use_meters(200)` would create
+centers approximately every 200 meters, which corresponds to every 20
+pixels.
 
 ``` r
-sc_step_map <- sc_slic(vol, step = 200, step_unit = "map", compactness = 5)
+sc_step_map <- sc_slic(vol, step = use_meters(200), compactness = 5)
 ```
 
 `k` specifies the desired number of supercells and the algorithm chooses
@@ -118,8 +120,8 @@ The
 function estimates a reasonable starting value from a short run of the
 algorithm.
 
-It supports two summaries with `metrics = "global"` and
-`metrics = "local"`. The global version looks at overall balance between
+It supports two summaries with `metric = "global"` and
+`metric = "local"`. The global version looks at overall balance between
 value and spatial distances, while the local version uses a
 neighborhood-based value scale. More precisely:
 
@@ -138,18 +140,18 @@ neighborhood-based value scale. More precisely:
 The local estimate is often more stable for heterogeneous rasters.
 
 ``` r
-tune_global <- sc_tune_compactness(vol, step = 8, metrics = "global")
-tune_local <- sc_tune_compactness(vol, step = 8, metrics = "local")
+tune_global <- sc_tune_compactness(vol, step = 8, metric = "global")
+tune_local <- sc_tune_compactness(vol, step = 8, metric = "local")
 tune_global
-#>   step metric compactness
-#> 1    8 global    6.864497
+#>   step metric  dist_fun compactness
+#> 1    8 global euclidean    6.864497
 tune_local
-#>   step metric compactness
-#> 1    8  local    9.084872
+#>   step metric  dist_fun compactness
+#> 1    8  local euclidean    9.084872
 ```
 
-Both results return a one-row data frame with `step`, `metric`, and
-`compactness`. You can plug the suggested value into
+Both results return a one-row data frame with `step`, `metric`,
+`dist_fun`, and `compactness`. You can plug the suggested value into
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
 by setting `compactness` to the estimated value.
 
@@ -159,34 +161,37 @@ sc_tuned <- sc_slic(vol, step = 8, compactness = tune_global$compactness)
 
 If your raster has many layers, the value distances can be large. The
 `value_scale` argument controls the scaling of value distances before
-the compactness estimate. The default `"auto"` divides by
-`sqrt(nlyr(x))`, which is often a good baseline for high-dimensional
-inputs. If your values are already standardized or on a common scale,
-you can set `value_scale = 1`.
+the compactness estimate. Global:
+`compactness = (median(value) / value_scale) * step / median(spatial)`.
+Local: `compactness = median(local_mean_value / value_scale)`. Use
+`"auto"` (`sqrt(nlyr(x))`) for Euclidean-like distances; for
+bounded/angular distances (e.g., cosine), `value_scale = 1` is often
+better.
 
 ### Automatic compactness
 
-For heterogeneous rasters, `compactness = "auto"` enables SLIC0-style
-adaptive compactness. This adjusts the value scale per supercell and
-often improves local adaptation. At the same time, it reduces direct
-control, so use it when a single global compactness is hard to choose.
-Importantly, it still uses your chosen `dist_fun` for value distances.
+For heterogeneous rasters, `compactness = use_adaptive()` enables
+SLIC0-style adaptive compactness. This adjusts the value scale per
+supercell and often improves local adaptation. At the same time, it
+reduces direct control, so use it when a single global compactness is
+hard to choose. Importantly, it still uses your chosen `dist_fun` for
+value distances.
 
 ``` r
-sc_auto <- sc_slic(vol, step = 8, compactness = "auto")
+sc_auto <- sc_slic(vol, step = 8, compactness = use_adaptive())
 ```
 
 ``` r
-terra::plot(vol, main = "compactness = auto")
+terra::plot(vol, main = "compactness = adaptive")
 plot(sc_auto[0], add = TRUE, border = "red", lwd = 0.5)
 ```
 
 ![](v2-parameters_files/figure-html/unnamed-chunk-12-1.png)
 
-When you compare results, keep in mind that metrics from `"auto"` are
-not directly comparable to fixed-compactness runs. You can still compare
-spatial metrics, but value metrics reflect local scaling when
-`compactness = "auto"`.
+When you compare results, keep in mind that metrics from adaptive
+compactness are not directly comparable to fixed-compactness runs. You
+can still compare spatial metrics, but value metrics reflect local
+scaling when `compactness = use_adaptive()`.
 
 ### Manual tuning
 
@@ -203,16 +208,16 @@ cmp_metrics <- lapply(cmp_vals, function(cmp) {
 })
 cmp_metrics <- do.call(rbind, cmp_metrics)
 cmp_metrics
-#>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled
-#> 1    8           1           90                0.5500066              2.1412253
-#> 2    8           3           88                0.5246759              0.7473867
-#> 3    8           5           89                0.4982282              0.4746065
-#> 4    8           8           88                0.4610799              0.3358298
-#>   mean_combined_dist    balance
-#> 1          2.3003626  1.1923986
-#> 2          0.9994451  0.2193843
-#> 3          0.7533578 -0.1505373
-#> 4          0.6175536 -0.4145741
+#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
+#> 1    8           1            <NA>           90                0.5500066
+#> 2    8           3            <NA>           88                0.5246759
+#> 3    8           5            <NA>           89                0.4982282
+#> 4    8           8            <NA>           88                0.4610799
+#>   mean_value_dist_scaled mean_combined_dist    balance
+#> 1              2.1412253          2.3003626  1.1923986
+#> 2              0.7473867          0.9994451  0.2193843
+#> 3              0.4746065          0.7533578 -0.1505373
+#> 4              0.3358298          0.6175536 -0.4145741
 ```
 
 ## Distance and averaging functions
@@ -283,14 +288,15 @@ set `clean = FALSE`.
 
 ## Iterations
 
-You can inspect how the algorithm converges over iterations by enabling
-`iter_diagnostics = TRUE`. This attaches diagnostics to the output and
-allows plotting with
-[`sc_plot_iter_diagnostics()`](https://jakubnowosad.com/supercells/reference/sc_plot_iter_diagnostics.md).[²](#fn2)
+You can inspect how the algorithm converges over iterations with
+[`sc_slic_convergence()`](https://jakubnowosad.com/supercells/reference/sc_slic_convergence.md).
+It returns a data frame with per-iteration mean distance and has a
+dedicated
+[`plot()`](https://rspatial.github.io/terra/reference/plot.html) method.
 
 ``` r
-sc_diag <- sc_slic(vol, step = 8, compactness = 5, iter_diagnostics = TRUE)
-sc_plot_iter_diagnostics(sc_diag)
+sc_conv <- sc_slic_convergence(vol, step = 8, compactness = 5, iter = 10)
+plot(sc_conv)
 ```
 
 ![](v2-parameters_files/figure-html/unnamed-chunk-18-1.png)
@@ -303,5 +309,3 @@ runs.
 
 1.  See the **philentropy** documentation at
     <https://drostlab.github.io/philentropy/articles/Distances.html>.
-
-2.  It only works when chunking is disabled.

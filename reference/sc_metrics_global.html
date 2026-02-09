@@ -94,7 +94,8 @@ If missing, uses <code>attr(sc, "step")</code> when available</p></dd>
 
 <dt id="arg-compactness">compactness<a class="anchor" aria-label="anchor" href="#arg-compactness"></a></dt>
 <dd><p>A compactness value used for the supercells
-If missing, uses <code>attr(sc, "compactness")</code> when available</p></dd>
+If missing, uses <code>attr(sc, "compactness")</code> when available.
+Adaptive mode is read from <code>attr(sc, "adaptive_method")</code> when available.</p></dd>
 
 
 <dt id="arg-dist-fun">dist_fun<a class="anchor" aria-label="anchor" href="#arg-dist-fun"></a></dt>
@@ -120,10 +121,14 @@ values indicate spatial dominance; positive values indicate value dominance.</p>
 
 
 </dl><dl><dt>step</dt>
-<dd><p>Step size used to generate supercells.</p></dd>
+<dd><p>Step size used to generate supercells. Returned in meters when
+the input used <code>step = use_meters(...)</code>, otherwise in cells.</p></dd>
 
 <dt>compactness</dt>
 <dd><p>Compactness value used to generate supercells.</p></dd>
+
+<dt>adaptive_method</dt>
+<dd><p>Adaptive compactness method; <code>NA</code> for fixed compactness.</p></dd>
 
 <dt>n_supercells</dt>
 <dd><p>Number of supercells with at least one non-missing pixel.</p></dd>
@@ -137,7 +142,7 @@ supercell centers, averaged across supercells. Returned as <code>mean_value_dist
 <dd><p>Mean per-supercell spatial distance from cells to
 their supercell centers, averaged across supercells; units are grid cells
 (row/column index distance). If the input supercells were created with
-<code>step_unit = "map"</code>, distances are reported in map units. Returned as
+<code>step = use_meters(...)</code>, distances are reported in meters. Returned as
 <code>mean_spatial_dist</code> (or <code>mean_spatial_dist_scaled</code> when <code>scale = TRUE</code>).</p></dd>
 
 <dt>mean_combined_dist</dt>
@@ -160,7 +165,7 @@ If they are missing, they are derived from geometry and row order.
 Use <code>outcomes = c("supercells", "coordinates", "values")</code> when calling
 <code><a href="sc_slic.html">sc_slic()</a></code> or <code><a href="supercells.html">supercells()</a></code> to preserve original centers and IDs.
 Metrics are averaged across supercells (each supercell has equal weight).
-When using SLIC0 (set <code>compactness = "auto"</code> in <code><a href="sc_slic.html">sc_slic()</a></code>), combined and balance metrics use per-supercell
+When using SLIC0 (set <code>compactness = use_adaptive()</code> in <code><a href="sc_slic.html">sc_slic()</a></code>), combined and balance metrics use per-supercell
 adaptive compactness (SLIC0), and scaled value distances are computed with the
 per-supercell max value distance.</p>
     </div>
@@ -175,10 +180,10 @@ per-supercell max value distance.</p>
 <span class="r-in"><span><span class="va">vol</span> <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"raster/volcano.tif"</span>, package <span class="op">=</span> <span class="st">"supercells"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">vol_sc</span> <span class="op">=</span> <span class="fu"><a href="sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">sc_metrics_global</span><span class="op">(</span><span class="va">vol</span>, <span class="va">vol_sc</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    8           7           88                0.4718607              0.3701397</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   mean_combined_dist    balance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          0.6517259 -0.3367309</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    8           7            &lt;NA&gt;           88                0.4718607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   mean_value_dist_scaled mean_combined_dist    balance</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0.3701397          0.6517259 -0.3367309</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

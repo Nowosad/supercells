@@ -46,7 +46,8 @@ sc_metrics_global(
 - compactness:
 
   A compactness value used for the supercells If missing, uses
-  `attr(sc, "compactness")` when available
+  `attr(sc, "compactness")` when available. Adaptive mode is read from
+  `attr(sc, "adaptive_method")` when available.
 
 - dist_fun:
 
@@ -80,11 +81,16 @@ Interpretation:
 
 - step:
 
-  Step size used to generate supercells.
+  Step size used to generate supercells. Returned in meters when the
+  input used `step = use_meters(...)`, otherwise in cells.
 
 - compactness:
 
   Compactness value used to generate supercells.
+
+- adaptive_method:
+
+  Adaptive compactness method; `NA` for fixed compactness.
 
 - n_supercells:
 
@@ -101,8 +107,8 @@ Interpretation:
   Mean per-supercell spatial distance from cells to their supercell
   centers, averaged across supercells; units are grid cells (row/column
   index distance). If the input supercells were created with
-  `step_unit = "map"`, distances are reported in map units. Returned as
-  `mean_spatial_dist` (or `mean_spatial_dist_scaled` when
+  `step = use_meters(...)`, distances are reported in meters. Returned
+  as `mean_spatial_dist` (or `mean_spatial_dist_scaled` when
   `scale = TRUE`).
 
 - mean_combined_dist:
@@ -129,7 +135,7 @@ or
 [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
 to preserve original centers and IDs. Metrics are averaged across
 supercells (each supercell has equal weight). When using SLIC0 (set
-`compactness = "auto"` in
+`compactness = use_adaptive()` in
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)),
 combined and balance metrics use per-supercell adaptive compactness
 (SLIC0), and scaled value distances are computed with the per-supercell
@@ -148,8 +154,8 @@ library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 vol_sc = sc_slic(vol, step = 8, compactness = 7)
 sc_metrics_global(vol, vol_sc)
-#>   step compactness n_supercells mean_spatial_dist_scaled mean_value_dist_scaled
-#> 1    8           7           88                0.4718607              0.3701397
-#>   mean_combined_dist    balance
-#> 1          0.6517259 -0.3367309
+#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
+#> 1    8           7            <NA>           88                0.4718607
+#>   mean_value_dist_scaled mean_combined_dist    balance
+#> 1              0.3701397          0.6517259 -0.3367309
 ```

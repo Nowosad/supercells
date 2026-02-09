@@ -89,7 +89,7 @@ It is also possible to provide a set of points (an <code>sf</code> object) as <c
 
 <dt id="arg-compactness">compactness<a class="anchor" aria-label="anchor" href="#arg-compactness"></a></dt>
 <dd><p>A compactness value. Larger values cause supercells to be more compact/even (square).
-Set <code>compactness = "auto"</code> to enable adaptive compactness (SLIC0).
+Use <code><a href="use_adaptive.html">use_adaptive()</a></code> to enable adaptive compactness (SLIC0).
 A compactness value depends on the range of input cell values and selected distance measure.</p></dd>
 
 
@@ -114,7 +114,9 @@ A compactness value depends on the range of input cell values and selected dista
 
 
 <dt id="arg-step">step<a class="anchor" aria-label="anchor" href="#arg-step"></a></dt>
-<dd><p>The distance (number of cells) between initial supercells' centers. You can use either <code>k</code> or <code>step</code>.</p></dd>
+<dd><p>Initial center spacing. You can use either <code>k</code> or <code>step</code>.
+Provide a plain numeric value for cell units, or use <code><a href="use_meters.html">use_meters()</a></code> for
+map-distance steps in meters (automatically converted to cells using raster resolution).</p></dd>
 
 
 <dt id="arg-minarea">minarea<a class="anchor" aria-label="anchor" href="#arg-minarea"></a></dt>

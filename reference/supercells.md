@@ -41,9 +41,10 @@ supercells(
 - compactness:
 
   A compactness value. Larger values cause supercells to be more
-  compact/even (square). Set `compactness = "auto"` to enable adaptive
-  compactness (SLIC0). A compactness value depends on the range of input
-  cell values and selected distance measure.
+  compact/even (square). Use
+  [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
+  to enable adaptive compactness (SLIC0). A compactness value depends on
+  the range of input cell values and selected distance measure.
 
 - dist_fun:
 
@@ -84,8 +85,11 @@ supercells(
 
 - step:
 
-  The distance (number of cells) between initial supercells' centers.
-  You can use either `k` or `step`.
+  Initial center spacing. You can use either `k` or `step`. Provide a
+  plain numeric value for cell units, or use
+  [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md)
+  for map-distance steps in meters (automatically converted to cells
+  using raster resolution).
 
 - minarea:
 

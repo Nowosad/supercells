@@ -12,9 +12,8 @@ uses a median of per-center mean distances.
 sc_tune_compactness(
   raster,
   step = NULL,
-  step_unit = "cells",
   compactness = 1,
-  metrics = "global",
+  metric = "global",
   dist_fun = "euclidean",
   avg_fun = "mean",
   clean = TRUE,
@@ -35,18 +34,17 @@ sc_tune_compactness(
 
 - step:
 
-  The distance (number of cells) between initial centers (alternative is
-  `k`).
-
-- step_unit:
-
-  Units for `step`. Use "cells" for pixel units or "map" for map units.
+  Initial center spacing (alternative is `k`). Provide a plain numeric
+  value for cell units, or use
+  [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md)
+  for map-distance steps in meters (automatically converted to cells
+  using raster resolution).
 
 - compactness:
 
   Starting compactness used for the initial short run.
 
-- metrics:
+- metric:
 
   Which compactness metric to return: `"global"` or `"local"`. Default:
   `"global"`.
@@ -94,17 +92,24 @@ sc_tune_compactness(
 
 - value_scale:
 
-  Optional scale factor applied to the median value distance before
-  computing compactness. Use `"auto"` to divide by `sqrt(nlyr(raster))`
-  (useful for high-dimensional embeddings). Default: `"auto"`.
+  Scale factor for value distances during tuning. Global metric:
+  `compactness = (median(d_value) / value_scale) * step / median(d_spatial)`.
+  Local metric:
+  `compactness = median(local_mean(d_value) / value_scale)`. `"auto"`
+  uses `sqrt(nlyr(raster))` (good for Euclidean-like distances); for
+  bounded/angular distances (e.g., cosine), `value_scale = 1` is often
+  better. Default: `"auto"`.
 
 ## Value
 
-A one-row data frame with columns `step`, `metric`, and `compactness`.
+A one-row data frame with columns `step`, `metric`, `dist_fun`, and
+`compactness`.
 
 ## See also
 
-[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
+[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md),
+[`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md),
+[`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
 
 ## Examples
 
