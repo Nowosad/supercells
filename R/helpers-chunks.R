@@ -28,7 +28,7 @@
       r = r + max_id
     }
     n_centers = nrow(chunks[[i]][["centers"]])
-    if (!is.na(n_centers) && n_centers > 0) {
+    if (n_centers > 0) {
       max_id = max_id + n_centers
     }
     rasters[[i]] = r
@@ -141,14 +141,6 @@
   nrows = ext[, 2] - ext[, 1] + 1
   ncols = ext[, 4] - ext[, 3] + 1
   as.integer(ceiling(nrows / step) * ceiling(ncols / step))
-}
-
-# deterministic per-chunk id offsets based on expected supercell counts
-.sc_chunk_offsets = function(chunk_ext, step) {
-  expected = .sc_chunk_expected_max_ids(chunk_ext, step)
-  offsets = cumsum(c(0L, expected[-length(expected)]))
-  storage.mode(offsets) = "double"
-  offsets
 }
 
 # choose a compact integer datatype based on expected max id

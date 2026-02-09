@@ -7,9 +7,8 @@
 sc_tune_compactness(
   raster,
   step = NULL,
-  step_unit = "cells",
   compactness = 1,
-  metrics = "global",
+  metric = "global",
   dist_fun = "euclidean",
   avg_fun = "mean",
   clean = TRUE,
@@ -24,13 +23,13 @@ sc_tune_compactness(
 \arguments{
 \item{raster}{A \code{SpatRaster}.}
 
-\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
-
-\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units.}
+\item{step}{Initial center spacing (alternative is \code{k}).
+Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
+map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{compactness}{Starting compactness used for the initial short run.}
 
-\item{metrics}{Which compactness metric to return: \code{"global"} or \code{"local"}.
+\item{metric}{Which compactness metric to return: \code{"global"} or \code{"local"}.
 Default: \code{"global"}.}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
@@ -54,12 +53,15 @@ function must accept a numeric vector and return a single numeric value.}
 \item{sample_size}{Optional limit on the number of pixels used for the summary
 (passed to \code{terra::global()} as \code{maxcell}).}
 
-\item{value_scale}{Optional scale factor applied to the median value distance
-before computing compactness. Use \code{"auto"} to divide by \code{sqrt(nlyr(raster))}
-(useful for high-dimensional embeddings). Default: \code{"auto"}.}
+\item{value_scale}{Scale factor for value distances during tuning.
+Global metric: \code{compactness = (median(d_value) / value_scale) * step / median(d_spatial)}.
+Local metric: \code{compactness = median(local_mean(d_value) / value_scale)}.
+\code{"auto"} uses \code{sqrt(nlyr(raster))} (good for Euclidean-like distances);
+for bounded/angular distances (e.g., cosine), \code{value_scale = 1} is often better.
+Default: \code{"auto"}.}
 }
 \value{
-A one-row data frame with columns \code{step}, \code{metric}, and \code{compactness}.
+A one-row data frame with columns \code{step}, \code{metric}, \code{dist_fun}, and \code{compactness}.
 }
 \description{
 Runs a short SLIC segmentation (default \code{iter = 1}) and uses cell-level
@@ -76,5 +78,5 @@ tune$compactness
 
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=use_meters]{use_meters()}}, \code{\link[=use_adaptive]{use_adaptive()}}
 }

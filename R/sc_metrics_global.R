@@ -8,7 +8,7 @@
 #' Use `outcomes = c("supercells", "coordinates", "values")` when calling
 #' `sc_slic()` or `supercells()` to preserve original centers and IDs.
 #' Metrics are averaged across supercells (each supercell has equal weight).
-#' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
+#' When using SLIC0 (set `compactness = use_adaptive()` in [sc_slic()]), combined and balance metrics use per-supercell
 #' adaptive compactness (SLIC0), and scaled value distances are computed with the
 #' per-supercell max value distance.
 #'
@@ -28,8 +28,10 @@
 #'   values indicate spatial dominance; positive values indicate value dominance.}
 #' }
 #' \describe{
-#'   \item{step}{Step size used to generate supercells.}
+#'   \item{step}{Step size used to generate supercells. Returned in meters when
+#'   the input used `step = use_meters(...)`, otherwise in cells.}
 #'   \item{compactness}{Compactness value used to generate supercells.}
+#'   \item{adaptive_method}{Adaptive compactness method; `NA` for fixed compactness.}
 #'   \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 #'   \item{mean_value_dist}{Mean per-supercell value distance from cells to their
 #'   supercell centers, averaged across supercells. Returned as `mean_value_dist`
@@ -37,7 +39,7 @@
 #'   \item{mean_spatial_dist}{Mean per-supercell spatial distance from cells to
 #'   their supercell centers, averaged across supercells; units are grid cells
 #'   (row/column index distance). If the input supercells were created with
-#'   `step_unit = "map"`, distances are reported in map units. Returned as
+#'   `step = use_meters(...)`, distances are reported in meters. Returned as
 #'   `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
 #'   \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 #'   value and spatial distances using `compactness` and `step`, averaged across
@@ -58,13 +60,9 @@ sc_metrics_global = function(x, sc,
                              metrics = c("spatial", "value", "combined", "balance"),
                              scale = TRUE,
                              step, compactness, dist_fun = NULL) {
-  if (missing(dist_fun) || is.null(dist_fun)) {
-    dist_fun = attr(sc, "dist_fun")
-    if (is.null(dist_fun)) {
-      stop("The 'dist_fun' argument is required when it is not stored in 'sc'", call. = FALSE)
-    }
-  }
-  if (any(!metrics %in% c("spatial", "value", "combined", "balance"))) {
+  dist_fun = .sc_metrics_resolve_dist_fun(sc, dist_fun)
+  allowed_metrics = c("spatial", "value", "combined", "balance")
+  if (any(!metrics %in% allowed_metrics)) {
     stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
   }
 
@@ -78,15 +76,9 @@ sc_metrics_global = function(x, sc,
   mean_spatial_dist = out[["mean_spatial_dist"]] * prep$spatial_scale
   mean_combined_dist = out[["mean_combined_dist"]]
   balance = out[["balance"]]
-
-  if (isTRUE(scale)) {
-    if (isTRUE(prep$adaptive_compactness)) {
-      mean_value_dist = out[["mean_value_dist_scaled"]]
-    } else {
-      mean_value_dist = mean_value_dist / prep$compactness
-    }
-    mean_spatial_dist = mean_spatial_dist / prep$step_scale
-  }
+  scaled = .sc_metrics_scale_summary(mean_value_dist, mean_spatial_dist, out, prep, scale)
+  mean_value_dist = scaled$value_dist
+  mean_spatial_dist = scaled$spatial_dist
 
   metric_values = list(
     spatial = mean_spatial_dist,
@@ -102,8 +94,15 @@ sc_metrics_global = function(x, sc,
     balance = "balance"
   )
   names(out_metrics) = unname(name_map[metrics])
+  step_out = prep$step_meta
+  adaptive_method_out = prep$adaptive_method
+  if (is.null(adaptive_method_out)) {
+    adaptive_method_out = NA_character_
+  }
   results = cbind(
-    data.frame(step = prep$step, compactness = prep$compactness, n_supercells = out[["n_supercells"]]),
+    data.frame(step = step_out, compactness = prep$compactness,
+               adaptive_method = adaptive_method_out,
+               n_supercells = out[["n_supercells"]]),
     out_metrics
   )
   return(results)

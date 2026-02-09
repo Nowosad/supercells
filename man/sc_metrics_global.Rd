@@ -30,7 +30,8 @@ columns are named with the \verb{_scaled} suffix.}
 If missing, uses \code{attr(sc, "step")} when available}
 
 \item{compactness}{A compactness value used for the supercells
-If missing, uses \code{attr(sc, "compactness")} when available}
+If missing, uses \code{attr(sc, "compactness")} when available.
+Adaptive mode is read from \code{attr(sc, "adaptive_method")} when available.}
 
 \item{dist_fun}{A distance function name or function, as in \code{\link[=sc_slic]{sc_slic()}}.
 If missing or \code{NULL}, uses \code{attr(sc, "dist_fun")} when available.}
@@ -46,8 +47,10 @@ Interpretation:
 values indicate spatial dominance; positive values indicate value dominance.}
 }
 \describe{
-\item{step}{Step size used to generate supercells.}
+\item{step}{Step size used to generate supercells. Returned in meters when
+the input used \code{step = use_meters(...)}, otherwise in cells.}
 \item{compactness}{Compactness value used to generate supercells.}
+\item{adaptive_method}{Adaptive compactness method; \code{NA} for fixed compactness.}
 \item{n_supercells}{Number of supercells with at least one non-missing pixel.}
 \item{mean_value_dist}{Mean per-supercell value distance from cells to their
 supercell centers, averaged across supercells. Returned as \code{mean_value_dist}
@@ -55,7 +58,7 @@ supercell centers, averaged across supercells. Returned as \code{mean_value_dist
 \item{mean_spatial_dist}{Mean per-supercell spatial distance from cells to
 their supercell centers, averaged across supercells; units are grid cells
 (row/column index distance). If the input supercells were created with
-\code{step_unit = "map"}, distances are reported in map units. Returned as
+\code{step = use_meters(...)}, distances are reported in meters. Returned as
 \code{mean_spatial_dist} (or \code{mean_spatial_dist_scaled} when \code{scale = TRUE}).}
 \item{mean_combined_dist}{Mean per-supercell combined distance, computed from
 value and spatial distances using \code{compactness} and \code{step}, averaged across
@@ -75,7 +78,7 @@ If they are missing, they are derived from geometry and row order.
 Use \code{outcomes = c("supercells", "coordinates", "values")} when calling
 \code{sc_slic()} or \code{supercells()} to preserve original centers and IDs.
 Metrics are averaged across supercells (each supercell has equal weight).
-When using SLIC0 (set \code{compactness = "auto"} in \code{\link[=sc_slic]{sc_slic()}}), combined and balance metrics use per-supercell
+When using SLIC0 (set \code{compactness = use_adaptive()} in \code{\link[=sc_slic]{sc_slic()}}), combined and balance metrics use per-supercell
 adaptive compactness (SLIC0), and scaled value distances are computed with the
 per-supercell max value distance.
 }

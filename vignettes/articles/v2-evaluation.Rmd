@@ -26,7 +26,7 @@ D = \sqrt{\left(\frac{d_s}{\text{step}}\right)^2 + \left(\frac{d_v}{c}\right)^2}
 $$
 
 where $d_s$ is the spatial distance in grid-cell units, $d_v$ is the value-space distance defined by `dist_fun`, and $c$ is `compactness`.
-<!-- When `compactness = "auto"`, $c$ becomes a per-center value scale computed as the maximum value distance within a local $2 \times \text{step}$ window. -->
+<!-- When `compactness = use_adaptive()`, $c$ becomes a per-center value scale computed as the maximum value distance within a local $2 \times \text{step}$ window. -->
 
 All examples use the `volcano` raster for simplicity, but the same workflow applies to multi-layer rasters.
 
@@ -47,7 +47,7 @@ Pixel metrics are provided with the `sc_metrics_pixels()` function, which accept
 
 The pixel metrics include four layers^[Use the `metrics` argument to request a subset of metrics], each with a specific interpretation and a simple definition:
 
-1. `spatial`: $d_s$, the distance from each pixel to its supercell center in grid-cell units (unless the input supercells were created with `step_unit = "map"`, in which case distances are reported in map units).
+1. `spatial`: $d_s$, the distance from each pixel to its supercell center in grid-cell units (unless the input supercells were created with `step = use_meters(...)`, in which case distances are reported in map units).
 Lower spatial values indicate cells that are closer to the center and more compact supercells, while higher values indicate cells that are farther from the center and may indicate irregular shapes or outliers.
 2. `value`: $d_v$, the distance from each pixel to its supercell center in the value space defined by your `dist_fun`.
 Lower value distances indicate more homogeneous supercells, while higher values indicate more heterogeneous supercells or outliers.
@@ -126,7 +126,7 @@ metrics_lower <- sc_metrics_global(vol, vol_sc_low)
 rbind(higher_compactness = metrics_higher, lower_compactness = metrics_lower)
 ```
 
-When using `compactness = "auto"`, the value scaling is per-supercell.
+When using `compactness = use_adaptive()`, the value scaling is per-supercell.
 This improves local adaptation, but it also means metrics are not directly comparable to fixed-compactness outputs. 
 In this case, you can still compare the spatial metrics, but the value metrics will reflect the local scaling rather than the original value distances.
 

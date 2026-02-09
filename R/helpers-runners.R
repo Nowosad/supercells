@@ -24,8 +24,7 @@
 
   raster_ref = x
   list(centers = slic[[2]], centers_vals = slic[[3]],
-       iter_diagnostics = slic[[4]], names_x = names(x),
-       raster_ref = raster_ref)
+       names_x = names(x), raster_ref = raster_ref)
 }
 
 # run slic on the raster chunk defined by ext
@@ -116,10 +115,6 @@
                                minarea, input_centers,
                                iter_diagnostics = iter_diagnostics, verbose = verbose)
     points_sf = .sc_run_centers_points(res$centers, res$raster_ref, res$centers_vals, res$names_x)
-    # points_sf = stats::na.omit(points_sf)
-    if (iter_diagnostics && !is.null(res$iter_diagnostics)) {
-      attr(points_sf, "iter_diagnostics") = res$iter_diagnostics
-    }
     return(points_sf)
   }
   res = .sc_run_chunk_raster(ext, x, step, compactness, dist_name,
@@ -132,9 +127,6 @@
   points_sf = points_sf[points_sf[["supercells"]] %in% ids, , drop = FALSE]
   points_sf = points_sf[match(ids, points_sf[["supercells"]]), , drop = FALSE]
   points_sf = stats::na.omit(points_sf)
-  if (iter_diagnostics && !is.null(res$iter_diagnostics)) {
-    attr(points_sf, "iter_diagnostics") = res$iter_diagnostics
-  }
   return(points_sf)
 }
 
@@ -162,9 +154,6 @@
     }
     slic_sf = cbind(slic_sf, centers_df)
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
-    if (iter_diagnostics && !is.null(res$iter_diagnostics)) {
-      attr(slic_sf, "iter_diagnostics") = res$iter_diagnostics
-    }
     return(slic_sf)
   }
 }

@@ -12,14 +12,15 @@
 #' @param step A step value used for the supercells
 #' If missing, uses `attr(sc, "step")` when available
 #' @param compactness A compactness value used for the supercells
-#' If missing, uses `attr(sc, "compactness")` when available
+#' If missing, uses `attr(sc, "compactness")` when available.
+#' Adaptive mode is read from `attr(sc, "adaptive_method")` when available.
 #' @param dist_fun A distance function name or function, as in [sc_slic()].
 #' If missing or `NULL`, uses `attr(sc, "dist_fun")` when available.
 #'
 #' @details
 #' If `sc` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers.
-#' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
+#' When using SLIC0 (set `compactness = use_adaptive()` in [sc_slic()]), combined and balance metrics use per-supercell
 #' adaptive compactness (SLIC0), and scaled value distances are computed with the
 #' per-supercell max value distance.
 #'
@@ -36,7 +37,7 @@
 #' \describe{
 #'   \item{spatial}{Spatial distance from each pixel to its supercell center
 #'   in grid-cell units (row/column index distance). If the input supercells were
-#'   created with `step_unit = "map"`, distances are reported in map units.}
+#'   created with `step = use_meters(...)`, distances are reported in meters.}
 #'   \item{value}{Value distance from each pixel to its supercell center in
 #'   the raster value space.}
 #'   \item{combined}{Combined distance using `compactness` and `step`.}
@@ -57,17 +58,12 @@ sc_metrics_pixels = function(x, sc,
                              metrics = c("spatial", "value", "combined", "balance"),
                              scale = TRUE,
                              step, compactness, dist_fun = NULL) {
-  if (missing(dist_fun) || is.null(dist_fun)) {
-    dist_fun = attr(sc, "dist_fun")
-    if (is.null(dist_fun)) {
-      stop("The 'dist_fun' argument is required when it is not stored in 'sc'", call. = FALSE)
-    }
-  }
-  
-  if (any(!metrics %in% c("spatial", "value", "combined", "balance"))) {
+  dist_fun = .sc_metrics_resolve_dist_fun(sc, dist_fun)
+  allowed_metrics = c("spatial", "value", "combined", "balance")
+  if (any(!metrics %in% allowed_metrics)) {
     stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
   }
-  
+
   prep = .sc_metrics_prep(x, sc, dist_fun, compactness, step)
 
   out = sc_metrics_pixels_cpp(prep$clusters, prep$centers_xy, prep$centers_vals, prep$vals,
@@ -89,14 +85,12 @@ sc_metrics_pixels = function(x, sc,
     if ("balance" %in% metrics) {
       balance = log(value_scaled / spatial_scaled)
     }
-  } 
-
+  }
+  result = c(spatial, value, combined)
+  names(result) = c("spatial", "value", "combined")
   if ("balance" %in% metrics) {
-    result = c(spatial, value, combined, balance)
-    names(result) = c("spatial", "value", "combined", "balance")
-  } else {
-    result = c(spatial, value, combined)
-    names(result) = c("spatial", "value", "combined")
+    result = c(result, balance)
+    names(result)[4] = "balance"
   }
 
   result = result[[metrics]]

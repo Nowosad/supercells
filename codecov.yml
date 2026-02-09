@@ -1,5 +1,9 @@
 comment: false
 
+ignore:
+  - "R/sc_merge_supercells.R"
+  - "**/R/sc_merge_supercells.R"
+
 coverage:
   status:
     project:

@@ -9,21 +9,21 @@
 #' [`sc_slic_raster()`] and [`sc_slic_points()`].
 #' Evaluation and diagnostic options:
 #' \itemize{
-#'   \item Iteration diagnostics: set `iter_diagnostics = TRUE` to attach an
-#'   `iter_diagnostics` attribute (only available without chunking). Use
-#'   [`sc_plot_iter_diagnostics()`] to visualize the convergence over iterations.
+#'   \item Iteration convergence: use [`sc_slic_convergence()`] and plot its output.
 #'   \item Pixel diagnostics: [sc_metrics_pixels()] for per-pixel spatial, value,
 #'   and combined distances.
 #'   \item Cluster diagnostics: [sc_metrics_supercells()] for per-supercell summaries.
 #'   \item Global diagnostics: [sc_metrics_global()] for a single-row summary.
 #' }
-#' @seealso [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_plot_iter_diagnostics()`],
+#' @seealso [use_meters()], [use_adaptive()], [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_slic_convergence()`],
 #'   [`sc_metrics_pixels()`], [`sc_metrics_supercells()`], [`sc_metrics_global()`]
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars).
-#' @param step The distance (number of cells) between initial centers (alternative is `k`).
+#' @param step Initial center spacing (alternative is `k`).
+#' Provide a plain numeric value for cell units, or use [use_meters()] for
+#' map-distance steps in meters (automatically converted to cells using raster resolution).
 #' @param compactness A compactness value. Use [`sc_tune_compactness()`] to estimate it.
-#' Set `compactness = "auto"` to enable adaptive compactness (SLIC0).
+#' Use [use_adaptive()] to enable adaptive compactness (SLIC0).
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.
@@ -33,22 +33,20 @@
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param minarea Minimal size of a supercell (in cells).
 #' @param iter Number of iterations.
-#' @param step_unit Units for `step`. Use "cells" for pixel units or "map" for map units
-#' (converted to cells using raster resolution).
 #' @param k The number of supercells desired (alternative to `step`).
 #' @param centers Optional sf object of custom centers. Requires `step`.
 #' @param outcomes Character vector controlling which fields are returned.
 #' Allowed values are "supercells", "coordinates", and "values". Default is
-#' "values". Use `outcomes = c("supercells", "coordinates", "values")` for full output.
+#' full output (`c("supercells", "coordinates", "values")`).
+#' Use `outcomes = "values"` for value summaries only.
 #' @param chunks Chunking option. Use `FALSE` for no chunking, `TRUE` for
 #' automatic chunking based on size, or a numeric value for a fixed chunk size
 #' (in number of cells per side).
 #' @param verbose Verbosity level.
-#' @param iter_diagnostics Logical. If `TRUE`, attaches iteration diagnostics as an
-#' attribute (`iter_diagnostics`) on the output. Only available when chunks are not used.
 #'
 #' @return An sf object with the supercell polygons and summary statistics.
-#' Information on `step` and `compactness` are attached to the result as attributes.
+#' Information on `step`, `compactness`, and `adaptive_method` are attached to
+#' the result as attributes (`adaptive_method` is `NULL` for fixed compactness).
 #'
 #' @references Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120
 #' @references Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935
@@ -64,20 +62,18 @@
 #' plot(sf::st_geometry(vol_slic1), add = TRUE, lwd = 0.2)
 sc_slic = function(x, step = NULL, compactness, dist_fun = "euclidean",
                    avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                   step_unit = "cells", k = NULL, centers = NULL,
-                   outcomes = "values", chunks = FALSE,
-                   iter_diagnostics = FALSE, verbose = 0) {
+                   k = NULL, centers = NULL,
+                   outcomes = c("supercells", "coordinates", "values"), chunks = FALSE,
+                   verbose = 0) {
 
   if (iter == 0) {
     stop("iter = 0 returns centers only; polygon output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
   }
-  prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                                k, centers, outcomes, chunks, iter_diagnostics, verbose)
+  prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
+                                k, centers, outcomes, chunks, verbose)
 
   segment = .sc_slic_segment(prep_args, .sc_run_full_polygons, .sc_run_chunk_polygons)
 
-  iter_attr = .sc_slic_add_iter_attr(segment$chunks, prep_args$iter_diagnostics)
-
-  result = .sc_slic_post(segment$chunks, prep_args, iter_attr)
+  result = .sc_slic_post(segment$chunks, prep_args)
   return(result)
 }

@@ -13,22 +13,22 @@ sc_slic(
   clean = TRUE,
   minarea,
   iter = 10,
-  step_unit = "cells",
   k = NULL,
   centers = NULL,
-  outcomes = "values",
+  outcomes = c("supercells", "coordinates", "values"),
   chunks = FALSE,
-  iter_diagnostics = FALSE,
   verbose = 0
 )
 }
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
-\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
+\item{step}{Initial center spacing (alternative is \code{k}).
+Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
+map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
-Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).}
+Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness (SLIC0).}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
@@ -44,29 +44,25 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{iter}{Number of iterations.}
 
-\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units
-(converted to cells using raster resolution).}
-
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
 \item{centers}{Optional sf object of custom centers. Requires \code{step}.}
 
 \item{outcomes}{Character vector controlling which fields are returned.
 Allowed values are "supercells", "coordinates", and "values". Default is
-"values". Use \code{outcomes = c("supercells", "coordinates", "values")} for full output.}
+full output (\code{c("supercells", "coordinates", "values")}).
+Use \code{outcomes = "values"} for value summaries only.}
 
 \item{chunks}{Chunking option. Use \code{FALSE} for no chunking, \code{TRUE} for
 automatic chunking based on size, or a numeric value for a fixed chunk size
 (in number of cells per side).}
 
-\item{iter_diagnostics}{Logical. If \code{TRUE}, attaches iteration diagnostics as an
-attribute (\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
-
 \item{verbose}{Verbosity level.}
 }
 \value{
 An sf object with the supercell polygons and summary statistics.
-Information on \code{step} and \code{compactness} are attached to the result as attributes.
+Information on \code{step}, \code{compactness}, and \code{adaptive_method} are attached to
+the result as attributes (\code{adaptive_method} is \code{NULL} for fixed compactness).
 }
 \description{
 Creates supercells from single- or multi-band rasters using an extended SLIC algorithm.
@@ -78,9 +74,7 @@ Use \code{\link[=sc_slic]{sc_slic()}} for polygon outputs. For raster or point c
 \code{\link[=sc_slic_raster]{sc_slic_raster()}} and \code{\link[=sc_slic_points]{sc_slic_points()}}.
 Evaluation and diagnostic options:
 \itemize{
-\item Iteration diagnostics: set \code{iter_diagnostics = TRUE} to attach an
-\code{iter_diagnostics} attribute (only available without chunking). Use
-\code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}} to visualize the convergence over iterations.
+\item Iteration convergence: use \code{\link[=sc_slic_convergence]{sc_slic_convergence()}} and plot its output.
 \item Pixel diagnostics: \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}} for per-pixel spatial, value,
 and combined distances.
 \item Cluster diagnostics: \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}} for per-supercell summaries.
@@ -102,6 +96,6 @@ Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012).
 Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935
 }
 \seealso{
-\code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_plot_iter_diagnostics]{sc_plot_iter_diagnostics()}},
+\code{\link[=use_meters]{use_meters()}}, \code{\link[=use_adaptive]{use_adaptive()}}, \code{\link[=sc_slic_raster]{sc_slic_raster()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}, \code{\link[=sc_slic_convergence]{sc_slic_convergence()}},
 \code{\link[=sc_metrics_pixels]{sc_metrics_pixels()}}, \code{\link[=sc_metrics_supercells]{sc_metrics_supercells()}}, \code{\link[=sc_metrics_global]{sc_metrics_global()}}
 }

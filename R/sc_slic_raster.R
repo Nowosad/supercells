@@ -20,9 +20,9 @@
 #' terra::plot(vol_ids)
 sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
-                          step_unit = "cells", k = NULL, centers = NULL,
+                          k = NULL, centers = NULL,
                           outcomes = "supercells", chunks = FALSE,
-                          iter_diagnostics = FALSE, verbose = 0) {
+                          verbose = 0) {
 
   if (iter == 0) {
     stop("iter = 0 returns centers only; raster output is not available. Use sc_slic_points(iter = 0) to get initial centers.", call. = FALSE)
@@ -31,8 +31,8 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
     stop("sc_slic_raster() supports only outcomes = 'supercells'", call. = FALSE)
   }
   # prep arguments
-  prep_args = .sc_slic_prep_args(x, step, step_unit, compactness, dist_fun, avg_fun, clean, minarea, iter,
-                            k, centers, outcomes, chunks, iter_diagnostics, verbose)
+  prep_args = .sc_slic_prep_args(x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
+                            k, centers, outcomes, chunks, verbose)
 
   # segment once (single) or per chunk (chunked), returning a list of chunk results
   if (nrow(prep_args$chunk_ext) > 1) {
@@ -49,19 +49,29 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
         message(sprintf("Processing chunk %d/%d", i, n_chunks))
       }
       ext = prep_args$chunk_ext[i, ]
-      res = .sc_run_chunk_raster(ext, prep_args$x, prep_args$step, prep_args$compactness,
-                                 prep_args$funs$dist_name, prep_args$adaptive_compactness,
-                                 prep_args$funs$dist_fun,
-                                 prep_args$funs$avg_fun_fun, prep_args$funs$avg_fun_name,
-                                 prep_args$clean, prep_args$iter, prep_args$minarea,
-                                 prep_args$input_centers, prep_args$iter_diagnostics,
-                                 prep_args$verbose_cpp)
+      res = .sc_run_chunk_raster(
+        ext = ext,
+        x = prep_args$x,
+        step = prep_args$step,
+        compactness = prep_args$compactness,
+        dist_name = prep_args$funs$dist_name,
+        adaptive_compactness = prep_args$adaptive_compactness,
+        dist_fun = prep_args$funs$dist_fun,
+        avg_fun_fun = prep_args$funs$avg_fun_fun,
+        avg_fun_name = prep_args$funs$avg_fun_name,
+        clean = prep_args$clean,
+        iter = prep_args$iter,
+        minarea = prep_args$minarea,
+        input_centers = prep_args$input_centers,
+        iter_diagnostics = FALSE,
+        verbose = prep_args$verbose_cpp
+      )
       r = res[["raster"]]
       if (max_id > 0) {
         r = r + max_id
       }
       n_centers = nrow(res[["centers"]])
-      if (!is.na(n_centers) && n_centers > 0) {
+      if (n_centers > 0) {
         max_id = max_id + n_centers
       }
       chunk_files[i] = tempfile(fileext = ".tif")

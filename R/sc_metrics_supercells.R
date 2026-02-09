@@ -11,7 +11,7 @@
 #' @details
 #' If `sc` lacks `supercells`, `x`, or `y` columns, they are derived from geometry
 #' and row order, which may differ from the original centers
-#' When using SLIC0 (set `compactness = "auto"` in [sc_slic()]), combined and balance metrics use per-supercell
+#' When using SLIC0 (set `compactness = use_adaptive()` in [sc_slic()]), combined and balance metrics use per-supercell
 #' adaptive compactness (SLIC0), and scaled value distances are computed with the
 #' per-supercell max value distance.
 #' @return An sf object with one row per supercell and columns:
@@ -28,7 +28,7 @@
 #'   \item{supercells}{Supercell ID.}
 #'   \item{spatial}{Mean spatial distance from cells to the supercell center
 #'   in grid-cell units (row/column index distance). If the input supercells were
-#'   created with `step_unit = "map"`, distances are reported in map units.
+#'   created with `step = use_meters(...)`, distances are reported in meters.
 #'   Returned as `mean_spatial_dist` (or `mean_spatial_dist_scaled` when `scale = TRUE`).}
 #'   \item{value}{Mean value distance from cells to the supercell center in
 #'   value space. Returned as `mean_value_dist` (or `mean_value_dist_scaled`
@@ -50,13 +50,9 @@ sc_metrics_supercells = function(x, sc,
                                metrics = c("spatial", "value", "combined", "balance"),
                                scale = TRUE,
                                step, compactness, dist_fun = NULL) {
-  if (missing(dist_fun) || is.null(dist_fun)) {
-    dist_fun = attr(sc, "dist_fun")
-    if (is.null(dist_fun)) {
-      stop("The 'dist_fun' argument is required when it is not stored in 'sc'", call. = FALSE)
-    }
-  }
-  if (any(!metrics %in% c("spatial", "value", "combined", "balance"))) {
+  dist_fun = .sc_metrics_resolve_dist_fun(sc, dist_fun)
+  allowed_metrics = c("spatial", "value", "combined", "balance")
+  if (any(!metrics %in% allowed_metrics)) {
     stop("metrics must be one or more of: spatial, value, combined, balance", call. = FALSE)
   }
 
@@ -73,15 +69,9 @@ sc_metrics_supercells = function(x, sc,
   mean_spatial_dist = out[["mean_spatial_dist"]] * prep$spatial_scale
   mean_combined_dist = out[["mean_combined_dist"]]
   balance = log(out[["balance"]])
-
-  if (isTRUE(scale)) {
-    if (isTRUE(prep$adaptive_compactness)) {
-      mean_value_dist = out[["mean_value_dist_scaled"]]
-    } else {
-      mean_value_dist = mean_value_dist / prep$compactness
-    }
-    mean_spatial_dist = mean_spatial_dist / prep$step_scale
-  }
+  scaled = .sc_metrics_scale_summary(mean_value_dist, mean_spatial_dist, out, prep, scale)
+  mean_value_dist = scaled$value_dist
+  mean_spatial_dist = scaled$spatial_dist
 
   x_ordered = prep$sc[order_idx, , drop = FALSE]
   x_keep = x_ordered[, "supercells", drop = FALSE]

@@ -13,22 +13,22 @@ sc_slic_raster(
   clean = TRUE,
   minarea,
   iter = 10,
-  step_unit = "cells",
   k = NULL,
   centers = NULL,
   outcomes = "supercells",
   chunks = FALSE,
-  iter_diagnostics = FALSE,
   verbose = 0
 )
 }
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
 
-\item{step}{The distance (number of cells) between initial centers (alternative is \code{k}).}
+\item{step}{Initial center spacing (alternative is \code{k}).
+Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
+map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
-Set \code{compactness = "auto"} to enable adaptive compactness (SLIC0).}
+Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness (SLIC0).}
 
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
@@ -44,9 +44,6 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{iter}{Number of iterations.}
 
-\item{step_unit}{Units for \code{step}. Use "cells" for pixel units or "map" for map units
-(converted to cells using raster resolution).}
-
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
 \item{centers}{Optional sf object of custom centers. Requires \code{step}.}
@@ -57,9 +54,6 @@ Only \code{"supercells"} is supported in \code{sc_slic_raster()}.}
 \item{chunks}{Chunking option. Use \code{FALSE} for no chunking, \code{TRUE} for
 automatic chunking based on size, or a numeric value for a fixed chunk size
 (in number of cells per side).}
-
-\item{iter_diagnostics}{Logical. If \code{TRUE}, attaches iteration diagnostics as an
-attribute (\code{iter_diagnostics}) on the output. Only available when chunks are not used.}
 
 \item{verbose}{Verbosity level.}
 }
