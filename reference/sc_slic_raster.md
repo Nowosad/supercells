@@ -105,7 +105,8 @@ A SpatRaster with supercell IDs.
 
 ## See also
 
-[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
+[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md),
+[`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)
 
 ## Examples
 

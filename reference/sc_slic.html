@@ -27,6 +27,7 @@ spacing (step), as well as optional custom centers and chunking."><meta property
     <li><a class="dropdown-item" href="../articles/v2-intro.html">Introduction to supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-parameters.html">Choosing parameters for supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-benchmarks.html">Benchmarks</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
     <li><a class="dropdown-item" href="../articles/v1-main-function.html">The supercells() function</a></li>
@@ -47,7 +48,7 @@ spacing (step), as well as optional custom centers and chunking."><meta property
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Create supercells</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/R/sc_slic.R" class="external-link"><code>R/sc_slic.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/1.9/R/sc_slic.R" class="external-link"><code>R/sc_slic.R</code></a></small>
       <div class="d-none name"><code>sc_slic.Rd</code></div>
     </div>
 
@@ -147,8 +148,8 @@ automatic chunking based on size, or a numeric value for a fixed chunk size
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An sf object with the supercell polygons and summary statistics.
-Information on <code>step</code>, <code>compactness</code>, and <code>adaptive_method</code> are attached to
-the result as attributes (<code>adaptive_method</code> is <code>NULL</code> for fixed compactness).</p>
+Information on <code>step</code>, <code>compactness</code>, and <code>compactness_method</code> are attached to
+the result as attributes (<code>compactness</code> is <code>NA</code> for adaptive compactness).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -167,7 +168,7 @@ and combined distances.</p></li>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="use_meters.html">use_meters()</a></code>, <code><a href="use_adaptive.html">use_adaptive()</a></code>, <code><a href="sc_slic_raster.html">sc_slic_raster()</a></code>, <code><a href="sc_slic_points.html">sc_slic_points()</a></code>, <code><a href="sc_slic_convergence.html">sc_slic_convergence()</a></code>,
+    <div class="dont-index"><p><code><a href="sc_tune_compactness.html">sc_tune_compactness()</a></code>, <code><a href="use_meters.html">use_meters()</a></code>, <code><a href="use_adaptive.html">use_adaptive()</a></code>, <code><a href="sc_slic_raster.html">sc_slic_raster()</a></code>, <code><a href="sc_slic_points.html">sc_slic_points()</a></code>, <code><a href="sc_slic_convergence.html">sc_slic_convergence()</a></code>,
 <code><a href="sc_metrics_pixels.html">sc_metrics_pixels()</a></code>, <code><a href="sc_metrics_supercells.html">sc_metrics_supercells()</a></code>, <code><a href="sc_metrics_global.html">sc_metrics_global()</a></code></p></div>
     </div>
 

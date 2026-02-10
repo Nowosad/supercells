@@ -46,8 +46,8 @@ sc_metrics_global(
 - compactness:
 
   A compactness value used for the supercells If missing, uses
-  `attr(sc, "compactness")` when available. Adaptive mode is read from
-  `attr(sc, "adaptive_method")` when available.
+  `attr(sc, "compactness")` when available. Compactness mode is read
+  from `attr(sc, "compactness_method")` when available.
 
 - dist_fun:
 
@@ -57,27 +57,7 @@ sc_metrics_global(
 
 ## Value
 
-A data.frame with a single row of global metrics and columns:
-Interpretation:
-
-- mean_value_dist:
-
-  Lower values indicate more homogeneous supercells.
-
-- mean_spatial_dist:
-
-  Lower values indicate more compact supercells.
-
-- mean_combined_dist:
-
-  Overall distance; mainly useful for ranking.
-
-- balance:
-
-  0 indicates balance between value and spatial terms; negative values
-  indicate spatial dominance; positive values indicate value dominance.
-
-&nbsp;
+A data.frame with a single row and columns:
 
 - step:
 
@@ -86,44 +66,47 @@ Interpretation:
 
 - compactness:
 
-  Compactness value used to generate supercells.
+  Compactness value used to generate supercells; `NA` for adaptive
+  compactness.
 
-- adaptive_method:
+- compactness_method:
 
-  Adaptive compactness method; `NA` for fixed compactness.
+  Compactness method: `"constant"` for fixed compactness, `"local_max"`
+  for adaptive compactness.
 
 - n_supercells:
 
   Number of supercells with at least one non-missing pixel.
 
-- mean_value_dist:
+- mean_value_dist / mean_value_dist_scaled:
 
   Mean per-supercell value distance from cells to their supercell
   centers, averaged across supercells. Returned as `mean_value_dist` (or
-  `mean_value_dist_scaled` when `scale = TRUE`).
+  `mean_value_dist_scaled` when `scale = TRUE`). Lower values indicate
+  more homogeneous supercells.
 
-- mean_spatial_dist:
+- mean_spatial_dist / mean_spatial_dist_scaled:
 
   Mean per-supercell spatial distance from cells to their supercell
   centers, averaged across supercells; units are grid cells (row/column
   index distance). If the input supercells were created with
   `step = use_meters(...)`, distances are reported in meters. Returned
   as `mean_spatial_dist` (or `mean_spatial_dist_scaled` when
-  `scale = TRUE`).
+  `scale = TRUE`). Lower values indicate more compact supercells.
 
 - mean_combined_dist:
 
   Mean per-supercell combined distance, computed from value and spatial
   distances using `compactness` and `step`, averaged across supercells.
-  Returned as `mean_combined_dist`.
+  Returned as `mean_combined_dist`. Lower values indicate lower overall
+  distance and are mainly useful for ranking.
 
 - balance:
 
   Mean signed log ratio of scaled value distance to scaled spatial
-  distance (averaged across supercells); 0 indicates balance.
-
-When `scale = TRUE`, `mean_spatial_dist` and `mean_value_dist` are
-returned as `mean_spatial_dist_scaled` and `mean_value_dist_scaled`.
+  distance (averaged across supercells); 0 indicates balance between
+  value and spatial terms, negative values indicate spatial dominance,
+  and positive values indicate value dominance.
 
 ## Details
 
@@ -154,8 +137,8 @@ library(supercells)
 vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 vol_sc = sc_slic(vol, step = 8, compactness = 7)
 sc_metrics_global(vol, vol_sc)
-#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
-#> 1    8           7            <NA>           88                0.4718607
+#>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
+#> 1    8           7           constant           88                0.4718607
 #>   mean_value_dist_scaled mean_combined_dist    balance
 #> 1              0.3701397          0.6517259 -0.3367309
 ```

@@ -20,9 +20,6 @@ sc_slic_convergence(
   centers = NULL,
   verbose = 0
 )
-
-# S3 method for class 'sc_slic_convergence'
-plot(x, ...)
 ```
 
 ## Arguments
@@ -85,11 +82,6 @@ plot(x, ...)
 - verbose:
 
   Verbosity level.
-
-- ...:
-
-  Additional arguments passed to
-  [`graphics::plot()`](https://rdrr.io/r/graphics/plot.default.html).
 
 ## Value
 

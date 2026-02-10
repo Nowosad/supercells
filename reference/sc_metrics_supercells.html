@@ -23,6 +23,7 @@
     <li><a class="dropdown-item" href="../articles/v2-intro.html">Introduction to supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-parameters.html">Choosing parameters for supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-benchmarks.html">Benchmarks</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
     <li><a class="dropdown-item" href="../articles/v1-main-function.html">The supercells() function</a></li>
@@ -43,7 +44,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Supercell-level metrics</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/R/sc_metrics_supercells.R" class="external-link"><code>R/sc_metrics_supercells.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/1.9/R/sc_metrics_supercells.R" class="external-link"><code>R/sc_metrics_supercells.R</code></a></small>
       <div class="d-none name"><code>sc_metrics_supercells.Rd</code></div>
     </div>
 
@@ -95,7 +96,7 @@ If missing, uses <code>attr(sc, "step")</code> when available</p></dd>
 <dt id="arg-compactness">compactness<a class="anchor" aria-label="anchor" href="#arg-compactness"></a></dt>
 <dd><p>A compactness value used for the supercells
 If missing, uses <code>attr(sc, "compactness")</code> when available.
-Adaptive mode is read from <code>attr(sc, "adaptive_method")</code> when available.</p></dd>
+Compactness mode is read from <code>attr(sc, "compactness_method")</code> when available.</p></dd>
 
 
 <dt id="arg-dist-fun">dist_fun<a class="anchor" aria-label="anchor" href="#arg-dist-fun"></a></dt>
@@ -147,7 +148,7 @@ spatial distance; 0 indicates balance.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>If <code>sc</code> lacks <code>supercells</code>, <code>x</code>, or <code>y</code> columns, they are derived from geometry
-and row order, which may differ from the original centers
+and row order, which may differ from the original centers.
 When using SLIC0 (set <code>compactness = use_adaptive()</code> in <code><a href="sc_slic.html">sc_slic()</a></code>), combined and balance metrics use per-supercell
 adaptive compactness (SLIC0), and scaled value distances are computed with the
 per-supercell max value distance.</p>

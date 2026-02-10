@@ -15,15 +15,28 @@
   [`plot()`](https://rspatial.github.io/terra/reference/plot.html)
   method
 - Added
+  [`sc_slic_get_params()`](https://jakubnowosad.com/supercells/reference/sc_slic_get_params.md)
+  and
+  [`sc_slic_set_params()`](https://jakubnowosad.com/supercells/reference/sc_slic_set_params.md)
+  for reading/writing stored
+  [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
+  parameters
+- Added
   [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md)
   for map-distance step values (replacing `in_meters()`)
 - Added
   [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
   for adaptive compactness mode (replacing `compactness = "auto"`)
-- Added experimental `sc_merge_supercells()` for adjacency-constrained
-  greedy merging
-- Added `sc_dist_vec_cpp()` (C++ distance wrapper) to support merge
-  utilities
+- Updated metrics API
+  ([`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md),
+  [`sc_metrics_supercells()`](https://jakubnowosad.com/supercells/reference/sc_metrics_supercells.md),
+  [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md))
+  to better reuse
+  [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
+  metadata and improve scaling/compactness handling
+- Updated
+  [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
+  to align with the revised compactness/step workflows
 - Documentation and vignettes updated (pkgdown refresh, new articles,
   and revised examples)
 

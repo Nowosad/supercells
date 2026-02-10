@@ -6,9 +6,10 @@ outputs, use
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md);
 for raster output, use
 [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
-By default, only value summaries are returned; add
-`outcomes = c("supercells", "coordinates", "values")` to include ids and
-x/y.
+By default, returns the same fields as
+[`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md):
+`outcomes = c("supercells", "coordinates", "values")`. Use
+`outcomes = "values"` for value summaries only.
 
 ## Usage
 
@@ -24,7 +25,7 @@ sc_slic_points(
   iter = 10,
   k = NULL,
   centers = NULL,
-  outcomes = "values",
+  outcomes = c("supercells", "coordinates", "values"),
   chunks = FALSE,
   verbose = 0
 )
@@ -90,9 +91,9 @@ sc_slic_points(
 - outcomes:
 
   Character vector controlling which fields are returned. Allowed values
-  are "supercells", "coordinates", and "values". Default is "values".
-  Use `outcomes = c("supercells", "coordinates", "values")` for full
-  output.
+  are "supercells", "coordinates", and "values". Default is full output
+  (`c("supercells", "coordinates", "values")`). Use
+  `outcomes = "values"` for value summaries only.
 
 - chunks:
 

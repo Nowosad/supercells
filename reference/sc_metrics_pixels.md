@@ -47,8 +47,8 @@ sc_metrics_pixels(
 - compactness:
 
   A compactness value used for the supercells If missing, uses
-  `attr(sc, "compactness")` when available. Adaptive mode is read from
-  `attr(sc, "adaptive_method")` when available.
+  `attr(sc, "compactness")` when available. Compactness mode is read
+  from `attr(sc, "compactness_method")` when available.
 
 - dist_fun:
 

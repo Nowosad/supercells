@@ -100,7 +100,6 @@ this parameter depends on many factors, including the range of values in
 the raster, their properties, and the selected distance measure.
 
 ``` r
-# Polygon supercells (sf)
 vol_sc <- sc_slic(
   vol,
   step = 8,
@@ -201,8 +200,8 @@ as a small grid of `step` and `compactness` values.
 
 ``` r
 global_metrics
-#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
-#> 1    8    9.084872            <NA>           88                0.4546412
+#>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
+#> 1    8    9.084872           constant           88                0.4546412
 #>   mean_value_dist_scaled mean_combined_dist    balance
 #> 1              0.3061439          0.5915118 -0.4939904
 ```

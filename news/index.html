@@ -23,6 +23,7 @@
     <li><a class="dropdown-item" href="../articles/v2-intro.html">Introduction to supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-parameters.html">Choosing parameters for supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-benchmarks.html">Benchmarks</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
     <li><a class="dropdown-item" href="../articles/v1-main-function.html">The supercells() function</a></li>
@@ -43,17 +44,18 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/Nowosad/supercells/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/Nowosad/supercells/blob/1.9/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9" id="supercells-19">supercells 1.9<a class="anchor" aria-label="anchor" href="#supercells-19"></a></h2>
 <ul><li>Added <code>outcomes</code> argument to <code><a href="../reference/sc_slic.html">sc_slic()</a></code>, <code><a href="../reference/sc_slic_points.html">sc_slic_points()</a></code>, and <code><a href="../reference/sc_slic_raster.html">sc_slic_raster()</a></code>; replaces <code>metadata</code> for controlling returned fields</li>
 <li>Iteration diagnostics API redesigned: <code>iter_diagnostics</code> and <code>sc_plot_iter_diagnostics()</code> replaced by <code><a href="../reference/sc_slic_convergence.html">sc_slic_convergence()</a></code> with a <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot()</a></code> method</li>
+<li>Added <code><a href="../reference/sc_slic_get_params.html">sc_slic_get_params()</a></code> and <code><a href="../reference/sc_slic_set_params.html">sc_slic_set_params()</a></code> for reading/writing stored <code><a href="../reference/sc_slic.html">sc_slic()</a></code> parameters</li>
 <li>Added <code><a href="../reference/use_meters.html">use_meters()</a></code> for map-distance step values (replacing <code>in_meters()</code>)</li>
 <li>Added <code><a href="../reference/use_adaptive.html">use_adaptive()</a></code> for adaptive compactness mode (replacing <code>compactness = "auto"</code>)</li>
-<li>Added experimental <code>sc_merge_supercells()</code> for adjacency-constrained greedy merging</li>
-<li>Added <code>sc_dist_vec_cpp()</code> (C++ distance wrapper) to support merge utilities</li>
+<li>Updated metrics API (<code><a href="../reference/sc_metrics_pixels.html">sc_metrics_pixels()</a></code>, <code><a href="../reference/sc_metrics_supercells.html">sc_metrics_supercells()</a></code>, <code><a href="../reference/sc_metrics_global.html">sc_metrics_global()</a></code>) to better reuse <code><a href="../reference/sc_slic.html">sc_slic()</a></code> metadata and improve scaling/compactness handling</li>
+<li>Updated <code><a href="../reference/sc_tune_compactness.html">sc_tune_compactness()</a></code> to align with the revised compactness/step workflows</li>
 <li>Documentation and vignettes updated (pkgdown refresh, new articles, and revised examples)</li>
 </ul></div>
     <div class="section level2">

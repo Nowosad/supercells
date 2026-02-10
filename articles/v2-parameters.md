@@ -208,11 +208,11 @@ cmp_metrics <- lapply(cmp_vals, function(cmp) {
 })
 cmp_metrics <- do.call(rbind, cmp_metrics)
 cmp_metrics
-#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
-#> 1    8           1            <NA>           90                0.5500066
-#> 2    8           3            <NA>           88                0.5246759
-#> 3    8           5            <NA>           89                0.4982282
-#> 4    8           8            <NA>           88                0.4610799
+#>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
+#> 1    8           1           constant           90                0.5500066
+#> 2    8           3           constant           88                0.5246759
+#> 3    8           5           constant           89                0.4982282
+#> 4    8           8           constant           88                0.4610799
 #>   mean_value_dist_scaled mean_combined_dist    balance
 #> 1              2.1412253          2.3003626  1.1923986
 #> 2              0.7473867          0.9994451  0.2193843

@@ -102,8 +102,8 @@ sc_slic(
 ## Value
 
 An sf object with the supercell polygons and summary statistics.
-Information on `step`, `compactness`, and `adaptive_method` are attached
-to the result as attributes (`adaptive_method` is `NULL` for fixed
+Information on `step`, `compactness`, and `compactness_method` are
+attached to the result as attributes (`compactness` is `NA` for adaptive
 compactness).
 
 ## Details
@@ -145,6 +145,7 @@ https://doi.org/10.1016/j.jag.2022.102935
 
 ## See also
 
+[`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md),
 [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md),
 [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md),
 [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md),

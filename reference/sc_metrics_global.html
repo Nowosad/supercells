@@ -23,6 +23,7 @@
     <li><a class="dropdown-item" href="../articles/v2-intro.html">Introduction to supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-parameters.html">Choosing parameters for supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-benchmarks.html">Benchmarks</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
     <li><a class="dropdown-item" href="../articles/v1-main-function.html">The supercells() function</a></li>
@@ -43,7 +44,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Global supercells metrics</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/R/sc_metrics_global.R" class="external-link"><code>R/sc_metrics_global.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/1.9/R/sc_metrics_global.R" class="external-link"><code>R/sc_metrics_global.R</code></a></small>
       <div class="d-none name"><code>sc_metrics_global.Rd</code></div>
     </div>
 
@@ -95,7 +96,7 @@ If missing, uses <code>attr(sc, "step")</code> when available</p></dd>
 <dt id="arg-compactness">compactness<a class="anchor" aria-label="anchor" href="#arg-compactness"></a></dt>
 <dd><p>A compactness value used for the supercells
 If missing, uses <code>attr(sc, "compactness")</code> when available.
-Adaptive mode is read from <code>attr(sc, "adaptive_method")</code> when available.</p></dd>
+Compactness mode is read from <code>attr(sc, "compactness_method")</code> when available.</p></dd>
 
 
 <dt id="arg-dist-fun">dist_fun<a class="anchor" aria-label="anchor" href="#arg-dist-fun"></a></dt>
@@ -105,59 +106,49 @@ If missing or <code>NULL</code>, uses <code>attr(sc, "dist_fun")</code> when ava
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data.frame with a single row of global metrics and columns:
-Interpretation:</p><dl><dt>mean_value_dist</dt>
-<dd><p>Lower values indicate more homogeneous supercells.</p></dd>
-
-<dt>mean_spatial_dist</dt>
-<dd><p>Lower values indicate more compact supercells.</p></dd>
-
-<dt>mean_combined_dist</dt>
-<dd><p>Overall distance; mainly useful for ranking.</p></dd>
-
-<dt>balance</dt>
-<dd><p>0 indicates balance between value and spatial terms; negative
-values indicate spatial dominance; positive values indicate value dominance.</p></dd>
-
-
-</dl><dl><dt>step</dt>
+    <p>A data.frame with a single row and columns:</p><dl><dt>step</dt>
 <dd><p>Step size used to generate supercells. Returned in meters when
 the input used <code>step = use_meters(...)</code>, otherwise in cells.</p></dd>
 
 <dt>compactness</dt>
-<dd><p>Compactness value used to generate supercells.</p></dd>
+<dd><p>Compactness value used to generate supercells; <code>NA</code> for
+adaptive compactness.</p></dd>
 
-<dt>adaptive_method</dt>
-<dd><p>Adaptive compactness method; <code>NA</code> for fixed compactness.</p></dd>
+<dt>compactness_method</dt>
+<dd><p>Compactness method: <code>"constant"</code> for fixed
+compactness, <code>"local_max"</code> for adaptive compactness.</p></dd>
 
 <dt>n_supercells</dt>
 <dd><p>Number of supercells with at least one non-missing pixel.</p></dd>
 
-<dt>mean_value_dist</dt>
+<dt>mean_value_dist / mean_value_dist_scaled</dt>
 <dd><p>Mean per-supercell value distance from cells to their
 supercell centers, averaged across supercells. Returned as <code>mean_value_dist</code>
-(or <code>mean_value_dist_scaled</code> when <code>scale = TRUE</code>).</p></dd>
+(or <code>mean_value_dist_scaled</code> when <code>scale = TRUE</code>). Lower values indicate
+more homogeneous supercells.</p></dd>
 
-<dt>mean_spatial_dist</dt>
+<dt>mean_spatial_dist / mean_spatial_dist_scaled</dt>
 <dd><p>Mean per-supercell spatial distance from cells to
 their supercell centers, averaged across supercells; units are grid cells
 (row/column index distance). If the input supercells were created with
 <code>step = use_meters(...)</code>, distances are reported in meters. Returned as
-<code>mean_spatial_dist</code> (or <code>mean_spatial_dist_scaled</code> when <code>scale = TRUE</code>).</p></dd>
+<code>mean_spatial_dist</code> (or <code>mean_spatial_dist_scaled</code> when <code>scale = TRUE</code>).
+Lower values indicate more compact supercells.</p></dd>
 
 <dt>mean_combined_dist</dt>
 <dd><p>Mean per-supercell combined distance, computed from
 value and spatial distances using <code>compactness</code> and <code>step</code>, averaged across
-supercells. Returned as <code>mean_combined_dist</code>.</p></dd>
+supercells. Returned as <code>mean_combined_dist</code>. Lower values indicate lower
+overall distance and are mainly useful for ranking.</p></dd>
 
 <dt>balance</dt>
 <dd><p>Mean signed log ratio of scaled value distance to scaled
-spatial distance (averaged across supercells); 0 indicates balance.</p></dd>
+spatial distance (averaged across supercells); 0 indicates balance between
+value and spatial terms, negative values indicate spatial dominance, and
+positive values indicate value dominance.</p></dd>
 
 
-</dl><p>When <code>scale = TRUE</code>, <code>mean_spatial_dist</code> and <code>mean_value_dist</code> are returned as
-<code>mean_spatial_dist_scaled</code> and <code>mean_value_dist_scaled</code>.</p>
-    </div>
+</dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Requires <code>sc</code> with metadata columns (<code>supercells</code>, <code>x</code>, <code>y</code>).
@@ -180,8 +171,8 @@ per-supercell max value distance.</p>
 <span class="r-in"><span><span class="va">vol</span> <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"raster/volcano.tif"</span>, package <span class="op">=</span> <span class="st">"supercells"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">vol_sc</span> <span class="op">=</span> <span class="fu"><a href="sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">sc_metrics_global</span><span class="op">(</span><span class="va">vol</span>, <span class="va">vol_sc</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    8           7            &lt;NA&gt;           88                0.4718607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   step compactness compactness_method n_supercells mean_spatial_dist_scaled</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    8           7           constant           88                0.4718607</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   mean_value_dist_scaled mean_combined_dist    balance</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1              0.3701397          0.6517259 -0.3367309</span>
 </code></pre></div>

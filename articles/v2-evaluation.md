@@ -168,8 +168,8 @@ summaries are returned as `mean_spatial_dist_scaled` and
 ``` r
 global_metrics <- sc_metrics_global(vol, vol_sc)
 global_metrics
-#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
-#> 1    8           7            <NA>           88                0.4718607
+#>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
+#> 1    8           7           constant           88                0.4718607
 #>   mean_value_dist_scaled mean_combined_dist    balance
 #> 1              0.3701397          0.6517259 -0.3367309
 ```
@@ -186,9 +186,9 @@ vol_sc_low <- sc_slic(vol, step = 8, compactness = 1)
 metrics_higher <- sc_metrics_global(vol, vol_sc)
 metrics_lower <- sc_metrics_global(vol, vol_sc_low)
 rbind(higher_compactness = metrics_higher, lower_compactness = metrics_lower)
-#>                    step compactness adaptive_method n_supercells
-#> higher_compactness    8           7            <NA>           88
-#> lower_compactness     8           1            <NA>           90
+#>                    step compactness compactness_method n_supercells
+#> higher_compactness    8           7           constant           88
+#> lower_compactness     8           1           constant           90
 #>                    mean_spatial_dist_scaled mean_value_dist_scaled
 #> higher_compactness                0.4718607              0.3701397
 #> lower_compactness                 0.5500066              2.1412253

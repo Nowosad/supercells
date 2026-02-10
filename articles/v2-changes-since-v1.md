@@ -191,8 +191,8 @@ plot(supercell_metrics["balance"], main = "Supercell balance metric")
 # Global metrics (single-row summary)
 global_metrics <- sc_metrics_global(vol, vol_sc)
 global_metrics
-#>   step compactness adaptive_method n_supercells mean_spatial_dist_scaled
-#> 1    8           7            <NA>           88                0.4718607
+#>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
+#> 1    8           7           constant           88                0.4718607
 #>   mean_value_dist_scaled mean_combined_dist    balance
 #> 1              0.3701397          0.6517259 -0.3367309
 ```

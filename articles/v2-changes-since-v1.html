@@ -38,6 +38,7 @@
     <li><a class="dropdown-item" href="../articles/v2-intro.html">Introduction to supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-parameters.html">Choosing parameters for supercells</a></li>
     <li><a class="dropdown-item" href="../articles/v2-evaluation.html">Evaluation and diagnostics</a></li>
+    <li><a class="dropdown-item" href="../articles/v2-benchmarks.html">Benchmarks</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Version 1.0</h6></li>
     <li><a class="dropdown-item" href="../articles/v1-main-function.html">The supercells() function</a></li>
@@ -70,9 +71,9 @@
                         <h4 data-toc-skip class="author">Jakub
 Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2026-02-09</h4>
+            <h4 data-toc-skip class="date">2026-02-10</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/v2-changes-since-v1.Rmd" class="external-link"><code>vignettes/articles/v2-changes-since-v1.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/1.9/vignettes/articles/v2-changes-since-v1.Rmd" class="external-link"><code>vignettes/articles/v2-changes-since-v1.Rmd</code></a></small>
       <div class="d-none name"><code>v2-changes-since-v1.Rmd</code></div>
     </div>
 
@@ -229,8 +230,8 @@ comparisons.</p>
 <code class="sourceCode R"><span><span class="co"># Global metrics (single-row summary)</span></span>
 <span><span class="va">global_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_metrics_global.html">sc_metrics_global</a></span><span class="op">(</span><span class="va">vol</span>, <span class="va">vol_sc</span><span class="op">)</span></span>
 <span><span class="va">global_metrics</span></span>
-<span><span class="co">#&gt;   step compactness adaptive_method n_supercells mean_spatial_dist_scaled</span></span>
-<span><span class="co">#&gt; 1    8           7            &lt;NA&gt;           88                0.4718607</span></span>
+<span><span class="co">#&gt;   step compactness compactness_method n_supercells mean_spatial_dist_scaled</span></span>
+<span><span class="co">#&gt; 1    8           7           constant           88                0.4718607</span></span>
 <span><span class="co">#&gt;   mean_value_dist_scaled mean_combined_dist    balance</span></span>
 <span><span class="co">#&gt; 1              0.3701397          0.6517259 -0.3367309</span></span></code></pre></div>
 </div>
