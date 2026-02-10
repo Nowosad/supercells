@@ -73,7 +73,7 @@ terra::plot(vol_ids)
 ```
 
 While, `sc_slic()` is the main function, the other two functions are useful for specific tasks.
-For example, `sc_slic_points()` is helpful for visualizing initial supercell centers, while `sc_slic_raster()` is useful for large datasets where polygon outputs may be too memory-intensive.
+For example, `sc_slic_points()` is helpful for inspecting supercell center locations, while `sc_slic_raster()` is useful for large datasets where polygon outputs may be too memory-intensive.
 
 ## Compactness tuning and iteration diagnostics
 
@@ -155,6 +155,5 @@ plot(sf::st_geometry(vol_sc_slic0), add = TRUE, lwd = 0.6, border = "violet")
 - New utilities: Added `use_meters()` helper for `step` and `use_adaptive()` for adaptive compactness in `sc_slic()`/`sc_slic_points()`/`sc_slic_raster()`.
 - Behavior: Since version 1.0, the way coordinates are summarized internally has changed, and results in versions after 1.0 may differ slightly from those prior to 1.0.
 - Performance: Improved speed and memory efficiency.
-- New utilities: Added experimental `sc_merge_supercells()` for adjacency-constrained greedy merging.
 - Chunking and memory: Chunk sizes align to `step`, deterministic ID offsets are used for file-backed merges, and `options(supercells.chunk_mem_gb)` controls memory.
 - Parallelization: Removed **future**-based parallel chunking.
