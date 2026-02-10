@@ -72,5 +72,5 @@ vol_ids = sc_slic_raster(vol, step = 8, compactness = 1)
 terra::plot(vol_ids)
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=sc_slic_points]{sc_slic_points()}}
 }

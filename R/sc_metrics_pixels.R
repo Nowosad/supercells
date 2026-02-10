@@ -13,7 +13,7 @@
 #' If missing, uses `attr(sc, "step")` when available
 #' @param compactness A compactness value used for the supercells
 #' If missing, uses `attr(sc, "compactness")` when available.
-#' Adaptive mode is read from `attr(sc, "adaptive_method")` when available.
+#' Compactness mode is read from `attr(sc, "compactness_method")` when available.
 #' @param dist_fun A distance function name or function, as in [sc_slic()].
 #' If missing or `NULL`, uses `attr(sc, "dist_fun")` when available.
 #'

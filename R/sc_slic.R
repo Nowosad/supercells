@@ -15,7 +15,7 @@
 #'   \item Cluster diagnostics: [sc_metrics_supercells()] for per-supercell summaries.
 #'   \item Global diagnostics: [sc_metrics_global()] for a single-row summary.
 #' }
-#' @seealso [use_meters()], [use_adaptive()], [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_slic_convergence()`],
+#' @seealso [`sc_tune_compactness()`], [use_meters()], [use_adaptive()], [`sc_slic_raster()`], [`sc_slic_points()`], [`sc_slic_convergence()`],
 #'   [`sc_metrics_pixels()`], [`sc_metrics_supercells()`], [`sc_metrics_global()`]
 #'
 #' @param x An object of class SpatRaster (terra) or class stars (stars).
@@ -45,8 +45,8 @@
 #' @param verbose Verbosity level.
 #'
 #' @return An sf object with the supercell polygons and summary statistics.
-#' Information on `step`, `compactness`, and `adaptive_method` are attached to
-#' the result as attributes (`adaptive_method` is `NULL` for fixed compactness).
+#' Information on `step`, `compactness`, and `compactness_method` are attached to
+#' the result as attributes (`compactness` is `NA` for adaptive compactness).
 #'
 #' @references Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., & Süsstrunk, S. (2012). SLIC Superpixels Compared to State-of-the-Art Superpixel Methods. IEEE Transactions on Pattern Analysis and Machine Intelligence, 34(11), 2274–2282. https://doi.org/10.1109/tpami.2012.120
 #' @references Nowosad, J., Stepinski, T. (2022). Extended SLIC superpixels algorithm for applications to non-imagery geospatial rasters. International Journal of Applied Earth Observation and Geoinformation, https://doi.org/10.1016/j.jag.2022.102935

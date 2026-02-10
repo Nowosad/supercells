@@ -7,7 +7,7 @@
 #' @inheritParams sc_slic
 #' @param outcomes Character vector controlling which fields are returned.
 #' Only `"supercells"` is supported in `sc_slic_raster()`.
-#' @seealso [`sc_slic()`]
+#' @seealso [`sc_slic()`], [`sc_slic_points()`]
 #'
 #' @return A SpatRaster with supercell IDs.
 #' 

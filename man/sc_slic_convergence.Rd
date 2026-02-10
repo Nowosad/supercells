@@ -2,7 +2,6 @@
 % Please edit documentation in R/sc_slic_convergence.R
 \name{sc_slic_convergence}
 \alias{sc_slic_convergence}
-\alias{plot.sc_slic_convergence}
 \title{SLIC convergence diagnostics}
 \usage{
 sc_slic_convergence(
@@ -18,8 +17,6 @@ sc_slic_convergence(
   centers = NULL,
   verbose = 0
 )
-
-\method{plot}{sc_slic_convergence}(x, ...)
 }
 \arguments{
 \item{x}{An object of class SpatRaster (terra) or class stars (stars).}
@@ -50,8 +47,6 @@ function must accept a numeric vector and return a single numeric value.}
 \item{centers}{Optional sf object of custom centers. Requires \code{step}.}
 
 \item{verbose}{Verbosity level.}
-
-\item{...}{Additional arguments passed to \code{\link[graphics:plot.default]{graphics::plot()}}.}
 }
 \value{
 A data frame with class \code{sc_slic_convergence} and columns:
@@ -62,7 +57,7 @@ A data frame with class \code{sc_slic_convergence} and columns:
 }
 \description{
 Runs SLIC and returns per-iteration mean combined distance.
-The output can be plotted directly with \code{\link[=plot.sc_slic_convergence]{plot()}}.
+The output can be plotted directly with \code{\link[=plot]{plot()}}.
 }
 \examples{
 library(supercells)
@@ -71,5 +66,5 @@ conv = sc_slic_convergence(vol, step = 8, compactness = 5, iter = 10)
 plot(conv)
 }
 \seealso{
-\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=plot.sc_slic_convergence]{plot()}}
+\code{\link[=sc_slic]{sc_slic()}}, \code{\link[=plot]{plot()}}
 }

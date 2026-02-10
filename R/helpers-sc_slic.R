@@ -44,7 +44,7 @@
               outcomes = outcomes,
               compactness = compactness_prep$value,
               adaptive_compactness = compactness_prep$adaptive,
-              adaptive_method = compactness_prep$adaptive_method,
+              compactness_method = compactness_prep$compactness_method,
               clean = clean, iter = iter,
               verbose = verbose, verbose_cpp = verbose_cpp))
 }
@@ -196,9 +196,13 @@
 
   slic_sf = .sc_slic_select_outcomes(slic_sf, prep$outcomes)
 
+  compactness_attr = prep$compactness
+  if (isTRUE(prep$adaptive_compactness)) {
+    compactness_attr = NA_real_
+  }
   attr(slic_sf, "step") = prep$step_meta
-  attr(slic_sf, "compactness") = prep$compactness
-  attr(slic_sf, "adaptive_method") = prep$adaptive_method
+  attr(slic_sf, "compactness") = compactness_attr
+  attr(slic_sf, "compactness_method") = prep$compactness_method
   attr(slic_sf, "dist_fun") = prep$dist_fun_input
   cls = class(slic_sf)
   cls = c(setdiff(cls, "data.frame"), "supercells", "data.frame")

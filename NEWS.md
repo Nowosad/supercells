@@ -2,10 +2,11 @@
 
 * Added `outcomes` argument to `sc_slic()`, `sc_slic_points()`, and `sc_slic_raster()`; replaces `metadata` for controlling returned fields
 * Iteration diagnostics API redesigned: `iter_diagnostics` and `sc_plot_iter_diagnostics()` replaced by `sc_slic_convergence()` with a `plot()` method
+* Added `sc_slic_get_params()` and `sc_slic_set_params()` for reading/writing stored `sc_slic()` parameters
 * Added `use_meters()` for map-distance step values (replacing `in_meters()`)
 * Added `use_adaptive()` for adaptive compactness mode (replacing `compactness = "auto"`)
-* Added experimental `sc_merge_supercells()` for adjacency-constrained greedy merging
-* Added `sc_dist_vec_cpp()` (C++ distance wrapper) to support merge utilities
+* Updated metrics API (`sc_metrics_pixels()`, `sc_metrics_supercells()`, `sc_metrics_global()`) to better reuse `sc_slic()` metadata and improve scaling/compactness handling
+* Updated `sc_tune_compactness()` to align with the revised compactness/step workflows
 * Documentation and vignettes updated (pkgdown refresh, new articles, and revised examples)
 
 # supercells 1.8

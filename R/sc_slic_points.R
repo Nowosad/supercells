@@ -3,8 +3,9 @@
 #' Runs the SLIC workflow and returns supercell centers as points.
 #' Use \code{iter = 0} to return the initial centers before iterations.
 #' For polygon outputs, use [`sc_slic()`]; for raster output, use [`sc_slic_raster()`]
-#' By default, only value summaries are returned; add
-#' `outcomes = c("supercells", "coordinates", "values")` to include ids and x/y.
+#' By default, returns the same fields as [`sc_slic()`]:
+#' `outcomes = c("supercells", "coordinates", "values")`.
+#' Use `outcomes = "values"` for value summaries only.
 #'
 #' @inheritParams sc_slic
 #' @seealso [`sc_slic()`], [`sc_slic_raster()`]
@@ -28,7 +29,7 @@
 sc_slic_points = function(x, step = NULL, compactness, dist_fun = "euclidean",
                           avg_fun = "mean", clean = TRUE, minarea, iter = 10,
                           k = NULL, centers = NULL,
-                          outcomes = "values", chunks = FALSE,
+                          outcomes = c("supercells", "coordinates", "values"), chunks = FALSE,
                           verbose = 0) {
   if (iter == 0) {
     clean = FALSE

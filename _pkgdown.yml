@@ -16,6 +16,8 @@ navbar:
       href: articles/v2-parameters.html
     - text: Evaluation and diagnostics
       href: articles/v2-evaluation.html
+    - text: Benchmarks
+      href: articles/v2-benchmarks.html
     # - text: Title A1
     #   href: articles/a1.html
     # - text: Title A2
