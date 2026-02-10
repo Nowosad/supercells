@@ -9,7 +9,7 @@ double get_vals_dist(const std::vector<double>& values1, const std::vector<doubl
   } else if (dist_name == "jsd"){
     return jensen_shannon(values1, values2);
   } else if (dist_name == "dtw"){
-    return dtw3(values1, values2);
+    return dtw1d(values1, values2);
   } else if (dist_name == "dtw2d"){
     return dtw2d(values1, values2);
   } else if (dist_name != ""){
@@ -43,7 +43,7 @@ double manhattan(const std::vector<double>& values1, const std::vector<double>& 
   return dist;
 }
 
-double dtw3(const std::vector<double>& values1, const std::vector<double>& values2){
+double dtw1d(const std::vector<double>& values1, const std::vector<double>& values2){
   double p = 2;  // the p-norm to use; 2.0 = euclidean, 1.0 = manhattan
   int len1 = values1.size();
 
@@ -54,11 +54,9 @@ double dtw3(const std::vector<double>& values1, const std::vector<double>& value
   b.reserve(len1);
 
   for(int i = 0; i < len1; i++){
-    std::vector<double> pair1(2); std::vector<double> pair2(2);
-    pair1[0] = i;
-    pair1[1] = values1[i];
-    pair2[0] = i;
-    pair2[1] = values2[i];
+    std::vector<double> pair1(1); std::vector<double> pair2(1);
+    pair1[0] = values1[i];
+    pair2[0] = values2[i];
     a.push_back(pair1); b.push_back(pair2);
   }
 
@@ -68,6 +66,7 @@ double dtw3(const std::vector<double>& values1, const std::vector<double>& value
 
 double dtw2d(const std::vector<double>& values1, const std::vector<double>& values2){
   double p = 2;  // the p-norm to use; 2.0 = euclidean, 1.0 = manhattan
+
   int len1 = values1.size() / 2;
 
   std::vector<std::vector<double> > a;
@@ -78,9 +77,9 @@ double dtw2d(const std::vector<double>& values1, const std::vector<double>& valu
 
   for(int i = 0; i < len1; i++){
     std::vector<double> pair1(2); std::vector<double> pair2(2);
-    pair1[0] = values1[i + (len1 - 1)];
+    pair1[0] = values1[i + len1];
     pair1[1] = values1[i];
-    pair2[0] = values2[i + (len1 - 1)];
+    pair2[0] = values2[i + len1];
     pair2[1] = values2[i];
     a.push_back(pair1); b.push_back(pair2);
   }
