@@ -1,5 +1,4 @@
 #include "distances.h"
-#include "dtw/include/DTW.hpp"
 // using namespace cpp11::literals; // so we can use ""_nm syntax
 
 double get_vals_dist(const std::vector<double>& values1, const std::vector<double>& values2,
@@ -44,48 +43,64 @@ double manhattan(const std::vector<double>& values1, const std::vector<double>& 
 }
 
 double dtw1d(const std::vector<double>& values1, const std::vector<double>& values2){
-  double p = 2;  // the p-norm to use; 2.0 = euclidean, 1.0 = manhattan
   int len1 = values1.size();
-
-  std::vector<std::vector<double> > a;
-  std::vector<std::vector<double> > b;
-
-  a.reserve(len1);
-  b.reserve(len1);
-
-  for(int i = 0; i < len1; i++){
-    std::vector<double> pair1(1); std::vector<double> pair2(1);
-    pair1[0] = values1[i];
-    pair2[0] = values2[i];
-    a.push_back(pair1); b.push_back(pair2);
+  int len2 = values2.size();
+  if (len1 == 0 || len2 == 0) {
+    return NAN;
   }
 
-  double scost = DTW::dtw_distance_only(a, b, p);
-  return(scost);
+  std::vector<double> prev(len2);
+  std::vector<double> curr(len2);
+
+  prev[0] = std::fabs(values1[0] - values2[0]);
+  for (int j = 1; j < len2; j++) {
+    prev[j] = prev[j - 1] + std::fabs(values1[0] - values2[j]);
+  }
+
+  for (int i = 1; i < len1; i++) {
+    curr[0] = prev[0] + std::fabs(values1[i] - values2[0]);
+    for (int j = 1; j < len2; j++) {
+      double cost = std::fabs(values1[i] - values2[j]);
+      double best = std::fmin(std::fmin(prev[j], curr[j - 1]), prev[j - 1]);
+      curr[j] = cost + best;
+    }
+    prev.swap(curr);
+  }
+
+  return prev[len2 - 1];
 }
 
 double dtw2d(const std::vector<double>& values1, const std::vector<double>& values2){
-  double p = 2;  // the p-norm to use; 2.0 = euclidean, 1.0 = manhattan
-
   int len1 = values1.size() / 2;
-
-  std::vector<std::vector<double> > a;
-  std::vector<std::vector<double> > b;
-
-  a.reserve(len1);
-  b.reserve(len1);
-
-  for(int i = 0; i < len1; i++){
-    std::vector<double> pair1(2); std::vector<double> pair2(2);
-    pair1[0] = values1[i + len1];
-    pair1[1] = values1[i];
-    pair2[0] = values2[i + len1];
-    pair2[1] = values2[i];
-    a.push_back(pair1); b.push_back(pair2);
+  int len2 = values2.size() / 2;
+  if (len1 == 0 || len2 == 0) {
+    return NAN;
   }
 
-  double scost = DTW::dtw_distance_only(a, b, p);
-  return(scost);
+  std::vector<double> prev(len2);
+  std::vector<double> curr(len2);
+
+  auto cost = [&](int i, int j) {
+    double dx = values1[i + len1] - values2[j + len2];
+    double dy = values1[i] - values2[j];
+    return std::sqrt(dx * dx + dy * dy);
+  };
+
+  prev[0] = cost(0, 0);
+  for (int j = 1; j < len2; j++) {
+    prev[j] = prev[j - 1] + cost(0, j);
+  }
+
+  for (int i = 1; i < len1; i++) {
+    curr[0] = prev[0] + cost(i, 0);
+    for (int j = 1; j < len2; j++) {
+      double best = std::fmin(std::fmin(prev[j], curr[j - 1]), prev[j - 1]);
+      curr[j] = cost(i, j) + best;
+    }
+    prev.swap(curr);
+  }
+
+  return prev[len2 - 1];
 }
 
 
