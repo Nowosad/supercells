@@ -81,7 +81,7 @@ While,
 is the main function, the other two functions are useful for specific
 tasks. For example,
 [`sc_slic_points()`](https://jakubnowosad.com/supercells/reference/sc_slic_points.md)
-is helpful for visualizing initial supercell centers, while
+is helpful for inspecting supercell center locations, while
 [`sc_slic_raster()`](https://jakubnowosad.com/supercells/reference/sc_slic_raster.md)
 is useful for large datasets where polygon outputs may be too
 memory-intensive.
@@ -225,8 +225,6 @@ plot(sf::st_geometry(vol_sc_slic0), add = TRUE, lwd = 0.6, border = "violet")
   internally has changed, and results in versions after 1.0 may differ
   slightly from those prior to 1.0.
 - Performance: Improved speed and memory efficiency.
-- New utilities: Added experimental `sc_merge_supercells()` for
-  adjacency-constrained greedy merging.
 - Chunking and memory: Chunk sizes align to `step`, deterministic ID
   offsets are used for file-backed merges, and
   `options(supercells.chunk_mem_gb)` controls memory.

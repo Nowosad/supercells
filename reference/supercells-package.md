@@ -24,5 +24,3 @@ Other contributors:
 
 - Pascal Mettes (Author of the initial C++ implementation of the SLIC
   Superpixel algorithm for image data) \[contributor\]
-
-- Charles Jekel (Author of underlying C++ code for dtw) \[contributor\]

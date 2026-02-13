@@ -9,13 +9,10 @@
   Author of the initial C++ implementation of the SLIC Superpixel
   algorithm for image data
 
-- **Charles Jekel**. Contributor.  
-  Author of underlying C++ code for dtw
-
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/Nowosad/supercells/blob/1.9/inst/CITATION)
+[`inst/CITATION`](https://github.com/Nowosad/supercells/blob/main/inst/CITATION)
 
 Nowosad, J., & Stepinski, T. F. (2022). Extended SLIC superpixels
 algorithm for applications to non-imagery geospatial rasters.
