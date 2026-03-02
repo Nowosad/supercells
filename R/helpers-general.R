@@ -64,7 +64,8 @@
   if (!identical(as.character(units::deparse_unit(step)), "m")) {
     stop("A units-based 'step' must use meters ('m')", call. = FALSE)
   }
-  if (terra::is.lonlat(x)) {
+  is_lonlat = suppressWarnings(terra::is.lonlat(x))
+  if (isTRUE(is_lonlat)) {
     stop("A units-based 'step' requires a projected CRS; project the input raster first", call. = FALSE)
   }
 
@@ -73,7 +74,10 @@
     warning("Map-unit step requires square cells; res(x) has different x/y resolution", call. = FALSE)
   }
 
-  crs_units = sf::st_crs(terra::crs(x))$units_gdal
+  crs_units = tryCatch(
+    sf::st_crs(terra::crs(x))$units_gdal,
+    error = function(e) NA_character_
+  )
   if (is.null(crs_units) || is.na(crs_units) || !nzchar(crs_units)) {
     stop("The raster CRS has unknown linear units; cannot use units-based 'step'", call. = FALSE)
   }

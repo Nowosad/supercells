@@ -8,7 +8,8 @@
   outcomes = .sc_slic_prep_outcomes(outcomes)
   # Normalize input to SpatRaster
   x = .sc_util_prep_raster(x)
-  if (terra::is.lonlat(x)) {
+  is_lonlat = suppressWarnings(terra::is.lonlat(x))
+  if (isTRUE(is_lonlat)) {
     warning("The input raster uses a geographic (lon/lat) CRS; consider projecting it before using SLIC", call. = FALSE)
   }
   # Resolve step from k when needed

@@ -87,6 +87,11 @@ test_that("sc_slic validates key argument errors", {
   expect_error(sc_slic(v1, step = 8, compactness = 1, dist_fun = "not_a_dist"), "does not exist", fixed = TRUE)
 })
 
+test_that("sc_slic handles rasters with missing CRS", {
+  x_no_crs = suppressWarnings({x = terra::rast(nrows = 40, ncols = 40, xmin = 0, xmax = 40, ymin = 0, ymax = 40); terra::crs(x) <- ""; terra::values(x) = seq_len(terra::ncell(x)); x})
+  expect_no_warning(sc_slic(x_no_crs, k = 7, compactness = 30, avg_fun = median))
+})
+
 test_that("sc_slic handles step units and unit-related errors", {
   step_map = use_meters(8 * terra::res(v1)[1])
   sc = sc_slic(v1, step = step_map, compactness = 1)
