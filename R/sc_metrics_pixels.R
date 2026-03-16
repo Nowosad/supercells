@@ -24,28 +24,24 @@
 #' adaptive compactness (SLIC0), and scaled value distances are computed with the
 #' per-supercell max value distance.
 #'
-#' @return A SpatRaster with one or more layers depending on `metrics`.
-#' Interpretation:
+#' @return A SpatRaster with one or more layers depending on `metrics` and
+#' `scale`.
 #' \describe{
-#'   \item{spatial}{Lower values indicate more compact supercells.}
-#'   \item{value}{Lower values indicate more homogeneous supercells.}
-#'   \item{combined}{Overall distance; mainly useful for ranking.}
-#'   \item{balance}{0 indicates balance; negative values indicate spatial dominance;
-#'   positive values indicate value dominance.}
-#' }
-#' Metrics:
-#' \describe{
-#'   \item{spatial}{Spatial distance from each pixel to its supercell center
-#'   in grid-cell units (row/column index distance). If the input supercells were
-#'   created with `step = use_meters(...)`, distances are reported in meters.}
+#'   \item{spatial}{Spatial distance from each pixel to its supercell center in
+#'   grid-cell units (row/column index distance). If the input supercells were
+#'   created with `step = use_meters(...)`, distances are reported in meters.
+#'   Lower values indicate more compact supercells. Returned as
+#'   `spatial_scaled` when `scale = TRUE`.}
 #'   \item{value}{Value distance from each pixel to its supercell center in
-#'   the raster value space.}
-#'   \item{combined}{Combined distance using `compactness` and `step`.}
-#'   \item{balance}{Signed log ratio of scaled value distance to scaled
-#'   spatial distance; 0 indicates balance. Always computed from scaled components.}
+#'   the raster value space. Lower values indicate more homogeneous supercells.
+#'   Returned as `value_scaled` when `scale = TRUE`.}
+#'   \item{combined}{Combined distance using `compactness` and `step`. Overall
+#'   distance; mainly useful for ranking.}
+#'   \item{balance}{Signed log ratio of scaled value distance to scaled spatial
+#'   distance. `0` indicates balance; negative values indicate spatial dominance;
+#'   positive values indicate value dominance. Always computed from scaled
+#'   components.}
 #' }
-#' When `scale = TRUE`, `spatial` and `value` are returned as
-#' `spatial_scaled` and `value_scaled`.
 #' @seealso [`sc_slic()`], [`sc_metrics_supercells()`], [`sc_metrics_global()`]
 #' @export
 #' @examples
