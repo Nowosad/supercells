@@ -106,41 +106,31 @@ If missing or <code>NULL</code>, uses <code>attr(sc, "dist_fun")</code> when ava
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A SpatRaster with one or more layers depending on <code>metrics</code>.
-Interpretation:</p><dl><dt>spatial</dt>
-<dd><p>Lower values indicate more compact supercells.</p></dd>
-
-<dt>value</dt>
-<dd><p>Lower values indicate more homogeneous supercells.</p></dd>
-
-<dt>combined</dt>
-<dd><p>Overall distance; mainly useful for ranking.</p></dd>
-
-<dt>balance</dt>
-<dd><p>0 indicates balance; negative values indicate spatial dominance;
-positive values indicate value dominance.</p></dd>
-
-
-</dl><p>Metrics:</p><dl><dt>spatial</dt>
-<dd><p>Spatial distance from each pixel to its supercell center
-in grid-cell units (row/column index distance). If the input supercells were
-created with <code>step = use_meters(...)</code>, distances are reported in meters.</p></dd>
+    <p>A SpatRaster with one or more layers depending on <code>metrics</code> and
+<code>scale</code>.</p><dl><dt>spatial</dt>
+<dd><p>Spatial distance from each pixel to its supercell center in
+grid-cell units (row/column index distance). If the input supercells were
+created with <code>step = use_meters(...)</code>, distances are reported in meters.
+Lower values indicate more compact supercells. Returned as
+<code>spatial_scaled</code> when <code>scale = TRUE</code>.</p></dd>
 
 <dt>value</dt>
 <dd><p>Value distance from each pixel to its supercell center in
-the raster value space.</p></dd>
+the raster value space. Lower values indicate more homogeneous supercells.
+Returned as <code>value_scaled</code> when <code>scale = TRUE</code>.</p></dd>
 
 <dt>combined</dt>
-<dd><p>Combined distance using <code>compactness</code> and <code>step</code>.</p></dd>
+<dd><p>Combined distance using <code>compactness</code> and <code>step</code>. Overall
+distance; mainly useful for ranking.</p></dd>
 
 <dt>balance</dt>
-<dd><p>Signed log ratio of scaled value distance to scaled
-spatial distance; 0 indicates balance. Always computed from scaled components.</p></dd>
+<dd><p>Signed log ratio of scaled value distance to scaled spatial
+distance. <code>0</code> indicates balance; negative values indicate spatial dominance;
+positive values indicate value dominance. Always computed from scaled
+components.</p></dd>
 
 
-</dl><p>When <code>scale = TRUE</code>, <code>spatial</code> and <code>value</code> are returned as
-<code>spatial_scaled</code> and <code>value_scaled</code>.</p>
-    </div>
+</dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>If <code>sc</code> lacks <code>supercells</code>, <code>x</code>, or <code>y</code> columns, they are derived from geometry

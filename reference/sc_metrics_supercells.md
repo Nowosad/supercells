@@ -57,54 +57,36 @@ sc_metrics_supercells(
 
 ## Value
 
-An sf object with one row per supercell and columns: Interpretation:
-
-- mean_value_dist:
-
-  Lower values indicate more homogeneous supercells.
-
-- mean_spatial_dist:
-
-  Lower values indicate more compact supercells.
-
-- mean_combined_dist:
-
-  Overall distance; mainly useful for ranking.
-
-- balance:
-
-  0 indicates balance between value and spatial terms; negative values
-  indicate spatial dominance; positive values indicate value dominance.
-
-Metrics:
+An sf object with one row per supercell and columns:
 
 - supercells:
 
   Supercell ID.
 
-- spatial:
+- mean_spatial_dist:
 
   Mean spatial distance from cells to the supercell center in grid-cell
   units (row/column index distance). If the input supercells were
   created with `step = use_meters(...)`, distances are reported in
-  meters. Returned as `mean_spatial_dist` (or `mean_spatial_dist_scaled`
-  when `scale = TRUE`).
+  meters. Lower values indicate more compact supercells. Returned as
+  `mean_spatial_dist_scaled` when `scale = TRUE`.
 
-- value:
+- mean_value_dist:
 
   Mean value distance from cells to the supercell center in value space.
-  Returned as `mean_value_dist` (or `mean_value_dist_scaled` when
-  `scale = TRUE`).
+  Lower values indicate more homogeneous supercells. Returned as
+  `mean_value_dist_scaled` when `scale = TRUE`.
 
-- combined:
+- mean_combined_dist:
 
   Mean combined distance using `compactness` and `step` to scale value
-  and spatial distances. Returned as `mean_combined_dist`.
+  and spatial distances. Overall distance; mainly useful for ranking.
 
 - balance:
 
-  Signed log ratio of scaled value distance to scaled spatial distance;
-  0 indicates balance.
+  Signed log ratio of scaled value distance to scaled spatial distance.
+  `0` indicates balance; negative values indicate spatial dominance;
+  positive values indicate value dominance.
 
 ## Details
 

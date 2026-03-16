@@ -106,42 +106,30 @@ If missing or <code>NULL</code>, uses <code>attr(sc, "dist_fun")</code> when ava
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An sf object with one row per supercell and columns:
-Interpretation:</p><dl><dt>mean_value_dist</dt>
-<dd><p>Lower values indicate more homogeneous supercells.</p></dd>
-
-<dt>mean_spatial_dist</dt>
-<dd><p>Lower values indicate more compact supercells.</p></dd>
-
-<dt>mean_combined_dist</dt>
-<dd><p>Overall distance; mainly useful for ranking.</p></dd>
-
-<dt>balance</dt>
-<dd><p>0 indicates balance between value and spatial terms; negative
-values indicate spatial dominance; positive values indicate value dominance.</p></dd>
-
-
-</dl><p>Metrics:</p><dl><dt>supercells</dt>
+    <p>An sf object with one row per supercell and columns:</p><dl><dt>supercells</dt>
 <dd><p>Supercell ID.</p></dd>
 
-<dt>spatial</dt>
-<dd><p>Mean spatial distance from cells to the supercell center
-in grid-cell units (row/column index distance). If the input supercells were
-created with <code>step = use_meters(...)</code>, distances are reported in meters.
-Returned as <code>mean_spatial_dist</code> (or <code>mean_spatial_dist_scaled</code> when <code>scale = TRUE</code>).</p></dd>
+<dt>mean_spatial_dist</dt>
+<dd><p>Mean spatial distance from cells to the supercell
+center in grid-cell units (row/column index distance). If the input
+supercells were created with <code>step = use_meters(...)</code>, distances are
+reported in meters. Lower values indicate more compact supercells.
+Returned as <code>mean_spatial_dist_scaled</code> when <code>scale = TRUE</code>.</p></dd>
 
-<dt>value</dt>
-<dd><p>Mean value distance from cells to the supercell center in
-value space. Returned as <code>mean_value_dist</code> (or <code>mean_value_dist_scaled</code>
-when <code>scale = TRUE</code>).</p></dd>
+<dt>mean_value_dist</dt>
+<dd><p>Mean value distance from cells to the supercell
+center in value space. Lower values indicate more homogeneous supercells.
+Returned as <code>mean_value_dist_scaled</code> when <code>scale = TRUE</code>.</p></dd>
 
-<dt>combined</dt>
-<dd><p>Mean combined distance using <code>compactness</code> and <code>step</code>
-to scale value and spatial distances. Returned as <code>mean_combined_dist</code>.</p></dd>
+<dt>mean_combined_dist</dt>
+<dd><p>Mean combined distance using <code>compactness</code> and
+<code>step</code> to scale value and spatial distances. Overall distance; mainly useful
+for ranking.</p></dd>
 
 <dt>balance</dt>
-<dd><p>Signed log ratio of scaled value distance to scaled
-spatial distance; 0 indicates balance.</p></dd>
+<dd><p>Signed log ratio of scaled value distance to scaled spatial
+distance. <code>0</code> indicates balance; negative values indicate spatial dominance;
+positive values indicate value dominance.</p></dd>
 
 
 </dl></div>

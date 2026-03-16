@@ -33,7 +33,7 @@ own computer, install and attach the packages:
 ``` r
 library(supercells)    # supercells for spatial data
 library(terra)         # spatial raster data reading and handling
-#> terra 1.8.93
+#> terra 1.9.1
 library(sf)            # spatial vector data reading and handling
 #> Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE
 library(motif)         # tools for working with categorical spatial patterns

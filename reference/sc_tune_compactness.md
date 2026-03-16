@@ -115,7 +115,7 @@ A one-row data frame with columns `step`, `metric`, `dist_fun`, and
 
 ``` r
 library(terra)
-#> terra 1.8.93
+#> terra 1.9.1
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 tune = sc_tune_compactness(vol, step = 8)
 tune$compactness

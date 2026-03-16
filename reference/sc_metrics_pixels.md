@@ -58,51 +58,33 @@ sc_metrics_pixels(
 
 ## Value
 
-A SpatRaster with one or more layers depending on `metrics`.
-Interpretation:
-
-- spatial:
-
-  Lower values indicate more compact supercells.
-
-- value:
-
-  Lower values indicate more homogeneous supercells.
-
-- combined:
-
-  Overall distance; mainly useful for ranking.
-
-- balance:
-
-  0 indicates balance; negative values indicate spatial dominance;
-  positive values indicate value dominance.
-
-Metrics:
+A SpatRaster with one or more layers depending on `metrics` and `scale`.
 
 - spatial:
 
   Spatial distance from each pixel to its supercell center in grid-cell
   units (row/column index distance). If the input supercells were
   created with `step = use_meters(...)`, distances are reported in
-  meters.
+  meters. Lower values indicate more compact supercells. Returned as
+  `spatial_scaled` when `scale = TRUE`.
 
 - value:
 
   Value distance from each pixel to its supercell center in the raster
-  value space.
+  value space. Lower values indicate more homogeneous supercells.
+  Returned as `value_scaled` when `scale = TRUE`.
 
 - combined:
 
-  Combined distance using `compactness` and `step`.
+  Combined distance using `compactness` and `step`. Overall distance;
+  mainly useful for ranking.
 
 - balance:
 
-  Signed log ratio of scaled value distance to scaled spatial distance;
-  0 indicates balance. Always computed from scaled components.
-
-When `scale = TRUE`, `spatial` and `value` are returned as
-`spatial_scaled` and `value_scaled`.
+  Signed log ratio of scaled value distance to scaled spatial distance.
+  `0` indicates balance; negative values indicate spatial dominance;
+  positive values indicate value dominance. Always computed from scaled
+  components.
 
 ## Details
 
