@@ -147,9 +147,11 @@ function must accept a numeric vector and return a single numeric value.</p></dd
 <dd><p>Scale factor for value distances during tuning.
 Global metric: <code>compactness = (median(d_value) / value_scale) * step / median(d_spatial)</code>.
 Local metric: <code>compactness = median(local_mean(d_value) / value_scale)</code>.
-<code>"auto"</code> uses <code>sqrt(nlyr(raster))</code> (good for Euclidean-like distances);
-for bounded/angular distances (e.g., cosine), <code>value_scale = 1</code> is often better.
-Default: <code>"auto"</code>.</p></dd>
+Use this to keep value distances comparable across numbers of bands or
+distance families. <code>"auto"</code> uses <code>sqrt(nlyr(raster))</code>, which is a reasonable
+normalization for Euclidean-like norms (distance tends to grow with
+dimensionality). For bounded or normalized distances (e.g., cosine, JSD),
+<code>value_scale = 1</code> is often more appropriate. Default: <code>"auto"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
