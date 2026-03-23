@@ -16,9 +16,11 @@
 #' @param value_scale Scale factor for value distances during tuning.
 #' Global metric: `compactness = (median(d_value) / value_scale) * step / median(d_spatial)`.
 #' Local metric: `compactness = median(local_mean(d_value) / value_scale)`.
-#' `"auto"` uses `sqrt(nlyr(raster))` (good for Euclidean-like distances);
-#' for bounded/angular distances (e.g., cosine), `value_scale = 1` is often better.
-#' Default: `"auto"`.
+#' Use this to keep value distances comparable across numbers of bands or
+#' distance families. `"auto"` uses `sqrt(nlyr(raster))`, which is a reasonable
+#' normalization for Euclidean-like norms (distance tends to grow with
+#' dimensionality). For bounded or normalized distances (e.g., cosine, JSD),
+#' `value_scale = 1` is often more appropriate. Default: `"auto"`.
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.

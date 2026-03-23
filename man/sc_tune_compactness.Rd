@@ -56,9 +56,11 @@ function must accept a numeric vector and return a single numeric value.}
 \item{value_scale}{Scale factor for value distances during tuning.
 Global metric: \code{compactness = (median(d_value) / value_scale) * step / median(d_spatial)}.
 Local metric: \code{compactness = median(local_mean(d_value) / value_scale)}.
-\code{"auto"} uses \code{sqrt(nlyr(raster))} (good for Euclidean-like distances);
-for bounded/angular distances (e.g., cosine), \code{value_scale = 1} is often better.
-Default: \code{"auto"}.}
+Use this to keep value distances comparable across numbers of bands or
+distance families. \code{"auto"} uses \code{sqrt(nlyr(raster))}, which is a reasonable
+normalization for Euclidean-like norms (distance tends to grow with
+dimensionality). For bounded or normalized distances (e.g., cosine, JSD),
+\code{value_scale = 1} is often more appropriate. Default: \code{"auto"}.}
 }
 \value{
 A one-row data frame with columns \code{step}, \code{metric}, \code{dist_fun}, and \code{compactness}.
