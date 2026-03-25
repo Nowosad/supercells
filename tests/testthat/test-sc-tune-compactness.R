@@ -25,10 +25,27 @@ test_that("sc_tune_compactness local_variability scales with dimensionality", {
   expect_true(lv64$compactness > 0)
 })
 
+test_that("sc_tune_compactness supports local_balance metric", {
+  tune = sc_tune_compactness(v1, step = 8, metric = "local_balance")
+
+  expect_equal(tune$metric, "local_balance")
+  expect_true(is.finite(tune$compactness))
+  expect_true(tune$compactness > 0)
+})
+
 test_that("sc_tune_compactness validates metric values", {
   expect_error(
     sc_tune_compactness(v1, step = 8, metric = "bad"),
-    "metric must be 'local_variability'",
+    "metric must be one of 'local_variability' or 'local_balance'",
     fixed = TRUE
   )
+})
+
+test_that(".sc_tune_local_spatial_mean returns positive finite values", {
+  centers_xy = matrix(c(5, 5, 10, 10), ncol = 2, byrow = TRUE)
+  out = .sc_tune_local_spatial_mean(centers_xy, rows = 20, cols = 20, step = 4)
+
+  expect_length(out, 2)
+  expect_true(all(is.finite(out)))
+  expect_true(all(out > 0))
 })

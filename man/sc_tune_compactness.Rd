@@ -24,13 +24,12 @@ map-distance steps in meters (automatically converted to cells using raster reso
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
 A custom function must accept two numeric vectors and return a single numeric value.}
 
-\item{metric}{Which compactness metric to return. Currently only
-\code{"local_variability"} is supported. The argument is kept for future additions.
-For \code{"local_variability"}, \code{compactness = median(local_mean(d_value)) / dim_scale},
-where local means are computed in windows around initial centers and
-\code{dim_scale} is inferred from the number of raster layers and \code{dist_fun}.
-This keeps compactness adjustable to dimensionality without requiring a
-separate user-facing scaling argument.}
+\item{metric}{Which compactness metric to return.
+\code{"local_variability"} estimates compactness as the median local mean of
+\code{d_value}, with \code{d_value} adjusted by \code{dim_scale} inferred from the number of
+raster layers and \code{dist_fun}.
+\code{"local_balance"} estimates compactness as the median of
+\code{mean(d_value) / mean(d_spatial / step)} computed in the same local windows.}
 
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
@@ -41,8 +40,8 @@ A one-row data frame with columns \code{step} and \code{compactness}.
 }
 \description{
 Estimates a compactness value for a chosen raster scale.
-The current implementation supports one tuning metric, \code{"local_variability"},
-which estimates compactness directly from local value variability.
+The current implementation supports two tuning metrics based on local windows
+around initial centers.
 }
 \examples{
 library(terra)

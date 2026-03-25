@@ -1,8 +1,8 @@
 #' Estimate a compactness value
 #'
 #' Estimates a compactness value for a chosen raster scale.
-#' The current implementation supports one tuning metric, `"local_variability"`,
-#' which estimates compactness directly from local value variability.
+#' The current implementation supports two tuning metrics based on local windows
+#' around initial centers.
 #'
 #' @param raster A `SpatRaster`.
 #' @param step Initial center spacing (alternative is `k`).
@@ -11,13 +11,12 @@
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.
-#' @param metric Which compactness metric to return. Currently only
-#' `"local_variability"` is supported. The argument is kept for future additions.
-#' For `"local_variability"`, `compactness = median(local_mean(d_value)) / dim_scale`,
-#' where local means are computed in windows around initial centers and
-#' `dim_scale` is inferred from the number of raster layers and `dist_fun`.
-#' This keeps compactness adjustable to dimensionality without requiring a
-#' separate user-facing scaling argument.
+#' @param metric Which compactness metric to return.
+#' `"local_variability"` estimates compactness as the median local mean of
+#' `d_value`, with `d_value` adjusted by `dim_scale` inferred from the number of
+#' raster layers and `dist_fun`.
+#' `"local_balance"` estimates compactness as the median of
+#' `mean(d_value) / mean(d_spatial / step)` computed in the same local windows.
 #' @param k The number of supercells desired (alternative to `step`).
 #' @param centers Optional sf object of custom initial centers. Requires `step`.
 #'
@@ -36,18 +35,18 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
                                         metric = "local_variability", k = NULL,
                                         centers = NULL) {
   if (!is.character(metric) || length(metric) != 1 || is.na(metric) ||
-      !identical(metric, "local_variability")) {
-    stop("metric must be 'local_variability'", call. = FALSE)
+      !metric %in% c("local_variability", "local_balance")) {
+    stop("metric must be one of 'local_variability' or 'local_balance'", call. = FALSE)
   }
   dist_fun_out = if (is.character(dist_fun)) as.character(dist_fun[[1]]) else "custom"
 
   dim_scale = .sc_tune_local_variability_scale(terra::nlyr(raster), dist_fun_out)
 
-  tune_stats = .sc_tune_grid_window_variability(raster, step, dist_fun, k, centers)
+  tune_stats = .sc_tune_grid_window_variability(raster, step, dist_fun, k, centers, metric)
   step_used = unlist(tune_stats$step, use.names = FALSE)
   compactness_value = tune_stats$compactness / dim_scale
 
-  return(data.frame(step = step_used, metric = "local_variability", dist_fun = dist_fun_out,
+  return(data.frame(step = step_used, metric = metric, dist_fun = dist_fun_out,
                     compactness = compactness_value))
 }
 
@@ -71,7 +70,7 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
   1
 }
 
-.sc_tune_grid_window_variability = function(raster, step, dist_fun, k, centers) {
+.sc_tune_grid_window_variability = function(raster, step, dist_fun, k, centers, metric) {
   pts = sc_slic_points(
     raster,
     step = step,
@@ -96,8 +95,48 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
     dist_fun = prep$dist_fun
   )
 
+  compactness_values = switch(
+    metric,
+    local_variability = mean_value_dist,
+    local_balance = {
+      mean_spatial_dist_scaled = .sc_tune_local_spatial_mean(
+        prep$centers_xy,
+        rows = dim(prep$raster)[1],
+        cols = dim(prep$raster)[2],
+        step = prep$step
+      )
+      mean_value_dist / mean_spatial_dist_scaled
+    }
+  )
+
   list(
     step = attr(pts, "step"),
-    compactness = stats::median(mean_value_dist, na.rm = TRUE)
+    compactness = stats::median(compactness_values, na.rm = TRUE)
   )
+}
+
+.sc_tune_local_spatial_mean = function(centers_xy, rows, cols, step) {
+  centers_xy = as.matrix(centers_xy)
+  out = rep(NA_real_, nrow(centers_xy))
+
+  for (i in seq_len(nrow(centers_xy))) {
+    center_x = round(centers_xy[i, 1])
+    center_y = round(centers_xy[i, 2])
+
+    x_seq = seq.int(center_x - step, center_x + step - 1)
+    y_seq = seq.int(center_y - step, center_y + step - 1)
+
+    x_seq = x_seq[x_seq >= 0 & x_seq < cols]
+    y_seq = y_seq[y_seq >= 0 & y_seq < rows]
+
+    if (!length(x_seq) || !length(y_seq)) {
+      next
+    }
+
+    grid = expand.grid(x = x_seq, y = y_seq)
+    d_spatial = sqrt((grid$x - center_x)^2 + (grid$y - center_y)^2)
+    out[i] = mean(d_spatial / step)
+  }
+
+  out
 }
