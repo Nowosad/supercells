@@ -2,22 +2,15 @@
 % Please edit documentation in R/sc_tune_compactness.R
 \name{sc_tune_compactness}
 \alias{sc_tune_compactness}
-\title{Estimate compactness from a light SLIC run}
+\title{Estimate a compactness value}
 \usage{
 sc_tune_compactness(
   raster,
   step = NULL,
-  compactness = 1,
-  metric = "global",
   dist_fun = "euclidean",
-  avg_fun = "mean",
-  clean = TRUE,
-  minarea,
-  iter = 1,
+  metric = "local_variability",
   k = NULL,
-  centers = NULL,
-  sample_size = 10000,
-  value_scale = "auto"
+  centers = NULL
 )
 }
 \arguments{
@@ -27,50 +20,29 @@ sc_tune_compactness(
 Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
 map-distance steps in meters (automatically converted to cells using raster resolution).}
 
-\item{compactness}{Starting compactness used for the initial short run.}
-
-\item{metric}{Which compactness metric to return: \code{"global"} or \code{"local"}.
-Default: \code{"global"}.}
-
 \item{dist_fun}{A distance function name or a custom function. Supported names:
 "euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
 A custom function must accept two numeric vectors and return a single numeric value.}
 
-\item{avg_fun}{An averaging function name or custom function used to summarize
-values within each supercell. Supported names: "mean" and "median". A custom
-function must accept a numeric vector and return a single numeric value.}
-
-\item{clean}{Should connectivity of the supercells be enforced?}
-
-\item{minarea}{Minimal size of a supercell (in cells).}
-
-\item{iter}{Number of SLIC iterations for the pilot run.}
+\item{metric}{Which compactness metric to return. Currently only
+\code{"local_variability"} is supported. The argument is kept for future additions.
+For \code{"local_variability"}, \code{compactness = median(local_mean(d_value)) / dim_scale},
+where local means are computed in windows around initial centers and
+\code{dim_scale} is inferred from the number of raster layers and \code{dist_fun}.
+This keeps compactness adjustable to dimensionality without requiring a
+separate user-facing scaling argument.}
 
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
-\item{centers}{Optional sf object of custom centers. Requires \code{step}.}
-
-\item{sample_size}{Optional limit on the number of pixels used for the summary
-(passed to \code{terra::global()} as \code{maxcell}).}
-
-\item{value_scale}{Scale factor for value distances during tuning.
-Global metric: \code{compactness = (median(d_value) / value_scale) * step / median(d_spatial)}.
-Local metric: \code{compactness = median(local_mean(d_value) / value_scale)}.
-Use this to keep value distances comparable across numbers of bands or
-distance families. \code{"auto"} uses \code{sqrt(nlyr(raster))}, which is a reasonable
-normalization for Euclidean-like norms (distance tends to grow with
-dimensionality). For bounded or normalized distances (e.g., cosine, JSD),
-\code{value_scale = 1} is often more appropriate. Default: \code{"auto"}.}
+\item{centers}{Optional sf object of custom initial centers. Requires \code{step}.}
 }
 \value{
-A one-row data frame with columns \code{step}, \code{metric}, \code{dist_fun}, and \code{compactness}.
+A one-row data frame with columns \code{step} and \code{compactness}.
 }
 \description{
-Runs a short SLIC segmentation (default \code{iter = 1}) and uses cell-level
-distances to estimate a compactness value where value and spatial distances
-are balanced for the chosen \code{step}.
-The global estimate uses a pixel-weighted median over the sampled cells,
-while the local estimate uses a median of per-center mean distances.
+Estimates a compactness value for a chosen raster scale.
+The current implementation supports one tuning metric, \code{"local_variability"},
+which estimates compactness directly from local value variability.
 }
 \examples{
 library(terra)

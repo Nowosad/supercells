@@ -77,10 +77,10 @@ For example, `sc_slic_points()` is helpful for inspecting supercell center locat
 
 ## Compactness tuning and iteration diagnostics
 
-Use `sc_tune_compactness()` to estimate a compactness value from a short pilot run, then run `sc_slic()` with the tuned value. 
+Use `sc_tune_compactness()` to estimate a compactness value from local value variability at the chosen `step`, then run `sc_slic()` with the tuned value. 
 
 ```{r}
-# Estimate compactness from a short pilot run
+# Estimate compactness from local value variability
 comp_tune <- sc_tune_compactness(vol, step = 8)
 comp_tune
 
@@ -89,8 +89,6 @@ vol_sc_tuned <- sc_slic(vol, step = 8, compactness = comp_tune$compactness)
 terra::plot(vol)
 plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.6, border = "red")
 ```
-
-This function also allow to calculate the compactness using second method called `"local"`.
 
 `sc_slic_convergence()` provides iteration diagnostics so you can visualize convergence in mean distance across iterations.
 

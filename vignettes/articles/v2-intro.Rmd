@@ -41,7 +41,7 @@ It can be thought of as the expected spatial scale of the output.
 `compactness` controls the tradeoff between spatial regularity and value similarity.
 Lower values prioritize value similarity and may lead to irregular shapes, while higher values prioritize shape regularity -- supercells may look more like squares -- but may be less homogeneous in terms of values.
 
-For compactness selection, you may use `sc_tune_compactness()` to estimate a good value from a short pilot run.
+For compactness selection, you may use `sc_tune_compactness()` to estimate a good value from local value variability at the chosen `step`.
 Alternatively, `compactness = use_adaptive()` enables SLIC0-style adaptive compactness when you want the algorithm to adjust locally -- this does not require setting a specific value, but also takes away direct control.
 
 To assess quality of the resulting supercells, use `sc_metrics_pixels()` for pixel-level distances, `sc_metrics_supercells()` for per-supercell summaries, and `sc_metrics_global()` for a general overview.
@@ -57,7 +57,7 @@ Basic workflows follow the same pattern: choose scale (`step` or `k`), tune or s
 vol <- terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 
 # choose scale and tune compactness
-tune <- supercells::sc_tune_compactness(vol, step = 8, metric = "local")
+tune <- supercells::sc_tune_compactness(vol, step = 8, metric = "local_variability")
 
 # create supercells
 vol_sc <- supercells::sc_slic(vol, step = 8, compactness = tune$compactness)
@@ -108,13 +108,13 @@ Use `sc_slic_points()` to return only supercell centers as points.
 Use `sc_slic_raster()` to return a raster of supercell IDs for large datasets or raster-based pipelines.
 These functions share the same core arguments and can be swapped with minimal changes.
 
-Now, let's try to tune the `compactness` parameter using a pilot run.
+Now, let's try to tune the `compactness` parameter using local value variability.
 
 ```{r}
 tune <- sc_tune_compactness(
   vol,
   step = 8,
-  metric = "local"
+  metric = "local_variability"
 )
 tune
 ```

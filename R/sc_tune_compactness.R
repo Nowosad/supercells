@@ -1,41 +1,27 @@
-#' Estimate compactness from a light SLIC run
+#' Estimate a compactness value
 #'
-#' Runs a short SLIC segmentation (default `iter = 1`) and uses cell-level
-#' distances to estimate a compactness value where value and spatial distances
-#' are balanced for the chosen `step`.
-#' The global estimate uses a pixel-weighted median over the sampled cells,
-#' while the local estimate uses a median of per-center mean distances.
+#' Estimates a compactness value for a chosen raster scale.
+#' The current implementation supports one tuning metric, `"local_variability"`,
+#' which estimates compactness directly from local value variability.
 #'
 #' @param raster A `SpatRaster`.
 #' @param step Initial center spacing (alternative is `k`).
 #' Provide a plain numeric value for cell units, or use [use_meters()] for
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
-#' @param compactness Starting compactness used for the initial short run.
-#' @param metric Which compactness metric to return: `"global"` or `"local"`.
-#' Default: `"global"`.
-#' @param value_scale Scale factor for value distances during tuning.
-#' Global metric: `compactness = (median(d_value) / value_scale) * step / median(d_spatial)`.
-#' Local metric: `compactness = median(local_mean(d_value) / value_scale)`.
-#' Use this to keep value distances comparable across numbers of bands or
-#' distance families. `"auto"` uses `sqrt(nlyr(raster))`, which is a reasonable
-#' normalization for Euclidean-like norms (distance tends to grow with
-#' dimensionality). For bounded or normalized distances (e.g., cosine, JSD),
-#' `value_scale = 1` is often more appropriate. Default: `"auto"`.
 #' @param dist_fun A distance function name or a custom function. Supported names:
 #' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
 #' A custom function must accept two numeric vectors and return a single numeric value.
-#' @param avg_fun An averaging function name or custom function used to summarize
-#' values within each supercell. Supported names: "mean" and "median". A custom
-#' function must accept a numeric vector and return a single numeric value.
-#' @param clean Should connectivity of the supercells be enforced?
-#' @param minarea Minimal size of a supercell (in cells).
-#' @param iter Number of SLIC iterations for the pilot run.
+#' @param metric Which compactness metric to return. Currently only
+#' `"local_variability"` is supported. The argument is kept for future additions.
+#' For `"local_variability"`, `compactness = median(local_mean(d_value)) / dim_scale`,
+#' where local means are computed in windows around initial centers and
+#' `dim_scale` is inferred from the number of raster layers and `dist_fun`.
+#' This keeps compactness adjustable to dimensionality without requiring a
+#' separate user-facing scaling argument.
 #' @param k The number of supercells desired (alternative to `step`).
-#' @param centers Optional sf object of custom centers. Requires `step`.
-#' @param sample_size Optional limit on the number of pixels used for the summary
-#' (passed to `terra::global()` as `maxcell`).
+#' @param centers Optional sf object of custom initial centers. Requires `step`.
 #'
-#' @return A one-row data frame with columns `step`, `metric`, `dist_fun`, and `compactness`.
+#' @return A one-row data frame with columns `step` and `compactness`.
 #'
 #' @seealso [`sc_slic()`], [use_meters()], [use_adaptive()]
 #'
@@ -46,58 +32,62 @@
 #' tune$compactness
 #'
 #' @export
-sc_tune_compactness = function(raster, step = NULL, compactness = 1,
-                                        metric = "global",
-                                        dist_fun = "euclidean", avg_fun = "mean",
-                                        clean = TRUE, minarea, iter = 1,
-                                        k = NULL, centers = NULL,
-                                        sample_size = 10000, value_scale = "auto") {
-  pts = sc_slic_points(raster, step = step, compactness = compactness,
-                       dist_fun = dist_fun, avg_fun = avg_fun,
-                       clean = clean, minarea = minarea, iter = iter,
-                       k = k, centers = centers,
-                       outcomes = c("supercells", "coordinates", "values"),
-                       chunks = FALSE)
-
-  step_used = attr(pts, "step")
-  if (is.null(step_used)) {
-    step_used = step
-  }
-  step_used_num = step_used
-  if (inherits(step_used_num, "units")) {
-    step_used_num = as.numeric(units::drop_units(step_used_num))
-  }
-
+sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
+                                        metric = "local_variability", k = NULL,
+                                        centers = NULL) {
   if (!is.character(metric) || length(metric) != 1 || is.na(metric) ||
-      !(metric %in% c("global", "local"))) {
-    stop("metric must be 'global' or 'local'", call. = FALSE)
+      !identical(metric, "local_variability")) {
+    stop("metric must be 'local_variability'", call. = FALSE)
   }
   dist_fun_out = if (is.character(dist_fun)) as.character(dist_fun[[1]]) else "custom"
 
-  if (identical(value_scale, "auto")) {
-    value_scale = sqrt(terra::nlyr(raster))
-  } else if (!is.numeric(value_scale) || length(value_scale) != 1 ||
-             is.na(value_scale) || value_scale <= 0) {
-    stop("value_scale must be a single positive number or 'auto'", call. = FALSE)
+  dim_scale = .sc_tune_local_variability_scale(terra::nlyr(raster), dist_fun_out)
+
+  tune_stats = .sc_tune_grid_window_variability(raster, step, dist_fun, k, centers)
+  step_used = unlist(tune_stats$step, use.names = FALSE)
+  compactness_value = tune_stats$compactness / dim_scale
+
+  return(data.frame(step = step_used, metric = "local_variability", dist_fun = dist_fun_out,
+                    compactness = compactness_value))
+}
+
+.sc_tune_local_variability_scale = function(n_bands, dist_fun_name) {
+  if (!is.character(dist_fun_name) || length(dist_fun_name) != 1 || is.na(dist_fun_name)) {
+    return(1)
   }
 
-  if (identical(metric, "global")) {
-    pix_metrics = sc_metrics_pixels(raster, pts, dist_fun = dist_fun,
-                                    compactness = compactness, step = step_used,
-                                    scale = FALSE, metrics = c("spatial", "value"))
-
-    med = terra::global(pix_metrics, stats::median, na.rm = TRUE, maxcell = sample_size)
-    spatial_dist_median = med[1, 1]
-    value_dist_median = med[2, 1]
-    value_dist_median = value_dist_median / value_scale
-    compactness_value = value_dist_median * step_used_num / spatial_dist_median
-
-    return(data.frame(step = step_used, metric = "global", dist_fun = dist_fun_out,
-                      compactness = compactness_value))
+  if (identical(dist_fun_name, "euclidean")) {
+    return(sqrt(n_bands))
   }
 
-  prep = .sc_metrics_prep(raster, pts, dist_fun, compactness, step_used,
+  if (dist_fun_name %in% c("manhattan", "dtw", "dtw2d")) {
+    return(n_bands)
+  }
+
+  if (dist_fun_name %in% c("jsd")) {
+    return(1)
+  }
+
+  1
+}
+
+.sc_tune_grid_window_variability = function(raster, step, dist_fun, k, centers) {
+  pts = sc_slic_points(
+    raster,
+    step = step,
+    compactness = 1,
+    dist_fun = dist_fun,
+    iter = 0,
+    k = k,
+    centers = centers,
+    outcomes = c("supercells", "coordinates", "values"),
+    chunks = FALSE
+  )
+
+  step_used = attr(pts, "step")
+  prep = .sc_metrics_prep(raster, pts, dist_fun, compactness = 1, step = step_used,
                           include = c("centers", "vals", "dist", "raster"))
+
   mean_value_dist = sc_metrics_local_mean_cpp(
     prep$centers_xy, prep$centers_vals, prep$vals,
     rows = dim(prep$raster)[1], cols = dim(prep$raster)[2],
@@ -105,9 +95,9 @@ sc_tune_compactness = function(raster, step = NULL, compactness = 1,
     dist_name = prep$dist_name,
     dist_fun = prep$dist_fun
   )
-  mean_value_dist = mean_value_dist / value_scale
-  compactness_value = stats::median(mean_value_dist, na.rm = TRUE)
 
-  return(data.frame(step = step_used, metric = "local", dist_fun = dist_fun_out,
-                    compactness = compactness_value))
+  list(
+    step = attr(pts, "step"),
+    compactness = stats::median(mean_value_dist, na.rm = TRUE)
+  )
 }
