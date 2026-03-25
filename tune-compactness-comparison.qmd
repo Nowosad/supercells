@@ -1,0 +1,168 @@
+---
+title: "Compare compactness tuning methods"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+params:
+  raster_paths:
+    - "~/Science/sc-paper2026/ms_2024_c.tif"
+    # - "~/path/to/raster_64d.tif"
+  step: 64
+  methods:
+    - "local_variability"
+    - "local_balance"
+  dist_fun: "cosine"
+---
+
+
+```{r}
+#| message: false
+# library(supercells)
+devtools::load_all("~/Software/supercells")
+library(terra)
+library(sf)
+library(dplyr)
+library(purrr)
+library(tidyr)
+library(ggplot2)
+options(pillar.width = Inf)
+```
+
+
+## Inputs
+
+
+```{r}
+report_inputs <- list(
+  raster_paths = params$raster_paths,
+  step = params$step,
+  methods = params$methods,
+  dist_fun = params$dist_fun
+)
+
+report_inputs
+```
+
+
+## Read rasters
+
+
+```{r}
+rasters <- set_names(
+  lapply(params$raster_paths, terra::rast),
+  nm = basename(path.expand(params$raster_paths))
+)
+
+raster_summary <- tibble(
+  dataset = names(rasters),
+  nrow = map_int(rasters, nrow),
+  ncol = map_int(rasters, ncol),
+  nlyr = map_int(rasters, nlyr),
+  ncell = map_int(rasters, ncell)
+)
+
+raster_summary
+```
+
+
+## Tune compactness and build supercells
+
+Current tuning methods are segmentation-free:
+
+- `local_variability`: uses local mean value distances around initial centers
+- `local_balance`: uses local mean value distances scaled by local mean spatial distances in the same windows
+
+
+```{r}
+tuned_results <- imap_dfr(rasters, function(x, dataset_name) {
+  map_dfr(params$methods, function(method_name) {
+    tune <- sc_tune_compactness(
+      raster = x,
+      step = params$step,
+      metric = method_name,
+      dist_fun = params$dist_fun
+    )
+
+    sc <- sc_slic(
+      x = x,
+      step = params$step,
+      compactness = tune$compactness,
+      dist_fun = params$dist_fun
+    )
+
+    global_metrics <- sc_metrics_global(
+      x = x,
+      sc = sc,
+      dist_fun = params$dist_fun,
+      scale = TRUE
+    )
+
+    tibble(
+      dataset = dataset_name,
+      method = method_name,
+      tuned_compactness = tune$compactness,
+      supercells = list(sc),
+      metrics = list(global_metrics)
+    )
+  })
+})
+
+tuned_results |> select(dataset, method, tuned_compactness)
+```
+
+
+## Global metrics comparison
+
+
+```{r}
+global_metrics_tbl <- tuned_results |>
+  mutate(metrics = map(metrics, as_tibble)) |>
+  unnest(metrics) |>
+  relocate(dataset, method, tuned_compactness)
+
+global_metrics_tbl
+```
+
+
+## Visual comparison
+
+
+```{r}
+plot_supercells_panel <- function(x, sc, title_text) {
+  terra::plot(x[[1]], main = title_text)
+  plot(sf::st_geometry(sc), add = TRUE, border = "red", lwd = 0.5)
+}
+
+old_par <- par(no.readonly = TRUE)
+on.exit(par(old_par), add = TRUE)
+par(
+  mfrow = c(length(rasters), length(params$methods)),
+  mar = c(2, 2, 3, 2)
+)
+
+pwalk(
+  tuned_results |> select(dataset, method, tuned_compactness, supercells),
+  function(dataset, method, tuned_compactness, supercells) {
+    x <- rasters[[dataset]]
+    plot_supercells_panel(
+      x = x,
+      sc = supercells,
+      title_text = paste0(dataset, "\n", method, ": ", signif(tuned_compactness, 4))
+    )
+  }
+)
+```
+
+
+## Compact summary
+
+
+```{r}
+summary_tbl <- global_metrics_tbl |>
+  select(dataset, method, tuned_compactness, n_supercells, tidyselect::everything())
+
+summary_tbl
+```
+
