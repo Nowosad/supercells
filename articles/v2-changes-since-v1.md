@@ -90,16 +90,17 @@ memory-intensive.
 
 Use
 [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
-to estimate a compactness value from a short pilot run, then run
+to estimate a compactness value from local value variability at the
+chosen `step`, then run
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
 with the tuned value.
 
 ``` r
-# Estimate compactness from a short pilot run
+# Estimate compactness from local value variability
 comp_tune <- sc_tune_compactness(vol, step = 8)
 comp_tune
-#>   step metric  dist_fun compactness
-#> 1    8 global euclidean    6.864497
+#>   step            metric  dist_fun compactness
+#> 1    8 local_variability euclidean    8.990234
 
 # Use the tuned value and plot results
 vol_sc_tuned <- sc_slic(vol, step = 8, compactness = comp_tune$compactness)
@@ -108,9 +109,6 @@ plot(sf::st_geometry(vol_sc_tuned), add = TRUE, lwd = 0.6, border = "red")
 ```
 
 ![](v2-changes-since-v1_files/figure-html/unnamed-chunk-6-1.png)
-
-This function also allow to calculate the compactness using second
-method called `"local"`.
 
 [`sc_slic_convergence()`](https://jakubnowosad.com/supercells/reference/sc_slic_convergence.md)
 provides iteration diagnostics so you can visualize convergence in mean

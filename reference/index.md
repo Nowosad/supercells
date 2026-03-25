@@ -38,7 +38,7 @@
   parameters
 
 - [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
-  : Estimate compactness from a light SLIC run
+  : Estimate a compactness value
 
 - [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
   : Creates supercells

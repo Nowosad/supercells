@@ -1,10 +1,8 @@
-# Estimate compactness from a light SLIC run
+# Estimate a compactness value
 
-Runs a short SLIC segmentation (default `iter = 1`) and uses cell-level
-distances to estimate a compactness value where value and spatial
-distances are balanced for the chosen `step`. The global estimate uses a
-pixel-weighted median over the sampled cells, while the local estimate
-uses a median of per-center mean distances.
+Estimates a compactness value for a chosen raster scale. The current
+implementation supports one tuning metric, `"local_variability"`, which
+estimates compactness directly from local value variability.
 
 ## Usage
 
@@ -12,17 +10,10 @@ uses a median of per-center mean distances.
 sc_tune_compactness(
   raster,
   step = NULL,
-  compactness = 1,
-  metric = "global",
   dist_fun = "euclidean",
-  avg_fun = "mean",
-  clean = TRUE,
-  minarea,
-  iter = 1,
+  metric = "local_variability",
   k = NULL,
-  centers = NULL,
-  sample_size = 10000,
-  value_scale = "auto"
+  centers = NULL
 )
 ```
 
@@ -40,15 +31,6 @@ sc_tune_compactness(
   for map-distance steps in meters (automatically converted to cells
   using raster resolution).
 
-- compactness:
-
-  Starting compactness used for the initial short run.
-
-- metric:
-
-  Which compactness metric to return: `"global"` or `"local"`. Default:
-  `"global"`.
-
 - dist_fun:
 
   A distance function name or a custom function. Supported names:
@@ -57,24 +39,16 @@ sc_tune_compactness(
   A custom function must accept two numeric vectors and return a single
   numeric value.
 
-- avg_fun:
+- metric:
 
-  An averaging function name or custom function used to summarize values
-  within each supercell. Supported names: "mean" and "median". A custom
-  function must accept a numeric vector and return a single numeric
-  value.
-
-- clean:
-
-  Should connectivity of the supercells be enforced?
-
-- minarea:
-
-  Minimal size of a supercell (in cells).
-
-- iter:
-
-  Number of SLIC iterations for the pilot run.
+  Which compactness metric to return. Currently only
+  `"local_variability"` is supported. The argument is kept for future
+  additions. For `"local_variability"`,
+  `compactness = median(local_mean(d_value)) / dim_scale`, where local
+  means are computed in windows around initial centers and `dim_scale`
+  is inferred from the number of raster layers and `dist_fun`. This
+  keeps compactness adjustable to dimensionality without requiring a
+  separate user-facing scaling argument.
 
 - k:
 
@@ -82,30 +56,11 @@ sc_tune_compactness(
 
 - centers:
 
-  Optional sf object of custom centers. Requires `step`.
-
-- sample_size:
-
-  Optional limit on the number of pixels used for the summary (passed to
-  [`terra::global()`](https://rspatial.github.io/terra/reference/global.html)
-  as `maxcell`).
-
-- value_scale:
-
-  Scale factor for value distances during tuning. Global metric:
-  `compactness = (median(d_value) / value_scale) * step / median(d_spatial)`.
-  Local metric:
-  `compactness = median(local_mean(d_value) / value_scale)`. Use this to
-  keep value distances comparable across numbers of bands or distance
-  families. `"auto"` uses `sqrt(nlyr(raster))`, which is a reasonable
-  normalization for Euclidean-like norms (distance tends to grow with
-  dimensionality). For bounded or normalized distances (e.g., cosine,
-  JSD), `value_scale = 1` is often more appropriate. Default: `"auto"`.
+  Optional sf object of custom initial centers. Requires `step`.
 
 ## Value
 
-A one-row data frame with columns `step`, `metric`, `dist_fun`, and
-`compactness`.
+A one-row data frame with columns `step` and `compactness`.
 
 ## See also
 
@@ -121,5 +76,5 @@ library(terra)
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 tune = sc_tune_compactness(vol, step = 8)
 tune$compactness
-#> [1] 6.864497
+#> [1] 8.990234
 ```

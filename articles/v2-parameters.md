@@ -117,56 +117,37 @@ plot(sc_compact_high[0], add = TRUE, border = "red", lwd = 0.5)
 
 The
 [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
-function estimates a reasonable starting value from a short run of the
-algorithm.
+function estimates a reasonable starting value directly from local value
+variability at the chosen `step`.
 
-It supports two summaries with `metric = "global"` and
-`metric = "local"`. The global version looks at overall balance between
-value and spatial distances, while the local version uses a
-neighborhood-based value scale. More precisely:
+Currently, it supports one tuning metric: `"local_variability"`. This
+metric uses the initial `step`-based grid of centers and computes mean
+value distances in local windows around those centers. The compactness
+is then estimated as:
 
-- **Global**: runs a short pilot segmentation (`iter = 1` by default),
-  computes pixel-level `spatial` and `value` distances, then takes their
-  medians over pixels. The compactness is estimated as
-  `compactness = (median(value) / value_scale) * step / median(spatial)`.  
-  This aligns the median value and spatial terms in the combined
-  distance.
-- **Local**: computes, for each center, the mean value distance within a
-  local $2 \times \text{step}$ window, then returns the median of those
-  per-center means (after `value_scale`).  
-  This yields a compactness tied to local value variability, without
-  explicitly using spatial distances.
+- **Local variability**:
+  `compactness = median(local_mean(d_value)) / dim_scale`, where
+  `dim_scale` is inferred internally from raster dimensionality and
+  `dist_fun`.
 
-The local estimate is often more stable for heterogeneous rasters.
+This yields a compactness tied to typical local heterogeneity at the
+target supercell scale.
 
 ``` r
-tune_global <- sc_tune_compactness(vol, step = 8, metric = "global")
-tune_local <- sc_tune_compactness(vol, step = 8, metric = "local")
-tune_global
-#>   step metric  dist_fun compactness
-#> 1    8 global euclidean    6.864497
-tune_local
-#>   step metric  dist_fun compactness
-#> 1    8  local euclidean    9.084872
+tune_local_variability <- sc_tune_compactness(vol, step = 8, metric = "local_variability")
+tune_local_variability
+#>   step            metric  dist_fun compactness
+#> 1    8 local_variability euclidean    8.990234
 ```
 
-Both results return a one-row data frame with `step`, `metric`,
+The result returns a one-row data frame with `step`, `metric`,
 `dist_fun`, and `compactness`. You can plug the suggested value into
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)
 by setting `compactness` to the estimated value.
 
 ``` r
-sc_tuned <- sc_slic(vol, step = 8, compactness = tune_global$compactness)
+sc_tuned <- sc_slic(vol, step = 8, compactness = tune_local_variability$compactness)
 ```
-
-If your raster has many layers, the value distances can be large. The
-`value_scale` argument controls the scaling of value distances before
-the compactness estimate. Global:
-`compactness = (median(value) / value_scale) * step / median(spatial)`.
-Local: `compactness = median(local_mean_value / value_scale)`. Use
-`"auto"` (`sqrt(nlyr(x))`) for Euclidean-like distances; for
-bounded/angular distances (e.g., cosine), `value_scale = 1` is often
-better.
 
 ### Automatic compactness
 

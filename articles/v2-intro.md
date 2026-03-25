@@ -39,10 +39,11 @@ like squares – but may be less homogeneous in terms of values.
 
 For compactness selection, you may use
 [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
-to estimate a good value from a short pilot run. Alternatively,
-`compactness = use_adaptive()` enables SLIC0-style adaptive compactness
-when you want the algorithm to adjust locally – this does not require
-setting a specific value, but also takes away direct control.
+to estimate a good value from local value variability at the chosen
+`step`. Alternatively, `compactness = use_adaptive()` enables
+SLIC0-style adaptive compactness when you want the algorithm to adjust
+locally – this does not require setting a specific value, but also takes
+away direct control.
 
 To assess quality of the resulting supercells, use
 [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md)
@@ -63,7 +64,7 @@ tune or set `compactness`, create supercells, and evaluate.
 vol <- terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 
 # choose scale and tune compactness
-tune <- supercells::sc_tune_compactness(vol, step = 8, metric = "local")
+tune <- supercells::sc_tune_compactness(vol, step = 8, metric = "local_variability")
 
 # create supercells
 vol_sc <- supercells::sc_slic(vol, step = 8, compactness = tune$compactness)
@@ -127,17 +128,18 @@ to return a raster of supercell IDs for large datasets or raster-based
 pipelines. These functions share the same core arguments and can be
 swapped with minimal changes.
 
-Now, let’s try to tune the `compactness` parameter using a pilot run.
+Now, let’s try to tune the `compactness` parameter using local value
+variability.
 
 ``` r
 tune <- sc_tune_compactness(
   vol,
   step = 8,
-  metric = "local"
+  metric = "local_variability"
 )
 tune
-#>   step metric  dist_fun compactness
-#> 1    8  local euclidean    9.084872
+#>   step            metric  dist_fun compactness
+#> 1    8 local_variability euclidean    8.990234
 ```
 
 Next, we may try to create supercells with the suggested `compactness`
@@ -201,9 +203,9 @@ as a small grid of `step` and `compactness` values.
 ``` r
 global_metrics
 #>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
-#> 1    8    9.084872           constant           88                0.4546412
+#> 1    8    8.990234           constant           88                0.4558924
 #>   mean_value_dist_scaled mean_combined_dist    balance
-#> 1              0.3061439          0.5915118 -0.4939904
+#> 1              0.3079427          0.5936206 -0.4886038
 ```
 
 ## Where to go next
