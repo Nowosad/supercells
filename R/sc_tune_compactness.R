@@ -96,8 +96,13 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
     dist_fun = prep$dist_fun
   )
 
+  plot(hist(mean_value_dist, breaks = 30, main = "Local mean value distance", xlab = "Mean distance"))
+  print(paste("Median local mean value distance:", stats::median(mean_value_dist, na.rm = TRUE)))
+  print(paste("Mean local mean value distance:", mean(mean_value_dist, na.rm = TRUE)))
+
   list(
     step = attr(pts, "step"),
-    compactness = stats::median(mean_value_dist, na.rm = TRUE)
+    compactness = min(mean_value_dist, na.rm = TRUE)
+    # compactness = stats::median(mean_value_dist, na.rm = TRUE)
   )
 }
