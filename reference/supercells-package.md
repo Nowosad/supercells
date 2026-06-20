@@ -20,6 +20,11 @@ Useful links:
 **Maintainer**: Jakub Nowosad <nowosad.jakub@gmail.com>
 ([ORCID](https://orcid.org/0000-0002-1057-3721))
 
+Authors:
+
+- Jakub Nowosad <nowosad.jakub@gmail.com>
+  ([ORCID](https://orcid.org/0000-0002-1057-3721))
+
 Other contributors:
 
 - Pascal Mettes (Author of the initial C++ implementation of the SLIC

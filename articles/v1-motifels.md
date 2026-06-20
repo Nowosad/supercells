@@ -33,7 +33,7 @@ own computer, install and attach the packages:
 ``` r
 library(supercells)    # supercells for spatial data
 library(terra)         # spatial raster data reading and handling
-#> terra 1.9.1
+#> terra 1.9.27
 library(sf)            # spatial vector data reading and handling
 #> Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE
 library(motif)         # tools for working with categorical spatial patterns
@@ -62,15 +62,15 @@ comp_output = lsp_signature(landcover, type = "composition", window = 20,
 #comp_output = lsp_restructure(comp_output)
 comp_output = lsp_add_terra(comp_output)
 comp_output
-#> class       : SpatRaster 
+#> class       : SpatRaster
 #> size        : 191, 368, 9  (nrow, ncol, nlyr)
 #> resolution  : 6000, 6000  (x, y)
 #> extent      : -1091676, 1116324, -1184556, -38556.49  (xmin, xmax, ymin, ymax)
-#> coord. ref. : +proj=cea +lat_ts=5.5 +lon_0=140.8 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs 
+#> coord. ref. : +proj=cea +lat_ts=5.5 +lon_0=140.8 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs
 #> source(s)   : memory
-#> names       :    id, na_prop, X1, X2, X3,        X4, ... 
-#> min values  :     1,     0.0,  0,  0,  0, 0.0000000, ... 
-#> max values  : 70288,     0.9,  1,  1,  1, 0.4690909, ...
+#> names       :    id, na_prop, X1, X2, X3,       X4, ...
+#> min values  :     1,       0,  0,  0,  0,        0, ...
+#> max values  : 70288,     0.9,  1,  1,  1, 0.469091, ...
 ```
 
 The result, `comp_output`, contains two layers with metadata (`id` and

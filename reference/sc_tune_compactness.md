@@ -12,8 +12,10 @@ sc_tune_compactness(
   step = NULL,
   dist_fun = "euclidean",
   metric = "local_variability",
+  stat = stats::median,
   k = NULL,
-  centers = NULL
+  centers = NULL,
+  ...
 )
 ```
 
@@ -50,6 +52,12 @@ sc_tune_compactness(
   keeps compactness adjustable to dimensionality without requiring a
   separate user-facing scaling argument.
 
+- stat:
+
+  The summary statistic to use for the local variability metric. Default
+  is `median`. If it is `NULL`, all local variability values will be
+  returned without summarization.
+
 - k:
 
   The number of supercells desired (alternative to `step`).
@@ -57,6 +65,12 @@ sc_tune_compactness(
 - centers:
 
   Optional sf object of custom initial centers. Requires `step`.
+
+- ...:
+
+  Additional arguments for the compactness metric. For example,
+  `dim_scale` for `"local_variability"` if you want to override the
+  default scaling.
 
 ## Value
 
@@ -72,7 +86,7 @@ A one-row data frame with columns `step` and `compactness`.
 
 ``` r
 library(terra)
-#> terra 1.9.1
+#> terra 1.9.27
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 tune = sc_tune_compactness(vol, step = 8)
 tune$compactness
