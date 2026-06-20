@@ -54,6 +54,7 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
   compactness_value = tune_stats$compactness / dim_scale
 
   if (!is.null(stat)) {
+    compactness_value = compactness_value[!is.na(compactness_value)]
     compactness_value = stat(compactness_value)
   }
 
