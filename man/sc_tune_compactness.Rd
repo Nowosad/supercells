@@ -9,8 +9,10 @@ sc_tune_compactness(
   step = NULL,
   dist_fun = "euclidean",
   metric = "local_variability",
+  stat = stats::median,
   k = NULL,
-  centers = NULL
+  centers = NULL,
+  ...
 )
 }
 \arguments{
@@ -32,9 +34,13 @@ where local means are computed in windows around initial centers and
 This keeps compactness adjustable to dimensionality without requiring a
 separate user-facing scaling argument.}
 
+\item{stat}{The summary statistic to use for the local variability metric. Default is \code{median}. If it is \code{NULL}, all local variability values will be returned without summarization.}
+
 \item{k}{The number of supercells desired (alternative to \code{step}).}
 
 \item{centers}{Optional sf object of custom initial centers. Requires \code{step}.}
+
+\item{...}{Additional arguments for the compactness metric. For example, \code{dim_scale} for \code{"local_variability"} if you want to override the default scaling.}
 }
 \value{
 A one-row data frame with columns \code{step} and \code{compactness}.

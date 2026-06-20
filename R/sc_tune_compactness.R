@@ -18,8 +18,10 @@
 #' `dim_scale` is inferred from the number of raster layers and `dist_fun`.
 #' This keeps compactness adjustable to dimensionality without requiring a
 #' separate user-facing scaling argument.
+#' @param stat The summary statistic to use for the local variability metric. Default is `median`. If it is `NULL`, all local variability values will be returned without summarization.
 #' @param k The number of supercells desired (alternative to `step`).
 #' @param centers Optional sf object of custom initial centers. Requires `step`.
+#' @param ... Additional arguments for the compactness metric. For example, `dim_scale` for `"local_variability"` if you want to override the default scaling.
 #'
 #' @return A one-row data frame with columns `step` and `compactness`.
 #'
@@ -33,19 +35,27 @@
 #'
 #' @export
 sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
-                                        metric = "local_variability", k = NULL,
-                                        centers = NULL) {
+                                        metric = "local_variability", stat = stats::median,
+                                        k = NULL, centers = NULL, ...) {
   if (!is.character(metric) || length(metric) != 1 || is.na(metric) ||
       !identical(metric, "local_variability")) {
     stop("metric must be 'local_variability'", call. = FALSE)
   }
   dist_fun_out = if (is.character(dist_fun)) as.character(dist_fun[[1]]) else "custom"
 
-  dim_scale = .sc_tune_local_variability_scale(terra::nlyr(raster), dist_fun_out)
-
   tune_stats = .sc_tune_grid_window_variability(raster, step, dist_fun, k, centers)
   step_used = unlist(tune_stats$step, use.names = FALSE)
+
+  if (!is.null(list(...)$dim_scale)) {
+    dim_scale = list(...)$dim_scale
+  } else {
+    dim_scale = .sc_tune_local_variability_scale(terra::nlyr(raster), dist_fun_out)
+  }
   compactness_value = tune_stats$compactness / dim_scale
+
+  if (!is.null(stat)) {
+    compactness_value = stat(compactness_value)
+  }
 
   return(data.frame(step = step_used, metric = "local_variability", dist_fun = dist_fun_out,
                     compactness = compactness_value))
@@ -96,13 +106,8 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
     dist_fun = prep$dist_fun
   )
 
-  plot(hist(mean_value_dist, breaks = 30, main = "Local mean value distance", xlab = "Mean distance"))
-  print(paste("Median local mean value distance:", stats::median(mean_value_dist, na.rm = TRUE)))
-  print(paste("Mean local mean value distance:", mean(mean_value_dist, na.rm = TRUE)))
-
   list(
     step = attr(pts, "step"),
-    compactness = min(mean_value_dist, na.rm = TRUE)
-    # compactness = stats::median(mean_value_dist, na.rm = TRUE)
+    compactness = mean_value_dist, na.rm = TRUE 
   )
 }
