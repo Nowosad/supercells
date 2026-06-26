@@ -7,7 +7,7 @@
 #include <vector>
 
 // Compute per-center max value distance within a 2*step window.
-// Role: provide SLIC0-style adaptive compactness denominators.
+// Role: provide ASLIC-style adaptive compactness denominators.
 // Inputs: per-center values, center coordinates, full raster values, window size, distance function.
 // Output: vector of max distances per center (min 1.0, NA pixels ignored).
 inline std::vector<double> sc_compute_max_value_dist(

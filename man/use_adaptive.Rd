@@ -8,14 +8,14 @@ use_adaptive(method = "local_max")
 }
 \arguments{
 \item{method}{Adaptive compactness method. Currently only \code{"local_max"} is supported
-(SLIC0-style).}
+(ASLIC-style).}
 }
 \value{
 An adaptive compactness mode object for \code{compactness} arguments.
 }
 \description{
 Creates a compactness mode object for adaptive compactness.
-The \code{"local_max"} method corresponds to SLIC0-style local scaling,
+The \code{"local_max"} method corresponds to ASLIC-style local scaling,
 where compactness is adapted using local maximum value distances.
 }
 \examples{

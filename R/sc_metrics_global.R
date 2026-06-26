@@ -8,8 +8,8 @@
 #' Use `outcomes = c("supercells", "coordinates", "values")` when calling
 #' `sc_slic()` or `supercells()` to preserve original centers and IDs.
 #' Metrics are averaged across supercells (each supercell has equal weight).
-#' When using SLIC0 (set `compactness = use_adaptive()` in [sc_slic()]), combined and balance metrics use per-supercell
-#' adaptive compactness (SLIC0), and scaled value distances are computed with the
+#' When using ASLIC (set `compactness = use_adaptive()` in [sc_slic()]), combined and balance metrics use per-supercell
+#' adaptive compactness (ASLIC), and scaled value distances are computed with the
 #' per-supercell max value distance.
 #'
 #' @inheritParams sc_metrics_pixels

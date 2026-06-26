@@ -39,7 +39,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
     if (verbose > 0) std::printf("Iteration: %u/%u\r", itr + 1, iter);
 
     if (adaptive_compactness) {
-      // SLIC0: update per-center value-distance scale before assignment.
+      // ASLIC: update per-center value-distance scale before assignment.
       compute_max_value_dist(vals, colour);
     }
 
