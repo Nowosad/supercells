@@ -51,7 +51,7 @@ sc_slic_points(
   [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
   to estimate it. Use
   [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
-  to enable adaptive compactness (SLIC0).
+  to enable adaptive compactness (ASLIC).
 
 - dist_fun:
 

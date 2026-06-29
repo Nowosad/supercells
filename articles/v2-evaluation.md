@@ -65,7 +65,7 @@ returns `spatial`, `value`, `combined`, and `balance`, and uses
 `scale = TRUE`. With scaling on, the spatial and value layers are
 returned as `spatial_scaled` and `value_scaled`. Scaling divides spatial
 distance by `step` (or by `step` in map units) and value distance by
-`compactness` (or by per-supercell values for SLIC0). This makes the
+`compactness` (or by per-supercell values for ASLIC). This makes the
 spatial and value components comparable and keeps the balance metric
 interpretable. If you want raw units, set `scale = FALSE`.
 

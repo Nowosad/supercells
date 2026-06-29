@@ -117,11 +117,11 @@ are missing, they are derived from geometry and row order. Use
 or
 [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
 to preserve original centers and IDs. Metrics are averaged across
-supercells (each supercell has equal weight). When using SLIC0 (set
+supercells (each supercell has equal weight). When using ASLIC (set
 `compactness = use_adaptive()` in
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)),
 combined and balance metrics use per-supercell adaptive compactness
-(SLIC0), and scaled value distances are computed with the per-supercell
+(ASLIC), and scaled value distances are computed with the per-supercell
 max value distance.
 
 ## See also

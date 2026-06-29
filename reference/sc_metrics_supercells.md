@@ -92,10 +92,10 @@ An sf object with one row per supercell and columns:
 
 If `sc` lacks `supercells`, `x`, or `y` columns, they are derived from
 geometry and row order, which may differ from the original centers. When
-using SLIC0 (set `compactness = use_adaptive()` in
+using ASLIC (set `compactness = use_adaptive()` in
 [`sc_slic()`](https://jakubnowosad.com/supercells/reference/sc_slic.md)),
 combined and balance metrics use per-supercell adaptive compactness
-(SLIC0), and scaled value distances are computed with the per-supercell
+(ASLIC), and scaled value distances are computed with the per-supercell
 max value distance.
 
 ## See also
