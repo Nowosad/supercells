@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <cstddef>
 #include <cstdio>
 #include <cmath>
 #include <float.h>
@@ -36,6 +37,14 @@ class SlicCore {
   double compactness_value() const { return compactness; }
 
  private:
+
+  static inline double read_val_vec(const std::vector<double>& vals,
+                                    int cell, int band, int bands) {
+    const std::size_t idx =
+      static_cast<std::size_t>(cell) * static_cast<std::size_t>(bands) +
+      static_cast<std::size_t>(band);
+    return vals[idx];
+  }
 
   std::vector<std::vector<int>> clusters;
   std::vector<std::vector<double>> distances;

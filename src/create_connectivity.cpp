@@ -113,8 +113,8 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
       }
       for (int ncell : cluster_cells[c_id]) {
         for (int nval = 0; nval < mat_dims[2]; nval++) {
-            double val = vals[ncell * mat_dims[2] + nval];
-            new_c_id_centers_vals_buf[nval].push_back(val);
+          double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
+          new_c_id_centers_vals_buf[nval].push_back(val);
         }
       }
       for (int nval = 0; nval < mat_dims[2]; nval++) {
@@ -149,7 +149,7 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
           int ncell = l + (k * mat_dims[1]);
 
           for (int nval = 0; nval < mat_dims[2]; nval++) {
-            double val = vals[ncell * mat_dims[2] + nval];
+            double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
             colour[nval] = val;
           }
 
