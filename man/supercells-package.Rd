@@ -28,6 +28,7 @@ Authors:
 Other contributors:
 \itemize{
   \item Pascal Mettes (Author of the initial C++ implementation of the SLIC Superpixel algorithm for image data) [contributor]
+  \item Lucas De Oto [contributor]
 }
 
 }
