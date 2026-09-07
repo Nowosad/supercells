@@ -38,7 +38,7 @@ void SlicCore::create_centers(const std::vector<int>& mat_dims, const std::vecto
       int ncell = ncolcenter + (nrowcenter * mat_dims[1]);
       std::vector<double> colour; colour.reserve(mat_dims[2]);
       for (int nval = 0; nval < mat_dims[2]; nval++) {
-        double val = vals[ncell * mat_dims[2] + nval];
+        double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
         colour.push_back(val);
       }
 
@@ -80,7 +80,7 @@ void SlicCore::create_centers2(const std::vector<int>& mat_dims, const std::vect
     }
     int ncell = lm_col + (lm_row * mat_dims[1]);
     for (int nval = 0; nval < mat_dims[2]; nval++) {
-      double val = vals[ncell * mat_dims[2] + nval];
+      double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
       colour.push_back(val);
     }
 
@@ -175,9 +175,9 @@ std::vector<double> SlicCore::find_local_minimum(const std::vector<double>& vals
       int ncell3 = i + (j * cols);
 
       for (int nval = 0; nval < bands; nval++) {
-        colour1[nval] = vals[ncell1 * bands + nval];
-        colour2[nval] = vals[ncell2 * bands + nval];
-        colour3[nval] = vals[ncell3 * bands + nval];
+        colour1[nval] = read_val_vec(vals, ncell1, nval, bands);
+        colour2[nval] = read_val_vec(vals, ncell2, nval, bands);
+        colour3[nval] = read_val_vec(vals, ncell3, nval, bands);
       }
 
       double new_grad = dist_fn(colour1, colour3) + dist_fn(colour2, colour3);
@@ -205,7 +205,7 @@ void SlicCore::compute_max_value_dist(const std::vector<double>& vals, std::vect
           int ncell = m + (n * mat_dims[1]);
           int count_na = 0;
           for (int nval = 0; nval < mat_dims[2]; nval++) {
-            double val = vals[ncell * mat_dims[2] + nval];
+            double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
             colour[nval] = val;
             if (std::isnan(val)) {
               count_na += 1;

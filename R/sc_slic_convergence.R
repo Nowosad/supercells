@@ -1,7 +1,7 @@
 #' SLIC convergence diagnostics
 #'
 #' Runs SLIC and returns per-iteration mean combined distance.
-#' The output can be plotted directly with [plot()].
+#' The output can be plotted directly with [supercells::plot()].
 #'
 #' @inheritParams sc_slic
 #'
@@ -11,7 +11,7 @@
 #'   \item{mean_distance}{Mean combined distance across assigned cells at each iteration.}
 #' }
 #'
-#' @seealso [sc_slic()], [plot()]
+#' @seealso [sc_slic()], [supercells::plot()]
 #' @export
 #'
 #' @examples

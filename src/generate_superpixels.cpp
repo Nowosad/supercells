@@ -63,7 +63,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
 
             int count_na = 0;
             for (int nval = 0; nval < mat_dims[2]; nval++) {
-              double val = vals[ncell * mat_dims[2] + nval];
+              double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
               colour[nval] = val;
               if (std::isnan(val)) {
                 count_na += 1;
@@ -123,7 +123,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
         }
         for (int ncell : cluster_cells[c_id]) {
           for (int nval = 0; nval < mat_dims[2]; nval++) {
-            double val = vals[ncell * mat_dims[2] + nval];
+            double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
             centers_vals_c_id_buf[nval].push_back(val);
           }
         }
@@ -158,7 +158,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
             int ncell = l + (k * mat_dims[1]);
 
             for (int nval = 0; nval < mat_dims[2]; nval++) {
-            double val = vals[ncell * mat_dims[2] + nval];
+            double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
             colour[nval] = val;
             }
             centers[c_id][0] += k;

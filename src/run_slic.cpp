@@ -3,6 +3,7 @@
 #include "cpp11.hpp"
 #include "cpp11/list.hpp"
 #include "cpp11/matrix.hpp"
+#include <cstddef>
 
 cpp11::writable::integers_matrix<> return_clusters(const SlicCore& slic);
 cpp11::writable::doubles_matrix<> return_centers(const SlicCore& slic);
@@ -16,11 +17,22 @@ cpp11::list run_slic(cpp11::integers mat, cpp11::doubles_matrix<> vals, int step
 
   int ncell = vals.nrow();
   int bands = vals.ncol();
-  // Copy vals into a contiguous vector for SlicCore processing
-  std::vector<double> vals_vec(ncell * bands);
+
+  const double* vals_data = REAL(vals.data());
+  const std::size_t total_vals =
+    static_cast<std::size_t>(ncell) * static_cast<std::size_t>(bands);
+
+  std::vector<double> vals_vec(total_vals);
   for (int i = 0; i < ncell; i++) {
     for (int j = 0; j < bands; j++) {
-      vals_vec[i * bands + j] = vals(i, j);
+      const R_xlen_t r_idx =
+        static_cast<R_xlen_t>(i) +
+        static_cast<R_xlen_t>(j) * static_cast<R_xlen_t>(ncell);
+      const std::size_t v_idx =
+        static_cast<std::size_t>(i) * static_cast<std::size_t>(bands) +
+        static_cast<std::size_t>(j);
+
+      vals_vec[v_idx] = vals_data[r_idx];
     }
   }
 
