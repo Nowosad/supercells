@@ -1,5 +1,14 @@
 # Changelog
 
+## supercells 1.9.5
+
+- **Fixed integer overflow in vector indexing inside the C++ part of the
+  code**: C++ code now uses 64-bit arithmetic for array indices
+  (`std::size_t`) instead of 32-bit integers when accessing raster data.
+  This prevents silent data corruption or crashes when processing large
+  rasters (\>100M cells with multiple bands). The fix should have no
+  performance impact. (Thanks to Lucas De Oto)
+
 ## supercells 1.9
 
 - Added `outcomes` argument to

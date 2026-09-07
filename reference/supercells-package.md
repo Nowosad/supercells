@@ -29,3 +29,5 @@ Other contributors:
 
 - Pascal Mettes (Author of the initial C++ implementation of the SLIC
   Superpixel algorithm for image data) \[contributor\]
+
+- Lucas De Oto \[contributor\]

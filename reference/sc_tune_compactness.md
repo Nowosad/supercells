@@ -86,7 +86,7 @@ A one-row data frame with columns `step` and `compactness`.
 
 ``` r
 library(terra)
-#> terra 1.9.34
+#> terra 1.9.46
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 tune = sc_tune_compactness(vol, step = 8)
 tune$compactness
