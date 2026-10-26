@@ -55,6 +55,10 @@
   if (!is.null(step) && !is.numeric(step)) {
     stop("The 'step' argument must be numeric or a units object", call. = FALSE)
   }
+  if (!is.null(k) &&
+      (!is.numeric(k) || length(k) != 1 || !is.finite(k) || k <= 0 || k != floor(k))) {
+    stop("The 'k' argument must be a single positive integer", call. = FALSE)
+  }
   if (inherits(step, "units")) {
     if (length(step) != 1 || any(is.na(step))) {
       stop("The 'step' argument as units must be a single non-missing value", call. = FALSE)
@@ -124,7 +128,7 @@
 # normalize custom centers or create placeholder
 .sc_slic_prep_centers = function(x, centers) {
   if (is.null(centers)) {
-    return(matrix(c(0L, 0L), ncol = 2))
+    return(matrix(integer(), nrow = 0, ncol = 2))
   }
   return(.sc_util_centers_to_dims(x, centers))
 }
