@@ -6,9 +6,6 @@
                                  minarea, input_centers,
                                  iter_diagnostics = FALSE, verbose = 0) {
   centers = TRUE
-  if (is.character(x)) {
-    x = terra::rast(x)
-  }
   x = x[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
 
   mat = dim(x)[1:2]; mode(mat) = "integer"
@@ -36,9 +33,6 @@
     stop("iter = 0 returns centers only; raster output is not available. Use sc_slic_points with iter = 0 to get initial centers.", call. = FALSE)
   }
   centers = TRUE
-  if (is.character(x)){
-    x = terra::rast(x)
-  }
 
   # crops the input to the chunk extent
   x = x[ext[1]:ext[2], ext[3]:ext[4], drop = FALSE]
@@ -160,9 +154,6 @@
 
 # run slic on a full raster using a chunk runner
 .sc_run_full = function(x, runner, ...) {
-  if (is.character(x)) {
-    x = terra::rast(x)
-  }
   ext = c(1L, dim(x)[1], 1L, dim(x)[2])
   runner(ext, x, ...)
 }

@@ -84,9 +84,7 @@ sc_slic_raster = function(x, step = NULL, compactness, dist_fun = "euclidean",
     result = terra::merge(terra::sprc(chunk_files), filename = out_file, overwrite = TRUE, wopt = wopt)
   } else {
     segment = .sc_slic_segment(prep_args, .sc_run_full_raster, .sc_run_chunk_raster)
-    # single chunk: offset ids and return the raster
-    chunk_rasters = .sc_chunk_offset_ids_raster_by_centers(segment$chunks)
-    result = chunk_rasters[[1]]
+    result = segment$chunks[[1]][["raster"]]
   }
   names(result) = "supercells"
   return(result)

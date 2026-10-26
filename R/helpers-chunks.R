@@ -18,24 +18,6 @@
   return(x)
 }
 
-# update supercells ids for raster chunks based on center counts
-.sc_chunk_offset_ids_raster_by_centers = function(chunks) {
-  max_id = 0
-  rasters = vector("list", length(chunks))
-  for (i in seq_along(chunks)) {
-    r = chunks[[i]][["raster"]]
-    if (max_id > 0) {
-      r = r + max_id
-    }
-    n_centers = nrow(chunks[[i]][["centers"]])
-    if (n_centers > 0) {
-      max_id = max_id + n_centers
-    }
-    rasters[[i]] = r
-  }
-  rasters
-}
-
 # approximate bytes per cell used by SLIC buffers (conservative)
 .sc_chunk_bytes_per_cell = function(bands) {
   (16 * bands) + 16

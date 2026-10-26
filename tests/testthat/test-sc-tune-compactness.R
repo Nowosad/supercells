@@ -16,13 +16,15 @@ test_that("sc_tune_compactness stores custom dist_fun label", {
 })
 
 test_that("sc_tune_compactness local_variability scales with dimensionality", {
-  v64 = c(v1, replicate(63, v1, simplify = FALSE))
+  v64 = terra::rast(rep(list(v1), 64))
+  names(v64) = paste0("band", seq_len(64))
   lv1 = sc_tune_compactness(v1, step = 8, metric = "local_variability")
   lv64 = sc_tune_compactness(v64, step = 8, metric = "local_variability")
 
+  expect_equal(terra::nlyr(v64), 64)
   expect_true(is.finite(lv1$compactness))
   expect_true(is.finite(lv64$compactness))
-  expect_true(lv64$compactness > 0)
+  expect_equal(lv64$compactness, lv1$compactness, tolerance = 1e-8)
 })
 
 test_that("sc_tune_compactness validates metric values", {
