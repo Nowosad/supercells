@@ -130,7 +130,8 @@
   }
 
   if ("clusters" %in% include) {
-    cluster_rast = terra::rasterize(terra::vect(sc_work), raster, field = "supercells")
+    internal_ids = match(sc_work[["supercells"]], x_df[["supercells"]])
+    cluster_rast = terra::rasterize(terra::vect(sc_work), raster, field = internal_ids)
     clusters = terra::as.matrix(cluster_rast, wide = TRUE)
     clusters = ifelse(is.na(clusters), -1L, clusters - 1L)
     storage.mode(clusters) = "integer"

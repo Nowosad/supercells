@@ -37,6 +37,15 @@ test_that("metrics preserve zero-based fractional center coordinates", {
   expect_equal(as.vector(terra::values(spatial)), rep(sqrt(0.5), 4), tolerance = 1e-12)
 })
 
+test_that("metrics map non-contiguous ids to their centers", {
+  sc = sc_full
+  sc[["supercells"]] = rev(seq_len(nrow(sc))) * 2L
+
+  expected = sc_metrics_pixels(v1, sc_full)
+  actual = sc_metrics_pixels(v1, sc)
+  expect_equal(terra::values(actual), terra::values(expected), tolerance = 1e-12)
+})
+
 test_that("metrics work without metadata columns", {
   expect_s4_class(sc_metrics_pixels(v1, sc_values), "SpatRaster")
   expect_s3_class(sc_metrics_supercells(v1, sc_values), "sf")
