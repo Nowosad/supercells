@@ -14,9 +14,9 @@
 #' @param avg_fun An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions `"mean"` and `"median"` (provided with quotation marks), but also accepts any fitting R function (e.g., `base::mean()` or `stats::median()`, provided as plain function name: `mean`). Default: `"mean"`. See details for more information.
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param iter The number of iterations performed to create the output.
-#' @param minarea Specifies the minimal size of a supercell (in cells). Only works when `clean = TRUE`.
-#' By default, when `clean = TRUE`, average area (A) is calculated based on the total number of cells divided by a number of supercells
-#' Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)
+#' @param minarea Connectivity components containing `minarea` cells or fewer
+#' are merged into an adjacent component when `clean = TRUE`. If omitted or
+#' zero, the threshold is one quarter of the expected supercell area.
 #' @param step Initial center spacing. You can use either `k` or `step`.
 #' Provide a plain numeric value for cell units, or use [use_meters()] for
 #' map-distance steps in meters (automatically converted to cells using raster resolution).

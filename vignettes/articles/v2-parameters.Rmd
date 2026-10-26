@@ -214,7 +214,7 @@ See the evaluation vignette for guidance on interpreting these metrics: <https:/
 
 The `clean` argument, enabled by default, enforces connectivity and removes small fragments that may arise during the iterative process of assigning pixels to supercells.
 This is usually desirable for polygon outputs and downstream analyses.
-The `minarea` argument sets a minimum expected size in pixels for supercells, and smaller supercells are merged into neighbors.
+The `minarea` argument sets the largest connected-component size (in cells) to merge into a neighbor: components containing `minarea` cells or fewer are merged.
 By default, when `clean = TRUE`, a minimum size is still enforced internally (about one quarter of the average supercell size), so small fragments are merged unless you turn off cleaning.
 If you see many tiny supercells, increase `minarea` or `step`.
 

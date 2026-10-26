@@ -31,7 +31,9 @@
 #' values within each supercell. Supported names: "mean" and "median". A custom
 #' function must accept a numeric vector and return a single numeric value.
 #' @param clean Should connectivity of the supercells be enforced?
-#' @param minarea Minimal size of a supercell (in cells).
+#' @param minarea Connectivity components containing `minarea` cells or fewer
+#' are merged into an adjacent component when `clean = TRUE`. If omitted or
+#' zero, the threshold is one quarter of the expected supercell area.
 #' @param iter Number of iterations.
 #' @param k The number of supercells desired (alternative to `step`).
 #' @param centers Optional sf object of custom centers. Requires `step`.
