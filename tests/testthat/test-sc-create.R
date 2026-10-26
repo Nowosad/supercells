@@ -57,6 +57,12 @@ test_that("sc_slic_raster assigns unique ids across chunks", {
   }
 })
 
+test_that("sc_slic assigns contiguous ids across chunks", {
+  sc = sc_slic(v1, step = 8, compactness = 1, iter = 1, chunks = 16)
+
+  expect_equal(sort(sc[["supercells"]]), seq_len(nrow(sc)))
+})
+
 test_that("sc_slic_raster enforces raster-specific guardrails", {
   expect_error(
     sc_slic_raster(v1, step = 8, compactness = 1, iter = 0),

@@ -1,12 +1,12 @@
 # update supercells ids for chunked sf outputs
 .sc_chunk_offset_ids_sf = function(x){
-  x = x[lapply(x, length) > 0]
+  x = Filter(function(z) !is.null(z) && nrow(z) > 0, x)
   max_id = 0
   for (i in seq_along(x)) {
     if (max_id > 0) {
       x[[i]][["supercells"]] = x[[i]][["supercells"]] + max_id
     }
-    max_id = max(x[[i]][["supercells"]], na.rm = TRUE) + 1
+    max_id = max(x[[i]][["supercells"]], na.rm = TRUE)
   }
   x
 }
