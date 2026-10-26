@@ -30,7 +30,8 @@
 #'   for ranking.}
 #'   \item{balance}{Signed log ratio of scaled value distance to scaled spatial
 #'   distance. `0` indicates balance; negative values indicate spatial dominance;
-#'   positive values indicate value dominance.}
+#'   positive values indicate value dominance. Returns `NA` when either scaled
+#'   component is zero.}
 #' }
 #' @seealso [`sc_slic()`], [`sc_metrics_pixels()`], [`sc_metrics_global()`]
 #' @export
@@ -63,6 +64,7 @@ sc_metrics_supercells = function(x, sc,
   mean_spatial_dist = out[["mean_spatial_dist"]] * prep$spatial_scale
   mean_combined_dist = out[["mean_combined_dist"]]
   balance = log(out[["balance"]])
+  balance[!is.finite(balance)] = NA_real_
   scaled = .sc_metrics_scale_summary(mean_value_dist, mean_spatial_dist, out, prep, scale)
   mean_value_dist = scaled$value_dist
   mean_spatial_dist = scaled$spatial_dist

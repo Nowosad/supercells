@@ -40,7 +40,7 @@
 #'   \item{balance}{Signed log ratio of scaled value distance to scaled spatial
 #'   distance. `0` indicates balance; negative values indicate spatial dominance;
 #'   positive values indicate value dominance. Always computed from scaled
-#'   components.}
+#'   components. Returns `NA` when either component is zero.}
 #' }
 #' @seealso [`sc_slic()`], [`sc_metrics_supercells()`], [`sc_metrics_global()`]
 #' @export
@@ -80,6 +80,7 @@ sc_metrics_pixels = function(x, sc,
     }
     if ("balance" %in% metrics) {
       balance = log(value_scaled / spatial_scaled)
+      balance = terra::ifel(is.finite(balance), balance, NA)
     }
   }
   result = c(spatial, value, combined)

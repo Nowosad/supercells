@@ -44,7 +44,8 @@
 #'   \item{balance}{Mean signed log ratio of scaled value distance to scaled
 #'   spatial distance (averaged across supercells); 0 indicates balance between
 #'   value and spatial terms, negative values indicate spatial dominance, and
-#'   positive values indicate value dominance.}
+#'   positive values indicate value dominance. Supercells with a zero scaled
+#'   component are excluded; `NA` is returned if none remain.}
 #' }
 #' @seealso [`sc_slic()`], [`sc_metrics_pixels()`], [`sc_metrics_supercells()`]
 #' @export
