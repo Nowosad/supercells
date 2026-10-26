@@ -40,7 +40,9 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{clean}{Should connectivity of the supercells be enforced?}
 
-\item{minarea}{Minimal size of a supercell (in cells).}
+\item{minarea}{Connectivity components containing \code{minarea} cells or fewer
+are merged into an adjacent component when \code{clean = TRUE}. If omitted or
+zero, the threshold is one quarter of the expected supercell area.}
 
 \item{iter}{Number of iterations.}
 

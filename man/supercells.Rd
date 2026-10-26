@@ -45,9 +45,9 @@ A compactness value depends on the range of input cell values and selected dista
 Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
 map-distance steps in meters (automatically converted to cells using raster resolution).}
 
-\item{minarea}{Specifies the minimal size of a supercell (in cells). Only works when \code{clean = TRUE}.
-By default, when \code{clean = TRUE}, average area (A) is calculated based on the total number of cells divided by a number of supercells
-Next, the minimal size of a supercell equals to A/(2^2) (A is being right shifted)}
+\item{minarea}{Connectivity components containing \code{minarea} cells or fewer
+are merged into an adjacent component when \code{clean = TRUE}. If omitted or
+zero, the threshold is one quarter of the expected supercell area.}
 
 \item{metadata}{Logical. Controls whether metadata columns
 ("supercells", "x", "y") are included.}

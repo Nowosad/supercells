@@ -8,6 +8,7 @@
 * Balance metrics now return `NA` when either scaled distance component is zero.
 * Cluster assignments are now recomputed each iteration; valid cells outside local center windows are assigned to the nearest current center.
 * `sc_slic_convergence()` now skips connectivity cleaning and warns when `clean = TRUE` is requested.
+* Median summaries now average the two middle values for even-sized supercells.
 
 # supercells 1.9.5
 
