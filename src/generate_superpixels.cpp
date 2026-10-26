@@ -19,9 +19,6 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
   avg_fn = avg_fn_in;
   avg_fun_name = avg_fun_name_in;
   iter_diagnostics_enabled = iter_diagnostics;
-  if (iter_diagnostics_enabled) {
-    iter_mean_distance.clear();
-  }
   inits(mat_dims_in, vals, input_centers);
   if (verbose > 0) std::printf("Completed\n");
 

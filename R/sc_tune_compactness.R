@@ -23,7 +23,9 @@
 #' @param centers Optional sf object of custom initial centers. Requires `step`.
 #' @param ... Additional arguments for the compactness metric. For example, `dim_scale` for `"local_variability"` if you want to override the default scaling.
 #'
-#' @return A one-row data frame with columns `step` and `compactness`.
+#' @return A data frame with columns `step`, `metric`, `dist_fun`, and
+#' `compactness`. It has one row when `stat` summarizes the local variability,
+#' or one row per local variability value when `stat = NULL`.
 #'
 #' @seealso [`sc_slic()`], [use_meters()], [use_adaptive()]
 #'
@@ -109,6 +111,6 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
 
   list(
     step = attr(pts, "step"),
-    compactness = mean_value_dist, na.rm = TRUE 
+    compactness = mean_value_dist
   )
 }

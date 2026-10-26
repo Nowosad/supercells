@@ -43,7 +43,9 @@ separate user-facing scaling argument.}
 \item{...}{Additional arguments for the compactness metric. For example, \code{dim_scale} for \code{"local_variability"} if you want to override the default scaling.}
 }
 \value{
-A one-row data frame with columns \code{step} and \code{compactness}.
+A data frame with columns \code{step}, \code{metric}, \code{dist_fun}, and
+\code{compactness}. It has one row when \code{stat} summarizes the local variability,
+or one row per local variability value when \code{stat = NULL}.
 }
 \description{
 Estimates a compactness value for a chosen raster scale.

@@ -147,7 +147,7 @@
     return(0)
   }
   if (minarea > step^2) {
-    warning("The provided minarea value is larger than than the average supercell (step^2). The connectivity cleaning is likely to fail.", call. = FALSE)
+    warning("The provided minarea value is larger than the average supercell (step^2). The connectivity cleaning is likely to fail.", call. = FALSE)
   }
   return(minarea)
 }
