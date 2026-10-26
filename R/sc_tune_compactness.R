@@ -46,7 +46,7 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
   dist_fun_out = if (is.character(dist_fun)) as.character(dist_fun[[1]]) else "custom"
 
   tune_stats = .sc_tune_grid_window_variability(raster, step, dist_fun, k, centers)
-  step_used = unlist(tune_stats$step, use.names = FALSE)
+  step_used = tune_stats$step
 
   if (!is.null(list(...)$dim_scale)) {
     dim_scale = list(...)$dim_scale
@@ -60,8 +60,13 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
     compactness_value = stat(compactness_value)
   }
 
-  return(data.frame(step = step_used, metric = "local_variability", dist_fun = dist_fun_out,
-                    compactness = compactness_value))
+  n_out = length(compactness_value)
+  return(data.frame(
+    step = rep(step_used, length.out = n_out),
+    metric = rep("local_variability", length.out = n_out),
+    dist_fun = rep(dist_fun_out, length.out = n_out),
+    compactness = compactness_value
+  ))
 }
 
 .sc_tune_local_variability_scale = function(n_bands, dist_fun_name) {
