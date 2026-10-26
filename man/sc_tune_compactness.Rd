@@ -16,7 +16,7 @@ sc_tune_compactness(
 )
 }
 \arguments{
-\item{raster}{A \code{SpatRaster}.}
+\item{raster}{A \code{SpatRaster} (terra) or \code{stars} object.}
 
 \item{step}{Initial center spacing (alternative is \code{k}).
 Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for

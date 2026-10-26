@@ -1,6 +1,7 @@
 # supercells 1.9.9
 
 * Fixed `sc_tune_compactness()` with `stat = NULL` and a `step` in meters.
+* `sc_tune_compactness()` now accepts `stars` rasters consistently with the SLIC functions.
 
 # supercells 1.9.8
 

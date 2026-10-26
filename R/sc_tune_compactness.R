@@ -4,7 +4,7 @@
 #' The current implementation supports one tuning metric, `"local_variability"`,
 #' which estimates compactness directly from local value variability.
 #'
-#' @param raster A `SpatRaster`.
+#' @param raster A `SpatRaster` (terra) or `stars` object.
 #' @param step Initial center spacing (alternative is `k`).
 #' Provide a plain numeric value for cell units, or use [use_meters()] for
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
@@ -43,6 +43,7 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
       !identical(metric, "local_variability")) {
     stop("metric must be 'local_variability'", call. = FALSE)
   }
+  raster = .sc_util_prep_raster(raster)
   dist_fun_out = if (is.character(dist_fun)) as.character(dist_fun[[1]]) else "custom"
 
   tune_stats = .sc_tune_grid_window_variability(raster, step, dist_fun, k, centers)
