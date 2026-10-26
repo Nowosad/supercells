@@ -14,9 +14,6 @@ class SlicCore {
   using DistFn = std::function<double(const std::vector<double>&, const std::vector<double>&)>;
   using AvgFn = std::function<double(const std::vector<double>&)>;
 
-  SlicCore();
-  ~SlicCore();
-
   void generate_superpixels(const std::vector<int>& mat_dims, const std::vector<double>& vals,
                             int step, double compactness, bool adaptive_compactness,
                             DistFn dist_fn, AvgFn avg_fn, const std::string& avg_fun_name,
@@ -32,9 +29,6 @@ class SlicCore {
   const std::vector<int>& mat_dims_ref() const { return mat_dims; }
 
   const std::vector<double>& iter_mean_distance_ref() const { return iter_mean_distance; }
-
-  int step_value() const { return step; }
-  double compactness_value() const { return compactness; }
 
  private:
 
@@ -62,8 +56,6 @@ class SlicCore {
   double compactness = 0.0;
   bool adaptive_compactness = false;
 
-  const std::vector<double>* vals_ptr = nullptr;
-  int bands = 0;
   DistFn dist_fn;
   AvgFn avg_fn;
   std::string avg_fun_name;

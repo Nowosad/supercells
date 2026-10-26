@@ -1,15 +1,5 @@
 #include "slic_core.h"
 
-/* Constructor. Nothing is done here. */
-SlicCore::SlicCore() {
-
-}
-
-/* Destructor. Clear any present data. */
-SlicCore::~SlicCore() {
-  clear_data();
-}
-
 /* Clear the data as saved by the algorithm. */
 void SlicCore::clear_data() {
   clusters.clear();
@@ -22,8 +12,6 @@ void SlicCore::clear_data() {
   max_value_dist.clear();
   iter_mean_distance.clear();
   iter_diagnostics_enabled = false;
-  vals_ptr = nullptr;
-  bands = 0;
   dist_fn = nullptr;
   avg_fn = nullptr;
   avg_fun_name.clear();
@@ -98,9 +86,6 @@ void SlicCore::create_centers2(const std::vector<int>& mat_dims, const std::vect
 void SlicCore::inits(const std::vector<int>& mat_dims_in, const std::vector<double>& vals,
                      const std::vector<std::array<int, 2>>& input_centers) {
   mat_dims = mat_dims_in;
-  bands = mat_dims[2];
-  vals_ptr = &vals;
-
   clusters.reserve(mat_dims[1]);
   distances.reserve(mat_dims[1]);
   for (int ncol = 0; ncol < mat_dims[1]; ncol++) {
