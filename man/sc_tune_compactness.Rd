@@ -5,7 +5,7 @@
 \title{Estimate a compactness value}
 \usage{
 sc_tune_compactness(
-  raster,
+  x,
   step = NULL,
   dist_fun = "euclidean",
   metric = "local_variability",
@@ -16,7 +16,7 @@ sc_tune_compactness(
 )
 }
 \arguments{
-\item{raster}{A \code{SpatRaster} (terra) or \code{stars} object.}
+\item{x}{A \code{SpatRaster} (terra) or \code{stars} object.}
 
 \item{step}{Initial center spacing (alternative is \code{k}).
 Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
@@ -44,8 +44,9 @@ separate user-facing scaling argument.}
 }
 \value{
 A data frame with columns \code{step}, \code{metric}, \code{dist_fun}, and
-\code{compactness}. It has one row when \code{stat} summarizes the local variability,
-or one row per local variability value when \code{stat = NULL}.
+\code{compactness}. With the default \code{stat = median}, it contains one row. With
+\code{stat = NULL}, it contains one row per initial center, with \code{step}, \code{metric},
+and \code{dist_fun} repeated for each row.
 }
 \description{
 Estimates a compactness value for a chosen raster scale.

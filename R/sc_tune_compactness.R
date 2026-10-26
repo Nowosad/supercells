@@ -4,7 +4,7 @@
 #' The current implementation supports one tuning metric, `"local_variability"`,
 #' which estimates compactness directly from local value variability.
 #'
-#' @param raster A `SpatRaster` (terra) or `stars` object.
+#' @param x A `SpatRaster` (terra) or `stars` object.
 #' @param step Initial center spacing (alternative is `k`).
 #' Provide a plain numeric value for cell units, or use [use_meters()] for
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
@@ -24,8 +24,9 @@
 #' @param ... Additional arguments for the compactness metric. For example, `dim_scale` for `"local_variability"` if you want to override the default scaling.
 #'
 #' @return A data frame with columns `step`, `metric`, `dist_fun`, and
-#' `compactness`. It has one row when `stat` summarizes the local variability,
-#' or one row per local variability value when `stat = NULL`.
+#' `compactness`. With the default `stat = median`, it contains one row. With
+#' `stat = NULL`, it contains one row per initial center, with `step`, `metric`,
+#' and `dist_fun` repeated for each row.
 #'
 #' @seealso [`sc_slic()`], [use_meters()], [use_adaptive()]
 #'
@@ -36,23 +37,23 @@
 #' tune$compactness
 #'
 #' @export
-sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
-                                        metric = "local_variability", stat = stats::median,
-                                        k = NULL, centers = NULL, ...) {
+sc_tune_compactness = function(x, step = NULL, dist_fun = "euclidean",
+                                metric = "local_variability", stat = stats::median,
+                                k = NULL, centers = NULL, ...) {
   if (!is.character(metric) || length(metric) != 1 || is.na(metric) ||
       !identical(metric, "local_variability")) {
     stop("metric must be 'local_variability'", call. = FALSE)
   }
-  raster = .sc_util_prep_raster(raster)
+  x = .sc_util_prep_raster(x)
   dist_fun_out = if (is.character(dist_fun)) as.character(dist_fun[[1]]) else "custom"
 
-  tune_stats = .sc_tune_grid_window_variability(raster, step, dist_fun, k, centers)
+  tune_stats = .sc_tune_grid_window_variability(x, step, dist_fun, k, centers)
   step_used = tune_stats$step
 
   if (!is.null(list(...)$dim_scale)) {
     dim_scale = list(...)$dim_scale
   } else {
-    dim_scale = .sc_tune_local_variability_scale(terra::nlyr(raster), dist_fun_out)
+    dim_scale = .sc_tune_local_variability_scale(terra::nlyr(x), dist_fun_out)
   }
   compactness_value = tune_stats$compactness / dim_scale
 
@@ -90,9 +91,9 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
   1
 }
 
-.sc_tune_grid_window_variability = function(raster, step, dist_fun, k, centers) {
+.sc_tune_grid_window_variability = function(x, step, dist_fun, k, centers) {
   pts = sc_slic_points(
-    raster,
+    x,
     step = step,
     compactness = 1,
     dist_fun = dist_fun,
@@ -104,7 +105,7 @@ sc_tune_compactness = function(raster, step = NULL, dist_fun = "euclidean",
   )
 
   step_used = attr(pts, "step")
-  prep = .sc_metrics_prep(raster, pts, dist_fun, compactness = 1, step = step_used,
+  prep = .sc_metrics_prep(x, pts, dist_fun, compactness = 1, step = step_used,
                           include = c("centers", "vals", "dist", "raster"))
 
   mean_value_dist = sc_metrics_local_mean_cpp(
