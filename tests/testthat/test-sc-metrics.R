@@ -26,6 +26,17 @@ test_that("metrics outputs have expected structure", {
                     "mean_combined_dist", "balance") %in% names(gl)))
 })
 
+test_that("metrics preserve zero-based fractional center coordinates", {
+  x = terra::rast(nrows = 2, ncols = 2, xmin = 0, xmax = 2, ymin = 0, ymax = 2,
+                  crs = "EPSG:3857")
+  terra::values(x) = 1
+  sc = sc_slic(x, step = 2, compactness = 1, iter = 1, clean = FALSE)
+
+  spatial = sc_metrics_pixels(x, sc, metrics = "spatial", scale = FALSE)
+
+  expect_equal(as.vector(terra::values(spatial)), rep(sqrt(0.5), 4), tolerance = 1e-12)
+})
+
 test_that("metrics work without metadata columns", {
   expect_s4_class(sc_metrics_pixels(v1, sc_values), "SpatRaster")
   expect_s3_class(sc_metrics_supercells(v1, sc_values), "sf")

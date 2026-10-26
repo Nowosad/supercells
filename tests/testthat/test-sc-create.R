@@ -82,9 +82,33 @@ test_that("sc_slic_raster works with chunks = TRUE", {
 
 test_that("sc_slic validates key argument errors", {
   expect_error(sc_slic(v1, k = 10), "compactness", fixed = TRUE)
+  expect_error(sc_slic(v1, k = 0, compactness = 1), "single positive integer", fixed = TRUE)
+  expect_error(sc_slic(v1, k = 1.5, compactness = 1), "single positive integer", fixed = TRUE)
   expect_error(sc_slic(v1, k = 10, step = 5, compactness = 1), "either 'k' or 'step'", fixed = TRUE)
   expect_error(sc_slic(v1, centers = sf::st_sf(geom = sf::st_sfc()), compactness = 1), "step", fixed = TRUE)
   expect_error(sc_slic(v1, step = 8, compactness = 1, dist_fun = "not_a_dist"), "does not exist", fixed = TRUE)
+})
+
+test_that("initial center values match their snapped raster cells", {
+  x = terra::rast(nrows = 5, ncols = 5, xmin = 0, xmax = 5, ymin = 0, ymax = 5)
+  terra::values(x) = seq_len(terra::ncell(x))
+
+  pts = suppressWarnings(sc_slic_points(x, step = 4, compactness = 1, iter = 0))
+  extracted = terra::extract(x, terra::vect(pts))[[2]]
+
+  expect_equal(pts[[names(x)]], extracted)
+})
+
+test_that("custom centers use zero-based native cell indices", {
+  x = terra::rast(nrows = 1, ncols = 1, xmin = 0, xmax = 1, ymin = 0, ymax = 1,
+                  crs = "EPSG:3857")
+  terra::values(x) = 5
+  center = sf::st_as_sf(data.frame(x = 0.5, y = 0.5), coords = c("x", "y"), crs = 3857)
+
+  pts = sc_slic_points(x, centers = center, step = 1, compactness = 1, iter = 0)
+
+  expect_equal(nrow(pts), 1)
+  expect_equal(pts[[names(x)]], 5)
 })
 
 test_that("sc_slic handles rasters with missing CRS", {
@@ -117,6 +141,15 @@ test_that("sc_slic handles step units and unit-related errors", {
   expect_error(
     suppressWarnings(sc_slic(x_non_meter, step = use_meters(100), compactness = 1)),
     "meter units",
+    fixed = TRUE
+  )
+
+  x_non_square = terra::rast(nrows = 10, ncols = 10, xmin = 0, xmax = 1000,
+                             ymin = 0, ymax = 2000, crs = "EPSG:3857")
+  terra::values(x_non_square) = seq_len(terra::ncell(x_non_square))
+  expect_warning(
+    sc_slic(x_non_square, step = use_meters(400), compactness = 1),
+    "approximate for non-square cells",
     fixed = TRUE
   )
 })

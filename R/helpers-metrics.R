@@ -108,11 +108,19 @@
   )
 
   if ("centers" %in% include) {
-    center_x = terra::colFromX(raster, x_df[["x"]])
-    center_y = terra::rowFromY(raster, x_df[["y"]])
-    if (any(is.na(center_x)) || any(is.na(center_y))) {
+    raster_ext = as.vector(terra::ext(raster))
+    raster_res = terra::res(raster)
+    center_x = (x_df[["x"]] - raster_ext[[1]]) / raster_res[[1]] - 0.5
+    center_y = (raster_ext[[4]] - x_df[["y"]]) / raster_res[[2]] - 0.5
+    tolerance = sqrt(.Machine$double.eps)
+    outside = !is.finite(center_x) | !is.finite(center_y) |
+      center_x < -tolerance | center_x > terra::ncol(raster) - 1 + tolerance |
+      center_y < -tolerance | center_y > terra::nrow(raster) - 1 + tolerance
+    if (any(outside)) {
       stop("Some centers fall outside the raster extent", call. = FALSE)
     }
+    center_x = pmin(pmax(center_x, 0), terra::ncol(raster) - 1)
+    center_y = pmin(pmax(center_y, 0), terra::nrow(raster) - 1)
     centers_xy = cbind(center_x, center_y)
     storage.mode(centers_xy) = "double"
     centers_vals = as.matrix(x_df[, val_cols, drop = FALSE])

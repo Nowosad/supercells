@@ -38,8 +38,8 @@
 # convert sf centers to raster row and col indices
 .sc_util_centers_to_dims = function(x, y){
   y_coords = sf::st_coordinates(sf::st_geometry(y))
-  y_col = terra::colFromX(x, y_coords[, 1])
-  y_row = terra::rowFromY(x, y_coords[, 2])
+  y_col = terra::colFromX(x, y_coords[, 1]) - 1L
+  y_row = terra::rowFromY(x, y_coords[, 2]) - 1L
   center_dims = cbind(y_col, y_row)
   storage.mode(center_dims) = "integer"
   unique(center_dims)
@@ -71,7 +71,7 @@
 
   res = terra::res(x)
   if (!isTRUE(all.equal(res[[1]], res[[2]]))) {
-    warning("Map-unit step requires square cells; res(x) has different x/y resolution", call. = FALSE)
+    warning("Map-unit step is approximate for non-square cells: using x resolution for both axes", call. = FALSE)
   }
 
   crs_units = tryCatch(
