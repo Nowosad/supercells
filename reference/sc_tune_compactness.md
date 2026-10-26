@@ -74,7 +74,9 @@ sc_tune_compactness(
 
 ## Value
 
-A one-row data frame with columns `step` and `compactness`.
+A data frame with columns `step`, `metric`, `dist_fun`, and
+`compactness`. It has one row when `stat` summarizes the local
+variability, or one row per local variability value when `stat = NULL`.
 
 ## See also
 
@@ -86,9 +88,9 @@ A one-row data frame with columns `step` and `compactness`.
 
 ``` r
 library(terra)
-#> terra 1.9.46
+#> terra 1.9.50
 vol = rast(system.file("raster/volcano.tif", package = "supercells"))
 tune = sc_tune_compactness(vol, step = 8)
 tune$compactness
-#> [1] 8.990234
+#> [1] 9.241536
 ```

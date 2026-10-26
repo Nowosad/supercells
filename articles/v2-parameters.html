@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,9 +71,9 @@
                         <h4 data-toc-skip class="author">Jakub
 Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2026-09-07</h4>
+            <h4 data-toc-skip class="date">2026-10-26</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/newcppread/vignettes/articles/v2-parameters.Rmd" class="external-link"><code>vignettes/articles/v2-parameters.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/v2-parameters.Rmd" class="external-link"><code>vignettes/articles/v2-parameters.Rmd</code></a></small>
       <div class="d-none name"><code>v2-parameters.Rmd</code></div>
     </div>
 
@@ -220,7 +220,7 @@ target supercell scale.</p>
 <code class="sourceCode R"><span><span class="va">tune_local_variability</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_tune_compactness.html">sc_tune_compactness</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, metric <span class="op">=</span> <span class="st">"local_variability"</span><span class="op">)</span></span>
 <span><span class="va">tune_local_variability</span></span>
 <span><span class="co">#&gt;   step            metric  dist_fun compactness</span></span>
-<span><span class="co">#&gt; 1    8 local_variability euclidean    8.990234</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    8 local_variability euclidean    9.241536</span></span></code></pre></div>
 <p>The result returns a one-row data frame with <code>step</code>,
 <code>metric</code>, <code>dist_fun</code>, and
 <code>compactness</code>. You can plug the suggested value into
@@ -265,15 +265,15 @@ compactness settings.</p>
 <span><span class="va">cmp_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">cmp_metrics</span><span class="op">)</span></span>
 <span><span class="va">cmp_metrics</span></span>
 <span><span class="co">#&gt;   step compactness compactness_method n_supercells mean_spatial_dist_scaled</span></span>
-<span><span class="co">#&gt; 1    8           1           constant           90                0.5500066</span></span>
-<span><span class="co">#&gt; 2    8           3           constant           88                0.5246759</span></span>
-<span><span class="co">#&gt; 3    8           5           constant           89                0.4982282</span></span>
-<span><span class="co">#&gt; 4    8           8           constant           88                0.4610799</span></span>
-<span><span class="co">#&gt;   mean_value_dist_scaled mean_combined_dist    balance</span></span>
-<span><span class="co">#&gt; 1              2.1412253          2.3003626  1.1923986</span></span>
-<span><span class="co">#&gt; 2              0.7473867          0.9994451  0.2193843</span></span>
-<span><span class="co">#&gt; 3              0.4746065          0.7533578 -0.1505373</span></span>
-<span><span class="co">#&gt; 4              0.3358298          0.6175536 -0.4145741</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    8           1           constant           90                0.5296680</span></span>
+<span><span class="co">#&gt; 2    8           3           constant           89                0.5024743</span></span>
+<span><span class="co">#&gt; 3    8           5           constant           88                0.4744017</span></span>
+<span><span class="co">#&gt; 4    8           8           constant           88                0.4365704</span></span>
+<span><span class="co">#&gt;   mean_value_dist_scaled mean_combined_dist     balance</span></span>
+<span><span class="co">#&gt; 1              2.1702860          2.3211519  1.22197621</span></span>
+<span><span class="co">#&gt; 2              0.7444729          0.9783978  0.26256500</span></span>
+<span><span class="co">#&gt; 3              0.4750390          0.7301158 -0.08298471</span></span>
+<span><span class="co">#&gt; 4              0.3358444          0.5946984 -0.35582210</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -322,13 +322,13 @@ evaluation vignette for guidance on interpreting these metrics: <a href="https:/
 connectivity and removes small fragments that may arise during the
 iterative process of assigning pixels to supercells. This is usually
 desirable for polygon outputs and downstream analyses. The
-<code>minarea</code> argument sets a minimum expected size in pixels for
-supercells, and smaller supercells are merged into neighbors. By
-default, when <code>clean = TRUE</code>, a minimum size is still
-enforced internally (about one quarter of the average supercell size),
-so small fragments are merged unless you turn off cleaning. If you see
-many tiny supercells, increase <code>minarea</code> or
-<code>step</code>.</p>
+<code>minarea</code> argument sets the largest connected-component size
+(in cells) to merge into a neighbor: components containing
+<code>minarea</code> cells or fewer are merged. By default, when
+<code>clean = TRUE</code>, a minimum size is still enforced internally
+(about one quarter of the average supercell size), so small fragments
+are merged unless you turn off cleaning. If you see many tiny
+supercells, increase <code>minarea</code> or <code>step</code>.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sc_clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fl">5</span>, clean <span class="op">=</span> <span class="cn">TRUE</span>, minarea <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
 <p>If you need unpostprocessed supercells for speed or debugging, you

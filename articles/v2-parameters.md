@@ -137,7 +137,7 @@ target supercell scale.
 tune_local_variability <- sc_tune_compactness(vol, step = 8, metric = "local_variability")
 tune_local_variability
 #>   step            metric  dist_fun compactness
-#> 1    8 local_variability euclidean    8.990234
+#> 1    8 local_variability euclidean    9.241536
 ```
 
 The result returns a one-row data frame with `step`, `metric`,
@@ -190,15 +190,15 @@ cmp_metrics <- lapply(cmp_vals, function(cmp) {
 cmp_metrics <- do.call(rbind, cmp_metrics)
 cmp_metrics
 #>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
-#> 1    8           1           constant           90                0.5500066
-#> 2    8           3           constant           88                0.5246759
-#> 3    8           5           constant           89                0.4982282
-#> 4    8           8           constant           88                0.4610799
-#>   mean_value_dist_scaled mean_combined_dist    balance
-#> 1              2.1412253          2.3003626  1.1923986
-#> 2              0.7473867          0.9994451  0.2193843
-#> 3              0.4746065          0.7533578 -0.1505373
-#> 4              0.3358298          0.6175536 -0.4145741
+#> 1    8           1           constant           90                0.5296680
+#> 2    8           3           constant           89                0.5024743
+#> 3    8           5           constant           88                0.4744017
+#> 4    8           8           constant           88                0.4365704
+#>   mean_value_dist_scaled mean_combined_dist     balance
+#> 1              2.1702860          2.3211519  1.22197621
+#> 2              0.7444729          0.9783978  0.26256500
+#> 3              0.4750390          0.7301158 -0.08298471
+#> 4              0.3358444          0.5946984 -0.35582210
 ```
 
 ## Distance and averaging functions
@@ -253,12 +253,13 @@ See the evaluation vignette for guidance on interpreting these metrics:
 The `clean` argument, enabled by default, enforces connectivity and
 removes small fragments that may arise during the iterative process of
 assigning pixels to supercells. This is usually desirable for polygon
-outputs and downstream analyses. The `minarea` argument sets a minimum
-expected size in pixels for supercells, and smaller supercells are
-merged into neighbors. By default, when `clean = TRUE`, a minimum size
-is still enforced internally (about one quarter of the average supercell
-size), so small fragments are merged unless you turn off cleaning. If
-you see many tiny supercells, increase `minarea` or `step`.
+outputs and downstream analyses. The `minarea` argument sets the largest
+connected-component size (in cells) to merge into a neighbor: components
+containing `minarea` cells or fewer are merged. By default, when
+`clean = TRUE`, a minimum size is still enforced internally (about one
+quarter of the average supercell size), so small fragments are merged
+unless you turn off cleaning. If you see many tiny supercells, increase
+`minarea` or `step`.
 
 ``` r
 sc_clean <- sc_slic(vol, step = 8, compactness = 5, clean = TRUE, minarea = 20)

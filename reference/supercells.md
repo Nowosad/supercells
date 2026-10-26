@@ -93,11 +93,9 @@ supercells(
 
 - minarea:
 
-  Specifies the minimal size of a supercell (in cells). Only works when
-  `clean = TRUE`. By default, when `clean = TRUE`, average area (A) is
-  calculated based on the total number of cells divided by a number of
-  supercells Next, the minimal size of a supercell equals to A/(2^2) (A
-  is being right shifted)
+  Connectivity components containing `minarea` cells or fewer are merged
+  into an adjacent component when `clean = TRUE`. If omitted or zero,
+  the threshold is one quarter of the expected supercell area.
 
 - metadata:
 

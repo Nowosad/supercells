@@ -70,7 +70,9 @@ sc_slic_raster(
 
 - minarea:
 
-  Minimal size of a supercell (in cells).
+  Connectivity components containing `minarea` cells or fewer are merged
+  into an adjacent component when `clean = TRUE`. If omitted or zero,
+  the threshold is one quarter of the expected supercell area.
 
 - iter:
 

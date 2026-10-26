@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,9 +71,9 @@
                         <h4 data-toc-skip class="author">Jakub
 Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2026-09-07</h4>
+            <h4 data-toc-skip class="date">2026-10-26</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/newcppread/vignettes/articles/v2-changes-since-v1.Rmd" class="external-link"><code>vignettes/articles/v2-changes-since-v1.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/v2-changes-since-v1.Rmd" class="external-link"><code>vignettes/articles/v2-changes-since-v1.Rmd</code></a></small>
       <div class="d-none name"><code>v2-changes-since-v1.Rmd</code></div>
     </div>
 
@@ -154,7 +154,7 @@ run <code><a href="../reference/sc_slic.html">sc_slic()</a></code> with the tune
 <span><span class="va">comp_tune</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_tune_compactness.html">sc_tune_compactness</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="va">comp_tune</span></span>
 <span><span class="co">#&gt;   step            metric  dist_fun compactness</span></span>
-<span><span class="co">#&gt; 1    8 local_variability euclidean    8.990234</span></span>
+<span><span class="co">#&gt; 1    8 local_variability euclidean    9.241536</span></span>
 <span></span>
 <span><span class="co"># Use the tuned value and plot results</span></span>
 <span><span class="va">vol_sc_tuned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="va">comp_tune</span><span class="op">$</span><span class="va">compactness</span><span class="op">)</span></span>
@@ -206,22 +206,22 @@ comparisons.</p>
 <span><span class="co">#&gt; Simple feature collection with 6 features and 5 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POLYGON</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
-<span><span class="co">#&gt; Bounding box:  xmin: 2667400 ymin: 6479045 xmax: 2667500 ymax: 6479575</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 2667400 ymin: 6479025 xmax: 2667500 ymax: 6479575</span></span>
 <span><span class="co">#&gt; Projected CRS: NZGD49 / New Zealand Map Grid</span></span>
 <span><span class="co">#&gt;   supercells mean_spatial_dist_scaled mean_value_dist_scaled mean_combined_dist</span></span>
-<span><span class="co">#&gt; 1          1                0.4195350             0.08554244          0.4325501</span></span>
-<span><span class="co">#&gt; 2          2                0.4539066             0.04427186          0.4587638</span></span>
-<span><span class="co">#&gt; 3          3                0.4003193             0.14495014          0.4452615</span></span>
-<span><span class="co">#&gt; 4          4                0.4570244             0.14389321          0.4939813</span></span>
-<span><span class="co">#&gt; 5          5                0.4450208             0.31268263          0.5773152</span></span>
-<span><span class="co">#&gt; 6          6                0.4680141             0.20287698          0.5398852</span></span>
+<span><span class="co">#&gt; 1          1                0.4095206             0.09007318          0.4222508</span></span>
+<span><span class="co">#&gt; 2          2                0.4312237             0.06200361          0.4380981</span></span>
+<span><span class="co">#&gt; 3          3                0.3717557             0.16420635          0.4168714</span></span>
+<span><span class="co">#&gt; 4          4                0.4261679             0.14332676          0.4633701</span></span>
+<span><span class="co">#&gt; 5          5                0.4191004             0.30019033          0.5423462</span></span>
+<span><span class="co">#&gt; 6          6                0.4520404             0.30186667          0.5812408</span></span>
 <span><span class="co">#&gt;      balance                       geometry</span></span>
-<span><span class="co">#&gt; 1 -1.5901344 POLYGON ((2667400 6479575, ...</span></span>
-<span><span class="co">#&gt; 2 -2.3275422 POLYGON ((2667400 6479495, ...</span></span>
-<span><span class="co">#&gt; 3 -1.0158726 POLYGON ((2667440 6479415, ...</span></span>
-<span><span class="co">#&gt; 4 -1.1556654 POLYGON ((2667460 6479345, ...</span></span>
-<span><span class="co">#&gt; 5 -0.3529323 POLYGON ((2667460 6479265, ...</span></span>
-<span><span class="co">#&gt; 6 -0.8358987 POLYGON ((2667450 6479175, ...</span></span>
+<span><span class="co">#&gt; 1 -1.5143648 POLYGON ((2667400 6479575, ...</span></span>
+<span><span class="co">#&gt; 2 -1.9394344 POLYGON ((2667410 6479495, ...</span></span>
+<span><span class="co">#&gt; 3 -0.8171130 POLYGON ((2667400 6479405, ...</span></span>
+<span><span class="co">#&gt; 4 -1.0897063 POLYGON ((2667450 6479335, ...</span></span>
+<span><span class="co">#&gt; 5 -0.3336939 POLYGON ((2667440 6479245, ...</span></span>
+<span><span class="co">#&gt; 6 -0.4037861 POLYGON ((2667460 6479165, ...</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">supercell_metrics</span><span class="op">[</span><span class="st">"balance"</span><span class="op">]</span>, main <span class="op">=</span> <span class="st">"Supercell balance metric"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="v2-changes-since-v1_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -229,9 +229,9 @@ comparisons.</p>
 <span><span class="va">global_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_metrics_global.html">sc_metrics_global</a></span><span class="op">(</span><span class="va">vol</span>, <span class="va">vol_sc</span><span class="op">)</span></span>
 <span><span class="va">global_metrics</span></span>
 <span><span class="co">#&gt;   step compactness compactness_method n_supercells mean_spatial_dist_scaled</span></span>
-<span><span class="co">#&gt; 1    8           7           constant           88                0.4718607</span></span>
+<span><span class="co">#&gt; 1    8           7           constant           88                0.4466124</span></span>
 <span><span class="co">#&gt;   mean_value_dist_scaled mean_combined_dist    balance</span></span>
-<span><span class="co">#&gt; 1              0.3701397          0.6517259 -0.3367309</span></span></code></pre></div>
+<span><span class="co">#&gt; 1              0.3710111          0.6294388 -0.2780825</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="aslic-adaptive-compactness">ASLIC adaptive compactness<a class="anchor" aria-label="anchor" href="#aslic-adaptive-compactness"></a>

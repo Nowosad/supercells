@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Pixel-level supercells metrics</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/newcppread/R/sc_metrics_pixels.R" class="external-link"><code>R/sc_metrics_pixels.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/R/sc_metrics_pixels.R" class="external-link"><code>R/sc_metrics_pixels.R</code></a></small>
       <div class="d-none name"><code>sc_metrics_pixels.Rd</code></div>
     </div>
 
@@ -127,7 +127,7 @@ distance; mainly useful for ranking.</p></dd>
 <dd><p>Signed log ratio of scaled value distance to scaled spatial
 distance. <code>0</code> indicates balance; negative values indicate spatial dominance;
 positive values indicate value dominance. Always computed from scaled
-components.</p></dd>
+components. Returns <code>NA</code> when either component is zero.</p></dd>
 
 
 </dl></div>

@@ -1,5 +1,28 @@
 # Changelog
 
+## supercells 1.9.8
+
+- Invalid `k` values are now rejected before code is run.
+- Fixed R/C++ raster-index conversion for custom centers and metrics;
+  metrics now preserve fractional center positions.
+- Initial center values are now read from the locally adjusted center
+  cells.
+- [`use_meters()`](https://jakubnowosad.com/supercells/reference/use_meters.md)
+  now warns explicitly that non-square cells use x resolution for both
+  axes and therefore give approximate map-unit steps.
+- Fixed ID offsets and empty-result handling when combining chunked
+  polygon outputs.
+- Balance metrics now return `NA` when either scaled distance component
+  is zero.
+- Cluster assignments are now recomputed each iteration; valid cells
+  outside local center windows are assigned to the nearest current
+  center.
+- [`sc_slic_convergence()`](https://jakubnowosad.com/supercells/reference/sc_slic_convergence.md)
+  now skips connectivity cleaning and warns when `clean = TRUE` is
+  requested.
+- Median summaries now average the two middle values for even-sized
+  supercells.
+
 ## supercells 1.9.5
 
 - **Fixed integer overflow in vector indexing inside the C++ part of the

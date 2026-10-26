@@ -139,7 +139,7 @@ tune <- sc_tune_compactness(
 )
 tune
 #>   step            metric  dist_fun compactness
-#> 1    8 local_variability euclidean    8.990234
+#> 1    8 local_variability euclidean    9.241536
 ```
 
 Next, we may try to create supercells with the suggested `compactness`
@@ -203,9 +203,9 @@ as a small grid of `step` and `compactness` values.
 ``` r
 global_metrics
 #>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
-#> 1    8    8.990234           constant           88                0.4558924
+#> 1    8    9.241536           constant           88                0.4212289
 #>   mean_value_dist_scaled mean_combined_dist    balance
-#> 1              0.3079427          0.5936206 -0.4886038
+#> 1              0.3102238          0.5627799 -0.4061637
 ```
 
 ## Where to go next

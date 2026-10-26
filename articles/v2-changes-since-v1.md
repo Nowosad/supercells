@@ -100,7 +100,7 @@ with the tuned value.
 comp_tune <- sc_tune_compactness(vol, step = 8)
 comp_tune
 #>   step            metric  dist_fun compactness
-#> 1    8 local_variability euclidean    8.990234
+#> 1    8 local_variability euclidean    9.241536
 
 # Use the tuned value and plot results
 vol_sc_tuned <- sc_slic(vol, step = 8, compactness = comp_tune$compactness)
@@ -164,22 +164,22 @@ head(supercell_metrics)
 #> Simple feature collection with 6 features and 5 fields
 #> Geometry type: POLYGON
 #> Dimension:     XY
-#> Bounding box:  xmin: 2667400 ymin: 6479045 xmax: 2667500 ymax: 6479575
+#> Bounding box:  xmin: 2667400 ymin: 6479025 xmax: 2667500 ymax: 6479575
 #> Projected CRS: NZGD49 / New Zealand Map Grid
 #>   supercells mean_spatial_dist_scaled mean_value_dist_scaled mean_combined_dist
-#> 1          1                0.4195350             0.08554244          0.4325501
-#> 2          2                0.4539066             0.04427186          0.4587638
-#> 3          3                0.4003193             0.14495014          0.4452615
-#> 4          4                0.4570244             0.14389321          0.4939813
-#> 5          5                0.4450208             0.31268263          0.5773152
-#> 6          6                0.4680141             0.20287698          0.5398852
+#> 1          1                0.4095206             0.09007318          0.4222508
+#> 2          2                0.4312237             0.06200361          0.4380981
+#> 3          3                0.3717557             0.16420635          0.4168714
+#> 4          4                0.4261679             0.14332676          0.4633701
+#> 5          5                0.4191004             0.30019033          0.5423462
+#> 6          6                0.4520404             0.30186667          0.5812408
 #>      balance                       geometry
-#> 1 -1.5901344 POLYGON ((2667400 6479575, ...
-#> 2 -2.3275422 POLYGON ((2667400 6479495, ...
-#> 3 -1.0158726 POLYGON ((2667440 6479415, ...
-#> 4 -1.1556654 POLYGON ((2667460 6479345, ...
-#> 5 -0.3529323 POLYGON ((2667460 6479265, ...
-#> 6 -0.8358987 POLYGON ((2667450 6479175, ...
+#> 1 -1.5143648 POLYGON ((2667400 6479575, ...
+#> 2 -1.9394344 POLYGON ((2667410 6479495, ...
+#> 3 -0.8171130 POLYGON ((2667400 6479405, ...
+#> 4 -1.0897063 POLYGON ((2667450 6479335, ...
+#> 5 -0.3336939 POLYGON ((2667440 6479245, ...
+#> 6 -0.4037861 POLYGON ((2667460 6479165, ...
 plot(supercell_metrics["balance"], main = "Supercell balance metric")
 ```
 
@@ -190,9 +190,9 @@ plot(supercell_metrics["balance"], main = "Supercell balance metric")
 global_metrics <- sc_metrics_global(vol, vol_sc)
 global_metrics
 #>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
-#> 1    8           7           constant           88                0.4718607
+#> 1    8           7           constant           88                0.4466124
 #>   mean_value_dist_scaled mean_combined_dist    balance
-#> 1              0.3701397          0.6517259 -0.3367309
+#> 1              0.3710111          0.6294388 -0.2780825
 ```
 
 ## ASLIC adaptive compactness

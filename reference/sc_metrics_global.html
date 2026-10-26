@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">supercells</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Global supercells metrics</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/newcppread/R/sc_metrics_global.R" class="external-link"><code>R/sc_metrics_global.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/R/sc_metrics_global.R" class="external-link"><code>R/sc_metrics_global.R</code></a></small>
       <div class="d-none name"><code>sc_metrics_global.Rd</code></div>
     </div>
 
@@ -145,7 +145,8 @@ overall distance and are mainly useful for ranking.</p></dd>
 <dd><p>Mean signed log ratio of scaled value distance to scaled
 spatial distance (averaged across supercells); 0 indicates balance between
 value and spatial terms, negative values indicate spatial dominance, and
-positive values indicate value dominance.</p></dd>
+positive values indicate value dominance. Supercells with a zero scaled
+component are excluded; <code>NA</code> is returned if none remain.</p></dd>
 
 
 </dl></div>
@@ -172,9 +173,9 @@ per-supercell max value distance.</p>
 <span class="r-in"><span><span class="va">vol_sc</span> <span class="op">=</span> <span class="fu"><a href="sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">sc_metrics_global</span><span class="op">(</span><span class="va">vol</span>, <span class="va">vol_sc</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   step compactness compactness_method n_supercells mean_spatial_dist_scaled</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    8           7           constant           88                0.4718607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    8           7           constant           88                0.4466124</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   mean_value_dist_scaled mean_combined_dist    balance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0.3701397          0.6517259 -0.3367309</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0.3710111          0.6294388 -0.2780825</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

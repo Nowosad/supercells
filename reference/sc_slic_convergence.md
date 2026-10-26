@@ -13,7 +13,7 @@ sc_slic_convergence(
   compactness,
   dist_fun = "euclidean",
   avg_fun = "mean",
-  clean = TRUE,
+  clean = FALSE,
   minarea,
   iter = 10,
   k = NULL,
@@ -61,11 +61,12 @@ sc_slic_convergence(
 
 - clean:
 
-  Should connectivity of the supercells be enforced?
+  Connectivity cleaning is not applied to convergence diagnostics.
+  Setting this to `TRUE` produces a warning and is otherwise ignored.
 
 - minarea:
 
-  Minimal size of a supercell (in cells).
+  Ignored because connectivity cleaning is not applied.
 
 - iter:
 

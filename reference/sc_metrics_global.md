@@ -106,7 +106,8 @@ A data.frame with a single row and columns:
   Mean signed log ratio of scaled value distance to scaled spatial
   distance (averaged across supercells); 0 indicates balance between
   value and spatial terms, negative values indicate spatial dominance,
-  and positive values indicate value dominance.
+  and positive values indicate value dominance. Supercells with a zero
+  scaled component are excluded; `NA` is returned if none remain.
 
 ## Details
 
@@ -138,7 +139,7 @@ vol = terra::rast(system.file("raster/volcano.tif", package = "supercells"))
 vol_sc = sc_slic(vol, step = 8, compactness = 7)
 sc_metrics_global(vol, vol_sc)
 #>   step compactness compactness_method n_supercells mean_spatial_dist_scaled
-#> 1    8           7           constant           88                0.4718607
+#> 1    8           7           constant           88                0.4466124
 #>   mean_value_dist_scaled mean_combined_dist    balance
-#> 1              0.3701397          0.6517259 -0.3367309
+#> 1              0.3710111          0.6294388 -0.2780825
 ```
