@@ -6,6 +6,8 @@
 * `use_meters()` now warns explicitly that non-square cells use x resolution for both axes and therefore give approximate map-unit steps.
 * Fixed ID offsets and empty-result handling when combining chunked polygon outputs.
 * Balance metrics now return `NA` when either scaled distance component is zero.
+* Cluster assignments are now recomputed each iteration; valid cells outside local center windows are assigned to the nearest current center.
+* `sc_slic_convergence()` now skips connectivity cleaning and warns when `clean = TRUE` is requested.
 
 # supercells 1.9.5
 
