@@ -3,7 +3,10 @@
 double median(std::vector<double>& v){
   size_t n = v.size() / 2;
   std::nth_element(v.begin(), v.begin()+n, v.end());
-  return v[n];
+  double upper = v[n];
+  if (v.size() % 2 != 0) return upper;
+  double lower = *std::max_element(v.begin(), v.begin()+n);
+  return lower + (upper - lower) / 2.0;
 }
 
 double mean(const std::vector<double>& v){
