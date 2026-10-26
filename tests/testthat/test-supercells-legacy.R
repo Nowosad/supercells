@@ -27,7 +27,7 @@ test_that("legacy supercells wrapper supports iter = 0 and custom centers", {
 
 test_that("legacy supercells wrapper supports transform and chunked calls", {
   sc_lab = supercells(v3, 100, compactness = 1, transform = "to_LAB")
-  sc_chunk = supercells(v3, 100, compactness = 1, chunk = 150)
+  sc_chunk = supercells(v3, 100, compactness = 1, chunks = 150)
 
   expect_s3_class(sc_lab, "sf")
   expect_s3_class(sc_chunk, "sf")
