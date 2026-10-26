@@ -19,6 +19,25 @@ test_that("sc_slic supports custom centers", {
   expect_s3_class(sc, "sf")
 })
 
+test_that("sc_slic does not retain assignments from earlier iterations", {
+  set.seed(1)
+  x = terra::rast(nrows = 5, ncols = 5, xmin = 0, xmax = 5,
+                  ymin = 0, ymax = 5, crs = "EPSG:3857")
+  terra::values(x) = runif(terra::ncell(x))
+  centers = sf::st_as_sf(data.frame(x = runif(2, 0.5, 4.5),
+                                    y = runif(2, 0.5, 4.5)),
+                         coords = c("x", "y"), crs = 3857)
+
+  iter1 = sc_slic_raster(x, centers = centers, step = 1,
+                         compactness = 0.1, iter = 1, clean = FALSE)
+  iter2 = sc_slic_raster(x, centers = centers, step = 1,
+                         compactness = 0.1, iter = 2, clean = FALSE)
+
+  expect_equal(terra::values(iter1, mat = FALSE)[[2]], 1)
+  expect_equal(terra::values(iter2, mat = FALSE)[[2]], 2)
+  expect_false(anyNA(terra::values(iter2, mat = FALSE)))
+})
+
 test_that("sc_slic_raster matches rasterized sc_slic output", {
   sc = sc_slic(v1, step = 8, compactness = 1, outcomes = "supercells")
   sc_r = sc_slic_raster(v1, step = 8, compactness = 1)

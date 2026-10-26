@@ -43,10 +43,11 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
       compute_max_value_dist(vals, colour);
     }
 
-    // Reset per-pixel distances before assignment.
+    // Reset per-pixel assignments before assignment.
     for (int i = 0; i < mat_dims[1]; i++) {
       for (int j = 0; j < mat_dims[0]; j++) {
         distances[i][j] = FLT_MAX;
+        clusters[i][j] = -1;
       }
     }
 
@@ -81,6 +82,36 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
               distances[m][n] = d;
               clusters[m][n] = l;
             }
+          }
+        }
+      }
+    }
+
+    // Local windows may not cover every valid pixel after centers move.
+    // Assign those pixels against all current centers rather than retaining
+    // an assignment from the previous iteration.
+    for (int m = 0; m < mat_dims[1]; m++) {
+      for (int n = 0; n < mat_dims[0]; n++) {
+        if (clusters[m][n] != -1) {
+          continue;
+        }
+        int ncell = m + (n * mat_dims[1]);
+        bool has_na = false;
+        for (int nval = 0; nval < mat_dims[2]; nval++) {
+          double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
+          colour[nval] = val;
+          if (std::isnan(val)) {
+            has_na = true;
+          }
+        }
+        if (has_na) {
+          continue;
+        }
+        for (int l = 0; l < (int) centers.size(); l++) {
+          double d = compute_dist(l, n, m, colour);
+          if (d < distances[m][n]) {
+            distances[m][n] = d;
+            clusters[m][n] = l;
           }
         }
       }
