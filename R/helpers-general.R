@@ -62,11 +62,11 @@
   }
 
   if (!identical(as.character(units::deparse_unit(step)), "m")) {
-    stop("A units-based 'step' must use meters ('m')", call. = FALSE)
+    stop("'step' with units must be in meters. Use use_meters(value), where 'value' is in meters, or use a plain numeric 'step' in cells", call. = FALSE)
   }
   is_lonlat = suppressWarnings(terra::is.lonlat(x))
   if (isTRUE(is_lonlat)) {
-    stop("A units-based 'step' requires a projected CRS; project the input raster first", call. = FALSE)
+    stop("'step = use_meters()' requires a projected CRS. Project 'x' with terra::project()", call. = FALSE)
   }
 
   res = terra::res(x)

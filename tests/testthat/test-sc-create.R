@@ -150,14 +150,14 @@ test_that("sc_slic handles step units and unit-related errors", {
   x_lonlat = terra::rast(nrows = 50, ncols = 50, xmin = 0, xmax = 1, ymin = 0, ymax = 1, crs = "EPSG:4326")
   terra::values(x_lonlat) = seq_len(terra::ncell(x_lonlat))
   expect_error(
-    suppressWarnings(sc_slic(x_lonlat, step = use_meters(1000), compactness = 1)),
+    sc_slic(x_lonlat, step = use_meters(1000), compactness = 1),
     "projected CRS",
     fixed = TRUE
   )
 
   expect_error(
     sc_slic(v1, step = units::set_units(1, "km"), compactness = 1),
-    "must use meters",
+    "use_meters(value)",
     fixed = TRUE
   )
 

@@ -8,14 +8,14 @@
   outcomes = .sc_slic_prep_outcomes(outcomes)
   # Normalize input to SpatRaster
   x = .sc_util_prep_raster(x)
-  is_lonlat = suppressWarnings(terra::is.lonlat(x))
-  if (isTRUE(is_lonlat)) {
-    warning("The input raster uses a geographic (lon/lat) CRS; consider projecting it before using SLIC", call. = FALSE)
-  }
   # Resolve step from k when needed
   step_prep = .sc_slic_prep_step(x, step, k)
   step = step_prep$step
   step_meta = step_prep$step_meta
+  is_lonlat = suppressWarnings(terra::is.lonlat(x))
+  if (isTRUE(is_lonlat)) {
+    warning("'x' uses a geographic (lon/lat) CRS. Project it with terra::project() before using SLIC", call. = FALSE)
+  }
   # Adjust numeric chunks to match step size
   if (is.numeric(chunks)) {
     if (chunks < step) {
