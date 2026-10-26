@@ -40,9 +40,11 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{clean}{Should connectivity of the supercells be enforced?}
 
-\item{minarea}{Connectivity components containing \code{minarea} cells or fewer
-are merged into an adjacent component when \code{clean = TRUE}. If omitted or
-zero, the threshold is one quarter of the expected supercell area.}
+\item{minarea}{When \code{clean = TRUE}, connected components containing
+\code{minarea} cells or fewer are merged into an adjacent component. If \code{minarea}
+is omitted or set to \code{0}, the threshold is selected automatically as one
+quarter of the raster cell count divided by the number of initialized centers:
+\code{floor(ncell / (4 * n_centers))}.}
 
 \item{iter}{Number of iterations.}
 

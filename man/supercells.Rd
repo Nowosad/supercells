@@ -45,9 +45,11 @@ A compactness value depends on the range of input cell values and selected dista
 Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
 map-distance steps in meters (automatically converted to cells using raster resolution).}
 
-\item{minarea}{Connectivity components containing \code{minarea} cells or fewer
-are merged into an adjacent component when \code{clean = TRUE}. If omitted or
-zero, the threshold is one quarter of the expected supercell area.}
+\item{minarea}{When \code{clean = TRUE}, connected components containing
+\code{minarea} cells or fewer are merged into an adjacent component. If \code{minarea}
+is omitted or set to \code{0}, the threshold is selected automatically as one
+quarter of the raster cell count divided by the number of initialized centers:
+\code{floor(ncell / (4 * n_centers))}.}
 
 \item{metadata}{Logical. Controls whether metadata columns
 ("supercells", "x", "y") are included.}
