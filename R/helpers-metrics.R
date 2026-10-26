@@ -86,9 +86,9 @@
     x_df[["x"]] = coords[, 1]
     x_df[["y"]] = coords[, 2]
   }
-  val_cols = setdiff(names(x_df), c("supercells", "x", "y"))
-  if (length(val_cols) == 0) {
-    stop("No value columns found in 'sc'", call. = FALSE)
+  val_cols = names(raster)
+  if (!all(val_cols %in% names(x_df))) {
+    stop("The value columns in 'sc' must match the raster layer names", call. = FALSE)
   }
   x_df = x_df[order(x_df[["supercells"]]), , drop = FALSE]
 
