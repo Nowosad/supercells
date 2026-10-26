@@ -10,7 +10,7 @@ sc_slic_convergence(
   compactness,
   dist_fun = "euclidean",
   avg_fun = "mean",
-  clean = TRUE,
+  clean = FALSE,
   minarea,
   iter = 10,
   k = NULL,
@@ -36,9 +36,10 @@ A custom function must accept two numeric vectors and return a single numeric va
 values within each supercell. Supported names: "mean" and "median". A custom
 function must accept a numeric vector and return a single numeric value.}
 
-\item{clean}{Should connectivity of the supercells be enforced?}
+\item{clean}{Connectivity cleaning is not applied to convergence diagnostics.
+Setting this to \code{TRUE} produces a warning and is otherwise ignored.}
 
-\item{minarea}{Minimal size of a supercell (in cells).}
+\item{minarea}{Ignored because connectivity cleaning is not applied.}
 
 \item{iter}{Number of iterations.}
 

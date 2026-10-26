@@ -3,6 +3,9 @@
 #' Runs SLIC and returns per-iteration mean combined distance.
 #' The output can be plotted directly with [supercells::plot()].
 #'
+#' @param clean Connectivity cleaning is not applied to convergence diagnostics.
+#'   Setting this to `TRUE` produces a warning and is otherwise ignored.
+#' @param minarea Ignored because connectivity cleaning is not applied.
 #' @inheritParams sc_slic
 #'
 #' @return A data frame with class `sc_slic_convergence` and columns:
@@ -20,14 +23,18 @@
 #' conv = sc_slic_convergence(vol, step = 8, compactness = 5, iter = 10)
 #' plot(conv)
 sc_slic_convergence = function(x, step = NULL, compactness, dist_fun = "euclidean",
-                               avg_fun = "mean", clean = TRUE, minarea, iter = 10,
+                               avg_fun = "mean", clean = FALSE, minarea, iter = 10,
                                k = NULL, centers = NULL, verbose = 0) {
   if (iter == 0) {
     stop("iter must be > 0 for convergence diagnostics", call. = FALSE)
   }
+  if (isTRUE(clean)) {
+    warning("Connectivity cleaning is not applied by sc_slic_convergence(). 'clean = TRUE' is ignored.",
+            call. = FALSE)
+  }
 
   prep = .sc_slic_prep_args(
-    x, step, compactness, dist_fun, avg_fun, clean, minarea, iter,
+    x, step, compactness, dist_fun, avg_fun, FALSE, 0, iter,
     k, centers, outcomes = "values", chunks = FALSE, verbose = verbose
   )
 
@@ -40,7 +47,7 @@ sc_slic_convergence = function(x, step = NULL, compactness, dist_fun = "euclidea
     adaptive_compactness = prep$adaptive_compactness,
     avg_fun_fun = prep$funs$avg_fun_fun,
     avg_fun_name = prep$funs$avg_fun_name,
-    clean = prep$clean,
+    clean = FALSE,
     iter = prep$iter,
     minarea = prep$minarea,
     input_centers = prep$input_centers,
