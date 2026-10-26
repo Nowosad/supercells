@@ -35,14 +35,15 @@ void SlicCore::create_centers(const std::vector<int>& mat_dims, const std::vecto
   for (int ncolcenter = step / 2; ncolcenter < mat_dims[1]; ncolcenter += step) {
     for (int nrowcenter = step / 2; nrowcenter < mat_dims[0]; nrowcenter += step) {
       std::vector<double> center; center.reserve(2);
-      int ncell = ncolcenter + (nrowcenter * mat_dims[1]);
+      std::vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter);
+      int lm_row = static_cast<int>(lm[0]);
+      int lm_col = static_cast<int>(lm[1]);
+      int ncell = lm_col + (lm_row * mat_dims[1]);
       std::vector<double> colour; colour.reserve(mat_dims[2]);
       for (int nval = 0; nval < mat_dims[2]; nval++) {
         double val = read_val_vec(vals, ncell, nval, mat_dims[2]);
         colour.push_back(val);
       }
-
-      std::vector<double> lm = find_local_minimum(vals, nrowcenter, ncolcenter);
 
       center.push_back(lm[0]);
       center.push_back(lm[1]);
@@ -114,11 +115,6 @@ void SlicCore::inits(const std::vector<int>& mat_dims_in, const std::vector<doub
   }
 
   bool use_custom_centers = !input_centers.empty();
-  if (input_centers.size() == 1 &&
-      input_centers[0][0] == 0 &&
-      input_centers[0][1] == 0) {
-    use_custom_centers = false;
-  }
   if (use_custom_centers) {
     create_centers2(mat_dims, vals, input_centers);
   } else {
