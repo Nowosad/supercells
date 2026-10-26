@@ -53,7 +53,8 @@ Returned as \code{mean_value_dist_scaled} when \code{scale = TRUE}.}
 for ranking.}
 \item{balance}{Signed log ratio of scaled value distance to scaled spatial
 distance. \code{0} indicates balance; negative values indicate spatial dominance;
-positive values indicate value dominance.}
+positive values indicate value dominance. Returns \code{NA} when either scaled
+component is zero.}
 }
 }
 \description{

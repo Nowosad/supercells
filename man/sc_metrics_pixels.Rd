@@ -53,7 +53,7 @@ distance; mainly useful for ranking.}
 \item{balance}{Signed log ratio of scaled value distance to scaled spatial
 distance. \code{0} indicates balance; negative values indicate spatial dominance;
 positive values indicate value dominance. Always computed from scaled
-components.}
+components. Returns \code{NA} when either component is zero.}
 }
 }
 \description{

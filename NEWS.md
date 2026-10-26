@@ -1,3 +1,12 @@
+# supercells 1.9.8
+
+* Invalid `k` values are now rejected before code is run.
+* Fixed R/C++ raster-index conversion for custom centers and metrics; metrics now preserve fractional center positions.
+* Initial center values are now read from the locally adjusted center cells.
+* `use_meters()` now warns explicitly that non-square cells use x resolution for both axes and therefore give approximate map-unit steps.
+* Fixed ID offsets and empty-result handling when combining chunked polygon outputs.
+* Balance metrics now return `NA` when either scaled distance component is zero.
+
 # supercells 1.9.5
 
 * **Fixed integer overflow in vector indexing inside the C++ part of the code**: C++ code now uses 64-bit arithmetic for array indices (`std::size_t`) instead of 32-bit integers when accessing raster data. This prevents silent data corruption or crashes when processing large rasters (>100M cells with multiple bands). The fix should have no performance impact. (Thanks to Lucas De Oto)
