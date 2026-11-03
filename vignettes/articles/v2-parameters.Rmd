@@ -182,6 +182,7 @@ cmp_metrics
 The `dist_fun` argument defines how similarity is measured in value space.
 Supported named options include `"euclidean"`, Jensen–Shannon divergence, and dynamic time warping.
 Use `sc_list_distances()` to see every accepted name and its input requirements.
+See the [distance measure vignette](v2-distances.html) for guidance on choosing among them.
 Other measures must be passed as a custom function that takes two numeric vectors and returns a single number.
 If you use a custom distance, ensure it returns one finite, nonnegative value, with smaller values meaning greater similarity.
 
