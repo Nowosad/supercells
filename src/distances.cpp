@@ -7,6 +7,8 @@ double get_vals_dist(const std::vector<double>& values1, const std::vector<doubl
     return euclidean(values1, values2);
   } else if (dist_name == "jsd"){
     return jensen_shannon(values1, values2);
+  } else if (dist_name == "cosine_distance"){
+    return cosine_distance(values1, values2);
   } else if (dist_name == "dtw"){
     return dtw1d(values1, values2);
   } else if (dist_name == "dtw2d"){
@@ -42,6 +44,23 @@ double manhattan(const std::vector<double>& values1, const std::vector<double>& 
   return dist;
 }
 
+double cosine_distance(const std::vector<double>& values1, const std::vector<double>& values2){
+  int len1 = values1.size();
+  double dot = 0.0;
+  double norm1 = 0.0;
+  double norm2 = 0.0;
+
+  for (int i = 0; i < len1; i++){
+    dot += values1[i] * values2[i];
+    norm1 += values1[i] * values1[i];
+    norm2 += values2[i] * values2[i];
+  }
+  if (norm1 == 0.0 && norm2 == 0.0) return 0.0;
+  if (norm1 == 0.0 || norm2 == 0.0) return 1.0;
+  double similarity = dot / (sqrt(norm1) * sqrt(norm2));
+  return fmin(2.0, fmax(0.0, 1.0 - similarity));
+}
+
 double dtw1d(const std::vector<double>& values1, const std::vector<double>& values2){
   int len1 = values1.size();
   int len2 = values2.size();
@@ -71,6 +90,9 @@ double dtw1d(const std::vector<double>& values1, const std::vector<double>& valu
 }
 
 double dtw2d(const std::vector<double>& values1, const std::vector<double>& values2){
+  if (values1.size() % 2 != 0 || values2.size() % 2 != 0) {
+    cpp11::stop("'dtw2d' requires an even number of layers: two equal-length coordinate blocks.");
+  }
   int len1 = values1.size() / 2;
   int len2 = values2.size() / 2;
   if (len1 == 0 || len2 == 0) {
