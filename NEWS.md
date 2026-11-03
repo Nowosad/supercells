@@ -1,5 +1,9 @@
 # supercells 1.9.9
 
+* Named `dist_fun` values are now limited to the curated list of measures returned by `sc_list_distances()`. Other measures can still be supplied as functions. 
+* The curated set includes the new `"cosine_distance"` definition.
+* `sc_tune_compactness()` now applies measure-specific dimensional scaling across the curated measures.
+* `"dtw2d"` now rejects an odd number of layers instead of ignoring the final layer.
 * Fixed `sc_tune_compactness()` with `stat = NULL` and a `step` in meters.
 * `sc_tune_compactness()` now accepts `stars` rasters consistently with the SLIC functions.
 * Renamed the first argument of `sc_tune_compactness()` from `raster` to `x`.
