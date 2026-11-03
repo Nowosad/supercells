@@ -31,7 +31,10 @@ It is also possible to provide a set of points (an \code{sf} object) as \code{k}
 Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness (ASLIC).
 A compactness value depends on the range of input cell values and selected distance measure.}
 
-\item{dist_fun}{A distance function. Currently implemented distance functions are \code{"euclidean"}, \code{"jsd"}, \code{"dtw"} (dynamic time warping), name of any distance function from the \code{philentropy} package (see \code{\link[philentropy:getDistMethods]{philentropy::getDistMethods()}}; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: \code{"euclidean"}}
+\item{dist_fun}{A supported distance name from \code{\link[=sc_list_distances]{sc_list_distances()}} or a
+custom function that takes two numeric vectors and returns one finite,
+nonnegative value. Smaller values must mean greater similarity.
+Default: \code{"euclidean"}.}
 
 \item{avg_fun}{An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions \code{"mean"} and \code{"median"} (provided with quotation marks), but also accepts any fitting R function (e.g., \code{base::mean()} or \code{stats::median()}, provided as plain function name: \code{mean}). Default: \code{"mean"}. See details for more information.}
 

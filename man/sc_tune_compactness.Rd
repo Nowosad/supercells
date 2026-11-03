@@ -22,15 +22,17 @@ sc_tune_compactness(
 Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
 map-distance steps in meters (automatically converted to cells using raster resolution).}
 
-\item{dist_fun}{A distance function name or a custom function. Supported names:
-"euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
-A custom function must accept two numeric vectors and return a single numeric value.}
+\item{dist_fun}{A supported distance name from \code{\link[=sc_list_distances]{sc_list_distances()}} or a
+custom function that takes two numeric vectors and returns one finite,
+nonnegative value. Smaller values must mean greater similarity.}
 
 \item{metric}{Which compactness metric to return. Currently only
 \code{"local_variability"} is supported. The argument is kept for future additions.
 For \code{"local_variability"}, \code{compactness = median(local_mean(d_value)) / dim_scale},
 where local means are computed in windows around initial centers and
 \code{dim_scale} is inferred from the number of raster layers and \code{dist_fun}.
+Root-sum-square measures use \code{sqrt(n_layers)}, additive and path-sum
+measures use \code{n_layers}, and other named or custom measures use \code{1}.
 This keeps compactness adjustable to dimensionality without requiring a
 separate user-facing scaling argument.}
 
