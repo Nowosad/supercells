@@ -10,7 +10,7 @@ test_that("sc_list_distances returns the curated distance registry", {
   expect_s3_class(distances, "data.frame")
   expect_named(
     distances,
-    c("name", "label", "input", "compares", "effect_of_rescaling", "guidance")
+    c("name", "label", "input", "compares", "effect_of_layer_rescaling", "guidance")
   )
   expect_identical(distances$name, expected)
   expect_true(all(vapply(distances, is.character, logical(1))))

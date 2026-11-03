@@ -13,14 +13,16 @@ A data frame with one row per supported measure and columns:
 \item{\code{label}}{Measure name.}
 \item{\code{input}}{Type of the input vector.}
 \item{\code{compares}}{What aspect of the vectors the measure compares.}
-\item{\code{effect_of_rescaling}}{Effect of rescaling the input values.}
+\item{\code{effect_of_layer_rescaling}}{Effect of multiplying individual
+raster layers by positive constants.}
 \item{\code{guidance}}{Practical usage guidance.}
 }
 }
 \description{
 Returns information about the distance measures that can be provided by name
 to the \code{dist_fun} argument. The table describes their input
-requirements, what they compare, and practical guidance.
+requirements, what they compare, the effect of rescaling individual raster
+layers, and practical guidance.
 }
 \details{
 Other measures can be supplied explicitly as a function to \code{dist_fun}.
