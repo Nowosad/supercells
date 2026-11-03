@@ -111,7 +111,7 @@ test_that("sc_slic validates key argument errors", {
   expect_error(sc_slic(v1, k = 1.5, compactness = 1), "single positive integer", fixed = TRUE)
   expect_error(sc_slic(v1, k = 10, step = 5, compactness = 1), "either 'k' or 'step'", fixed = TRUE)
   expect_error(sc_slic(v1, centers = sf::st_sf(geom = sf::st_sfc()), compactness = 1), "step", fixed = TRUE)
-  expect_error(sc_slic(v1, step = 8, compactness = 1, dist_fun = "not_a_dist"), "does not exist", fixed = TRUE)
+  expect_error(sc_slic(v1, step = 8, compactness = 1, dist_fun = "not_a_dist"), "not supported", fixed = TRUE)
 })
 
 test_that("initial center values match their snapped raster cells", {

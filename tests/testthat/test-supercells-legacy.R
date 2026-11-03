@@ -8,7 +8,7 @@ test_that("legacy supercells wrapper handles basic options", {
 
   expect_error(
     supercells(v1, k = 10, compactness = 1, dist_fun = "not_a_dist"),
-    "does not exist",
+    "not supported",
     fixed = TRUE
   )
 })
