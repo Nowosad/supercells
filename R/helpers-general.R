@@ -12,15 +12,22 @@
 # validate and prepare distance function
 .sc_util_prep_dist_fun = function(dist_fun) {
   if (is.character(dist_fun)) {
-    if (!(dist_fun %in% c("euclidean", "jsd", "dtw", "dtw2d", philentropy::getDistMethods()))) {
-      stop("The provided distance function ('dist_fun') does not exist!", call. = FALSE)
+    if (length(dist_fun) != 1 || is.na(dist_fun) || !nzchar(dist_fun)) {
+      stop("'dist_fun' must be one non-empty string or a function", call. = FALSE)
     }
-    dist_name = dist_fun
-    dist_fun = function() ""
-  } else {
-    dist_name = ""
+    if (!(dist_fun %in% .sc_distance_registry$name)) {
+      stop(
+        sprintf(
+          "'%s' is not supported. See sc_list_distances(), or supply a function.",
+          dist_fun
+        ),
+        call. = FALSE
+      )
+    }
+    return(list(dist_name = dist_fun, dist_fun = function() ""))
   }
-  return(list(dist_name = dist_name, dist_fun = dist_fun))
+
+  list(dist_name = "", dist_fun = dist_fun)
 }
 
 # validate and prepare averaging function

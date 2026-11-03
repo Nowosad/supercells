@@ -23,7 +23,8 @@ This helps with interpretation, visualization, and downstream modeling.
 It also reduces noise while preserving important spatial structure.
 
 The package is designed to work with rasters that have many layers or time steps.
-It supports multiple distance measures such as Jensen–Shannon divergence or dynamic time warping, as well as user-defined distance functions, so similarity can be adapted to the data.
+It supports a curated set of named distance measures, including Jensen–Shannon divergence and dynamic time warping, as well as user-defined distance functions.
+Use `sc_list_distances()` to see the accepted names and their input requirements.
 It can therefore handle diverse data types and high-dimensional inputs without changing the main workflow.
 The package core ideas are described in @Nowosad2022.
 

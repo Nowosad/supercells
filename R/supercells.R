@@ -10,7 +10,10 @@
 #' @param compactness A compactness value. Larger values cause supercells to be more compact/even (square).
 #' Use [use_adaptive()] to enable adaptive compactness (ASLIC).
 #' A compactness value depends on the range of input cell values and selected distance measure.
-#' @param dist_fun A distance function. Currently implemented distance functions are `"euclidean"`, `"jsd"`, `"dtw"` (dynamic time warping), name of any distance function from the `philentropy` package (see [philentropy::getDistMethods()]; "log2" is used in this case), or any user defined function accepting two vectors and returning one value. Default: `"euclidean"`
+#' @param dist_fun A supported distance name from [sc_list_distances()] or a
+#' custom function that takes two numeric vectors and returns one finite,
+#' nonnegative value. Smaller values must mean greater similarity.
+#' Default: `"euclidean"`.
 #' @param avg_fun An averaging function - how the values of the supercells' centers are calculated? The algorithm internally implements common functions `"mean"` and `"median"` (provided with quotation marks), but also accepts any fitting R function (e.g., `base::mean()` or `stats::median()`, provided as plain function name: `mean`). Default: `"mean"`. See details for more information.
 #' @param clean Should connectivity of the supercells be enforced?
 #' @param iter The number of iterations performed to create the output.

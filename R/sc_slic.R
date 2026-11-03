@@ -24,9 +24,9 @@
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
 #' @param compactness A compactness value. Use [`sc_tune_compactness()`] to estimate it.
 #' Use [use_adaptive()] to enable adaptive compactness (ASLIC).
-#' @param dist_fun A distance function name or a custom function. Supported names:
-#' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
-#' A custom function must accept two numeric vectors and return a single numeric value.
+#' @param dist_fun A supported distance name from [sc_list_distances()] or a
+#' custom function that takes two numeric vectors and returns one finite,
+#' nonnegative value. Smaller values must mean greater similarity.
 #' @param avg_fun An averaging function name or custom function used to summarize
 #' values within each supercell. Supported names: "mean" and "median". A custom
 #' function must accept a numeric vector and return a single numeric value.

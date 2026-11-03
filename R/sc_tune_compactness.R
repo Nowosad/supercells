@@ -8,14 +8,16 @@
 #' @param step Initial center spacing (alternative is `k`).
 #' Provide a plain numeric value for cell units, or use [use_meters()] for
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
-#' @param dist_fun A distance function name or a custom function. Supported names:
-#' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
-#' A custom function must accept two numeric vectors and return a single numeric value.
+#' @param dist_fun A supported distance name from [sc_list_distances()] or a
+#' custom function that takes two numeric vectors and returns one finite,
+#' nonnegative value. Smaller values must mean greater similarity.
 #' @param metric Which compactness metric to return. Currently only
 #' `"local_variability"` is supported. The argument is kept for future additions.
 #' For `"local_variability"`, `compactness = median(local_mean(d_value)) / dim_scale`,
 #' where local means are computed in windows around initial centers and
 #' `dim_scale` is inferred from the number of raster layers and `dist_fun`.
+#' Root-sum-square measures use `sqrt(n_layers)`, additive and path-sum
+#' measures use `n_layers`, and other named or custom measures use `1`.
 #' This keeps compactness adjustable to dimensionality without requiring a
 #' separate user-facing scaling argument.
 #' @param stat The summary statistic to use for the local variability metric. Default is `median`. If it is `NULL`, all local variability values will be returned without summarization.
@@ -76,19 +78,18 @@ sc_tune_compactness = function(x, step = NULL, dist_fun = "euclidean",
     return(1)
   }
 
-  if (identical(dist_fun_name, "euclidean")) {
-    return(sqrt(n_bands))
-  }
+  tuning_scale = .sc_distance_registry$tuning_scale[
+    match(dist_fun_name, .sc_distance_registry$name)
+  ]
+  if (is.na(tuning_scale)) return(1)
 
-  if (dist_fun_name %in% c("manhattan", "dtw", "dtw2d")) {
-    return(n_bands)
-  }
-
-  if (dist_fun_name %in% c("jsd")) {
-    return(1)
-  }
-
-  1
+  switch(
+    tuning_scale,
+    none = 1,
+    sqrt_layers = sqrt(n_bands),
+    layers = n_bands,
+    stop("Unknown compactness tuning scale", call. = FALSE)
+  )
 }
 
 .sc_tune_grid_window_variability = function(x, step, dist_fun, k, centers) {
