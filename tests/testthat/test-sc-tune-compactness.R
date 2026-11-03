@@ -27,6 +27,17 @@ test_that("sc_tune_compactness local_variability scales with dimensionality", {
   expect_equal(lv64$compactness, lv1$compactness, tolerance = 1e-8)
 })
 
+test_that("local variability scaling follows distance aggregation", {
+  expected = c(none = 1, sqrt_layers = 3, layers = 9)
+  expect_true(all(.sc_distance_registry$tuning_scale %in% names(expected)))
+
+  actual = vapply(.sc_distance_registry$name, function(x) {
+    .sc_tune_local_variability_scale(9, x)
+  }, numeric(1))
+  expect_equal(actual, unname(expected[.sc_distance_registry$tuning_scale]),
+               ignore_attr = TRUE)
+})
+
 test_that("sc_tune_compactness validates metric values", {
   expect_error(
     sc_tune_compactness(v1, step = 8, metric = "bad"),
