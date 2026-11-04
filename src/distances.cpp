@@ -7,6 +7,8 @@ double get_vals_dist(const std::vector<double>& values1, const std::vector<doubl
     return euclidean(values1, values2);
   } else if (dist_name == "jsd"){
     return jensen_shannon(values1, values2);
+  } else if (dist_name == "wasserstein1"){
+    return wasserstein1(values1, values2);
   } else if (dist_name == "cosine_distance"){
     return cosine_distance(values1, values2);
   } else if (dist_name == "dtw"){
@@ -146,6 +148,18 @@ double jensen_shannon(const std::vector<double>& values1, const std::vector<doub
     }
   }
   return 0.5 * (sum1 + sum2);
+}
+
+double wasserstein1(const std::vector<double>& values1,
+                    const std::vector<double>& values2){
+  double cumulative = 0.0;
+  double result = 0.0;
+
+  for (std::size_t i = 0; i + 1 < values1.size(); i++){
+    cumulative += values1[i] - values2[i];
+    result += std::fabs(cumulative);
+  }
+  return result;
 }
 
 double custom_log2(double x){

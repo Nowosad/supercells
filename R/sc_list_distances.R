@@ -17,6 +17,7 @@ squared_chi;Squared chi-square;nonnegative values;squared differences relative t
 clark;Clark;nonnegative values;combined relative layer differences;no effect;Layer scaling has no effect.;sqrt_layers
 jsd;Jensen-Shannon divergence;probabilities summing to 1;difference between probability profiles;requires renormalization;Normalize every cell to sum to 1 and use mean centres.;none
 non-intersection;Non-intersection;probabilities summing to 1;probability assigned differently across layers;requires renormalization;Normalize every cell to sum to 1 and use mean centres.;none
+wasserstein1;Wasserstein-1;probabilities in equal-width bins summing to 1;probability mass shifted across ordered bins;requires renormalization;Normalize every cell to sum to 1, use mean centres, and arrange layers in bin order.;layers
 
 cosine_distance;Cosine distance;numeric values;pattern across layers, ignoring overall scale;can change distance;Scale layers only to change their influence.;none
 

@@ -4,7 +4,7 @@ test_that("sc_list_distances returns the curated distance registry", {
     "euclidean", "squared_euclidean", "manhattan", "chebyshev", "canberra",
     "lorentzian", "soergel", "wavehedges", "czekanowski",
     "squared_chord", "squared_chi", "clark", "jsd", "non-intersection",
-    "cosine_distance", "dtw", "dtw2d"
+    "wasserstein1", "cosine_distance", "dtw", "dtw2d"
   )
 
   expect_s3_class(distances, "data.frame")
@@ -65,4 +65,16 @@ test_that("cosine_distance has defined zero-profile behavior", {
   value = sc_metrics_pixels(x, sc, metrics = "value", scale = FALSE)
 
   expect_equal(terra::values(value, mat = FALSE), c(1, 0, 0, 0), tolerance = 1e-12)
+})
+
+test_that("wasserstein1 accounts for distance between ordered bins", {
+  x = terra::rast(nrows = 2, ncols = 2, nlyrs = 4, xmin = 0, xmax = 2,
+                  ymin = 0, ymax = 2, crs = "EPSG:3857")
+  terra::values(x) = rbind(c(1, 0, 0, 0), c(1, 0, 0, 0),
+                           c(0, 0, 0, 1), c(0, 0, 0, 1))
+  sc = sc_slic(x, step = 2, compactness = 1, dist_fun = "wasserstein1",
+               iter = 1, clean = FALSE)
+  value = sc_metrics_pixels(x, sc, metrics = "value", scale = FALSE)
+
+  expect_equal(terra::values(value, mat = FALSE), rep(1.5, 4))
 })
