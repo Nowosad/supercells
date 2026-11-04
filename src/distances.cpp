@@ -57,9 +57,11 @@ double cosine_distance(const std::vector<double>& values1, const std::vector<dou
     norm1 += values1[i] * values1[i];
     norm2 += values2[i] * values2[i];
   }
+  if (!std::isfinite(norm1) || !std::isfinite(norm2)) return NAN;
   if (norm1 == 0.0 && norm2 == 0.0) return 0.0;
   if (norm1 == 0.0 || norm2 == 0.0) return 1.0;
   double similarity = dot / (sqrt(norm1) * sqrt(norm2));
+  if (!std::isfinite(similarity)) return NAN;
   return fmin(2.0, fmax(0.0, 1.0 - similarity));
 }
 
