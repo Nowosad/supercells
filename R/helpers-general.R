@@ -1,12 +1,19 @@
 # normalize input to SpatRaster
 .sc_util_prep_raster = function(x) {
-  if (inherits(x, "SpatRaster")) {
-    return(x)
-  }
   if (inherits(x, "stars")) {
-    return(terra::rast(x))
+    x = terra::rast(x)
+  } else if (!inherits(x, "SpatRaster")) {
+    stop("The SpatRaster class is expected as an input", call. = FALSE)
   }
-  stop("The SpatRaster class is expected as an input", call. = FALSE)
+
+  if (anyDuplicated(names(x))) {
+    stop(
+      "Raster layer names must be unique. Rename them, for example with `names(x) <- make.unique(names(x))`.",
+      call. = FALSE
+    )
+  }
+
+  x
 }
 
 # validate and prepare distance function
