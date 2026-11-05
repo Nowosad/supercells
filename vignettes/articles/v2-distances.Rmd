@@ -30,8 +30,9 @@ library(terra)
 # Available measures
 
 To check the available distance measures, use the `sc_list_distances()` function.
-It returns a data frame with the information on the measure names, accepted input types, what the measure compares, the effect of layer rescaling, and guidance for choosing the measure.
-Below is a summary of the available measures, grouped by the type of input they accept.
+It returns a data frame with information on the measure names, required input domains, what the measure compares, the effect of layer rescaling, and guidance for choosing the measure.
+Below is a summary of the available measures, grouped by input domain.
+The “Layer rescaling” column indicates whether differences in scale among layers affect the distance.
 
 ```{r}
 #| echo: false
@@ -59,22 +60,28 @@ for (input in unique(distances$input)) {
 
 | Data or similarity question | Measures to consider |
 |---|---|
-| Absolute differences across comparable numeric layers matter | `euclidean` if larger differences should count more, or `manhattan` for linear contributions |
+| Absolute differences across comparable numeric layers matter | `manhattan` for linear contributions, `euclidean` to give larger differences more influence, or `squared_euclidean` to emphasize them further |
 | The largest difference in any one layer should dominate | `chebyshev` |
 | Relative differences within individual layers matter | `canberra`; for nonnegative data, `wavehedges` or `clark` |
-| Overall difference relative to the complete profile matters | `soergel` or `czekanowski` |
-| Relative pattern matters, not the overall magnitude of the profile | `cosine_distance` |
-| Each cell contains class probabilities summing to 1 | `jsd` or `non-intersection` |
+| Absolute differences should be dampened logarithmically | `lorentzian` |
+| Overall difference relative to the complete nonnegative profile matters | `soergel` or `czekanowski` |
+| Differences after compressing nonnegative values with a square-root transformation matter | `squared_chord` |
+| Differences should receive more weight when their combined nonnegative magnitude is small | `squared_chi` |
+| Relative pattern matters, not the overall positive magnitude of the profile | `cosine_distance` |
+| Each cell contains unordered class probabilities summing to 1 | `jsd` or `non-intersection` |
+| Each cell contains probabilities over ordered, equal-width bins | `wasserstein1` |
 | Layers are an ordered one-dimensional sequence | `dtw` |
-| Layers contain the coordinates of a two-dimensional trajectory | `dtw2d` |
+| Layers contain a two-dimensional trajectory stored as two coordinate blocks | `dtw2d` |
 
-These are starting points rather than automatic choices. When layer rescaling
-can change a measure, put layers on comparable scales unless different influence
-is intentional. Retune `compactness` after changing the distance measure.
+These are starting points rather than automatic choices.
+When layer rescaling can change a measure, put layers on comparable scales unless different influence is intentional.
+Retune `compactness` after changing the distance measure.
 
-For probability measures, normalize every cell to sum to 1 and use mean
-centres. For `dtw`, arrange layers in sequence order. For `dtw2d`, arrange
-layers by dimension, with sequence order within each dimension.
+For probability measures, normalize every cell to sum to 1 and use mean centres.
+For `wasserstein1`, also arrange layers in bin order.
+For `dtw`, arrange layers in sequence order.
+For `dtw2d`, use an even number of layers, arrange layers by dimension, and preserve sequence order within each dimension.
+The package does not automatically enforce every measure-specific input requirement, so prepare the input and choose the centre function accordingly.
 
 -->
 
