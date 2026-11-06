@@ -2,6 +2,9 @@
 
 ## All functions
 
+- [`sc_list_distances()`](https://jakubnowosad.com/supercells/reference/sc_list_distances.md)
+  : List supported distance measures
+
 - [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md)
   : Global supercells metrics
 

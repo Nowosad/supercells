@@ -48,12 +48,11 @@ supercells(
 
 - dist_fun:
 
-  A distance function. Currently implemented distance functions are
-  `"euclidean"`, `"jsd"`, `"dtw"` (dynamic time warping), name of any
-  distance function from the `philentropy` package (see
-  [`philentropy::getDistMethods()`](https://drostlab.github.io/philentropy/reference/getDistMethods.html);
-  "log2" is used in this case), or any user defined function accepting
-  two vectors and returning one value. Default: `"euclidean"`
+  A supported distance name from
+  [`sc_list_distances()`](https://jakubnowosad.com/supercells/reference/sc_list_distances.md)
+  or a custom function that takes two numeric vectors and returns one
+  finite, nonnegative value. Smaller values must mean greater
+  similarity. Default: `"euclidean"`.
 
 - avg_fun:
 
@@ -93,9 +92,11 @@ supercells(
 
 - minarea:
 
-  Connectivity components containing `minarea` cells or fewer are merged
-  into an adjacent component when `clean = TRUE`. If omitted or zero,
-  the threshold is one quarter of the expected supercell area.
+  When `clean = TRUE`, connected components containing `minarea` cells
+  or fewer are merged into an adjacent component. If `minarea` is
+  omitted or set to `0`, the threshold is selected automatically as one
+  quarter of the raster cell count divided by the number of initialized
+  centers: `floor(ncell / (4 * n_centers))`.
 
 - metadata:
 

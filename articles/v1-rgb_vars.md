@@ -38,7 +38,7 @@ library(sf)            # spatial vector data reading and handling
 
 The first step is to read the input data. This time our input data
 `ortho.tif`, included in the **supercells** package, contains three
-layers representing red, green, and blue satellite bands[¹](#fn1).
+layers representing red, green, and blue satellite bands[^1].
 
 ``` r
 ortho = rast(system.file("raster/ortho.tif", package = "supercells"))
@@ -111,7 +111,5 @@ Fua, and Sabine Süsstrunk. 2012. “SLIC Superpixels Compared to
 State-of-the-Art Superpixel Methods.” *IEEE Transactions on Pattern
 Analysis and Machine Intelligence* 34 (11): 2274–82.
 
-------------------------------------------------------------------------
-
-1.  It also has an empty square on the left part of the image for
+[^1]: It also has an empty square on the left part of the image for
     testing purposes.

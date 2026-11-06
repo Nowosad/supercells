@@ -14,8 +14,12 @@
   raster](https://jakubnowosad.com/supercells/articles/v1-rgb_vars.md):
 - [Benchmarks of the supercells
   package](https://jakubnowosad.com/supercells/articles/v2-benchmarks.md):
+- [Creating supercells from categorical
+  rasters](https://jakubnowosad.com/supercells/articles/v2-categorical.md):
 - [Main changes since version
   1.0.0](https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.md):
+- [Choosing a distance measure for
+  supercells](https://jakubnowosad.com/supercells/articles/v2-distances.md):
 - [Evaluation and
   diagnostics](https://jakubnowosad.com/supercells/articles/v2-evaluation.md):
 - [Introduction to

@@ -46,11 +46,11 @@ sc_slic_convergence(
 
 - dist_fun:
 
-  A distance function name or a custom function. Supported names:
-  "euclidean", "jsd", "dtw", "dtw2d", or any method from
-  [`philentropy::getDistMethods()`](https://drostlab.github.io/philentropy/reference/getDistMethods.html).
-  A custom function must accept two numeric vectors and return a single
-  numeric value.
+  A supported distance name from
+  [`sc_list_distances()`](https://jakubnowosad.com/supercells/reference/sc_list_distances.md)
+  or a custom function that takes two numeric vectors and returns one
+  finite, nonnegative value. Smaller values must mean greater
+  similarity.
 
 - avg_fun:
 

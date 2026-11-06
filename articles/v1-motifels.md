@@ -35,7 +35,7 @@ library(supercells)    # supercells for spatial data
 library(terra)         # spatial raster data reading and handling
 #> terra 1.9.50
 library(sf)            # spatial vector data reading and handling
-#> Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE
+#> Linking to GEOS 3.14.1, GDAL 3.12.2, PROJ 9.7.1; sf_use_s2() is TRUE
 library(motif)         # tools for working with categorical spatial patterns
 ```
 
@@ -119,11 +119,11 @@ Quantification with R.” *Journal of Open Source Software* 3 (26): 765.
 
 Lin, Jianhua. 1991. “Divergence Measures Based on the Shannon Entropy.”
 *IEEE Transactions on Information Theory* 37 (1): 145–51.
-<https://doi.org/djxkkh>.
+<https://doi.org/10/djxkkh>.
 
 Nowosad, Jakub. 2021. “Motif: An Open-Source R Tool for Pattern-Based
 Spatial Analysis.” *Landscape Ecology* 36 (1): 29–43.
-<https://doi.org/ghfsnh>.
+<https://doi.org/10/ghfsnh>.
 
 Nowosad, Jakub, and Tomasz F. Stepinski. 2022. “Extended SLIC
 Superpixels Algorithm for Applications to Non-Imagery Geospatial

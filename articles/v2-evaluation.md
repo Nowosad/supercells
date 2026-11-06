@@ -7,10 +7,12 @@ homogeneity, and their balance.
 The metrics are derived from the same combined distance used during
 segmentation:
 
-$$D = \sqrt{\left( \frac{d_{s}}{\text{step}} \right)^{2} + \left( \frac{d_{v}}{c} \right)^{2}}$$
+``` math
+D = \sqrt{\left(\frac{d_s}{\text{step}}\right)^2 + \left(\frac{d_v}{c}\right)^2}
+```
 
-where $d_{s}$ is the spatial distance in grid-cell units, $d_{v}$ is the
-value-space distance defined by `dist_fun`, and $c$ is `compactness`.
+where $`d_s`$ is the spatial distance in grid-cell units, $`d_v`$ is the
+value-space distance defined by `dist_fun`, and $`c`$ is `compactness`.
 
 All examples use the `volcano` raster for simplicity, but the same
 workflow applies to multi-layer rasters.
@@ -31,31 +33,31 @@ areas where the supercells are too large or too irregular. Pixel metrics
 are provided with the
 [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md)
 function, which accepts the original raster and the supercell
-polygons[¹](#fn1), and returns a multi-layer raster with the requested
+polygons[^1], and returns a multi-layer raster with the requested
 metrics.
 
-The pixel metrics include four layers[²](#fn2), each with a specific
+The pixel metrics include four layers[^2], each with a specific
 interpretation and a simple definition:
 
-1.  `spatial`: $d_{s}$, the distance from each pixel to its supercell
+1.  `spatial`: $`d_s`$, the distance from each pixel to its supercell
     center in grid-cell units (unless the input supercells were created
     with `step = use_meters(...)`, in which case distances are reported
     in map units). Lower spatial values indicate cells that are closer
     to the center and more compact supercells, while higher values
     indicate cells that are farther from the center and may indicate
     irregular shapes or outliers.
-2.  `value`: $d_{v}$, the distance from each pixel to its supercell
+2.  `value`: $`d_v`$, the distance from each pixel to its supercell
     center in the value space defined by your `dist_fun`. Lower value
     distances indicate more homogeneous supercells, while higher values
     indicate more heterogeneous supercells or outliers.
 3.  `combined`:
-    $D = \sqrt{\left( d_{s}/\text{step} \right)^{2} + \left( d_{v}/c \right)^{2}}$,
+    $`D = \sqrt{\left(d_s/\text{step}\right)^2 + \left(d_v/c\right)^2}`$,
     the combined distance used to assign pixels to centers. This is
     mainly useful for ranking pixels or supercells within a single run –
     it is not directly comparable across runs with different parameters
     or distance functions.
-4.  `balance`: $\log\left( \frac{d_{v}/c}{d_{s}/\text{step}} \right)$,
-    the signed log ratio of scaled value to scaled spatial distance.
+4.  `balance`: $`\log\left(\frac{d_v/c}{d_s/\text{step}}\right)`$, the
+    signed log ratio of scaled value to scaled spatial distance.
     Negative values indicate spatial dominance and positive values
     indicate value dominance.
 
@@ -90,16 +92,16 @@ metrics as columns.
 The supercell metrics include four variables, each with a specific
 interpretation and definition as per-supercell means:
 
-1.  `mean_spatial_dist`: $\overline{d_{s}}$, the average spatial
+1.  `mean_spatial_dist`: $`\overline{d_s}`$, the average spatial
     distance from pixels to the supercell center. Lower values indicate
     more compact shapes.
-2.  `mean_value_dist`: $\overline{d_{v}}$, the average value distance
+2.  `mean_value_dist`: $`\overline{d_v}`$, the average value distance
     from pixels to the supercell center in the value space defined by
     `dist_fun`. Lower values indicate more homogeneous supercells.
-3.  `mean_combined_dist`: $\overline{D}$, the average combined distance
-    within each supercell.
+3.  `mean_combined_dist`: $`\overline{D}`$, the average combined
+    distance within each supercell.
 4.  `balance`:
-    $\log\left( \frac{\overline{d_{v}}/c}{\overline{d_{s}}/\text{step}} \right)$,
+    $`\log\left(\frac{\overline{d_v}/c}{\overline{d_s}/\text{step}}\right)`$,
     the signed log ratio of scaled distances.
 
 ``` r
@@ -142,21 +144,21 @@ different outputs or parameter settings. They are calculated with
 [`sc_metrics_global()`](https://jakubnowosad.com/supercells/reference/sc_metrics_global.md),
 which accepts the original raster and the supercell polygons and returns
 a `data.frame`. In these metrics, each supercell contributes equally to
-the global averages.[³](#fn3)
+the global averages.[^3]
 
 The global metrics include the same four distance summaries as the
 supercell metrics, averaged across supercells (each supercell has equal
 weight):
 
-1.  `mean_spatial_dist`: the mean of per-supercell $\overline{d_{s}}$.
+1.  `mean_spatial_dist`: the mean of per-supercell $`\overline{d_s}`$.
     Lower values indicate more compact shapes.
-2.  `mean_value_dist`: the mean of per-supercell $\overline{d_{v}}$ in
+2.  `mean_value_dist`: the mean of per-supercell $`\overline{d_v}`$ in
     the value space defined by `dist_fun`. Lower values indicate more
     homogeneous supercells.
-3.  `mean_combined_dist`: the mean of per-supercell $\overline{D}$,
+3.  `mean_combined_dist`: the mean of per-supercell $`\overline{D}`$,
     useful for ranking or comparing runs.
 4.  `balance`:
-    $\overline{\log\left( \frac{\overline{d_{v}}/c}{\overline{d_{s}}/\text{step}} \right)}$,
+    $`\overline{\log\left(\frac{\overline{d_v}/c}{\overline{d_s}/\text{step}}\right)}`$,
     the mean of per-supercell balance values.
 
 By default,
@@ -212,15 +214,13 @@ know](https://github.com/Nowosad/supercells/issues). For additional
 region-based measures, see the CRAN package **regional** at
 <https://cran.r-project.org/package=regional>.
 
-------------------------------------------------------------------------
-
-1.  This function reads supercells parameters internally from the
+[^1]: This function reads supercells parameters internally from the
     `supercell` object, so it does not require the `step`,
     `compactness`, or `dist_fun` arguments
 
-2.  Use the `metrics` argument to request a subset of metrics
+[^2]: Use the `metrics` argument to request a subset of metrics
 
-3.  If you want to weight by area or number of pixels, you can use the
+[^3]: If you want to weight by area or number of pixels, you can use the
     supercell-level metrics and calculate your own weighted averages.
     Also, let us know if you want a built-in option for weighted global
     metrics.

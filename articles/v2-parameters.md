@@ -28,10 +28,12 @@ until the specified number of iterations is reached.
 
 In this package, the combined distance follows the standard SLIC form:
 
-$$D = \sqrt{\left( \frac{d_{s}}{\text{step}} \right)^{2} + \left( \frac{d_{v}}{c} \right)^{2}}$$
+``` math
+D = \sqrt{\left(\frac{d_s}{\text{step}}\right)^2 + \left(\frac{d_v}{c}\right)^2}
+```
 
-where $d_{s}$ is the spatial distance in grid-cell units, $d_{v}$ is the
-value-space distance (from `dist_fun`), and $c$ is the `compactness`
+where $`d_s`$ is the spatial distance in grid-cell units, $`d_v`$ is the
+value-space distance (from `dist_fun`), and $`c`$ is the `compactness`
 value. When `step` is provided as `use_meters(...)`, it is converted to
 cells before segmentation; distances are still computed in grid-cell
 units. Larger `compactness` down-weights the value term, making shapes
@@ -130,6 +132,9 @@ is then estimated as:
   `dim_scale` is inferred internally from raster dimensionality and
   `dist_fun`.
 
+Root-sum-square measures use `sqrt(n_layers)`, additive and path-sum
+measures use `n_layers`, and other named or custom measures use `1`.
+
 This yields a compactness tied to typical local heterogeneity at the
 target supercell scale.
 
@@ -204,11 +209,16 @@ cmp_metrics
 ## Distance and averaging functions
 
 The `dist_fun` argument defines how similarity is measured in value
-space. Built-in options include `"euclidean"`, Jensen–Shannon
-divergence, and dynamic time warping. You can also pass a name of the
-distance measure from the **philentropy** package[¹](#fn1) or a custom
-function that takes two numeric vectors and returns a single number. If
-you use a custom distance, ensure it returns a single finite number.
+space. Supported named options include `"euclidean"`, Jensen–Shannon
+divergence, and dynamic time warping. Use
+[`sc_list_distances()`](https://jakubnowosad.com/supercells/reference/sc_list_distances.md)
+to see every accepted name and its input requirements. See the [distance
+measure
+vignette](https://jakubnowosad.com/supercells/articles/v2-distances.md)
+for guidance on choosing among them. Other measures must be passed as a
+custom function that takes two numeric vectors and returns a single
+number. If you use a custom distance, ensure it returns one finite,
+nonnegative value, with smaller values meaning greater similarity.
 
 ``` r
 sc_manhattan <- sc_slic(vol, step = 8, compactness = 5, dist_fun = "manhattan")
@@ -286,8 +296,3 @@ plot(sc_conv)
 Use the diagnostics to decide whether fewer iterations are sufficient.
 If the curves stabilize early, you can reduce `iter` to speed up large
 runs.
-
-------------------------------------------------------------------------
-
-1.  See the **philentropy** documentation at
-    <https://drostlab.github.io/philentropy/articles/Distances.html>.

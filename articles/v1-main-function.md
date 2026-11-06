@@ -28,12 +28,12 @@ resulting number of supercells may slightly differ from the number
 provided as `k`, e.g., a square raster cannot be divided into five equal
 square areas. `step` is the expected distance, in the number of cells,
 between initial supercell centers. This parameter also defines a zone of
-influence of each cluster center ($2S \times 2S$ region).
+influence of each cluster center ($`2S \times 2S`$ region).
 
 In our software, it is also possible to provide a set of points (an `sf`
 object) as `k` together with the `step` value. This way, custom
 supercell centers are used, with each of them attracting cells in the
-surrounding $2S \times 2S$ region.
+surrounding $`2S \times 2S`$ region.
 
 While `k` or `step` determines the number of supercells, the
 `compactness` argument controls their spatial shape, with its large
@@ -43,19 +43,19 @@ supercells’ centers and its smaller value putting more weight
 depends on the range of input cell values and the selected distance
 measure.
 
-| argument          | description                                                                                                                                                                    |
-|:------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **`x`**           | An object of class SpatRaster (terra) or class stars (stars)                                                                                                                   |
-| **`k`**           | A number of supercells desired by the user. It is also possible to provide a set of points (an sf object) as k together with the step value to create custom supercell centers |
-| **`compactness`** | A compactness value. Larger values cause supercells to be more compact/even (squarish)                                                                                         |
-| `dist_fun`        | A distance function used                                                                                                                                                       |
-| `avg_fun`         | An averaging function specifying how the values of the supercells’ centers are recalculated                                                                                    |
-| `clean`           | A boolean specifying if the additional process of connectivity enforcement should be performed                                                                                 |
-| `iter`            | A number of iterations performed to create the final output                                                                                                                    |
-| `step`            | A distance, in the number of cells, between initial supercells’ centers                                                                                                        |
-| `minarea`         | A minimal size of the output supercells in cells                                                                                                                               |
-| `chunks`          | A boolean or numeric value specifying if the input (x) should be split into chunks before deriving supercells                                                                  |
-| `verbose`         | An integer specifying the verboseness of text messages printed during calculations                                                                                             |
+| argument | description |
+|:---|:---|
+| **`x`** | An object of class SpatRaster (terra) or class stars (stars) |
+| **`k`** | A number of supercells desired by the user. It is also possible to provide a set of points (an sf object) as k together with the step value to create custom supercell centers |
+| **`compactness`** | A compactness value. Larger values cause supercells to be more compact/even (squarish) |
+| `dist_fun` | A distance function used |
+| `avg_fun` | An averaging function specifying how the values of the supercells’ centers are recalculated |
+| `clean` | A boolean specifying if the additional process of connectivity enforcement should be performed |
+| `iter` | A number of iterations performed to create the final output |
+| `step` | A distance, in the number of cells, between initial supercells’ centers |
+| `minarea` | A minimal size of the output supercells in cells |
+| `chunks` | A boolean or numeric value specifying if the input (x) should be split into chunks before deriving supercells |
+| `verbose` | An integer specifying the verboseness of text messages printed during calculations |
 
 Table: Overview of the arguments accepted by the
 [`supercells()`](https://jakubnowosad.com/supercells/reference/supercells.md)
@@ -99,12 +99,11 @@ enforced by removing small disconnected patches (by merging with larger
 neighborhood ones) or promoting small patches to new supercells. The
 role of the second one, `minarea`, is to control how large disconnected
 patches must be not be removed. By default, when `clean = TRUE`, an
-average area ($A$) is calculated automatically based on the total number
-of cells divided by a number of supercells, and next, the minimal size
-of a superpixel equals $A/\left( 2^{2} \right)$. Alternatively, users
-can also specify the minimum size of a superpixel by themselves by
-providing an area in the unit of a number of cells in the `minarea`
-argument.
+average area ($`A`$) is calculated automatically based on the total
+number of cells divided by a number of supercells, and next, the minimal
+size of a superpixel equals $`A/(2^2)`$. Alternatively, users can also
+specify the minimum size of a superpixel by themselves by providing an
+area in the unit of a number of cells in the `minarea` argument.
 
 The next argument is `iter` - specifying the number of iterations to
 create the output. Its default value of 10 follows the advice by Achanta
@@ -147,7 +146,7 @@ Quantification with R.” *Journal of Open Source Software* 3 (26): 765.
 
 Lin, Jianhua. 1991. “Divergence Measures Based on the Shannon Entropy.”
 *IEEE Transactions on Information Theory* 37 (1): 145–51.
-<https://doi.org/djxkkh>.
+<https://doi.org/10/djxkkh>.
 
 Nowosad, Jakub, and Tomasz F. Stepinski. 2022. “Extended SLIC
 Superpixels Algorithm for Applications to Non-Imagery Geospatial

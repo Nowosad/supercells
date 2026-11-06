@@ -8,7 +8,7 @@ estimates compactness directly from local value variability.
 
 ``` r
 sc_tune_compactness(
-  raster,
+  x,
   step = NULL,
   dist_fun = "euclidean",
   metric = "local_variability",
@@ -21,9 +21,9 @@ sc_tune_compactness(
 
 ## Arguments
 
-- raster:
+- x:
 
-  A `SpatRaster`.
+  A `SpatRaster` (terra) or `stars` object.
 
 - step:
 
@@ -35,11 +35,11 @@ sc_tune_compactness(
 
 - dist_fun:
 
-  A distance function name or a custom function. Supported names:
-  "euclidean", "jsd", "dtw", "dtw2d", or any method from
-  [`philentropy::getDistMethods()`](https://drostlab.github.io/philentropy/reference/getDistMethods.html).
-  A custom function must accept two numeric vectors and return a single
-  numeric value.
+  A supported distance name from
+  [`sc_list_distances()`](https://jakubnowosad.com/supercells/reference/sc_list_distances.md)
+  or a custom function that takes two numeric vectors and returns one
+  finite, nonnegative value. Smaller values must mean greater
+  similarity.
 
 - metric:
 
@@ -48,9 +48,11 @@ sc_tune_compactness(
   additions. For `"local_variability"`,
   `compactness = median(local_mean(d_value)) / dim_scale`, where local
   means are computed in windows around initial centers and `dim_scale`
-  is inferred from the number of raster layers and `dist_fun`. This
-  keeps compactness adjustable to dimensionality without requiring a
-  separate user-facing scaling argument.
+  is inferred from the number of raster layers and `dist_fun`.
+  Root-sum-square measures use `sqrt(n_layers)`, additive and path-sum
+  measures use `n_layers`, and other named or custom measures use `1`.
+  This keeps compactness adjustable to dimensionality without requiring
+  a separate user-facing scaling argument.
 
 - stat:
 
@@ -75,8 +77,9 @@ sc_tune_compactness(
 ## Value
 
 A data frame with columns `step`, `metric`, `dist_fun`, and
-`compactness`. It has one row when `stat` summarizes the local
-variability, or one row per local variability value when `stat = NULL`.
+`compactness`. With the default `stat = median`, it contains one row.
+With `stat = NULL`, it contains one row per initial center, with `step`,
+`metric`, and `dist_fun` repeated for each row.
 
 ## See also
 
