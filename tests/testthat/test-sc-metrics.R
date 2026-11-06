@@ -92,7 +92,7 @@ test_that("metrics follow step encoding in cells vs meters", {
 })
 
 test_that("metrics reject invalid dist_fun", {
-  expect_error(sc_metrics_pixels(v1, sc_full, dist_fun = "not_a_dist"), "does not exist", fixed = TRUE)
+  expect_error(sc_metrics_pixels(v1, sc_full, dist_fun = "not_a_dist"), "not supported", fixed = TRUE)
 })
 
 test_that("metrics work after save/read when explicit args are supplied", {

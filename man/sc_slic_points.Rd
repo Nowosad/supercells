@@ -30,9 +30,9 @@ map-distance steps in meters (automatically converted to cells using raster reso
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
 Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness (ASLIC).}
 
-\item{dist_fun}{A distance function name or a custom function. Supported names:
-"euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
-A custom function must accept two numeric vectors and return a single numeric value.}
+\item{dist_fun}{A supported distance name from \code{\link[=sc_list_distances]{sc_list_distances()}} or a
+custom function that takes two numeric vectors and returns one finite,
+nonnegative value. Smaller values must mean greater similarity.}
 
 \item{avg_fun}{An averaging function name or custom function used to summarize
 values within each supercell. Supported names: "mean" and "median". A custom
@@ -40,9 +40,11 @@ function must accept a numeric vector and return a single numeric value.}
 
 \item{clean}{Should connectivity of the supercells be enforced?}
 
-\item{minarea}{Connectivity components containing \code{minarea} cells or fewer
-are merged into an adjacent component when \code{clean = TRUE}. If omitted or
-zero, the threshold is one quarter of the expected supercell area.}
+\item{minarea}{When \code{clean = TRUE}, connected components containing
+\code{minarea} cells or fewer are merged into an adjacent component. If \code{minarea}
+is omitted or set to \code{0}, the threshold is selected automatically as one
+quarter of the raster cell count divided by the number of initialized centers:
+\code{floor(ncell / (4 * n_centers))}.}
 
 \item{iter}{Number of iterations.}
 

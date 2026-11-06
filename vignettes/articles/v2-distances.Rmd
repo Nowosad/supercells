@@ -1,0 +1,172 @@
+---
+title: "Choosing a distance measure for supercells"
+author: Jakub Nowosad
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Choosing a distance measure for supercells}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The distance measure defines what it means for the values of two raster cells to be similar.
+Therefore, the choice of a distance measure is crucial for the supercell segmentation results, and the decision of which measure to use should be based on the characteristics of the input data and the goals of the analysis. 
+This vignette provides an overview of the available distance measures, their requirements, and guidance for selecting an appropriate measure for your analysis.
+It also includes a short example comparing three different measures on a sample raster dataset.
+
+```{r}
+#| message: false
+library(supercells)
+library(terra)
+```
+
+# Available measures
+
+To check the available distance measures, use the `sc_list_distances()` function.
+It returns a data frame with information on the measure names, required input domains, what the measure compares, the effect of layer rescaling, and guidance for choosing the measure.
+Below is a summary of the available measures, grouped by input domain.
+The “Layer rescaling” column indicates whether differences in scale among layers affect the distance.
+
+```{r}
+#| echo: false
+#| results: asis
+distances <- sc_list_distances()
+
+for (input in unique(distances$input)) {
+  current <- distances[distances$input == input, ]
+  shown <- current[c(
+    "name", "compares", "effect_of_layer_rescaling", "guidance"
+  )]
+  names(shown) <- c(
+    "Name", "What it compares", "Layer rescaling", "Guidance"
+  )
+
+  cat("## Input: ", tools::toTitleCase(input), "\n\n", sep = "")
+  print(knitr::kable(shown, row.names = FALSE))
+  cat("\n\n")
+}
+```
+
+<!-- Temporarily hidden pending validation of the recommendations.
+
+# Choosing a measure
+
+| Data or similarity question | Measures to consider |
+|---|---|
+| Absolute differences across comparable numeric layers matter | `manhattan` for linear contributions, `euclidean` to give larger differences more influence, or `squared_euclidean` to emphasize them further |
+| The largest difference in any one layer should dominate | `chebyshev` |
+| Relative differences within individual layers matter | `canberra`; for nonnegative data, `wavehedges` or `clark` |
+| Absolute differences should be dampened logarithmically | `lorentzian` |
+| Overall difference relative to the complete nonnegative profile matters | `soergel` or `czekanowski` |
+| Differences after compressing nonnegative values with a square-root transformation matter | `squared_chord` |
+| Differences should receive more weight when their combined nonnegative magnitude is small | `squared_chi` |
+| Relative pattern matters, not the overall positive magnitude of the profile | `cosine_distance` |
+| Each cell contains unordered class probabilities summing to 1 | `jsd` or `non-intersection` |
+| Each cell contains probabilities over ordered, equal-width bins | `wasserstein1` |
+| Layers are an ordered one-dimensional sequence | `dtw` |
+| Layers contain a two-dimensional trajectory stored as two coordinate blocks | `dtw2d` |
+
+These are starting points rather than automatic choices.
+When layer rescaling can change a measure, put layers on comparable scales unless different influence is intentional.
+Retune `compactness` after changing the distance measure.
+
+For probability measures, normalize every cell to sum to 1 and use mean centres.
+For `wasserstein1`, also arrange layers in bin order.
+For `dtw`, arrange layers in sequence order.
+For `dtw2d`, use an even number of layers, arrange layers by dimension, and preserve sequence order within each dimension.
+The package does not automatically enforce every measure-specific input requirement, so prepare the input and choose the centre function accordingly.
+
+-->
+
+# Comparing three measures
+
+We illustrate segmentations obtained with three distance measures: `euclidean`, `canberra`, and `cosine_distance`. 
+Each measure is tuned separately because their distance values have different scales.
+
+```{r}
+ortho <- rast(system.file("raster/ortho.tif", package = "supercells"))
+ortho <- aggregate(ortho, fact = 2)
+
+tune_euclidean <- sc_tune_compactness(ortho, step = 10, dist_fun = "euclidean")
+sc_euclidean <- sc_slic(
+  ortho,
+  step = 10,
+  compactness = tune_euclidean$compactness,
+  dist_fun = "euclidean"
+)
+
+tune_canberra <- sc_tune_compactness(ortho, step = 10, dist_fun = "canberra")
+sc_canberra <- sc_slic(
+  ortho,
+  step = 10,
+  compactness = tune_canberra$compactness,
+  dist_fun = "canberra"
+)
+
+tune_cosine <- sc_tune_compactness(ortho, step = 10, dist_fun = "cosine_distance")
+sc_cosine <- sc_slic(
+  ortho,
+  step = 10,
+  compactness = tune_cosine$compactness,
+  dist_fun = "cosine_distance"
+)
+```
+
+```{r, fig.width = 7, fig.height = 4}
+#| echo: false
+results <- list(
+  euclidean = sc_euclidean,
+  canberra = sc_canberra,
+  cosine_distance = sc_cosine
+)
+
+for (measure in names(results)) {
+  plotRGB(ortho, scale = 255, axes = FALSE, main = measure)
+  plot(results[[measure]][0], add = TRUE, border = "white", lwd = 0.75)
+}
+```
+
+Each measure produces a different segmentation of the raster dataset:
+
+- Euclidean distance responds to absolute RGB differences. 
+- Canberra distance compares channel differences relative to their values. 
+- Cosine distance compares the RGB profile while ignoring its overall magnitude.
+
+# Custom measures
+
+Other measures can be supplied as functions.
+A custom function must take two numeric vectors and return one finite, nonnegative value, with smaller values meaning greater similarity.
+
+For example, Minkowski distance with $p = 3$ gives large layer differences more influence than Euclidean distance ($p = 2$); Chebyshev distance is the limiting case as $p$ approaches infinity.
+
+```{r}
+minkowski3 <- function(x, y) {
+  sum(abs(x - y)^3)^(1 / 3)
+}
+
+tune_minkowski3 <- sc_tune_compactness(
+  ortho,
+  step = 10,
+  dist_fun = minkowski3
+)
+
+sc_minkowski3 <- sc_slic(
+  ortho,
+  step = 10,
+  compactness = tune_minkowski3$compactness,
+  dist_fun = minkowski3
+)
+```
+
+```{r, fig.width = 7, fig.height = 4}
+#| echo: false
+plotRGB(ortho, scale = 255, axes = FALSE, main = "Minkowski distance (p = 3)")
+plot(sc_minkowski3[0], add = TRUE, border = "white", lwd = 0.75)
+```

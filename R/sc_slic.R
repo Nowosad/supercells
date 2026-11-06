@@ -24,16 +24,18 @@
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
 #' @param compactness A compactness value. Use [`sc_tune_compactness()`] to estimate it.
 #' Use [use_adaptive()] to enable adaptive compactness (ASLIC).
-#' @param dist_fun A distance function name or a custom function. Supported names:
-#' "euclidean", "jsd", "dtw", "dtw2d", or any method from `philentropy::getDistMethods()`.
-#' A custom function must accept two numeric vectors and return a single numeric value.
+#' @param dist_fun A supported distance name from [sc_list_distances()] or a
+#' custom function that takes two numeric vectors and returns one finite,
+#' nonnegative value. Smaller values must mean greater similarity.
 #' @param avg_fun An averaging function name or custom function used to summarize
 #' values within each supercell. Supported names: "mean" and "median". A custom
 #' function must accept a numeric vector and return a single numeric value.
 #' @param clean Should connectivity of the supercells be enforced?
-#' @param minarea Connectivity components containing `minarea` cells or fewer
-#' are merged into an adjacent component when `clean = TRUE`. If omitted or
-#' zero, the threshold is one quarter of the expected supercell area.
+#' @param minarea When `clean = TRUE`, connected components containing
+#' `minarea` cells or fewer are merged into an adjacent component. If `minarea`
+#' is omitted or set to `0`, the threshold is selected automatically as one
+#' quarter of the raster cell count divided by the number of initialized centers:
+#' `floor(ncell / (4 * n_centers))`.
 #' @param iter Number of iterations.
 #' @param k The number of supercells desired (alternative to `step`).
 #' @param centers Optional sf object of custom centers. Requires `step`.

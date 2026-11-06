@@ -5,7 +5,7 @@
 \title{Estimate a compactness value}
 \usage{
 sc_tune_compactness(
-  raster,
+  x,
   step = NULL,
   dist_fun = "euclidean",
   metric = "local_variability",
@@ -16,21 +16,23 @@ sc_tune_compactness(
 )
 }
 \arguments{
-\item{raster}{A \code{SpatRaster}.}
+\item{x}{A \code{SpatRaster} (terra) or \code{stars} object.}
 
 \item{step}{Initial center spacing (alternative is \code{k}).
 Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{use_meters()}} for
 map-distance steps in meters (automatically converted to cells using raster resolution).}
 
-\item{dist_fun}{A distance function name or a custom function. Supported names:
-"euclidean", "jsd", "dtw", "dtw2d", or any method from \code{philentropy::getDistMethods()}.
-A custom function must accept two numeric vectors and return a single numeric value.}
+\item{dist_fun}{A supported distance name from \code{\link[=sc_list_distances]{sc_list_distances()}} or a
+custom function that takes two numeric vectors and returns one finite,
+nonnegative value. Smaller values must mean greater similarity.}
 
 \item{metric}{Which compactness metric to return. Currently only
 \code{"local_variability"} is supported. The argument is kept for future additions.
 For \code{"local_variability"}, \code{compactness = median(local_mean(d_value)) / dim_scale},
 where local means are computed in windows around initial centers and
 \code{dim_scale} is inferred from the number of raster layers and \code{dist_fun}.
+Root-sum-square measures use \code{sqrt(n_layers)}, additive and path-sum
+measures use \code{n_layers}, and other named or custom measures use \code{1}.
 This keeps compactness adjustable to dimensionality without requiring a
 separate user-facing scaling argument.}
 
@@ -44,8 +46,9 @@ separate user-facing scaling argument.}
 }
 \value{
 A data frame with columns \code{step}, \code{metric}, \code{dist_fun}, and
-\code{compactness}. It has one row when \code{stat} summarizes the local variability,
-or one row per local variability value when \code{stat = NULL}.
+\code{compactness}. With the default \code{stat = median}, it contains one row. With
+\code{stat = NULL}, it contains one row per initial center, with \code{step}, \code{metric},
+and \code{dist_fun} repeated for each row.
 }
 \description{
 Estimates a compactness value for a chosen raster scale.

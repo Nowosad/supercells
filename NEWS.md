@@ -1,3 +1,14 @@
+# supercells 1.9.9
+
+* Named `dist_fun` values are now limited to the curated list of measures returned by `sc_list_distances()`. Other measures can still be supplied as functions. 
+* The curated set includes the new `"cosine_distance"` definition.
+* Added `"wasserstein1"` for probability profiles stored as ordered, equal-width raster layers.
+* `"dtw2d"` now rejects an odd number of layers instead of ignoring the final layer.
+* Renamed the first argument of `sc_tune_compactness()` from `raster` to `x`.
+* `sc_tune_compactness()` now applies measure-specific dimensional scaling across the curated measures.
+* `sc_tune_compactness()` now accepts `stars` rasters consistently with the SLIC functions.
+* Fixed `sc_tune_compactness()` with `stat = NULL` and a `step` in meters.
+
 # supercells 1.9.8
 
 * Invalid `k` values are now rejected before code is run.

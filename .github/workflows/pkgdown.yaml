@@ -27,6 +27,7 @@ jobs:
              any::rcmdcheck
              any::pkgdown
              any::motif
+             any::landscapemetrics
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2

@@ -127,6 +127,8 @@ The compactness is then estimated as:
 
 - **Local variability**: `compactness = median(local_mean(d_value)) / dim_scale`, where `dim_scale` is inferred internally from raster dimensionality and `dist_fun`.
 
+Root-sum-square measures use `sqrt(n_layers)`, additive and path-sum measures use `n_layers`, and other named or custom measures use `1`.
+
 This yields a compactness tied to typical local heterogeneity at the target supercell scale.
 
 ```{r}
@@ -178,10 +180,11 @@ cmp_metrics
 # Distance and averaging functions
 
 The `dist_fun` argument defines how similarity is measured in value space.
-Built-in options include `"euclidean"`, Jensen–Shannon divergence, and dynamic time warping.
-You can also pass a name of the distance measure from the **philentropy** package^[
-See the **philentropy** documentation at <https://drostlab.github.io/philentropy/articles/Distances.html>.] or a custom function that takes two numeric vectors and returns a single number.
-If you use a custom distance, ensure it returns a single finite number.
+Supported named options include `"euclidean"`, Jensen–Shannon divergence, and dynamic time warping.
+Use `sc_list_distances()` to see every accepted name and its input requirements.
+See the [distance measure vignette](v2-distances.html) for guidance on choosing among them.
+Other measures must be passed as a custom function that takes two numeric vectors and returns a single number.
+If you use a custom distance, ensure it returns one finite, nonnegative value, with smaller values meaning greater similarity.
 
 ```{r}
 sc_manhattan <- sc_slic(vol, step = 8, compactness = 5, dist_fun = "manhattan")

@@ -146,7 +146,7 @@
       centers_df = centers_df[match(slic_sf[["supercells"]], centers_df[["supercells"]]), , drop = FALSE]
       centers_df[["supercells"]] = NULL
     }
-    slic_sf = cbind(slic_sf, centers_df)
+    slic_sf[names(centers_df)] = centers_df
     slic_sf = suppressWarnings(sf::st_collection_extract(slic_sf, "POLYGON"))
     return(slic_sf)
   }

@@ -23,7 +23,8 @@ This helps with interpretation, visualization, and downstream modeling.
 It also reduces noise while preserving important spatial structure.
 
 The package is designed to work with rasters that have many layers or time steps.
-It supports multiple distance measures such as Jensen–Shannon divergence or dynamic time warping, as well as user-defined distance functions, so similarity can be adapted to the data.
+It supports a curated set of named distance measures, including Jensen–Shannon divergence and dynamic time warping, as well as user-defined distance functions.
+Use `sc_list_distances()` to see the accepted names and their input requirements.
 It can therefore handle diverse data types and high-dimensional inputs without changing the main workflow.
 The package core ideas are described in @Nowosad2022.
 
@@ -172,6 +173,8 @@ global_metrics
 To learn more about the package and its capabilities, check out the following articles:
 
 - [**Choosing parameters**: a practical guide to `step`, `k`, and `compactness`.](https://jakubnowosad.com/supercells/articles/v2-parameters.html)
+- [**Choosing a distance measure**: how value similarity is defined during segmentation.](https://jakubnowosad.com/supercells/articles/v2-distances.html)
+- [**Categorical rasters and supercells**: how to represent class identity, composition, and configuration.](https://jakubnowosad.com/supercells/articles/v2-categorical.html)
 - [**Evaluation and diagnostics**: how to read and compare pixel, supercell, and global metrics.](https://jakubnowosad.com/supercells/articles/v2-evaluation.html)
 - [**Benchmarks**: performance notes.](https://jakubnowosad.com/supercells/articles/v2-benchmarks.html)
 - [**Changes since v1**: a concise summary of what’s new in v2.](https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html)
