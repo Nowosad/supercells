@@ -173,6 +173,8 @@ global_metrics
 To learn more about the package and its capabilities, check out the following articles:
 
 - [**Choosing parameters**: a practical guide to `step`, `k`, and `compactness`.](https://jakubnowosad.com/supercells/articles/v2-parameters.html)
+- [**Choosing a distance measure**: how value similarity is defined during segmentation.](https://jakubnowosad.com/supercells/articles/v2-distances.html)
+- [**Categorical rasters and supercells**: how to represent class identity, composition, and configuration.](https://jakubnowosad.com/supercells/articles/v2-categorical.html)
 - [**Evaluation and diagnostics**: how to read and compare pixel, supercell, and global metrics.](https://jakubnowosad.com/supercells/articles/v2-evaluation.html)
 - [**Benchmarks**: performance notes.](https://jakubnowosad.com/supercells/articles/v2-benchmarks.html)
 - [**Changes since v1**: a concise summary of what’s new in v2.](https://jakubnowosad.com/supercells/articles/v2-changes-since-v1.html)
