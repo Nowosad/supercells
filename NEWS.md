@@ -1,4 +1,4 @@
-# supercells 1.9.9
+# supercells 2.0.0
 
 * Named `dist_fun` values are now limited to the curated list of measures returned by `sc_list_distances()`. Other measures can still be supplied as functions. 
 * The curated set includes the new `"cosine_distance"` definition.
