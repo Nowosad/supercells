@@ -85,10 +85,8 @@
       stop("The 'supercells.chunk_mem_gb' option must be a positive number", call. = FALSE)
     }
     wsize = .sc_chunk_optimize_size(dim_x, limit, step = step)
-    dims1 = ceiling(seq.int(0, to = dim_x[1],
-                            length.out = as.integer((dim_x[1] - 1) / wsize + 1) + 1))
-    dims2 = ceiling(seq.int(0, to = dim_x[2],
-                            length.out = as.integer((dim_x[2] - 1) / wsize + 1) + 1))
+    dims1 = ceiling(.sc_util_seq_last(0, to = dim_x[1], by = wsize))
+    dims2 = ceiling(.sc_util_seq_last(0, to = dim_x[2], by = wsize))
   }
   if (.sc_chunk_mem_gb(dim_x) > limit){
     row_dims = seq_along(dims1)[-length(dims1)]

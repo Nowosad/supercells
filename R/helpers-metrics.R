@@ -40,6 +40,12 @@
   if (!inherits(sc, "sf")) {
     stop("The 'sc' argument must be an sf object returned by sc_slic()", call. = FALSE)
   }
+  if ("clusters" %in% include) {
+    geometry_type = as.character(sf::st_geometry_type(sc, by_geometry = TRUE))
+    if (!length(geometry_type) || !all(geometry_type %in% c("POLYGON", "MULTIPOLYGON"))) {
+      stop("The 'sc' argument must contain only polygon geometries", call. = FALSE)
+    }
+  }
 
   if (missing(compactness)) {
     compactness = attr(sc, "compactness")
