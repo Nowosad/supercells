@@ -16,49 +16,37 @@ cpp11::writable::doubles sc_metrics_local_mean_cpp(cpp11::doubles_matrix<> cente
   int bands = vals.ncol();
   int ncenters = centers_vals.nrow();
 
-  std::vector<std::vector<double>> centers_vals_vec(ncenters, std::vector<double>(bands));
-  for (int i = 0; i < ncenters; i++) {
-    for (int nval = 0; nval < bands; nval++) {
-      centers_vals_vec[i][nval] = centers_vals(i, nval);
-    }
-  }
+  std::vector<std::vector<double>> center_values = sc_copy_center_values(centers_vals);
 
   cpp11::writable::doubles result(ncenters);
   std::vector<double> pixel_values;
   pixel_values.reserve(bands);
 
-  for (int i = 0; i < ncenters; i++) {
-    double sum_dist = 0.0;
-    int count = 0;
-    int center_x = static_cast<int>(std::round(centers_xy(i, 0)));
-    int center_y = static_cast<int>(std::round(centers_xy(i, 1)));
-    for (int m = center_x - step; m < center_x + step; m++) {
-      for (int n = center_y - step; n < center_y + step; n++) {
-        if (m < 0 || m >= cols || n < 0 || n >= rows) {
+  for (int center = 0; center < ncenters; center++) {
+    double distance_sum = 0.0;
+    int pixel_count = 0;
+    int center_col = static_cast<int>(std::round(centers_xy(center, 0)));
+    int center_row = static_cast<int>(std::round(centers_xy(center, 1)));
+    for (int col = center_col - step; col < center_col + step; col++) {
+      for (int row = center_row - step; row < center_row + step; row++) {
+        if (col < 0 || col >= cols || row < 0 || row >= rows) {
           continue;
         }
-        int ncell = m + (n * cols);
-        pixel_values.clear();
-        bool has_na = false;
-        for (int nval = 0; nval < bands; nval++) {
-          double val = vals(ncell, nval);
-          pixel_values.push_back(val);
-          if (std::isnan(val)) {
-            has_na = true;
-          }
-        }
-        if (has_na) {
+        int ncell = col + (row * cols);
+        if (!sc_read_pixel_values(vals, ncell, pixel_values)) {
           continue;
         }
-        double d = get_vals_dist(centers_vals_vec[i], pixel_values, dist_name, dist_fun);
-        sum_dist += d;
-        count += 1;
+        double distance = get_vals_dist(
+          center_values[center], pixel_values, dist_name, dist_fun
+        );
+        distance_sum += distance;
+        pixel_count += 1;
       }
     }
-    if (count > 0) {
-      result[i] = sum_dist / count;
+    if (pixel_count > 0) {
+      result[center] = distance_sum / pixel_count;
     } else {
-      result[i] = NA_REAL;
+      result[center] = NA_REAL;
     }
   }
 
