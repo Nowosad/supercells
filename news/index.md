@@ -1,6 +1,6 @@
 # Changelog
 
-## supercells 1.9.9
+## supercells 2.0.0
 
 - Named `dist_fun` values are now limited to the curated list of
   measures returned by
