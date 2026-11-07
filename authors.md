@@ -14,7 +14,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/Nowosad/supercells/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/Nowosad/supercells/blob/pre2/inst/CITATION)
 
 Nowosad, J., & Stepinski, T. F. (2022). Extended SLIC superpixels
 algorithm for applications to non-imagery geospatial rasters.
