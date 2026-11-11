@@ -26,7 +26,7 @@ D = \sqrt{\left(\frac{d_s}{\text{step}}\right)^2 + \left(\frac{d_v}{c}\right)^2}
 $$
 
 where $d_s$ is the spatial distance in grid-cell units, $d_v$ is the value-space distance defined by `dist_fun`, and $c$ is `compactness`.
-<!-- When `compactness = use_adaptive()`, $c$ becomes a per-center value scale computed as the maximum value distance within a local $2 \times \text{step}$ window. -->
+<!-- With `compactness = use_adaptive()`, $c$ is instead a separate value scale for each center: the largest feature-space distance within its local search window. -->
 
 All examples use the `volcano` raster for simplicity, but the same workflow applies to multi-layer rasters.
 
@@ -56,7 +56,7 @@ Lower value distances indicate more homogeneous supercells, while higher values 
 
 By default, `sc_metrics_pixels()` returns `spatial`, `value`, `combined`, and `balance`, and uses `scale = TRUE`.
 With scaling on, the spatial and value layers are returned as `spatial_scaled` and `value_scaled`.
-Scaling divides spatial distance by `step` (or by `step` in map units) and value distance by `compactness` (or by per-supercell values for ASLIC).
+Scaling divides spatial distance by `step` (or by `step` in map units) and value distance by `compactness` (or by a local value for each center under adaptive compactness).
 This makes the spatial and value components comparable and keeps the balance metric interpretable.
 If you want raw units, set `scale = FALSE`.
 

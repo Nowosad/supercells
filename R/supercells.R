@@ -8,7 +8,8 @@
 #' You can use either `k` or `step`.
 #' It is also possible to provide a set of points (an `sf` object) as `k` together with the `step` value to create custom cluster centers.
 #' @param compactness A compactness value. Larger values cause supercells to be more compact/even (square).
-#' Use [use_adaptive()] to enable adaptive compactness (ASLIC).
+#' Use [use_adaptive()] to enable adaptive compactness based on local
+#' feature-space distances.
 #' A compactness value depends on the range of input cell values and selected distance measure.
 #' @param dist_fun A supported distance name from [sc_list_distances()] or a
 #' custom function that takes two numeric vectors and returns one finite,

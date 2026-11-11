@@ -173,7 +173,7 @@ std::vector<double> SlicCore::find_local_minimum(const std::vector<double>& vals
   return loc_min;
 }
 
-// Compute per-center max value-distance within each local search window for ASLIC.
+// Compute per-center max value-distance within each local search window.
 void SlicCore::compute_max_value_dist(const std::vector<double>& vals, std::vector<double>& colour) {
   max_value_dist.assign(centers.size(), 0.0);
   for (int l = 0; l < (int) centers.size(); l++) {

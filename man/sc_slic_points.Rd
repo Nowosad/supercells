@@ -28,7 +28,8 @@ Provide a plain numeric value for cell units, or use \code{\link[=use_meters]{us
 map-distance steps in meters (automatically converted to cells using raster resolution).}
 
 \item{compactness}{A compactness value. Use \code{\link[=sc_tune_compactness]{sc_tune_compactness()}} to estimate it.
-Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness (ASLIC).}
+Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness based on local
+feature-space distances.}
 
 \item{dist_fun}{A supported distance name from \code{\link[=sc_list_distances]{sc_list_distances()}} or a
 custom function that takes two numeric vectors and returns one finite,

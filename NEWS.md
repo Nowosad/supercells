@@ -38,8 +38,8 @@
 
 # supercells 1.8
 
-* `compactness = "auto"` enables ASLIC-style adaptive compactness
-* Metrics now support ASLIC-like adaptive compactness (pixels/supercells/global)
+* `compactness = "auto"` enables locally adaptive compactness
+* Metrics now support local-window adaptive compactness (pixels/supercells/global)
 * `sc_tune_compactness()` returns only `step` + one compactness, selected by `metrics = "global"` or `"local"`
 * Chunked raster IDs now use a consistent center-count offset strategy
 

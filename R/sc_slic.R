@@ -23,7 +23,8 @@
 #' Provide a plain numeric value for cell units, or use [use_meters()] for
 #' map-distance steps in meters (automatically converted to cells using raster resolution).
 #' @param compactness A compactness value. Use [`sc_tune_compactness()`] to estimate it.
-#' Use [use_adaptive()] to enable adaptive compactness (ASLIC).
+#' Use [use_adaptive()] to enable adaptive compactness based on local
+#' feature-space distances.
 #' @param dist_fun A supported distance name from [sc_list_distances()] or a
 #' custom function that takes two numeric vectors and returns one finite,
 #' nonnegative value. Smaller values must mean greater similarity.

@@ -28,7 +28,8 @@ You can use either \code{k} or \code{step}.
 It is also possible to provide a set of points (an \code{sf} object) as \code{k} together with the \code{step} value to create custom cluster centers.}
 
 \item{compactness}{A compactness value. Larger values cause supercells to be more compact/even (square).
-Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness (ASLIC).
+Use \code{\link[=use_adaptive]{use_adaptive()}} to enable adaptive compactness based on local
+feature-space distances.
 A compactness value depends on the range of input cell values and selected distance measure.}
 
 \item{dist_fun}{A supported distance name from \code{\link[=sc_list_distances]{sc_list_distances()}} or a
