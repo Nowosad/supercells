@@ -157,11 +157,12 @@ sc_tuned <- sc_slic(vol, step = 8, compactness = tune_local_variability$compactn
 ### Automatic compactness
 
 For heterogeneous rasters, `compactness = use_adaptive()` enables
-ASLIC-style adaptive compactness. This adjusts the value scale per
-supercell and often improves local adaptation. At the same time, it
-reduces direct control, so use it when a single global compactness is
-hard to choose. Importantly, it still uses your chosen `dist_fun` for
-value distances.
+locally adaptive compactness. For each center, the largest feature-space
+distance within its local search window scales the value term, while
+`step` continues to scale spatial distance. This allows compactness to
+vary with local raster variability but offers less direct control than a
+fixed value. Importantly, it still uses your chosen `dist_fun` for value
+distances.
 
 ``` r
 sc_auto <- sc_slic(vol, step = 8, compactness = use_adaptive())

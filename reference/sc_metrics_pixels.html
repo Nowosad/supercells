@@ -137,9 +137,10 @@ components. Returns <code>NA</code> when either component is zero.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>If <code>sc</code> lacks <code>supercells</code>, <code>x</code>, or <code>y</code> columns, they are derived from geometry
 and row order, which may differ from the original centers.
-When using ASLIC (set <code>compactness = use_adaptive()</code> in <code><a href="sc_slic.html">sc_slic()</a></code>), combined and balance metrics use per-supercell
-adaptive compactness (ASLIC), and scaled value distances are computed with the
-per-supercell max value distance.</p>
+With adaptive compactness (set <code>compactness = use_adaptive()</code> in
+<code><a href="sc_slic.html">sc_slic()</a></code>), value distances are scaled separately for each center using a
+local maximum calculated from its final position and search window. The
+combined and balance metrics use these scaled distances.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

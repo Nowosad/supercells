@@ -72,7 +72,7 @@
                         <h4 data-toc-skip class="author">Jakub
 Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2026-11-07</h4>
+            <h4 data-toc-skip class="date">2026-11-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/v2-changes-since-v1.Rmd" class="external-link"><code>vignettes/articles/v2-changes-since-v1.Rmd</code></a></small>
       <div class="d-none name"><code>v2-changes-since-v1.Rmd</code></div>
@@ -235,17 +235,17 @@ comparisons.</p>
 <span><span class="co">#&gt; 1              0.3710111          0.6294388 -0.2780825</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="aslic-adaptive-compactness">ASLIC adaptive compactness<a class="anchor" aria-label="anchor" href="#aslic-adaptive-compactness"></a>
+<h2 id="locally-adaptive-compactness">Locally adaptive compactness<a class="anchor" aria-label="anchor" href="#locally-adaptive-compactness"></a>
 </h2>
-<p><code>compactness = use_adaptive()</code> enables adaptive
-compactness (ASLIC). This lets the method adjust compactness across
-supercells rather than using a single fixed value.</p>
+<p><code>compactness = use_adaptive()</code> scales value distances
+separately for each center using the largest feature-space distance
+within its local search window.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">vol_sc_aslic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fu"><a href="../reference/use_adaptive.html">use_adaptive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">vol_sc_adaptive</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fu"><a href="../reference/use_adaptive.html">use_adaptive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Plot results on top of the volcano raster</span></span>
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">vol</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">vol_sc_aslic</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">0.6</span>, border <span class="op">=</span> <span class="st">"violet"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">vol_sc_adaptive</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">0.6</span>, border <span class="op">=</span> <span class="st">"violet"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="v2-changes-since-v1_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level2">

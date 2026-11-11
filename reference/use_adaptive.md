@@ -1,8 +1,10 @@
 # Use adaptive compactness mode
 
 Creates a compactness mode object for adaptive compactness. The
-`"local_max"` method corresponds to ASLIC-style local scaling, where
-compactness is adapted using local maximum value distances.
+`"local_max"` method scales value distances separately for each center
+using the largest feature-space distance within its local search window.
+The scale is updated before each assignment iteration, while spatial
+distances remain scaled by `step`.
 
 ## Usage
 
@@ -14,8 +16,8 @@ use_adaptive(method = "local_max")
 
 - method:
 
-  Adaptive compactness method. Currently only `"local_max"` is supported
-  (ASLIC-style).
+  Adaptive compactness method. Currently only `"local_max"` is
+  supported.
 
 ## Value
 

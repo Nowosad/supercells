@@ -72,7 +72,7 @@
                         <h4 data-toc-skip class="author">Jakub
 Nowosad</h4>
             
-            <h4 data-toc-skip class="date">2026-11-07</h4>
+            <h4 data-toc-skip class="date">2026-11-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Nowosad/supercells/blob/main/vignettes/articles/v2-parameters.Rmd" class="external-link"><code>vignettes/articles/v2-parameters.Rmd</code></a></small>
       <div class="d-none name"><code>v2-parameters.Rmd</code></div>
@@ -237,11 +237,12 @@ estimated value.</p>
 <h3 id="automatic-compactness">Automatic compactness<a class="anchor" aria-label="anchor" href="#automatic-compactness"></a>
 </h3>
 <p>For heterogeneous rasters, <code>compactness = use_adaptive()</code>
-enables ASLIC-style adaptive compactness. This adjusts the value scale
-per supercell and often improves local adaptation. At the same time, it
-reduces direct control, so use it when a single global compactness is
-hard to choose. Importantly, it still uses your chosen
-<code>dist_fun</code> for value distances.</p>
+enables locally adaptive compactness. For each center, the largest
+feature-space distance within its local search window scales the value
+term, while <code>step</code> continues to scale spatial distance. This
+allows compactness to vary with local raster variability but offers less
+direct control than a fixed value. Importantly, it still uses your
+chosen <code>dist_fun</code> for value distances.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sc_auto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_slic.html">sc_slic</a></span><span class="op">(</span><span class="va">vol</span>, step <span class="op">=</span> <span class="fl">8</span>, compactness <span class="op">=</span> <span class="fu"><a href="../reference/use_adaptive.html">use_adaptive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">

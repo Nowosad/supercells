@@ -97,8 +97,8 @@
 
 ## supercells 1.8
 
-- `compactness = "auto"` enables ASLIC-style adaptive compactness
-- Metrics now support ASLIC-like adaptive compactness
+- `compactness = "auto"` enables locally adaptive compactness
+- Metrics now support local-window adaptive compactness
   (pixels/supercells/global)
 - [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
   returns only `step` + one compactness, selected by

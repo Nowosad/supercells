@@ -42,10 +42,9 @@ like squares – but may be less homogeneous in terms of values.
 For compactness selection, you may use
 [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
 to estimate a good value from local value variability at the chosen
-`step`. Alternatively, `compactness = use_adaptive()` enables
-ASLIC-style adaptive compactness when you want the algorithm to adjust
-locally – this does not require setting a specific value, but also takes
-away direct control.
+`step`. Alternatively, `compactness = use_adaptive()` lets
+value-distance scaling vary by center, avoiding a single global value
+but providing less direct control.
 
 To assess quality of the resulting supercells, use
 [`sc_metrics_pixels()`](https://jakubnowosad.com/supercells/reference/sc_metrics_pixels.md)

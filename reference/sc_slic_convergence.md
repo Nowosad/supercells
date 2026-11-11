@@ -42,7 +42,7 @@ sc_slic_convergence(
   [`sc_tune_compactness()`](https://jakubnowosad.com/supercells/reference/sc_tune_compactness.md)
   to estimate it. Use
   [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
-  to enable adaptive compactness (ASLIC).
+  to enable adaptive compactness based on local feature-space distances.
 
 - dist_fun:
 

@@ -67,9 +67,10 @@ returns `spatial`, `value`, `combined`, and `balance`, and uses
 `scale = TRUE`. With scaling on, the spatial and value layers are
 returned as `spatial_scaled` and `value_scaled`. Scaling divides spatial
 distance by `step` (or by `step` in map units) and value distance by
-`compactness` (or by per-supercell values for ASLIC). This makes the
-spatial and value components comparable and keeps the balance metric
-interpretable. If you want raw units, set `scale = FALSE`.
+`compactness` (or by a local value for each center under adaptive
+compactness). This makes the spatial and value components comparable and
+keeps the balance metric interpretable. If you want raw units, set
+`scale = FALSE`.
 
 ``` r
 pixel_metrics <- sc_metrics_pixels(vol, vol_sc)

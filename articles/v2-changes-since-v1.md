@@ -195,18 +195,18 @@ global_metrics
 #> 1              0.3710111          0.6294388 -0.2780825
 ```
 
-## ASLIC adaptive compactness
+## Locally adaptive compactness
 
-`compactness = use_adaptive()` enables adaptive compactness (ASLIC).
-This lets the method adjust compactness across supercells rather than
-using a single fixed value.
+`compactness = use_adaptive()` scales value distances separately for
+each center using the largest feature-space distance within its local
+search window.
 
 ``` r
-vol_sc_aslic <- sc_slic(vol, step = 8, compactness = use_adaptive())
+vol_sc_adaptive <- sc_slic(vol, step = 8, compactness = use_adaptive())
 
 # Plot results on top of the volcano raster
 terra::plot(vol)
-plot(sf::st_geometry(vol_sc_aslic), add = TRUE, lwd = 0.6, border = "violet")
+plot(sf::st_geometry(vol_sc_adaptive), add = TRUE, lwd = 0.6, border = "violet")
 ```
 
 ![](v2-changes-since-v1_files/figure-html/unnamed-chunk-11-1.png)

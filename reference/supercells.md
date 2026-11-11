@@ -43,8 +43,9 @@ supercells(
   A compactness value. Larger values cause supercells to be more
   compact/even (square). Use
   [`use_adaptive()`](https://jakubnowosad.com/supercells/reference/use_adaptive.md)
-  to enable adaptive compactness (ASLIC). A compactness value depends on
-  the range of input cell values and selected distance measure.
+  to enable adaptive compactness based on local feature-space distances.
+  A compactness value depends on the range of input cell values and
+  selected distance measure.
 
 - dist_fun:
 
