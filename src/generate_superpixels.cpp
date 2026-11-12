@@ -1,5 +1,6 @@
 #include "slic_core.h"
 #include "calc_stats.h"
+#include <R_ext/Print.h>
 #include <limits>
 
 void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const std::vector<double>& vals,
@@ -9,7 +10,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
                                     const std::vector<std::array<int, 2>>& input_centers,
                                     int verbose, bool iter_diagnostics) {
   // Initialize state and seed cluster centers.
-  if (verbose > 0) std::printf("Initialization: ");
+  if (verbose > 0) Rprintf("Initialization: ");
   /* Clear previous data (if any), and re-initialize it. */
   clear_data();
   this->step = step;
@@ -20,10 +21,10 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
   avg_fun_name = avg_fun_name_in;
   iter_diagnostics_enabled = iter_diagnostics;
   inits(mat_dims_in, vals, input_centers);
-  if (verbose > 0) std::printf("Completed\n");
+  if (verbose > 0) Rprintf("Completed\n");
 
   if (centers.empty() || centers_vals.empty()) {
-    if (verbose > 0) std::printf("No centers available\n");
+    if (verbose > 0) Rprintf("No centers available\n");
     return;
   }
 
@@ -33,7 +34,7 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
   std::vector<std::vector<double>> centers_vals_c_id_buf(mat_dims[2]);
 
   for (int itr = 0; itr < iter; itr++) {
-    if (verbose > 0) std::printf("Iteration: %u/%u\r", itr + 1, iter);
+    if (verbose > 0) Rprintf("Iteration: %d/%d\r", itr + 1, iter);
 
     if (adaptive_compactness) {
       // Update the per-center value-distance scale before assignment.
@@ -234,5 +235,5 @@ void SlicCore::generate_superpixels(const std::vector<int>& mat_dims_in, const s
       }
     }
   }
-  if (verbose > 0) std::printf("\n");
+  if (verbose > 0) Rprintf("\n");
 }

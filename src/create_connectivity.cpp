@@ -1,18 +1,19 @@
 #include "slic_core.h"
 #include "calc_stats.h"
+#include <R_ext/Print.h>
 
 void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn_in,
                                    const std::string& avg_fun_name_in, int minarea, int verbose) {
   avg_fn = avg_fn_in;
   avg_fun_name = avg_fun_name_in;
-  if (verbose > 0) std::printf("Cleaning connectivity: ");
+  if (verbose > 0) Rprintf("Cleaning connectivity: ");
   int label = 0;
   int adjlabel = -1;
   const int dx4[4] = {-1,  0,  1,  0};
   const int dy4[4] = { 0, -1,  0,  1};
 
   if (centers.empty()) {
-    if (verbose > 0) std::printf("No centers available\n");
+    if (verbose > 0) Rprintf("No centers available\n");
     return;
   }
 
@@ -180,5 +181,5 @@ void SlicCore::create_connectivity(const std::vector<double>& vals, AvgFn avg_fn
 
   centers = new_centers;
   centers_vals = new_centers_vals;
-  if (verbose > 0) std::printf("Completed\n");
+  if (verbose > 0) Rprintf("Completed\n");
 }
